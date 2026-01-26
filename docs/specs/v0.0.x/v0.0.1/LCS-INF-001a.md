@@ -2,18 +2,18 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `INF-001a` | Infrastructure - Solution Scaffolding |
-| **Feature Name** | Solution Scaffolding & Hierarchy | The physical foundation of the codebase. |
-| **Target Version** | `v0.0.1a` | The Genesis commit. |
-| **Module Scope** | `Root` | Global Solution scope. |
-| **Swimlane** | `Infrastructure` | The Podium (Platform). |
-| **License Tier** | `Core` | Foundation (Required for all tiers). |
-| **Feature Gate Key** | N/A | No runtime gating required for file structure. |
-| **Author** | System Architect | |
-| **Status** | **Approved** | Ready for execution. |
-| **Last Updated** | 2026-01-26 | |
+| Field                | Value                            | Description                                    |
+|:---------------------|:---------------------------------|:-----------------------------------------------|
+| **Feature ID**       | `INF-001a`                       | Infrastructure - Solution Scaffolding          |
+| **Feature Name**     | Solution Scaffolding & Hierarchy | The physical foundation of the codebase.       |
+| **Target Version**   | `v0.0.1a`                        | The Genesis commit.                            |
+| **Module Scope**     | `Root`                           | Global Solution scope.                         |
+| **Swimlane**         | `Infrastructure`                 | The Podium (Platform).                         |
+| **License Tier**     | `Core`                           | Foundation (Required for all tiers).           |
+| **Feature Gate Key** | N/A                              | No runtime gating required for file structure. |
+| **Author**           | System Architect                 |                                                |
+| **Status**           | **Approved**                     | Ready for execution.                           |
+| **Last Updated**     | 2026-01-26                       |                                                |
 
 ---
 

@@ -1,0 +1,128 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LEXICHORD THEME
+         Master theme dictionary that imports all component styles
+         Use this single import in App.axaml for complete theming
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <ResourceDictionary.MergedDictionaries>
+        <!-- Color Palettes (Dark is default, Light available for switching) -->
+        <ResourceInclude Source="avares://Lexichord.Host/Themes/Colors.Dark.axaml" />
+
+        <!-- Component Styles -->
+        <ResourceInclude Source="avares://Lexichord.Host/Themes/ButtonStyles.axaml" />
+        <ResourceInclude Source="avares://Lexichord.Host/Themes/TextBoxStyles.axaml" />
+        <ResourceInclude Source="avares://Lexichord.Host/Themes/CardStyles.axaml" />
+        <ResourceInclude Source="avares://Lexichord.Host/Themes/TabStyles.axaml" />
+
+        <!-- Icons -->
+        <ResourceInclude Source="avares://Lexichord.Host/Resources/Icons.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         GLOBAL STYLES
+         Applied to all controls unless overridden
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Default font family -->
+    <FontFamily x:Key="DefaultFontFamily">Inter, Segoe UI, -apple-system, sans-serif</FontFamily>
+    <FontFamily x:Key="MonoFontFamily">JetBrains Mono, Consolas, Courier New, monospace</FontFamily>
+
+    <!-- Typography Scale -->
+    <x:Double x:Key="FontSizeXS">11</x:Double>
+    <x:Double x:Key="FontSizeSM">12</x:Double>
+    <x:Double x:Key="FontSizeMD">14</x:Double>
+    <x:Double x:Key="FontSizeLG">16</x:Double>
+    <x:Double x:Key="FontSizeXL">20</x:Double>
+    <x:Double x:Key="FontSize2XL">24</x:Double>
+    <x:Double x:Key="FontSize3XL">32</x:Double>
+
+    <!-- Spacing Scale -->
+    <Thickness x:Key="SpacingXS">4</Thickness>
+    <Thickness x:Key="SpacingSM">8</Thickness>
+    <Thickness x:Key="SpacingMD">12</Thickness>
+    <Thickness x:Key="SpacingLG">16</Thickness>
+    <Thickness x:Key="SpacingXL">24</Thickness>
+    <Thickness x:Key="Spacing2XL">32</Thickness>
+
+    <!-- Border Radius -->
+    <CornerRadius x:Key="RadiusSM">4</CornerRadius>
+    <CornerRadius x:Key="RadiusMD">6</CornerRadius>
+    <CornerRadius x:Key="RadiusLG">8</CornerRadius>
+    <CornerRadius x:Key="RadiusXL">12</CornerRadius>
+    <CornerRadius x:Key="RadiusFull">9999</CornerRadius>
+
+    <!-- Animation Durations -->
+    <TimeSpan x:Key="DurationFast">0:0:0.1</TimeSpan>
+    <TimeSpan x:Key="DurationNormal">0:0:0.15</TimeSpan>
+    <TimeSpan x:Key="DurationSlow">0:0:0.3</TimeSpan>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         BASE CONTROL OVERRIDES
+         Apply Lexichord styling to standard Avalonia controls
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Global TextBlock defaults -->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMD}" />
+    </Style>
+
+    <!-- Window/View background -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <Style Selector="UserControl">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <!-- Default Button theme -->
+    <Style Selector="Button">
+        <Setter Property="Theme" Value="{StaticResource SecondaryButton}" />
+    </Style>
+
+    <!-- Default TextBox theme -->
+    <Style Selector="TextBox">
+        <Setter Property="Theme" Value="{StaticResource LexTextBox}" />
+    </Style>
+
+    <!-- ScrollBar styling -->
+    <Style Selector="ScrollBar">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource BorderDefaultBrush}" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="MinWidth" Value="8" />
+        <Setter Property="MinHeight" Value="8" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="{DynamicResource TextMutedBrush}" />
+    </Style>
+
+    <!-- ToolTip styling -->
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSM}" />
+    </Style>
+
+    <!-- Separator styling -->
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,8" />
+    </Style>
+
+</ResourceDictionary>

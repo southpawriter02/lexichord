@@ -1,0 +1,134 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       LEXICHORD DARK THEME - COLOR DEFINITIONS
+
+       Color Format: #AARRGGBB (Alpha, Red, Green, Blue)
+
+       Usage: These colors should be referenced via brushes, not directly.
+       Always use {DynamicResource BrushName} for theme switching support.
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SURFACE COLORS
+       The layered background system for depth and hierarchy
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Base: The deepest layer (window background) -->
+  <Color x:Key="SurfaceBaseColor">#FF0D0D0F</Color>
+
+  <!-- Elevated: Panels, sidebars, navigation -->
+  <Color x:Key="SurfaceElevatedColor">#FF16161A</Color>
+
+  <!-- Overlay: Modals, dropdowns, tooltips, cards -->
+  <Color x:Key="SurfaceOverlayColor">#FF1E1E24</Color>
+
+  <!-- Editor: The manuscript editor background -->
+  <Color x:Key="SurfaceEditorColor">#FF121215</Color>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       BORDER COLORS
+       For dividers, separators, and input boundaries
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Subtle: Panel edges, separators -->
+  <Color x:Key="BorderSubtleColor">#FF2A2A32</Color>
+
+  <!-- Default: Input fields, focused elements -->
+  <Color x:Key="BorderDefaultColor">#FF3D3D47</Color>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       TEXT COLORS
+       Hierarchical text for readability
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Primary: Main content, headings -->
+  <Color x:Key="TextPrimaryColor">#FFEAEAEC</Color>
+
+  <!-- Secondary: Labels, captions, metadata -->
+  <Color x:Key="TextSecondaryColor">#FFA0A0A8</Color>
+
+  <!-- Tertiary: Placeholders, disabled text, hints -->
+  <Color x:Key="TextTertiaryColor">#FF6B6B75</Color>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       ACCENT COLORS (Orange - "The Flame")
+       For interactive elements and emphasis
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Primary: Buttons, links, active states -->
+  <Color x:Key="AccentPrimaryColor">#FFFF6B2C</Color>
+
+  <!-- Hover: Hover states on accent elements -->
+  <Color x:Key="AccentHoverColor">#FFFF8A57</Color>
+
+  <!-- Pressed: Active/pressed state -->
+  <Color x:Key="AccentPressedColor">#FFE55A1F</Color>
+
+  <!-- Muted: Selection highlights, subtle backgrounds (15% opacity) -->
+  <Color x:Key="AccentMutedColor">#26FF6B2C</Color>
+
+  <!-- Glow: Focus rings, glowing effects (25% opacity) -->
+  <Color x:Key="AccentGlowColor">#40FF6B2C</Color>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SEMANTIC COLORS
+       For status indicators and feedback
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Success: Completed operations, "in harmony" -->
+  <Color x:Key="StatusSuccessColor">#FF34D399</Color>
+
+  <!-- Warning: Attention needed, style suggestions -->
+  <Color x:Key="StatusWarningColor">#FFFBBF24</Color>
+
+  <!-- Error: Problems, "dissonance" indicators -->
+  <Color x:Key="StatusErrorColor">#FFF87171</Color>
+
+  <!-- Info: Tips, informational messages -->
+  <Color x:Key="StatusInfoColor">#FF60A5FA</Color>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SOLID COLOR BRUSHES
+       Use these for bindings. Always prefer DynamicResource for theme switching.
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Surface Brushes -->
+  <SolidColorBrush x:Key="SurfaceBaseBrush" Color="{StaticResource SurfaceBaseColor}" />
+  <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="{StaticResource SurfaceElevatedColor}" />
+  <SolidColorBrush x:Key="SurfaceOverlayBrush" Color="{StaticResource SurfaceOverlayColor}" />
+  <SolidColorBrush x:Key="SurfaceEditorBrush" Color="{StaticResource SurfaceEditorColor}" />
+
+  <!-- Border Brushes -->
+  <SolidColorBrush x:Key="BorderSubtleBrush" Color="{StaticResource BorderSubtleColor}" />
+  <SolidColorBrush x:Key="BorderDefaultBrush" Color="{StaticResource BorderDefaultColor}" />
+
+  <!-- Text Brushes -->
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource TextTertiaryColor}" />
+
+  <!-- Accent Brushes -->
+  <SolidColorBrush x:Key="AccentPrimaryBrush" Color="{StaticResource AccentPrimaryColor}" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+  <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
+  <SolidColorBrush x:Key="AccentMutedBrush" Color="{StaticResource AccentMutedColor}" />
+  <SolidColorBrush x:Key="AccentGlowBrush" Color="{StaticResource AccentGlowColor}" />
+
+  <!-- Status Brushes -->
+  <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccessColor}" />
+  <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}" />
+  <SolidColorBrush x:Key="StatusErrorBrush" Color="{StaticResource StatusErrorColor}" />
+  <SolidColorBrush x:Key="StatusInfoBrush" Color="{StaticResource StatusInfoColor}" />
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SEMANTIC ALIASES
+       For Avalonia's built-in control theming
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <SolidColorBrush x:Key="SystemAccentColor" Color="{StaticResource AccentPrimaryColor}" />
+  <SolidColorBrush x:Key="SystemAccentColorDark1" Color="{StaticResource AccentPressedColor}" />
+  <SolidColorBrush x:Key="SystemAccentColorLight1" Color="{StaticResource AccentHoverColor}" />
+
+</ResourceDictionary>

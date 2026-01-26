@@ -1,0 +1,159 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LEXICHORD TEXTBOX STYLES
+         Maps React InputField components to Avalonia TextBox ControlThemes
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Base TextBox Theme -->
+    <ControlTheme x:Key="LexTextBox" TargetType="TextBox">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CaretBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentMutedBrush}" />
+        <Setter Property="Cursor" Value="IBeam" />
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="PART_Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <DockPanel>
+                        <!-- Optional prefix content (icons, labels) -->
+                        <ContentPresenter x:Name="PART_InnerLeftContent"
+                                          Content="{TemplateBinding InnerLeftContent}"
+                                          DockPanel.Dock="Left"
+                                          Margin="0,0,8,0"
+                                          VerticalAlignment="Center"
+                                          IsVisible="{TemplateBinding InnerLeftContent, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+                        <!-- Optional suffix content (icons, buttons) -->
+                        <ContentPresenter x:Name="PART_InnerRightContent"
+                                          Content="{TemplateBinding InnerRightContent}"
+                                          DockPanel.Dock="Right"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          IsVisible="{TemplateBinding InnerRightContent, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+                        <Panel>
+                            <!-- Watermark/Placeholder -->
+                            <TextBlock x:Name="PART_Watermark"
+                                       Text="{TemplateBinding Watermark}"
+                                       Foreground="{DynamicResource TextMutedBrush}"
+                                       IsVisible="False"
+                                       VerticalAlignment="Center"
+                                       Margin="{TemplateBinding Padding}" />
+
+                            <!-- Scroll viewer for text content -->
+                            <ScrollViewer x:Name="PART_ScrollViewer"
+                                          HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                          VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+                                <TextPresenter x:Name="PART_TextPresenter"
+                                               Text="{TemplateBinding Text, Mode=TwoWay}"
+                                               CaretBrush="{TemplateBinding CaretBrush}"
+                                               CaretIndex="{TemplateBinding CaretIndex}"
+                                               SelectionStart="{TemplateBinding SelectionStart}"
+                                               SelectionEnd="{TemplateBinding SelectionEnd}"
+                                               SelectionBrush="{TemplateBinding SelectionBrush}"
+                                               TextAlignment="{TemplateBinding TextAlignment}"
+                                               TextWrapping="{TemplateBinding TextWrapping}"
+                                               LineHeight="{TemplateBinding LineHeight}"
+                                               LetterSpacing="{TemplateBinding LetterSpacing}"
+                                               PasswordChar="{TemplateBinding PasswordChar}"
+                                               RevealPassword="{TemplateBinding RevealPassword}"
+                                               Margin="{TemplateBinding Padding}" />
+                            </ScrollViewer>
+                        </Panel>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Watermark visibility when empty -->
+        <Style Selector="^:empty /template/ TextBlock#PART_Watermark">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <!-- Hover state -->
+        <Style Selector="^:pointerover /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}" />
+        </Style>
+
+        <!-- Focus state -->
+        <Style Selector="^:focus /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="BoxShadow" Value="0 0 0 3px #40FF6B2C" />
+        </Style>
+
+        <!-- Disabled state -->
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+        <Style Selector="^:disabled /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
+        </Style>
+
+        <!-- Error state (via classes) -->
+        <Style Selector="^.error /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusErrorBrush}" />
+        </Style>
+        <Style Selector="^.error:focus /template/ Border#PART_Border">
+            <Setter Property="BoxShadow" Value="0 0 0 3px #40EF4444" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Search TextBox with icon -->
+    <ControlTheme x:Key="SearchTextBox" TargetType="TextBox" BasedOn="{StaticResource LexTextBox}">
+        <Setter Property="Watermark" Value="Search..." />
+        <Setter Property="InnerLeftContent">
+            <Template>
+                <PathIcon Data="{DynamicResource SearchIcon}"
+                          Width="16" Height="16"
+                          Foreground="{DynamicResource TextMutedBrush}" />
+            </Template>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Multiline TextBox for larger inputs -->
+    <ControlTheme x:Key="MultilineTextBox" TargetType="TextBox" BasedOn="{StaticResource LexTextBox}">
+        <Setter Property="AcceptsReturn" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="MinHeight" Value="100" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Padding" Value="12" />
+    </ControlTheme>
+
+    <!-- Chat Input TextBox -->
+    <ControlTheme x:Key="ChatInputTextBox" TargetType="TextBox" BasedOn="{StaticResource LexTextBox}">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
+        <Setter Property="Watermark" Value="Type a message..." />
+        <Setter Property="AcceptsReturn" Value="False" />
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="Padding" Value="16,12" />
+    </ControlTheme>
+
+    <!-- Inline Edit TextBox (minimal borders) -->
+    <ControlTheme x:Key="InlineTextBox" TargetType="TextBox" BasedOn="{StaticResource LexTextBox}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="MinHeight" Value="24" />
+
+        <Style Selector="^:focus /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="BoxShadow" Value="none" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

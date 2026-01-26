@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="120"
+             x:Class="Lexichord.Host.Controls.IssueCard"
+             x:DataType="controls:IssueCard"
+             xmlns:controls="clr-namespace:Lexichord.Host.Controls">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ISSUE CARD
+         Displays a style suggestion with severity indicator and action button
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <UserControl.Styles>
+        <!-- Severity indicator bar -->
+        <Style Selector="Border.severity-bar">
+            <Setter Property="Width" Value="4" />
+            <Setter Property="CornerRadius" Value="2" />
+        </Style>
+
+        <Style Selector="Border.severity-bar.error">
+            <Setter Property="Background" Value="{DynamicResource StatusErrorBrush}" />
+        </Style>
+
+        <Style Selector="Border.severity-bar.warning">
+            <Setter Property="Background" Value="{DynamicResource StatusWarningBrush}" />
+        </Style>
+
+        <Style Selector="Border.severity-bar.info">
+            <Setter Property="Background" Value="{DynamicResource StatusInfoBrush}" />
+        </Style>
+
+        <!-- Issue text styles -->
+        <Style Selector="TextBlock.issue-text">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.issue-suggestion">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4,0,0" />
+        </Style>
+
+        <Style Selector="TextBlock.issue-category">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceElevatedBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="0">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Severity indicator bar -->
+            <Border Grid.Column="0"
+                    Classes="severity-bar"
+                    Classes.error="{Binding IsError}"
+                    Classes.warning="{Binding IsWarning}"
+                    Classes.info="{Binding IsInfo}" />
+
+            <!-- Issue content -->
+            <StackPanel Grid.Column="1"
+                        Margin="12"
+                        VerticalAlignment="Center">
+                <TextBlock Classes="issue-text"
+                           Text="{Binding OriginalText}" />
+
+                <TextBlock Classes="issue-suggestion"
+                           Text="{Binding SuggestionText}"
+                           IsVisible="{Binding HasSuggestion}" />
+
+                <TextBlock Classes="issue-category"
+                           Text="{Binding Category}" />
+            </StackPanel>
+
+            <!-- Action button -->
+            <Button Grid.Column="2"
+                    Theme="{DynamicResource GhostButton}"
+                    Command="{Binding ApplyFixCommand}"
+                    Margin="0,0,12,0"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="Apply suggestion"
+                    IsVisible="{Binding HasSuggestion}">
+                <PathIcon Data="{DynamicResource CheckIcon}"
+                          Width="16" Height="16"
+                          Foreground="{DynamicResource StatusSuccessBrush}" />
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

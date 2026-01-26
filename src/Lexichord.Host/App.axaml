@@ -1,0 +1,29 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Lexichord.Host.App"
+             RequestedThemeVariant="Dark">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LEXICHORD APPLICATION
+         Main application resource configuration
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Avalonia base themes (required) -->
+                <ResourceInclude Source="avares://Avalonia.Themes.Fluent/FluentTheme.xaml" />
+
+                <!-- Lexichord custom theme (overrides Fluent where needed) -->
+                <ResourceInclude Source="avares://Lexichord.Host/Themes/LexichordTheme.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <!-- Base Fluent theme for unstyled controls -->
+        <FluentTheme />
+
+        <!-- Additional global styles can be added here -->
+    </Application.Styles>
+</Application>

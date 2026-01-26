@@ -1,0 +1,140 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="64" d:DesignHeight="600"
+             x:Class="Lexichord.Host.Controls.NavigationRail"
+             x:DataType="controls:NavigationRail"
+             xmlns:controls="clr-namespace:Lexichord.Host.Controls">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         NAVIGATION RAIL
+         Vertical navigation sidebar with icon buttons
+         Maps React NavigationRail component
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <UserControl.Styles>
+        <!-- Navigation Item Button -->
+        <Style Selector="Button.nav-item">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.nav-item PathIcon">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+        </Style>
+
+        <Style Selector="Button.nav-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}" />
+        </Style>
+
+        <Style Selector="Button.nav-item:pointerover PathIcon">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.nav-item.active">
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+
+        <Style Selector="Button.nav-item.active PathIcon">
+            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}" />
+        </Style>
+
+        <!-- Separator -->
+        <Style Selector="Border.nav-separator">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Margin" Value="12,8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBaseBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="0,0,1,0"
+            Width="64">
+        <DockPanel>
+            <!-- Logo at top -->
+            <Border DockPanel.Dock="Top"
+                    Height="64"
+                    Padding="12">
+                <PathIcon Data="{DynamicResource SparklesIcon}"
+                          Width="24" Height="24"
+                          Foreground="{DynamicResource AccentPrimaryBrush}"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center" />
+            </Border>
+
+            <!-- Main navigation items -->
+            <StackPanel DockPanel.Dock="Top"
+                        Spacing="4"
+                        Margin="8,0">
+                <Button Classes="nav-item"
+                        Classes.active="{Binding IsEditorActive}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Editor"
+                        ToolTip.Tip="Editor">
+                    <PathIcon Data="{DynamicResource FileTextIcon}" />
+                </Button>
+
+                <Button Classes="nav-item"
+                        Classes.active="{Binding IsKnowledgeActive}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Knowledge"
+                        ToolTip.Tip="Knowledge Base">
+                    <PathIcon Data="{DynamicResource BookOpenIcon}" />
+                </Button>
+
+                <Button Classes="nav-item"
+                        Classes.active="{Binding IsAgentsActive}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Agents"
+                        ToolTip.Tip="AI Agents">
+                    <PathIcon Data="{DynamicResource SparklesIcon}" />
+                </Button>
+
+                <Button Classes="nav-item"
+                        Classes.active="{Binding IsAnalyticsActive}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Analytics"
+                        ToolTip.Tip="Analytics">
+                    <PathIcon Data="{DynamicResource BarChart3Icon}" />
+                </Button>
+            </StackPanel>
+
+            <!-- Bottom section -->
+            <StackPanel DockPanel.Dock="Bottom"
+                        Spacing="4"
+                        Margin="8,0,8,16">
+                <Border Classes="nav-separator" />
+
+                <Button Classes="nav-item"
+                        Classes.active="{Binding IsSettingsActive}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Settings"
+                        ToolTip.Tip="Settings">
+                    <PathIcon Data="{DynamicResource SettingsIcon}" />
+                </Button>
+
+                <Button Classes="nav-item"
+                        Classes.active="{Binding IsProfileActive}"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Profile"
+                        ToolTip.Tip="Profile">
+                    <PathIcon Data="{DynamicResource UserIcon}" />
+                </Button>
+            </StackPanel>
+
+            <!-- Spacer -->
+            <Border />
+        </DockPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,119 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LEXICHORD CARD STYLES
+         Maps React Card components to Avalonia Border-based styles
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Base Card Style (applied to Border) -->
+    <ControlTheme x:Key="CardBase" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16" />
+    </ControlTheme>
+
+    <!-- Interactive Card (hover effects) -->
+    <ControlTheme x:Key="CardInteractive" TargetType="Border" BasedOn="{StaticResource CardBase}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Issue Card (for style suggestions) -->
+    <ControlTheme x:Key="IssueCard" TargetType="Border" BasedOn="{StaticResource CardBase}">
+        <Setter Property="Padding" Value="12" />
+
+        <Style Selector="^.warning">
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusWarningBrush}" />
+            <Setter Property="BorderThickness" Value="1,1,1,1" />
+        </Style>
+
+        <Style Selector="^.error">
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusErrorBrush}" />
+        </Style>
+
+        <Style Selector="^.info">
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusInfoBrush}" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Agent Card -->
+    <ControlTheme x:Key="AgentCard" TargetType="Border" BasedOn="{StaticResource CardInteractive}">
+        <Setter Property="MinWidth" Value="280" />
+        <Setter Property="MaxWidth" Value="320" />
+
+        <!-- Locked state for gated features -->
+        <Style Selector="^.locked">
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+        <Style Selector="^.locked:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="Cursor" Value="Arrow" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Stat Card (for analytics) -->
+    <ControlTheme x:Key="StatCard" TargetType="Border" BasedOn="{StaticResource CardBase}">
+        <Setter Property="MinWidth" Value="200" />
+        <Setter Property="Padding" Value="20" />
+    </ControlTheme>
+
+    <!-- Chat Message Card -->
+    <ControlTheme x:Key="ChatMessageCard" TargetType="Border">
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="MaxWidth" Value="500" />
+
+        <!-- User message style -->
+        <Style Selector="^.user">
+            <Setter Property="Background" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <!-- Assistant message style -->
+        <Style Selector="^.assistant">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Knowledge Source Card -->
+    <ControlTheme x:Key="KnowledgeSourceCard" TargetType="Border" BasedOn="{StaticResource CardInteractive}">
+        <Setter Property="Padding" Value="12" />
+
+        <Style Selector="^.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Settings Section Card -->
+    <ControlTheme x:Key="SettingsCard" TargetType="Border" BasedOn="{StaticResource CardBase}">
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Margin" Value="0,0,0,16" />
+    </ControlTheme>
+
+    <!-- Tooltip-style Card -->
+    <ControlTheme x:Key="TooltipCard" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="BoxShadow" Value="0 4 12 0 #40000000" />
+    </ControlTheme>
+
+</ResourceDictionary>

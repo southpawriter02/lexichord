@@ -1,0 +1,190 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       LEXICHORD ICON LIBRARY
+
+       Based on Lucide Icons (https://lucide.dev)
+       All icons are 24x24 viewBox, stroke-based
+
+       Usage:
+       <PathIcon Data="{StaticResource FileTextIcon}" Width="20" Height="20" />
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       NAVIGATION ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Hamburger Menu -->
+  <StreamGeometry x:Key="MenuIcon">M4 6h16M4 12h16M4 18h16</StreamGeometry>
+
+  <!-- File/Document -->
+  <StreamGeometry x:Key="FileTextIcon">M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8</StreamGeometry>
+
+  <!-- Book Open (Knowledge Hub) -->
+  <StreamGeometry x:Key="BookOpenIcon">M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z</StreamGeometry>
+
+  <!-- Music/Piano (Agents) -->
+  <StreamGeometry x:Key="MusicIcon">M9 18V5l12-2v13M9 9l12-2</StreamGeometry>
+
+  <!-- Bar Chart (Analytics) -->
+  <StreamGeometry x:Key="BarChart2Icon">M18 20V10M12 20V4M6 20v-6</StreamGeometry>
+
+  <!-- Settings Gear -->
+  <StreamGeometry x:Key="SettingsIcon">M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z</StreamGeometry>
+
+  <!-- User/Profile -->
+  <StreamGeometry x:Key="UserIcon">M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       ACTION ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Search/Magnifying Glass -->
+  <StreamGeometry x:Key="SearchIcon">M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z</StreamGeometry>
+
+  <!-- Plus -->
+  <StreamGeometry x:Key="PlusIcon">M12 5v14M5 12h14</StreamGeometry>
+
+  <!-- X/Close -->
+  <StreamGeometry x:Key="XIcon">M18 6L6 18M6 6l12 12</StreamGeometry>
+
+  <!-- Check -->
+  <StreamGeometry x:Key="CheckIcon">M20 6L9 17l-5-5</StreamGeometry>
+
+  <!-- Edit/Pencil -->
+  <StreamGeometry x:Key="EditIcon">M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5zM15 5l4 4</StreamGeometry>
+
+  <!-- Trash -->
+  <StreamGeometry x:Key="TrashIcon">M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2</StreamGeometry>
+
+  <!-- Copy -->
+  <StreamGeometry x:Key="CopyIcon">M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z</StreamGeometry>
+
+  <!-- Download -->
+  <StreamGeometry x:Key="DownloadIcon">M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3</StreamGeometry>
+
+  <!-- Upload -->
+  <StreamGeometry x:Key="UploadIcon">M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12</StreamGeometry>
+
+  <!-- Refresh -->
+  <StreamGeometry x:Key="RefreshIcon">M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M3 21v-5h5</StreamGeometry>
+
+  <!-- Play -->
+  <StreamGeometry x:Key="PlayIcon">M5 3l14 9-14 9V3z</StreamGeometry>
+
+  <!-- Pause -->
+  <StreamGeometry x:Key="PauseIcon">M6 4h4v16H6zM14 4h4v16h-4z</StreamGeometry>
+
+  <!-- Send -->
+  <StreamGeometry x:Key="SendIcon">M22 2L11 13M22 2l-7 20-4-9-9-4z</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       STATUS ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Alert Triangle (Warning) -->
+  <StreamGeometry x:Key="AlertTriangleIcon">M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01</StreamGeometry>
+
+  <!-- Alert Circle (Error) -->
+  <StreamGeometry x:Key="AlertCircleIcon">M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 8v4M12 16h.01</StreamGeometry>
+
+  <!-- Check Circle (Success) -->
+  <StreamGeometry x:Key="CheckCircleIcon">M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3</StreamGeometry>
+
+  <!-- Info Circle -->
+  <StreamGeometry x:Key="InfoIcon">M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v-4M12 8h.01</StreamGeometry>
+
+  <!-- Lock -->
+  <StreamGeometry x:Key="LockIcon">M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4</StreamGeometry>
+
+  <!-- Unlock -->
+  <StreamGeometry x:Key="UnlockIcon">M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 9.9-1</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       NAVIGATION ARROWS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Chevron Down -->
+  <StreamGeometry x:Key="ChevronDownIcon">M6 9l6 6 6-6</StreamGeometry>
+
+  <!-- Chevron Up -->
+  <StreamGeometry x:Key="ChevronUpIcon">M18 15l-6-6-6 6</StreamGeometry>
+
+  <!-- Chevron Left -->
+  <StreamGeometry x:Key="ChevronLeftIcon">M15 18l-6-6 6-6</StreamGeometry>
+
+  <!-- Chevron Right -->
+  <StreamGeometry x:Key="ChevronRightIcon">M9 18l6-6-6-6</StreamGeometry>
+
+  <!-- Arrow Left -->
+  <StreamGeometry x:Key="ArrowLeftIcon">M19 12H5M12 19l-7-7 7-7</StreamGeometry>
+
+  <!-- Arrow Right -->
+  <StreamGeometry x:Key="ArrowRightIcon">M5 12h14M12 5l7 7-7 7</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       THEME ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Sun (Light Mode) -->
+  <StreamGeometry x:Key="SunIcon">M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14z</StreamGeometry>
+
+  <!-- Moon (Dark Mode) -->
+  <StreamGeometry x:Key="MoonIcon">M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       AI/AGENT ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Sparkles (AI Generated) -->
+  <StreamGeometry x:Key="SparklesIcon">M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zM5 19l.5 1.5L7 21l-1.5.5L5 23l-.5-1.5L3 21l1.5-.5L5 19zM19 5l.5 1.5L21 7l-1.5.5L19 9l-.5-1.5L17 7l1.5-.5L19 5z</StreamGeometry>
+
+  <!-- Bot/Robot -->
+  <StreamGeometry x:Key="BotIcon">M12 8V4H8M2 14h2M20 14h2M15 13a3 3 0 1 1-6 0V9a3 3 0 1 1 6 0v4zM9 18l-2 4M15 18l2 4M9 22h6</StreamGeometry>
+
+  <!-- Wand (Magic/Generate) -->
+  <StreamGeometry x:Key="WandIcon">M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M3 21l9-9M12.2 6.2L11 5</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       FILE/FOLDER ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Folder -->
+  <StreamGeometry x:Key="FolderIcon">M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z</StreamGeometry>
+
+  <!-- Folder Open -->
+  <StreamGeometry x:Key="FolderOpenIcon">M6 14l1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h5l2 3h9a2 2 0 0 1 2 2v2</StreamGeometry>
+
+  <!-- File -->
+  <StreamGeometry x:Key="FileIcon">M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7</StreamGeometry>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       MISC ICONS
+       ═══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- External Link -->
+  <StreamGeometry x:Key="ExternalLinkIcon">M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3</StreamGeometry>
+
+  <!-- Eye (View) -->
+  <StreamGeometry x:Key="EyeIcon">M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z</StreamGeometry>
+
+  <!-- Eye Off (Hide) -->
+  <StreamGeometry x:Key="EyeOffIcon">M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22</StreamGeometry>
+
+  <!-- Clock -->
+  <StreamGeometry x:Key="ClockIcon">M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 6v6l4 2</StreamGeometry>
+
+  <!-- Calendar -->
+  <StreamGeometry x:Key="CalendarIcon">M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM16 2v4M8 2v4M3 10h18</StreamGeometry>
+
+  <!-- Loader (Spinner) -->
+  <StreamGeometry x:Key="LoaderIcon">M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83</StreamGeometry>
+
+  <!-- More Horizontal (Ellipsis) -->
+  <StreamGeometry x:Key="MoreHorizontalIcon">M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM19 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM5 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z</StreamGeometry>
+
+  <!-- More Vertical -->
+  <StreamGeometry x:Key="MoreVerticalIcon">M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z</StreamGeometry>
+
+</ResourceDictionary>

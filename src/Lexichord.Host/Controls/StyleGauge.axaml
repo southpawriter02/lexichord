@@ -1,0 +1,85 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="140"
+             x:Class="Lexichord.Host.Controls.StyleGauge"
+             x:DataType="controls:StyleGauge"
+             xmlns:controls="clr-namespace:Lexichord.Host.Controls">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         STYLE GAUGE
+         Circular progress indicator showing style score (0-100)
+         Color transitions based on score thresholds
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <UserControl.Styles>
+        <!-- Score label styling -->
+        <Style Selector="TextBlock.score-value">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.score-label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,4,0,0" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Width="120" Height="140">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Circular Gauge -->
+        <Canvas Grid.Row="0"
+                Width="100" Height="100"
+                HorizontalAlignment="Center">
+
+            <!-- Background arc (track) -->
+            <Arc x:Name="BackgroundArc"
+                 Width="100" Height="100"
+                 StartAngle="-225"
+                 SweepAngle="270"
+                 StrokeThickness="8"
+                 Stroke="{DynamicResource SurfaceElevatedBrush}"
+                 StrokeLineCap="Round" />
+
+            <!-- Progress arc (filled portion) -->
+            <Arc x:Name="ProgressArc"
+                 Width="100" Height="100"
+                 StartAngle="-225"
+                 SweepAngle="{Binding SweepAngle}"
+                 StrokeThickness="8"
+                 Stroke="{Binding GaugeColor}"
+                 StrokeLineCap="Round">
+                <Arc.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="SweepAngle" Duration="0:0:0.5" Easing="CubicEaseOut" />
+                        <BrushTransition Property="Stroke" Duration="0:0:0.3" />
+                    </Transitions>
+                </Arc.Transitions>
+            </Arc>
+
+            <!-- Center score display -->
+            <Border Canvas.Left="20" Canvas.Top="25"
+                    Width="60" Height="50">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Classes="score-value"
+                               Text="{Binding Score}"
+                               Foreground="{Binding GaugeColor}" />
+                </StackPanel>
+            </Border>
+        </Canvas>
+
+        <!-- Label below gauge -->
+        <TextBlock Grid.Row="1"
+                   Classes="score-label"
+                   Text="{Binding Label}" />
+    </Grid>
+</UserControl>

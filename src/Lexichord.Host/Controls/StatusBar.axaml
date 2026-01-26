@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="28"
+             x:Class="Lexichord.Host.Controls.StatusBar"
+             x:DataType="controls:StatusBar"
+             xmlns:controls="clr-namespace:Lexichord.Host.Controls">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         STATUS BAR
+         Bottom bar displaying document stats, sync status, and quick actions
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <UserControl.Styles>
+        <!-- Status item container -->
+        <Style Selector="StackPanel.status-item">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="4" />
+            <Setter Property="Margin" Value="0,0,16,0" />
+        </Style>
+
+        <!-- Status text -->
+        <Style Selector="TextBlock.status-text">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Status icon -->
+        <Style Selector="PathIcon.status-icon">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Sync status indicator -->
+        <Style Selector="Ellipse.sync-indicator">
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Height" Value="8" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Ellipse.sync-indicator.synced">
+            <Setter Property="Fill" Value="{DynamicResource StatusSuccessBrush}" />
+        </Style>
+
+        <Style Selector="Ellipse.sync-indicator.syncing">
+            <Setter Property="Fill" Value="{DynamicResource StatusWarningBrush}" />
+        </Style>
+
+        <Style Selector="Ellipse.sync-indicator.offline">
+            <Setter Property="Fill" Value="{DynamicResource TextMutedBrush}" />
+        </Style>
+
+        <!-- Separator -->
+        <Style Selector="Border.status-separator">
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Margin" Value="8,4" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBaseBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="0,1,0,0"
+            Height="28"
+            Padding="12,0">
+        <DockPanel>
+            <!-- Left section: Document stats -->
+            <StackPanel DockPanel.Dock="Left"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <!-- Word count -->
+                <StackPanel Classes="status-item">
+                    <PathIcon Classes="status-icon"
+                              Data="{DynamicResource FileTextIcon}" />
+                    <TextBlock Classes="status-text">
+                        <Run Text="{Binding WordCount}" />
+                        <Run Text=" words" />
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Character count -->
+                <StackPanel Classes="status-item">
+                    <TextBlock Classes="status-text">
+                        <Run Text="{Binding CharacterCount}" />
+                        <Run Text=" chars" />
+                    </TextBlock>
+                </StackPanel>
+
+                <Border Classes="status-separator" />
+
+                <!-- Reading time -->
+                <StackPanel Classes="status-item">
+                    <PathIcon Classes="status-icon"
+                              Data="{DynamicResource ClockIcon}" />
+                    <TextBlock Classes="status-text">
+                        <Run Text="{Binding ReadingTimeMinutes}" />
+                        <Run Text=" min read" />
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Right section: Status indicators -->
+            <StackPanel DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <!-- Sync status -->
+                <StackPanel Classes="status-item">
+                    <Ellipse Classes="sync-indicator"
+                             Classes.synced="{Binding IsSynced}"
+                             Classes.syncing="{Binding IsSyncing}"
+                             Classes.offline="{Binding IsOffline}" />
+                    <TextBlock Classes="status-text"
+                               Text="{Binding SyncStatusText}" />
+                </StackPanel>
+
+                <Border Classes="status-separator" />
+
+                <!-- Cursor position -->
+                <StackPanel Classes="status-item" Margin="0">
+                    <TextBlock Classes="status-text">
+                        <Run Text="Ln " />
+                        <Run Text="{Binding LineNumber}" />
+                        <Run Text=", Col " />
+                        <Run Text="{Binding ColumnNumber}" />
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Center spacer -->
+            <Border />
+        </DockPanel>
+    </Border>
+</UserControl>
