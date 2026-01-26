@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controls/**/*.cs" />
   </ItemGroup>
 
