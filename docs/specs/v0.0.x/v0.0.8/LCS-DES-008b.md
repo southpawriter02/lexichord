@@ -2,19 +2,28 @@
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                                    | Description                                        |
-| :------------------- | :--------------------------------------- | :------------------------------------------------- |
-| **Feature ID**       | `INF-008b`                               | Infrastructure - Database Health Check             |
-| **Feature Name**     | Database Health Check                    | Query SQLite for system uptime and health          |
-| **Target Version**   | `v0.0.8b`                                | Second sub-part of v0.0.8                          |
-| **Module Scope**     | `Lexichord.Modules.StatusBar`            | StatusBar module database integration              |
-| **Swimlane**         | `Infrastructure`                         | The Podium (Platform)                              |
-| **License Tier**     | `Core`                                   | Foundation (Available to all users)                |
-| **Author**           | System Architect                         |                                                    |
-| **Status**           | **Draft**                                | Pending implementation                             |
-| **Last Updated**     | 2026-01-26                               |                                                    |
+| Field              | Value                         | Description                               |
+| :----------------- | :---------------------------- | :---------------------------------------- |
+| **Feature ID**     | `INF-008b`                    | Infrastructure - Database Health Check    |
+| **Feature Name**   | Database Health Check         | Query SQLite for system uptime and health |
+| **Target Version** | `v0.0.8b`                     | Second sub-part of v0.0.8                 |
+| **Module Scope**   | `Lexichord.Modules.StatusBar` | StatusBar module database integration     |
+| **Swimlane**       | `Infrastructure`              | The Podium (Platform)                     |
+| **License Tier**   | `Core`                        | Foundation (Available to all users)       |
+| **Author**         | System Architect              |                                           |
+| **Status**         | **Draft**                     | Pending implementation                    |
+| **Last Updated**   | 2026-01-26                    |                                           |
 
 ---
+
+> [!IMPORTANT]
+> **Architectural Context:** This specification uses **SQLite** for local health metrics caching, which is separate from the **PostgreSQL** core data layer defined in v0.0.5. SQLite is appropriate here because health/heartbeat data is:
+>
+> - Non-critical (can be recreated on restart)
+> - High-frequency writes (60-second heartbeats)
+> - Local-only (no cross-device sync needed)
+>
+> Domain entities (Terms, Profiles, Users) remain in PostgreSQL as per the design proposal.
 
 ## 2. Executive Summary
 
@@ -28,6 +37,7 @@ The StatusBar module needs to **prove database connectivity** by:
 - Showing warnings when the heartbeat becomes stale.
 
 This proves that:
+
 - v0.0.6 Database infrastructure works.
 - Modules can access the shared database through DI.
 - Repository pattern implementation is correct.
@@ -1016,30 +1026,30 @@ public class UptimeFormattingTests
 
 ## 6. Observability & Logging
 
-| Level       | Context           | Message Template                                                      |
-| :---------- | :---------------- | :-------------------------------------------------------------------- |
-| Debug       | HealthRepository  | `System health table verified/created`                                |
-| Debug       | HealthRepository  | `No heartbeat record found`                                           |
-| Debug       | HealthRepository  | `Last heartbeat: {Timestamp}`                                         |
-| Debug       | HealthRepository  | `Heartbeat recorded at {Timestamp}`                                   |
-| Warning     | HealthRepository  | `Heartbeat update affected 0 rows - record may not exist`             |
-| Information | HealthRepository  | `Application startup recorded at {Timestamp}`                         |
-| Error       | HealthRepository  | `Failed to ensure system_health table exists`                         |
-| Error       | HealthRepository  | `Failed to get last heartbeat`                                        |
-| Error       | HealthRepository  | `Failed to record heartbeat`                                          |
-| Error       | HealthRepository  | `Failed to record startup`                                            |
-| Error       | HealthRepository  | `Failed to get database version`                                      |
-| Error       | HealthRepository  | `Database health check failed`                                        |
-| Debug       | HeartbeatService  | `HeartbeatService created with {Interval} interval`                   |
-| Information | HeartbeatService  | `Heartbeat service started with {Interval} interval`                  |
-| Information | HeartbeatService  | `Heartbeat service stopped`                                           |
-| Warning     | HeartbeatService  | `HeartbeatService is already running`                                 |
-| Warning     | HeartbeatService  | `HeartbeatService is not running`                                     |
-| Debug       | HeartbeatService  | `Heartbeat recorded successfully`                                     |
-| Error       | HeartbeatService  | `Failed to record heartbeat. Consecutive failures: {Failures}`        |
-| Critical    | HeartbeatService  | `Heartbeat has failed {Failures} consecutive times...`                |
-| Debug       | HeartbeatService  | `HeartbeatService disposed`                                           |
-| Error       | StatusBarViewModel| `Failed to refresh database status`                                   |
+| Level       | Context            | Message Template                                               |
+| :---------- | :----------------- | :------------------------------------------------------------- |
+| Debug       | HealthRepository   | `System health table verified/created`                         |
+| Debug       | HealthRepository   | `No heartbeat record found`                                    |
+| Debug       | HealthRepository   | `Last heartbeat: {Timestamp}`                                  |
+| Debug       | HealthRepository   | `Heartbeat recorded at {Timestamp}`                            |
+| Warning     | HealthRepository   | `Heartbeat update affected 0 rows - record may not exist`      |
+| Information | HealthRepository   | `Application startup recorded at {Timestamp}`                  |
+| Error       | HealthRepository   | `Failed to ensure system_health table exists`                  |
+| Error       | HealthRepository   | `Failed to get last heartbeat`                                 |
+| Error       | HealthRepository   | `Failed to record heartbeat`                                   |
+| Error       | HealthRepository   | `Failed to record startup`                                     |
+| Error       | HealthRepository   | `Failed to get database version`                               |
+| Error       | HealthRepository   | `Database health check failed`                                 |
+| Debug       | HeartbeatService   | `HeartbeatService created with {Interval} interval`            |
+| Information | HeartbeatService   | `Heartbeat service started with {Interval} interval`           |
+| Information | HeartbeatService   | `Heartbeat service stopped`                                    |
+| Warning     | HeartbeatService   | `HeartbeatService is already running`                          |
+| Warning     | HeartbeatService   | `HeartbeatService is not running`                              |
+| Debug       | HeartbeatService   | `Heartbeat recorded successfully`                              |
+| Error       | HeartbeatService   | `Failed to record heartbeat. Consecutive failures: {Failures}` |
+| Critical    | HeartbeatService   | `Heartbeat has failed {Failures} consecutive times...`         |
+| Debug       | HeartbeatService   | `HeartbeatService disposed`                                    |
+| Error       | StatusBarViewModel | `Failed to refresh database status`                            |
 
 ---
 

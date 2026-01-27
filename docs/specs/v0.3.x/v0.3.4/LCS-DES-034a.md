@@ -33,7 +33,7 @@ Implement:
 
 1. **`VoiceProfile` record** — Immutable data structure defining all style constraints
 2. **`IVoiceProfileService`** — Service for profile CRUD operations and active profile management
-3. **`VoiceProfileRepository`** — SQLite persistence for custom profiles
+3. **`VoiceProfileRepository`** — PostgreSQL persistence for custom profiles
 4. **5 Built-in Profiles** — Technical, Marketing, Academic, Narrative, Casual
 5. **`ProfileChangedEvent`** — MediatR notification when the active profile changes
 
@@ -448,12 +448,15 @@ sequenceDiagram
 
 ### 6.1 Database Schema
 
-Custom profiles are stored in SQLite. Built-in profiles are defined in code and not persisted.
+Custom profiles are stored in **PostgreSQL** (consistent with other domain entities). Built-in profiles are defined in code and not persisted.
+
+> [!NOTE]
+> Voice Profiles use PostgreSQL rather than SQLite because they are domain entities that may require future features like team sharing, cross-device sync, or transactional operations with other entities.
 
 ```sql
--- Migration: 20260126_1200_CreateVoiceProfilesTable
+-- Migration: 20260126_1200_CreateVoiceProfilesTable (PostgreSQL)
 CREATE TABLE IF NOT EXISTS voice_profiles (
-    id TEXT PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL UNIQUE,
     description TEXT,
     target_grade_level REAL,

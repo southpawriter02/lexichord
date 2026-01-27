@@ -2,15 +2,15 @@
 
 ## Document Control
 
-| Field            | Value                                                      |
-| :--------------- | :--------------------------------------------------------- |
-| **Document ID**  | LCS-SBD-033                                                |
-| **Version**      | v0.3.3                                                     |
-| **Codename**     | The Readability Engine (Metrics)                           |
-| **Status**       | Draft                                                      |
-| **Last Updated** | 2026-01-26                                                 |
-| **Owner**        | Lead Architect                                             |
-| **Depends On**   | v0.3.2 (Dictionary Manager), v0.2.3 (Linting Orchestrator) |
+| Field            | Value                                                 |
+| :--------------- | :---------------------------------------------------- |
+| **Document ID**  | LCS-SBD-033                                           |
+| **Version**      | v0.3.3                                                |
+| **Codename**     | The Readability Engine (Metrics)                      |
+| **Status**       | Draft                                                 |
+| **Last Updated** | 2026-01-26                                            |
+| **Owner**        | Lead Architect                                        |
+| **Depends On**   | v0.2.5 (The Librarian), v0.2.3 (Linting Orchestrator) |
 
 ---
 

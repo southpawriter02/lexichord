@@ -130,7 +130,7 @@ If this foundation is flawed, the Voice Profiler (v0.3.4) and Resonance Dashboar
             return Array.Empty<StyleViolation>();
         ```
 - **Task 1.3: UI Indication**
-    - In Terminology Editor (v0.3.2b), disable "Fuzzy Match" toggle for Core users.
+    - In Terminology Editor (v0.2.5b), disable "Fuzzy Match" toggle for Core users.
     - Show tooltip: "Upgrade to Writer Pro to enable fuzzy matching."
 - **Task 1.4: Settings Integration**
     - Add global toggle in Settings → Style → Advanced: "Enable Fuzzy Matching".

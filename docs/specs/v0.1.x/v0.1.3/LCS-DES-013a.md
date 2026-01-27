@@ -2,17 +2,17 @@
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                                | Description                                      |
-| :------------------- | :----------------------------------- | :----------------------------------------------- |
-| **Feature ID**       | `INF-013a`                           | Sub-part A of Editor Module                      |
-| **Feature Name**     | AvalonEdit Integration               | TextEditor control with core features            |
-| **Target Version**   | `v0.1.3a`                            | First sub-part of v0.1.3                         |
-| **Module Scope**     | `Lexichord.Modules.Editor`           | Standalone editor module                         |
-| **Swimlane**         | `Product`                            | Core User-Facing Feature                         |
-| **License Tier**     | `Core`                               | Foundation (Available in Free tier)              |
-| **Author**           | System Architect                     |                                                  |
-| **Status**           | **Draft**                            | Pending implementation                           |
-| **Last Updated**     | 2026-01-26                           |                                                  |
+| Field              | Value                      | Description                           |
+| :----------------- | :------------------------- | :------------------------------------ |
+| **Feature ID**     | `INF-013a`                 | Sub-part A of Editor Module           |
+| **Feature Name**   | AvalonEdit Integration     | TextEditor control with core features |
+| **Target Version** | `v0.1.3a`                  | First sub-part of v0.1.3              |
+| **Module Scope**   | `Lexichord.Modules.Editor` | Standalone editor module              |
+| **Swimlane**       | `Product`                  | Core User-Facing Feature              |
+| **License Tier**   | `Core`                     | Foundation (Available in Free tier)   |
+| **Author**         | System Architect           |                                       |
+| **Status**         | **Draft**                  | Pending implementation                |
+| **Last Updated**   | 2026-01-26                 |                                       |
 
 ---
 
@@ -929,10 +929,12 @@ public class EditorModule : IModule
 ### UC-01: Open File from Project Explorer
 
 **Preconditions:**
+
 - Project Explorer shows file tree.
 - User double-clicks a .md file.
 
 **Flow:**
+
 1. Project Explorer raises FileOpenRequested event.
 2. Host calls EditorService.OpenDocumentAsync(filePath).
 3. EditorService reads file, creates ManuscriptViewModel.
@@ -942,6 +944,7 @@ public class EditorModule : IModule
 7. Focus moves to editor.
 
 **Postconditions:**
+
 - File content displayed with line numbers.
 - Markdown syntax highlighted.
 - Tab title shows filename.
@@ -951,9 +954,11 @@ public class EditorModule : IModule
 ### UC-02: Create New Document
 
 **Preconditions:**
+
 - User wants a blank document.
 
 **Flow:**
+
 1. User presses Ctrl+N or clicks File > New.
 2. Host calls EditorService.CreateDocumentAsync().
 3. EditorService creates ManuscriptViewModel with empty content.
@@ -962,6 +967,7 @@ public class EditorModule : IModule
 6. Subsequent new documents increment: "Untitled-2", etc.
 
 **Postconditions:**
+
 - Blank document ready for editing.
 - Tab title indicates untitled status.
 
@@ -969,15 +975,15 @@ public class EditorModule : IModule
 
 ## 8. Observability & Logging
 
-| Level | Context | Message Template |
-|:------|:--------|:-----------------|
-| Information | EditorModule | `Initializing Editor module v{Version}` |
-| Information | EditorModule | `Editor module initialized successfully` |
-| Debug | ManuscriptView | `DataContext changed to {ViewModelType}` |
-| Debug | ManuscriptView | `Text synchronized from ViewModel ({Length} chars)` |
-| Debug | ManuscriptView | `Caret position: Line {Line}, Column {Column}` |
-| Debug | ManuscriptViewModel | `Save command executed for {Title}` |
-| Debug | ManuscriptViewModel | `Content changed: {LineCount} lines, {WordCount} words` |
+| Level       | Context             | Message Template                                        |
+| :---------- | :------------------ | :------------------------------------------------------ |
+| Information | EditorModule        | `Initializing Editor module v{Version}`                 |
+| Information | EditorModule        | `Editor module initialized successfully`                |
+| Debug       | ManuscriptView      | `DataContext changed to {ViewModelType}`                |
+| Debug       | ManuscriptView      | `Text synchronized from ViewModel ({Length} chars)`     |
+| Debug       | ManuscriptView      | `Caret position: Line {Line}, Column {Column}`          |
+| Debug       | ManuscriptViewModel | `Save command executed for {Title}`                     |
+| Debug       | ManuscriptViewModel | `Content changed: {LineCount} lines, {WordCount} words` |
 
 ---
 
@@ -1132,29 +1138,29 @@ public class ManuscriptViewModelBindingTests
 
 ## 11. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|:-----|:-------|:-----------|
-| AvaloniaEdit version conflict | High | Pin exact version in csproj |
-| Large file memory exhaustion | High | Implement file size warning (>50MB) |
-| Font not available | Medium | Fallback chain to system monospace |
-| Binding performance | Medium | Debounce text change notifications |
+| Risk                          | Impact | Mitigation                          |
+| :---------------------------- | :----- | :---------------------------------- |
+| AvaloniaEdit version conflict | High   | Pin exact version in csproj         |
+| Large file memory exhaustion  | High   | Implement file size warning (>50MB) |
+| Font not available            | Medium | Fallback chain to system monospace  |
+| Binding performance           | Medium | Debounce text change notifications  |
 
 ---
 
 ## 12. Acceptance Criteria (QA)
 
-| # | Category | Criterion |
-|:--|:---------|:----------|
-| 1 | **[Project]** | Lexichord.Modules.Editor project builds |
-| 2 | **[Module]** | EditorModule registers with Host |
-| 3 | **[View]** | ManuscriptView displays TextEditor control |
-| 4 | **[Binding]** | Text changes in editor update ViewModel |
-| 5 | **[Binding]** | ViewModel content changes update editor |
-| 6 | **[LineNum]** | Line numbers visible by default |
-| 7 | **[WordWrap]** | Word wrap enabled by default |
-| 8 | **[Caret]** | Caret position tracked in ViewModel |
-| 9 | **[Selection]** | Selection tracked in ViewModel |
-| 10 | **[Counts]** | Line/word/char counts update on change |
+| #   | Category        | Criterion                                  |
+| :-- | :-------------- | :----------------------------------------- |
+| 1   | **[Project]**   | Lexichord.Modules.Editor project builds    |
+| 2   | **[Module]**    | EditorModule registers with Host           |
+| 3   | **[View]**      | ManuscriptView displays TextEditor control |
+| 4   | **[Binding]**   | Text changes in editor update ViewModel    |
+| 5   | **[Binding]**   | ViewModel content changes update editor    |
+| 6   | **[LineNum]**   | Line numbers visible by default            |
+| 7   | **[WordWrap]**  | Word wrap enabled by default               |
+| 8   | **[Caret]**     | Caret position tracked in ViewModel        |
+| 9   | **[Selection]** | Selection tracked in ViewModel             |
+| 10  | **[Counts]**    | Line/word/char counts update on change     |
 
 ---
 
@@ -1188,20 +1194,74 @@ dotnet run --project src/Lexichord.Host
 
 ## 14. Deliverable Checklist
 
-| Step | Description | Status |
-|:-----|:------------|:-------|
-| 1 | Create `Lexichord.Modules.Editor` project | [ ] |
-| 2 | Add AvaloniaEdit NuGet package | [ ] |
-| 3 | Create EditorModule.cs with IModule implementation | [ ] |
-| 4 | Create ManuscriptView.axaml with TextEditor | [ ] |
-| 5 | Create ManuscriptView.axaml.cs with event handlers | [ ] |
-| 6 | Create ManuscriptViewModel with properties and commands | [ ] |
-| 7 | Wire line numbers binding | [ ] |
-| 8 | Wire word wrap binding | [ ] |
-| 9 | Wire font settings binding | [ ] |
-| 10 | Implement caret position tracking | [ ] |
-| 11 | Implement selection tracking | [ ] |
-| 12 | Implement line/word/char counts | [ ] |
-| 13 | Add keyboard shortcuts (Ctrl+S, Ctrl+F) | [ ] |
-| 14 | Unit tests for ManuscriptView | [ ] |
-| 15 | Unit tests for ManuscriptViewModel bindings | [ ] |
+| Step | Description                                             | Status |
+| :--- | :------------------------------------------------------ | :----- |
+| 1    | Create `Lexichord.Modules.Editor` project               | [ ]    |
+| 2    | Add AvaloniaEdit NuGet package                          | [ ]    |
+| 3    | Create EditorModule.cs with IModule implementation      | [ ]    |
+| 4    | Create ManuscriptView.axaml with TextEditor             | [ ]    |
+| 5    | Create ManuscriptView.axaml.cs with event handlers      | [ ]    |
+| 6    | Create ManuscriptViewModel with properties and commands | [ ]    |
+| 7    | Wire line numbers binding                               | [ ]    |
+| 8    | Wire word wrap binding                                  | [ ]    |
+| 9    | Wire font settings binding                              | [ ]    |
+| 10   | Implement caret position tracking                       | [ ]    |
+| 11   | Implement selection tracking                            | [ ]    |
+| 12   | Implement line/word/char counts                         | [ ]    |
+| 13   | Add keyboard shortcuts (Ctrl+S, Ctrl+F)                 | [ ]    |
+| 14   | Unit tests for ManuscriptView                           | [ ]    |
+| 15   | Unit tests for ManuscriptViewModel bindings             | [ ]    |
+
+---
+
+## 15. Future Compatibility: ITextBuffer Abstraction
+
+> [!IMPORTANT]
+> **CRDT Compatibility for [COL-01] Real-Time Sync**
+>
+> Per [ADR-002](../../../architecture/decisions/ADR-002-text-buffer-abstraction.md), the Editor module introduces an `ITextBuffer` abstraction to enable future CRDT swap-in without rewriting ViewModels.
+
+### 15.1 Implementation Pattern
+
+The `ManuscriptViewModel` interacts with text through `ITextBuffer` instead of raw strings:
+
+```csharp
+public interface ITextBuffer
+{
+    string GetText();
+    void ApplyOperation(TextOperation operation);
+    IObservable<TextChange> Changes { get; }
+    int Length { get; }
+}
+```
+
+### 15.2 v0.1.3 Default: AvalonEditTextBuffer
+
+```csharp
+public class AvalonEditTextBuffer : ITextBuffer
+{
+    private readonly TextDocument _document;
+
+    public AvalonEditTextBuffer(TextDocument document)
+    {
+        _document = document;
+    }
+
+    public string GetText() => _document.Text;
+
+    public void ApplyOperation(TextOperation op) => op.Type switch
+    {
+        TextOperationType.Insert => _document.Insert(op.Position, op.Text!),
+        TextOperationType.Delete => _document.Remove(op.Position, op.DeleteCount!.Value),
+        _ => throw new NotSupportedException()
+    };
+
+    public int Length => _document.TextLength;
+
+    public IObservable<TextChange> Changes { get; } // implemented via Document.Changed
+}
+```
+
+### 15.3 Future (v2.0+): CrdtTextBuffer
+
+When [COL-01] is implemented, a `CrdtTextBuffer` implementation wrapping Yjs/Loro/Automerge will be swapped in via DI registration — no ViewModel changes required.

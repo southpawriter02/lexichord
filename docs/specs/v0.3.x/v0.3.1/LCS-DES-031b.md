@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-031b` | Sub-part of STY-031 |
-| **Feature Name** | `Fuzzy Terminology Schema` | Database schema and repository extensions for fuzzy matching |
-| **Target Version** | `v0.3.1b` | Second sub-part of v0.3.1 |
-| **Module Scope** | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Entity, migration, and repository |
-| **Swimlane** | `Governance` | Style & Terminology Enforcement |
-| **License Tier** | `Core` | Schema exists for all tiers; feature gated in scanner |
-| **Feature Gate Key** | N/A | No gate at repository level (gate is in FuzzyScanner) |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-031 §2.2](./LCS-SBD-031.md#v031b-repository-update) | |
+| Field                | Value                                                        | Description                                                  |
+| :------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| **Feature ID**       | `STY-031b`                                                   | Sub-part of STY-031                                          |
+| **Feature Name**     | `Fuzzy Terminology Schema`                                   | Database schema and repository extensions for fuzzy matching |
+| **Target Version**   | `v0.3.1b`                                                    | Second sub-part of v0.3.1                                    |
+| **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Modules.Style`          | Entity, migration, and repository                            |
+| **Swimlane**         | `Governance`                                                 | Style & Terminology Enforcement                              |
+| **License Tier**     | `Core`                                                       | Schema exists for all tiers; feature gated in scanner        |
+| **Feature Gate Key** | N/A                                                          | No gate at repository level (gate is in FuzzyScanner)        |
+| **Author**           | Lead Architect                                               |                                                              |
+| **Status**           | `Draft`                                                      |                                                              |
+| **Last Updated**     | `2026-01-26`                                                 |                                                              |
+| **Parent Document**  | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md)                  |                                                              |
+| **Scope Breakdown**  | [LCS-SBD-031 §2.2](./LCS-SBD-031.md#v031b-repository-update) |                                                              |
 
 ---
 
@@ -408,7 +408,7 @@ public class AddFuzzyColumnsToStyleTerms : Migration
 
         // LOGIC: Add fuzzy_threshold with default 0.80 (80% match required)
         // DECIMAL(3,2) allows values from 0.00 to 9.99, but we constrain to 0.00-1.00
-        // via application-level validation (FluentValidation in v0.3.2c)
+        // via application-level validation (FluentValidation in v0.2.5c)
         Alter.Table(TableName).InSchema(SchemaName)
             .AddColumn("fuzzy_threshold")
                 .AsDecimal(3, 2)
@@ -1107,7 +1107,7 @@ public class TerminologySeederFuzzyTests
 
 ### 10.2 Input Validation
 
-- **FuzzyThreshold range:** Validated by FluentValidation in v0.3.2c (0.50 to 1.00).
+- **FuzzyThreshold range:** Validated by FluentValidation in v0.2.5c (0.50 to 1.00).
 - **FuzzyEnabled type:** Boolean type enforces valid values at database level.
 - **Pattern validation:** Existing validation ensures non-empty patterns.
 

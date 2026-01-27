@@ -204,7 +204,7 @@ public static class FeatureKeys
     /// </summary>
     public const string FuzzyMatching = "Feature.FuzzyMatching";
 
-    // Future features (v0.3.2+):
+    // Future features (v0.2.5+):
     // public const string CustomDictionary = "Feature.CustomDictionary";
     // public const string ReadabilityMetrics = "Feature.ReadabilityMetrics";
     // public const string VoiceProfile = "Feature.VoiceProfile";
@@ -1201,5 +1201,5 @@ dotnet test tests/Lexichord.Tests.Unit \
 
 - Defense-in-depth: License checked at UI, ViewModel, and Service layers
 - Live license updates via `ILicenseContext.LicenseChanged` observable
-- Upgrade prompt pattern reusable for future gated features (v0.3.2+)
+- Upgrade prompt pattern reusable for future gated features (v0.2.5+)
 ```

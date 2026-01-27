@@ -111,38 +111,40 @@
 | `IModuleFeatureRegistrar` | v0.3.1d    | Abstractions  | Module feature registration contract           |
 | `StyleFeatureRegistry`    | v0.3.1d    | Modules.Style | Style module feature registration              |
 
-### 1.5 v0.3.2 Dictionary Manager Interfaces
+### 1.5 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 
-| Interface              | Defined In | Module       | Purpose                                   |
-| :--------------------- | :--------- | :----------- | :---------------------------------------- |
-| `IDialogService`       | v0.3.2b    | Abstractions | Modal dialog management                   |
-| `ITerminologyImporter` | v0.3.2d    | Abstractions | CSV import contract (supersedes v0.2.5d)  |
-| `ITerminologyExporter` | v0.3.2d    | Abstractions | JSON export contract (supersedes v0.2.5d) |
+> **Note:** These interfaces were originally planned for v0.3.2 but have been consolidated into v0.2.5 per ADR decision. See [roadmap-v0.3.x.md](v0.3.x/roadmap-v0.3.x.md) for details.
 
-**New Records (v0.3.2):**
+| Interface              | Defined In | Module       | Purpose                         |
+| :--------------------- | :--------- | :----------- | :------------------------------ |
+| `IDialogService`       | v0.2.5b    | Abstractions | Modal dialog management         |
+| `ITerminologyImporter` | v0.2.5d    | Abstractions | CSV import contract (enhanced)  |
+| `ITerminologyExporter` | v0.2.5d    | Abstractions | JSON export contract (enhanced) |
+
+**New Records (v0.2.5 Dictionary Manager):**
 
 | Record            | Defined In | Module        | Purpose                          |
 | :---------------- | :--------- | :------------ | :------------------------------- |
-| `StyleTermDto`    | v0.3.2a    | Modules.Style | View-layer term representation   |
-| `DialogResult<T>` | v0.3.2b    | Abstractions  | Dialog return value wrapper      |
-| `ImportMapping`   | v0.3.2d    | Abstractions  | CSV column to DB field mapping   |
-| `ImportResult`    | v0.3.2d    | Abstractions  | Import operation outcome         |
-| `ImportOptions`   | v0.3.2d    | Abstractions  | Skip/overwrite configuration     |
-| `ImportError`     | v0.3.2d    | Abstractions  | Row-level import failure details |
-| `ExportDocument`  | v0.3.2d    | Modules.Style | Export JSON structure            |
-| `ExportedTerm`    | v0.3.2d    | Modules.Style | Term representation in export    |
+| `StyleTermDto`    | v0.2.5a    | Modules.Style | View-layer term representation   |
+| `DialogResult<T>` | v0.2.5b    | Abstractions  | Dialog return value wrapper      |
+| `ImportMapping`   | v0.2.5d    | Abstractions  | CSV column to DB field mapping   |
+| `ImportResult`    | v0.2.5d    | Abstractions  | Import operation outcome         |
+| `ImportOptions`   | v0.2.5d    | Abstractions  | Skip/overwrite configuration     |
+| `ImportError`     | v0.2.5d    | Abstractions  | Row-level import failure details |
+| `ExportDocument`  | v0.2.5d    | Modules.Style | Export JSON structure            |
+| `ExportedTerm`    | v0.2.5d    | Modules.Style | Term representation in export    |
 
-**New Classes (v0.3.2):**
+**New Classes (v0.2.5 Dictionary Manager):**
 
 | Class                     | Defined In | Module        | Purpose                          |
 | :------------------------ | :--------- | :------------ | :------------------------------- |
-| `StyleTermValidator`      | v0.3.2c    | Modules.Style | FluentValidation validator       |
-| `ValidationConstants`     | v0.3.2c    | Modules.Style | Centralized validation constants |
-| `CsvTerminologyImporter`  | v0.3.2d    | Modules.Style | CSV import implementation        |
-| `JsonTerminologyExporter` | v0.3.2d    | Modules.Style | JSON export implementation       |
-| `LexiconViewModel`        | v0.3.2a    | Modules.Style | DataGrid ViewModel               |
-| `TermEditorViewModel`     | v0.3.2b    | Modules.Style | Term editor dialog ViewModel     |
-| `ImportWizardViewModel`   | v0.3.2d    | Modules.Style | Import wizard ViewModel          |
+| `StyleTermValidator`      | v0.2.5c    | Modules.Style | FluentValidation validator       |
+| `ValidationConstants`     | v0.2.5c    | Modules.Style | Centralized validation constants |
+| `CsvTerminologyImporter`  | v0.2.5d    | Modules.Style | CSV import implementation        |
+| `JsonTerminologyExporter` | v0.2.5d    | Modules.Style | JSON export implementation       |
+| `LexiconViewModel`        | v0.2.5a    | Modules.Style | DataGrid ViewModel               |
+| `TermEditorViewModel`     | v0.2.5b    | Modules.Style | Term editor dialog ViewModel     |
+| `ImportWizardViewModel`   | v0.2.5d    | Modules.Style | Import wizard ViewModel          |
 
 **Extended Records (v0.3.1):**
 
@@ -445,7 +447,7 @@
 | `System.Reactive`                          | 6.x     | v0.2.3a       | Reactive extensions                  |
 | `Velopack`                                 | 0.x     | v0.1.7a       | Auto-updater                         |
 | `Sentry`                                   | 4.x     | v0.1.7d       | Crash reporting                      |
-| `CsvHelper`                                | 31.x    | v0.3.2d       | CSV parsing for terminology import   |
+| `CsvHelper`                                | 31.x    | v0.2.5d       | CSV parsing for terminology import   |
 | `Npgsql.Pgvector`                          | 0.2.x   | v0.4.1d       | pgvector type mapping for Dapper     |
 | `System.Threading.Channels`                | 9.0.x   | v0.4.2d       | Bounded ingestion queue              |
 | `System.IO.Hashing`                        | 9.0.x   | v0.4.2b       | SHA-256 hash computation             |
@@ -481,7 +483,7 @@
 | v0.2.7  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) with **`IOptions<T>`** for performance settings                                       |
 | v0.2.7  | `Serilog` from v0.0.3b               | Use **`ILogger<T>`** from `Microsoft.Extensions.Logging` (Serilog is the implementation configured in v0.0.3b)           |
 | v0.3.1d | `IFeatureMatrix` from v0.0.4b        | `IFeatureMatrix` is **NEW** in **v0.3.1d** (not from v0.0.4b)                                                            |
-| v0.3.2  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.2.5  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
 | v0.3.3  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
 | v0.3.3  | `Serilog` from v0.0.3b               | Use **`ILogger<T> / Serilog`** - emphasize interface over implementation                                                 |
 | v0.3.3  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
@@ -506,14 +508,16 @@
 | `IModuleFeatureRegistrar`  | New in v0.3.1d                   | Added to registry                        |
 | `ViewModelBase`            | Was cited as v0.1.1              | From CommunityToolkit.Mvvm (external)    |
 
-### 4.3 Interface Migrations (v0.3.2)
+### 4.3 Interface Migrations (v0.2.5 Consolidation)
+
+> **Note:** v0.3.2 has been consolidated into v0.2.5. The following interfaces have been promoted:
 
 | Interface              | Original Location     | New Location         | Reason                                        |
 | :--------------------- | :-------------------- | :------------------- | :-------------------------------------------- |
-| `ITerminologyImporter` | v0.2.5d Modules.Style | v0.3.2d Abstractions | Elevated to abstraction layer for broader use |
-| `ITerminologyExporter` | v0.2.5d Modules.Style | v0.3.2d Abstractions | Elevated to abstraction layer for broader use |
+| `ITerminologyImporter` | v0.2.5d Modules.Style | v0.2.5d Abstractions | Elevated to abstraction layer for broader use |
+| `ITerminologyExporter` | v0.2.5d Modules.Style | v0.2.5d Abstractions | Elevated to abstraction layer for broader use |
 
-**Note:** v0.3.2d redefines these interfaces with enhanced signatures in `Lexichord.Abstractions.Contracts`. The v0.2.5d definitions in `Modules.Style` are superseded.
+**Note:** v0.2.5d redefines these interfaces with enhanced signatures in `Lexichord.Abstractions.Contracts`. The early v0.2.5d definitions in `Modules.Style` are superseded.
 
 ---
 
@@ -552,8 +556,9 @@ graph TB
 
     subgraph "v0.3.x Advanced Matching"
         V031[v0.3.1 Fuzzy Matching]
-        V032[v0.3.2 Dictionary Manager]
     end
+
+    %% Note: v0.3.2 Dictionary Manager consolidated into v0.2.5 Librarian
 
     %% v0.0.x internal
     V003 --> V004
@@ -591,10 +596,8 @@ graph TB
     V023 --> V031
     V004 --> V031
 
-    %% v0.3.2 depends on v0.3.1, v0.2.x, v0.1.x, and v0.0.x
-    V031 --> V032
-    V022 --> V032
-    V014 --> V032
+    %% v0.2.5 now includes consolidated Dictionary Manager functionality
+    V031 --> V025
 ```
 
 ---
@@ -648,13 +651,13 @@ graph TB
 - [x] Microsoft.Extensions.Caching.Memory (v0.2.2b)
 - [x] FluentMigrator (v0.0.5c)
 
-### v0.3.1 Prerequisites for v0.3.2
+### v0.3.1 Prerequisites for v0.2.5 Dictionary Manager
 
 - [x] StyleTerm with FuzzyEnabled/FuzzyThreshold columns (v0.3.1b)
 - [x] Feature.FuzzyMatching feature gate key (v0.3.1d)
 - [x] IFuzzyMatchService (v0.3.1a)
 
-### v0.2.x/v0.1.x/v0.0.x Prerequisites for v0.3.2
+### v0.2.x/v0.1.x/v0.0.x Prerequisites for v0.2.5 Dictionary Manager
 
 - [x] StyleTerm entity (v0.2.2a)
 - [x] ITerminologyRepository (v0.2.2b)

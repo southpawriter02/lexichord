@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-031c` | Sub-part of STY-031 |
-| **Feature Name** | `Fuzzy Scanner` | Secondary scan loop for approximate string matching |
-| **Target Version** | `v0.3.1c` | Third sub-part of v0.3.1 |
-| **Module Scope** | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Interface and implementation |
-| **Swimlane** | `Governance` | Style & Terminology Enforcement |
-| **License Tier** | `Writer Pro` | Premium feature (Core users see regex only) |
-| **Feature Gate Key** | `Feature.FuzzyMatching` | Key used in `ILicenseContext.HasFeature()` |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-031 §2.3](./LCS-SBD-031.md#v031c-the-fuzzy-scanner) | |
+| Field                | Value                                                        | Description                                         |
+| :------------------- | :----------------------------------------------------------- | :-------------------------------------------------- |
+| **Feature ID**       | `STY-031c`                                                   | Sub-part of STY-031                                 |
+| **Feature Name**     | `Fuzzy Scanner`                                              | Secondary scan loop for approximate string matching |
+| **Target Version**   | `v0.3.1c`                                                    | Third sub-part of v0.3.1                            |
+| **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Modules.Style`          | Interface and implementation                        |
+| **Swimlane**         | `Governance`                                                 | Style & Terminology Enforcement                     |
+| **License Tier**     | `Writer Pro`                                                 | Premium feature (Core users see regex only)         |
+| **Feature Gate Key** | `Feature.FuzzyMatching`                                      | Key used in `ILicenseContext.HasFeature()`          |
+| **Author**           | Lead Architect                                               |                                                     |
+| **Status**           | `Draft`                                                      |                                                     |
+| **Last Updated**     | `2026-01-26`                                                 |                                                     |
+| **Parent Document**  | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md)                  |                                                     |
+| **Scope Breakdown**  | [LCS-SBD-031 §2.3](./LCS-SBD-031.md#v031c-the-fuzzy-scanner) |                                                     |
 
 ---
 
@@ -1269,7 +1269,7 @@ grep -n "IFuzzyScanner" src/Lexichord.Modules.Style/StyleModule.cs
 
 # 8. Manual verification (Writer Pro user):
 # a) Open app with Writer Pro license
-# b) Enable fuzzy on "whitelist" term (via v0.3.2b UI or seed data)
+# b) Enable fuzzy on "whitelist" term (via v0.2.5b UI or seed data)
 # c) Add document with "white-list"
 # d) Verify fuzzy violation appears with "(90% match)"
 

@@ -17,6 +17,7 @@
 5. **Event Bus** (v0.0.7) - StatusBar publishes and subscribes to health events.
 
 **This is the "Hello World" of the architecture.** If this release succeeds:
+
 - All foundational systems are proven to work together.
 - Future feature modules have a blueprint to follow.
 - The architecture is tagged as "Golden Skeleton" and frozen for v0.0.x.
@@ -151,25 +152,25 @@
 
 ## 3. Implementation Checklist (for Developer)
 
-| Step     | Description                                                                  | Status |
-| :------- | :--------------------------------------------------------------------------- | :----- |
-| **0.8a** | `Lexichord.Modules.StatusBar` project created.                               | [ ]    |
-| **0.8a** | Module references only `Lexichord.Abstractions`.                             | [ ]    |
-| **0.8a** | `StatusBarModule : IModule` implemented.                                     | [ ]    |
-| **0.8a** | `StatusBarView.axaml` created with three indicator panels.                   | [ ]    |
-| **0.8a** | View registered in `ShellRegion.Bottom`.                                     | [ ]    |
-| **0.8a** | Status bar visible in MainWindow bottom area.                                | [ ]    |
-| **0.8b** | `IHealthRepository` interface created.                                       | [ ]    |
-| **0.8b** | `system_health` table created in SQLite.                                     | [ ]    |
-| **0.8b** | `IHeartbeatService` updates heartbeat every 60 seconds.                      | [ ]    |
-| **0.8b** | StatusBar shows database connection status and uptime.                       | [ ]    |
-| **0.8c** | `IVaultStatusService` checks for API key presence.                           | [ ]    |
-| **0.8c** | StatusBar shows vault status (Ready/No Key/Error).                           | [ ]    |
-| **0.8c** | Key entry dialog stores key in ISecureVault.                                 | [ ]    |
-| **0.8d** | Integration tests for all systems created.                                   | [ ]    |
-| **0.8d** | Architecture documentation updated.                                          | [ ]    |
-| **0.8d** | Release notes written.                                                       | [ ]    |
-| **0.8d** | Git tag `v0.0.8-golden-skeleton` created.                                    | [ ]    |
+| Step     | Description                                                | Status |
+| :------- | :--------------------------------------------------------- | :----- |
+| **0.8a** | `Lexichord.Modules.StatusBar` project created.             | [ ]    |
+| **0.8a** | Module references only `Lexichord.Abstractions`.           | [ ]    |
+| **0.8a** | `StatusBarModule : IModule` implemented.                   | [ ]    |
+| **0.8a** | `StatusBarView.axaml` created with three indicator panels. | [ ]    |
+| **0.8a** | View registered in `ShellRegion.Bottom`.                   | [ ]    |
+| **0.8a** | Status bar visible in MainWindow bottom area.              | [ ]    |
+| **0.8b** | `IHealthRepository` interface created.                     | [ ]    |
+| **0.8b** | `system_health` table created in SQLite.                   | [ ]    |
+| **0.8b** | `IHeartbeatService` updates heartbeat every 60 seconds.    | [ ]    |
+| **0.8b** | StatusBar shows database connection status and uptime.     | [ ]    |
+| **0.8c** | `IVaultStatusService` checks for API key presence.         | [ ]    |
+| **0.8c** | StatusBar shows vault status (Ready/No Key/Error).         | [ ]    |
+| **0.8c** | Key entry dialog stores key in ISecureVault.               | [ ]    |
+| **0.8d** | Integration tests for all systems created.                 | [ ]    |
+| **0.8d** | Architecture documentation updated.                        | [ ]    |
+| **0.8d** | Release notes written.                                     | [ ]    |
+| **0.8d** | Git tag `v0.0.8-golden-skeleton` created.                  | [ ]    |
 
 ## 4. Risks & Mitigations
 
@@ -192,16 +193,16 @@
 
 This release is successful when:
 
-| Metric                        | Target               | Verification                                    |
-| :---------------------------- | :------------------- | :---------------------------------------------- |
-| Module Discovery              | 100% success         | StatusBar loads without errors                  |
-| Region Registration           | View visible         | StatusBarView appears in Bottom region          |
-| Database Connectivity         | Query executes       | Uptime displays correctly                       |
-| Vault Integration             | Key check works      | Status reflects actual vault state              |
-| Event Bus                     | Events flow          | Health events published and received            |
-| Integration Tests             | 100% passing         | All E2E tests pass in CI                        |
-| Documentation                 | Complete             | Module Developer Guide published                |
-| Release Tag                   | Created              | `v0.0.8-golden-skeleton` exists                 |
+| Metric                | Target          | Verification                           |
+| :-------------------- | :-------------- | :------------------------------------- |
+| Module Discovery      | 100% success    | StatusBar loads without errors         |
+| Region Registration   | View visible    | StatusBarView appears in Bottom region |
+| Database Connectivity | Query executes  | Uptime displays correctly              |
+| Vault Integration     | Key check works | Status reflects actual vault state     |
+| Event Bus             | Events flow     | Health events published and received   |
+| Integration Tests     | 100% passing    | All E2E tests pass in CI               |
+| Documentation         | Complete        | Module Developer Guide published       |
+| Release Tag           | Created         | `v0.0.8-golden-skeleton` exists        |
 
 ---
 
@@ -221,3 +222,113 @@ When v0.0.8 is complete, we have proven:
 10. **Exception Handling Works** - Failures are captured and reported gracefully.
 
 **The Golden Skeleton is complete.**
+
+---
+
+## 7. Compatibility Adapter Pattern {#compatibility}
+
+> [!IMPORTANT]
+> **Region System Migration:** The static region system (`IShellRegionView`) used in v0.0.8 is superseded by `Avalonia.Dock` with `IRegionManager` in **v0.1.1**. This section documents the recommended adapter pattern for forward compatibility.
+
+### 7.1 The Migration Challenge
+
+Modules developed against v0.0.8 use `IShellRegionView` to register in static shell regions:
+
+```csharp
+// v0.0.8 Pattern (Static Regions)
+public class StatusBarView : UserControl, IShellRegionView
+{
+    public ShellRegion TargetRegion => ShellRegion.Bottom;
+}
+```
+
+In v0.1.1+, modules use `IRegionManager` for dynamic docking:
+
+```csharp
+// v0.1.1+ Pattern (Avalonia.Dock)
+_regionManager.RegisterView<StatusBarView>("BottomPanel", new ViewOptions
+{
+    CanClose = false,
+    CanFloat = false
+});
+```
+
+### 7.2 Recommended Adapter Implementation
+
+Create a compatibility adapter that allows modules to work with both systems:
+
+```csharp
+namespace Lexichord.Abstractions.Compatibility;
+
+/// <summary>
+/// Adapts v0.0.8 static region views to v0.1.1+ IRegionManager.
+/// </summary>
+public interface IRegionAdapter
+{
+    /// <summary>
+    /// Registers a view using either the legacy or modern region system.
+    /// </summary>
+    void RegisterView<TView>(ShellRegion legacyRegion) where TView : Control;
+}
+
+public class RegionAdapter : IRegionAdapter
+{
+    private readonly IRegionManager? _regionManager;
+    private readonly IShellRegions? _legacyRegions;
+    private readonly ILogger<RegionAdapter> _logger;
+
+    public RegionAdapter(
+        IServiceProvider services,
+        ILogger<RegionAdapter> logger)
+    {
+        _regionManager = services.GetService<IRegionManager>();
+        _legacyRegions = services.GetService<IShellRegions>();
+        _logger = logger;
+    }
+
+    public void RegisterView<TView>(ShellRegion legacyRegion) where TView : Control
+    {
+        if (_regionManager is not null)
+        {
+            // Modern path: use Avalonia.Dock
+            var dockRegion = MapToDockRegion(legacyRegion);
+            _regionManager.RegisterView<TView>(dockRegion);
+            _logger.LogDebug("Registered {View} in dock region {Region}", typeof(TView).Name, dockRegion);
+        }
+        else if (_legacyRegions is not null)
+        {
+            // Legacy path: use static regions
+            _legacyRegions.Register<TView>(legacyRegion);
+            _logger.LogDebug("Registered {View} in legacy region {Region}", typeof(TView).Name, legacyRegion);
+        }
+        else
+        {
+            _logger.LogWarning("No region system available for {View}", typeof(TView).Name);
+        }
+    }
+
+    private static string MapToDockRegion(ShellRegion legacy) => legacy switch
+    {
+        ShellRegion.Top => "TopPanel",
+        ShellRegion.Bottom => "BottomPanel",
+        ShellRegion.Left => "LeftDock",
+        ShellRegion.Right => "RightDock",
+        ShellRegion.Center => "DocumentWell",
+        _ => "DocumentWell"
+    };
+}
+```
+
+### 7.3 Module Migration Path
+
+1. **Immediate:** Continue using `IShellRegionView` for v0.0.8 implementation.
+2. **v0.1.1:** Inject `IRegionAdapter` instead of implementing `IShellRegionView`.
+3. **v0.2.0+:** Migrate fully to `IRegionManager` when legacy support is dropped.
+
+### 7.4 Deprecation Timeline
+
+| Version | Static Regions (`IShellRegionView`) | Dock Regions (`IRegionManager`) |
+| :------ | :---------------------------------- | :------------------------------ |
+| v0.0.8  | ✅ Primary                          | ❌ Not available                |
+| v0.1.1  | ⚠️ Deprecated (adapter available)   | ✅ Primary                      |
+| v0.2.0  | ❌ Removed                          | ✅ Required                     |

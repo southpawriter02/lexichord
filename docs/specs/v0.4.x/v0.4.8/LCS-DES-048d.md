@@ -2,16 +2,16 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-048d                             |
-| **Version**      | v0.4.8d                                  |
-| **Title**        | Embedding Cache                          |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
-| **Module**       | `Lexichord.Modules.RAG`                  |
-| **License Tier** | Teams                                    |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Document ID**  | LCS-DES-048d            |
+| **Version**      | v0.4.8d                 |
+| **Title**        | Embedding Cache         |
+| **Status**       | Draft                   |
+| **Last Updated** | 2026-01-27              |
+| **Owner**        | Lead Architect          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Teams                   |
 
 ---
 
@@ -20,6 +20,16 @@
 ### 1.1 Purpose
 
 This specification defines `IEmbeddingCache` and `SqliteEmbeddingCache`, a local cache for embeddings that reduces API calls, lowers costs, and improves latency for repeated queries. Embeddings are keyed by content hash and evicted using an LRU policy.
+
+> [!NOTE]
+> **Architectural Context:** SQLite is the correct choice for this cache because:
+>
+> - Embeddings are derived data (regenerable from source text)
+> - High-frequency local reads require low-latency file-based access
+> - Cache is device-specific (no synchronization needed)
+> - LRU eviction means data is temporary by design
+>
+> See [ADR-001](../../architecture/decisions/ADR-001-database-architecture.md) for the full database strategy.
 
 ### 1.2 Goals
 
@@ -579,13 +589,13 @@ public static IServiceCollection AddEmbeddingCache(
 
 ```json
 {
-  "EmbeddingCache": {
-    "Enabled": true,
-    "MaxSizeMB": 100,
-    "CachePath": "~/.lexichord/cache/embeddings.db",
-    "EmbeddingDimensions": 1536,
-    "CompactionInterval": 100
-  }
+    "EmbeddingCache": {
+        "Enabled": true,
+        "MaxSizeMB": 100,
+        "CachePath": "~/.lexichord/cache/embeddings.db",
+        "EmbeddingDimensions": 1536,
+        "CompactionInterval": 100
+    }
 }
 ```
 
@@ -819,52 +829,52 @@ public class CachedEmbeddingServiceTests
 
 ## 5. Logging
 
-| Level | Message | Context |
-| :---- | :------ | :------ |
-| Information | "Embedding cache initialized: {Path}, MaxSize={MaxSizeMB}MB" | Startup |
-| Information | "Cache eviction: removed {Count} entries" | After compaction |
-| Information | "Cache cleared" | After clear |
-| Debug | "Cache hit for hash: {Hash}" | On hit |
-| Debug | "Cache miss for hash: {Hash}" | On miss |
-| Debug | "Cached embedding for hash: {Hash}" | After set |
-| Debug | "Batch: {Cached} cached, {Uncached} to fetch" | Batch operation |
-| Warning | "Cache read/write error for hash: {Hash}" | On exception |
+| Level       | Message                                                      | Context          |
+| :---------- | :----------------------------------------------------------- | :--------------- |
+| Information | "Embedding cache initialized: {Path}, MaxSize={MaxSizeMB}MB" | Startup          |
+| Information | "Cache eviction: removed {Count} entries"                    | After compaction |
+| Information | "Cache cleared"                                              | After clear      |
+| Debug       | "Cache hit for hash: {Hash}"                                 | On hit           |
+| Debug       | "Cache miss for hash: {Hash}"                                | On miss          |
+| Debug       | "Cached embedding for hash: {Hash}"                          | After set        |
+| Debug       | "Batch: {Cached} cached, {Uncached} to fetch"                | Batch operation  |
+| Warning     | "Cache read/write error for hash: {Hash}"                    | On exception     |
 
 ---
 
 ## 6. File Locations
 
-| File | Path |
-| :--- | :--- |
-| IEmbeddingCache | `src/Lexichord.Abstractions/Contracts/IEmbeddingCache.cs` |
-| EmbeddingCacheOptions | `src/Lexichord.Modules.RAG/Configuration/EmbeddingCacheOptions.cs` |
-| EmbeddingCacheStatistics | `src/Lexichord.Modules.RAG/Models/EmbeddingCacheStatistics.cs` |
-| SqliteEmbeddingCache | `src/Lexichord.Modules.RAG/Services/SqliteEmbeddingCache.cs` |
-| CachedEmbeddingService | `src/Lexichord.Modules.RAG/Services/CachedEmbeddingService.cs` |
-| Unit tests | `tests/Lexichord.Modules.RAG.Tests/Services/EmbeddingCacheTests.cs` |
+| File                     | Path                                                                |
+| :----------------------- | :------------------------------------------------------------------ |
+| IEmbeddingCache          | `src/Lexichord.Abstractions/Contracts/IEmbeddingCache.cs`           |
+| EmbeddingCacheOptions    | `src/Lexichord.Modules.RAG/Configuration/EmbeddingCacheOptions.cs`  |
+| EmbeddingCacheStatistics | `src/Lexichord.Modules.RAG/Models/EmbeddingCacheStatistics.cs`      |
+| SqliteEmbeddingCache     | `src/Lexichord.Modules.RAG/Services/SqliteEmbeddingCache.cs`        |
+| CachedEmbeddingService   | `src/Lexichord.Modules.RAG/Services/CachedEmbeddingService.cs`      |
+| Unit tests               | `tests/Lexichord.Modules.RAG.Tests/Services/EmbeddingCacheTests.cs` |
 
 ---
 
 ## 7. Acceptance Criteria
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | Cache stores embeddings by content hash | [ ] |
-| 2 | Cache hit returns stored embedding | [ ] |
-| 3 | Cache miss calls API and stores result | [ ] |
-| 4 | LRU eviction when size limit reached | [ ] |
-| 5 | Cache can be disabled via configuration | [ ] |
-| 6 | Statistics track hits, misses, evictions | [ ] |
-| 7 | Batch operations use cache efficiently | [ ] |
-| 8 | Clear removes all entries | [ ] |
-| 9 | All unit tests pass | [ ] |
+| #   | Criterion                                | Status |
+| :-- | :--------------------------------------- | :----- |
+| 1   | Cache stores embeddings by content hash  | [ ]    |
+| 2   | Cache hit returns stored embedding       | [ ]    |
+| 3   | Cache miss calls API and stores result   | [ ]    |
+| 4   | LRU eviction when size limit reached     | [ ]    |
+| 5   | Cache can be disabled via configuration  | [ ]    |
+| 6   | Statistics track hits, misses, evictions | [ ]    |
+| 7   | Batch operations use cache efficiently   | [ ]    |
+| 8   | Clear removes all entries                | [ ]    |
+| 9   | All unit tests pass                      | [ ]    |
 
 ---
 
 ## 8. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---
