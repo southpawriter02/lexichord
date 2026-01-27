@@ -1,4 +1,4 @@
-# LCS-INF-008d: Release v0.0.8 - Golden Skeleton Tagging
+# LCS-DES-008d: Release v0.0.8 - Golden Skeleton Tagging
 
 ## 1. Metadata & Categorization
 

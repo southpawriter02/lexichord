@@ -1,4 +1,4 @@
-# LCS-INF-008b: Database Health Check - Query for Uptime
+# LCS-DES-008b: Database Health Check - Query for Uptime
 
 ## 1. Metadata & Categorization
 

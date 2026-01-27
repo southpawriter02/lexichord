@@ -1,4 +1,4 @@
-# LCS-INF-008a: Status Bar Module - Shell Region Registration
+# LCS-DES-008a: Status Bar Module - Shell Region Registration
 
 ## 1. Metadata & Categorization
 

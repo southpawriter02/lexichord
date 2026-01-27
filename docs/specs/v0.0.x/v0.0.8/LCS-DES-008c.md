@@ -1,4 +1,4 @@
-# LCS-INF-008c: Secure Vault Check - Verify API Key
+# LCS-DES-008c: Secure Vault Check - Verify API Key
 
 ## 1. Metadata & Categorization
 
