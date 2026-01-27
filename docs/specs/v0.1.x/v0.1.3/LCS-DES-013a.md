@@ -1,4 +1,4 @@
-# LCS-INF-013a: AvalonEdit Integration
+# LCS-DES-013a: AvalonEdit Integration
 
 ## 1. Metadata & Categorization
 

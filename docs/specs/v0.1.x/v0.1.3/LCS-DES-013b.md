@@ -1,4 +1,4 @@
-# LCS-INF-013b: Syntax Highlighting Service
+# LCS-DES-013b: Syntax Highlighting Service
 
 ## 1. Metadata & Categorization
 

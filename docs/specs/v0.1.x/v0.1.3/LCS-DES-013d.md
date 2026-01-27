@@ -1,4 +1,4 @@
-# LCS-INF-013d: Editor Configuration
+# LCS-DES-013d: Editor Configuration
 
 ## 1. Metadata & Categorization
 
