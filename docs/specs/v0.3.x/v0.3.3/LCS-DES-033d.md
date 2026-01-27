@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-033d` | Sub-part of STY-033 |
-| **Feature Name** | `Readability HUD Widget` | Floating status bar widget |
-| **Target Version** | `v0.3.3d` | Fourth sub-part of v0.3.3 |
-| **Module Scope** | `Lexichord.Modules.Style` | Style governance module |
-| **Swimlane** | `Governance` | Part of Style vertical |
-| **License Tier** | `Writer Pro` | Required for readability features |
-| **Feature Gate Key** | `FeatureFlags.Style.Readability` | Shared with parent feature |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-033-INDEX](./LCS-DES-033-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-033 §3.4](./LCS-SBD-033.md#34-v033d-the-hud-widget) | |
+| Field                | Value                                                        | Description                       |
+| :------------------- | :----------------------------------------------------------- | :-------------------------------- |
+| **Feature ID**       | `STY-033d`                                                   | Sub-part of STY-033               |
+| **Feature Name**     | `Readability HUD Widget`                                     | Floating status bar widget        |
+| **Target Version**   | `v0.3.3d`                                                    | Fourth sub-part of v0.3.3         |
+| **Module Scope**     | `Lexichord.Modules.Style`                                    | Style governance module           |
+| **Swimlane**         | `Governance`                                                 | Part of Style vertical            |
+| **License Tier**     | `Writer Pro`                                                 | Required for readability features |
+| **Feature Gate Key** | `FeatureFlags.Style.Readability`                             | Shared with parent feature        |
+| **Author**           | Lead Architect                                               |                                   |
+| **Status**           | `Draft`                                                      |                                   |
+| **Last Updated**     | `2026-01-26`                                                 |                                   |
+| **Parent Document**  | [LCS-DES-033-INDEX](./LCS-DES-033-INDEX.md)                  |                                   |
+| **Scope Breakdown**  | [LCS-SBD-033 §3.4](./LCS-SBD-033.md#34-v033d-the-hud-widget) |                                   |
 
 ---
 
@@ -46,31 +46,31 @@ Implement a `ReadabilityHudView` widget that:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IReadabilityService` | v0.3.3c | Metrics calculation |
-| `ReadabilityAnalyzedEvent` | v0.3.3c | MediatR event for UI updates |
-| `ILicenseContext` | v0.0.4c | License tier checking |
-| `ViewModelBase` | v0.1.1 | MVVM base class |
-| `LintingCompletedEvent` | v0.2.3b | Trigger timing |
+| Interface                  | Source Version        | Purpose                                    |
+| :------------------------- | :-------------------- | :----------------------------------------- |
+| `IReadabilityService`      | v0.3.3c               | Metrics calculation                        |
+| `ReadabilityAnalyzedEvent` | v0.3.3c               | MediatR event for UI updates               |
+| `ILicenseContext`          | v0.0.4c               | License tier checking                      |
+| `ViewModelBase`            | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
+| `LintingCompletedEvent`    | v0.2.3b               | Trigger timing                             |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `System.Reactive` | 6.x | Observable debouncing |
-| `MediatR` | 12.x | Event subscription |
-| `CommunityToolkit.Mvvm` | 8.x | Source generators |
-| `Avalonia.Controls` | 11.x | UI controls |
+| Package                 | Version | Purpose               |
+| :---------------------- | :------ | :-------------------- |
+| `System.Reactive`       | 6.x     | Observable debouncing |
+| `MediatR`               | 12.x    | Event subscription    |
+| `CommunityToolkit.Mvvm` | 8.x     | Source generators     |
+| `Avalonia.Controls`     | 11.x    | UI controls           |
 
 ### 3.2 Licensing Behavior
 
 This component implements the **Soft Gate** strategy:
 
-| User Tier | HUD Display | Metrics Visible |
-| :--- | :--- | :--- |
-| Core | Lock icon + upgrade prompt | No |
-| Writer Pro+ | Full metrics | Yes |
+| User Tier   | HUD Display                | Metrics Visible |
+| :---------- | :------------------------- | :-------------- |
+| Core        | Lock icon + upgrade prompt | No              |
+| Writer Pro+ | Full metrics               | Yes             |
 
 ---
 
@@ -241,10 +241,10 @@ ON ReadabilityAnalyzedEvent received:
 
 ## 6. Data Persistence
 
-| Setting | Storage | Default |
-| :--- | :--- | :--- |
-| `IsExpanded` | `IConfigurationService` | `false` |
-| HUD Position | Hardcoded | Bottom-right, 16px margin |
+| Setting      | Storage          | Default                   |
+| :----------- | :--------------- | :------------------------ |
+| `IsExpanded` | `IConfiguration` | `false`                   |
+| HUD Position | Hardcoded        | Bottom-right, 16px margin |
 
 ---
 
@@ -331,71 +331,71 @@ OR (expanded):
 
 ### 7.5 Visual Design Tokens
 
-| Element | Token | Value |
-| :--- | :--- | :--- |
-| Container Background | `Brush.Surface.Overlay` | 80% opacity |
-| Container Border | `Brush.Border.Subtle` | 1px solid |
-| Container Corner Radius | `CornerRadius.Medium` | 6px |
-| Container Shadow | `Shadow.Medium` | 0 4px 12px rgba(0,0,0,0.15) |
-| Label Text | `Brush.Text.Secondary` | Left-aligned |
-| Value Text | `Brush.Text.Primary` | Right-aligned, monospace |
-| Expand Button | `LexButtonGhost` | Icon only |
-| Separator | `Brush.Border.Subtle` | 1px horizontal |
-| Interpretation | `Brush.Text.Tertiary` | Italic, centered |
-| Upgrade Button | `LexButtonPrimary` | Full width |
-| Lock Icon | `Brush.Text.Warning` | 16x16 |
+| Element                 | Token                   | Value                       |
+| :---------------------- | :---------------------- | :-------------------------- |
+| Container Background    | `Brush.Surface.Overlay` | 80% opacity                 |
+| Container Border        | `Brush.Border.Subtle`   | 1px solid                   |
+| Container Corner Radius | `CornerRadius.Medium`   | 6px                         |
+| Container Shadow        | `Shadow.Medium`         | 0 4px 12px rgba(0,0,0,0.15) |
+| Label Text              | `Brush.Text.Secondary`  | Left-aligned                |
+| Value Text              | `Brush.Text.Primary`    | Right-aligned, monospace    |
+| Expand Button           | `LexButtonGhost`        | Icon only                   |
+| Separator               | `Brush.Border.Subtle`   | 1px horizontal              |
+| Interpretation          | `Brush.Text.Tertiary`   | Italic, centered            |
+| Upgrade Button          | `LexButtonPrimary`      | Full width                  |
+| Lock Icon               | `Brush.Text.Warning`    | 16x16                       |
 
 ### 7.6 Grade Level Color Coding
 
-| Grade Range | Color | Token | Meaning |
-| :--- | :--- | :--- | :--- |
-| 0-5 | Green | `Brush.Semantic.Success` | Very Easy |
-| 6-8 | Blue | `Brush.Semantic.Info` | Standard |
-| 9-12 | Yellow | `Brush.Semantic.Warning` | Challenging |
-| 13+ | Orange | `Brush.Semantic.Caution` | Advanced |
+| Grade Range | Color  | Token                    | Meaning     |
+| :---------- | :----- | :----------------------- | :---------- |
+| 0-5         | Green  | `Brush.Semantic.Success` | Very Easy   |
+| 6-8         | Blue   | `Brush.Semantic.Info`    | Standard    |
+| 9-12        | Yellow | `Brush.Semantic.Warning` | Challenging |
+| 13+         | Orange | `Brush.Semantic.Caution` | Advanced    |
 
 ### 7.7 Animation Specifications
 
-| Animation | Trigger | Duration | Easing |
-| :--- | :--- | :--- | :--- |
-| Expand | Click expand button | 200ms | CubicEaseOut |
-| Collapse | Click collapse button | 150ms | CubicEaseIn |
-| Metrics Fade-In | Analysis complete | 100ms | Linear |
-| Spinner Rotation | IsAnalyzing=true | 1000ms loop | Linear |
-| Color Transition | Grade changes | 150ms | Linear |
+| Animation        | Trigger               | Duration    | Easing       |
+| :--------------- | :-------------------- | :---------- | :----------- |
+| Expand           | Click expand button   | 200ms       | CubicEaseOut |
+| Collapse         | Click collapse button | 150ms       | CubicEaseIn  |
+| Metrics Fade-In  | Analysis complete     | 100ms       | Linear       |
+| Spinner Rotation | IsAnalyzing=true      | 1000ms loop | Linear       |
+| Color Transition | Grade changes         | 150ms       | Linear       |
 
 ### 7.8 Accessibility (A11y)
 
-| Element | AutomationProperties.Name | Keyboard |
-| :--- | :--- | :--- |
-| HUD Container | "Readability metrics panel" | Tab-focusable |
-| Expand Button | "Expand readability details" | Enter/Space |
-| Collapse Button | "Collapse readability details" | Enter/Space |
-| Upgrade Button | "Upgrade to Writer Pro" | Enter/Space |
-| Grade Value | "Flesch-Kincaid grade level: {value}" | Read-only |
-| Spinner | "Analyzing document readability" | - |
+| Element         | AutomationProperties.Name             | Keyboard      |
+| :-------------- | :------------------------------------ | :------------ |
+| HUD Container   | "Readability metrics panel"           | Tab-focusable |
+| Expand Button   | "Expand readability details"          | Enter/Space   |
+| Collapse Button | "Collapse readability details"        | Enter/Space   |
+| Upgrade Button  | "Upgrade to Writer Pro"               | Enter/Space   |
+| Grade Value     | "Flesch-Kincaid grade level: {value}" | Read-only     |
+| Spinner         | "Analyzing document readability"      | -             |
 
 ---
 
 ## 8. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"License check for Readability: {IsLicensed}"` |
+| Level | Message Template                                                      |
+| :---- | :-------------------------------------------------------------------- |
+| Debug | `"License check for Readability: {IsLicensed}"`                       |
 | Debug | `"Metrics updated: Grade {GradeLevel:F1}, {WordsPerSentence:F0} w/s"` |
-| Debug | `"Debounce triggered, discarding rapid change"` |
-| Debug | `"HUD expanded state changed to {IsExpanded}"` |
-| Trace | `"PropertyChanged: {PropertyName}"` |
+| Debug | `"Debounce triggered, discarding rapid change"`                       |
+| Debug | `"HUD expanded state changed to {IsExpanded}"`                        |
+| Trace | `"PropertyChanged: {PropertyName}"`                                   |
 
 ---
 
 ## 9. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| License bypass | Low | Check occurs in ViewModel, not View |
-| UI thread blocking | Low | All analysis on background thread |
-| Memory leak | Low | Dispose subscriptions on unload |
+| Risk               | Level | Mitigation                          |
+| :----------------- | :---- | :---------------------------------- |
+| License bypass     | Low   | Check occurs in ViewModel, not View |
+| UI thread blocking | Low   | All analysis on background thread   |
+| Memory leak        | Low   | Dispose subscriptions on unload     |
 
 ---
 
@@ -403,39 +403,39 @@ OR (expanded):
 
 ### 10.1 Display Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | HUD in collapsed state | Metrics available | Shows "Grade X.X \| Y w/s" |
-| 2 | User clicks expand | Animation runs | HUD expands to full view |
-| 3 | HUD in expanded state | View rendered | Shows all 5 metrics |
-| 4 | HUD in expanded state | Shows interpretation | "Standard (8th-9th grade)" |
-| 5 | Empty document | HUD rendered | Shows "-- \| --" placeholders |
+| #   | Given                  | When                 | Then                          |
+| :-- | :--------------------- | :------------------- | :---------------------------- |
+| 1   | HUD in collapsed state | Metrics available    | Shows "Grade X.X \| Y w/s"    |
+| 2   | User clicks expand     | Animation runs       | HUD expands to full view      |
+| 3   | HUD in expanded state  | View rendered        | Shows all 5 metrics           |
+| 4   | HUD in expanded state  | Shows interpretation | "Standard (8th-9th grade)"    |
+| 5   | Empty document         | HUD rendered         | Shows "-- \| --" placeholders |
 
 ### 10.2 License Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 6 | Core license | HUD rendered | Shows lock + upgrade prompt |
-| 7 | Core license | Analysis runs | Metrics NOT visible |
-| 8 | Core license | Click "Upgrade Now" | Browser opens subscription URL |
-| 9 | Writer Pro license | HUD rendered | Shows full metrics |
+| #   | Given              | When                | Then                           |
+| :-- | :----------------- | :------------------ | :----------------------------- |
+| 6   | Core license       | HUD rendered        | Shows lock + upgrade prompt    |
+| 7   | Core license       | Analysis runs       | Metrics NOT visible            |
+| 8   | Core license       | Click "Upgrade Now" | Browser opens subscription URL |
+| 9   | Writer Pro license | HUD rendered        | Shows full metrics             |
 
 ### 10.3 Interaction Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 10 | User types rapidly | Debounce active | HUD updates after 300ms idle |
-| 11 | Analysis in progress | HUD visible | Shows spinner |
-| 12 | Expand button clicked | State toggles | IsExpanded changes |
+| #   | Given                 | When            | Then                         |
+| :-- | :-------------------- | :-------------- | :--------------------------- |
+| 10  | User types rapidly    | Debounce active | HUD updates after 300ms idle |
+| 11  | Analysis in progress  | HUD visible     | Shows spinner                |
+| 12  | Expand button clicked | State toggles   | IsExpanded changes           |
 
 ### 10.4 Visual Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 13 | Grade 0-5 | Color applied | Green |
-| 14 | Grade 6-8 | Color applied | Blue |
-| 15 | Grade 9-12 | Color applied | Yellow |
-| 16 | Grade 13+ | Color applied | Orange |
+| #   | Given      | When          | Then   |
+| :-- | :--------- | :------------ | :----- |
+| 13  | Grade 0-5  | Color applied | Green  |
+| 14  | Grade 6-8  | Color applied | Blue   |
+| 15  | Grade 9-12 | Color applied | Yellow |
+| 16  | Grade 13+  | Color applied | Orange |
 
 ---
 
@@ -843,6 +843,6 @@ services.AddTransient<ReadabilityHudView>();
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

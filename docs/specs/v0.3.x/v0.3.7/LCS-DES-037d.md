@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-037d` | Sub-part of STY-037 |
-| **Feature Name** | `Subscription Cleanup and Leak Prevention` | Memory management |
-| **Target Version** | `v0.3.7d` | Fourth sub-part of v0.3.7 |
-| **Module Scope** | `Lexichord.Modules.Style` | Style governance module |
-| **Swimlane** | `Governance` | Part of Style vertical |
-| **License Tier** | `Core` | Available to all users |
-| **Feature Gate Key** | N/A | Core infrastructure |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-037-INDEX](./LCS-DES-037-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-037 §3.4](./LCS-SBD-037.md#34-v037d-memory-leak-check) | |
+| Field                | Value                                                           | Description               |
+| :------------------- | :-------------------------------------------------------------- | :------------------------ |
+| **Feature ID**       | `STY-037d`                                                      | Sub-part of STY-037       |
+| **Feature Name**     | `Subscription Cleanup and Leak Prevention`                      | Memory management         |
+| **Target Version**   | `v0.3.7d`                                                       | Fourth sub-part of v0.3.7 |
+| **Module Scope**     | `Lexichord.Modules.Style`                                       | Style governance module   |
+| **Swimlane**         | `Governance`                                                    | Part of Style vertical    |
+| **License Tier**     | `Core`                                                          | Available to all users    |
+| **Feature Gate Key** | N/A                                                             | Core infrastructure       |
+| **Author**           | Lead Architect                                                  |                           |
+| **Status**           | `Draft`                                                         |                           |
+| **Last Updated**     | `2026-01-26`                                                    |                           |
+| **Parent Document**  | [LCS-DES-037-INDEX](./LCS-DES-037-INDEX.md)                     |                           |
+| **Scope Breakdown**  | [LCS-SBD-037 §3.4](./LCS-SBD-037.md#34-v037d-memory-leak-check) |                           |
 
 ---
 
@@ -24,12 +24,14 @@
 ### 2.1 The Requirement
 
 ViewModels and services subscribe to various event streams:
+
 - MediatR notifications
 - System.Reactive observables
 - Timer callbacks
 - Document change events
 
 When a document is closed, these subscriptions must be properly disposed. Otherwise:
+
 - Analyzers continue running on closed documents (wasted CPU)
 - Event handlers retain references to disposed ViewModels
 - Memory grows over time as subscriptions accumulate
@@ -54,11 +56,11 @@ Implement a disposal infrastructure:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `DocumentClosedEvent` | v0.1.4c | Cleanup trigger |
-| `IMediator` | v0.0.7a | Event subscriptions |
-| `ViewModelBase` | v0.1.1 | Base class to extend |
+| Interface             | Source Version        | Purpose                                    |
+| :-------------------- | :-------------------- | :----------------------------------------- |
+| `DocumentClosedEvent` | v0.1.4c               | Cleanup trigger                            |
+| `IMediator`           | v0.0.7a               | Event subscriptions                        |
+| `ViewModelBase`       | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
 
 #### 3.1.2 NuGet Packages
 
@@ -350,25 +352,25 @@ No direct UI. This is backend infrastructure.
 
 ## 7. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Tracking subscription, count: {Count}"` |
-| Debug | `"DisposeAll called, disposing {Count} subscriptions"` |
-| Warning | `"Error disposing subscription: {Error}"` |
-| Info | `"Disposed {Count} subscriptions successfully"` |
-| Debug | `"ViewModel {TypeName} disposing, {SubscriptionCount} subscriptions"` |
-| Debug | `"ViewModel {TypeName} disposed for document {DocumentId}"` |
+| Level   | Message Template                                                      |
+| :------ | :-------------------------------------------------------------------- |
+| Debug   | `"Tracking subscription, count: {Count}"`                             |
+| Debug   | `"DisposeAll called, disposing {Count} subscriptions"`                |
+| Warning | `"Error disposing subscription: {Error}"`                             |
+| Info    | `"Disposed {Count} subscriptions successfully"`                       |
+| Debug   | `"ViewModel {TypeName} disposing, {SubscriptionCount} subscriptions"` |
+| Debug   | `"ViewModel {TypeName} disposed for document {DocumentId}"`           |
 
 ---
 
 ## 8. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| Double disposal | Low | `_disposed` flag check |
+| Risk                      | Level  | Mitigation                    |
+| :------------------------ | :----- | :---------------------------- |
+| Double disposal           | Low    | `_disposed` flag check        |
 | Disposal during operation | Medium | CancellationToken propagation |
-| Exception in dispose | Low | Try-catch per subscription |
-| Race condition | Low | Lock in DisposableTracker |
+| Exception in dispose      | Low    | Try-catch per subscription    |
+| Race condition            | Low    | Lock in DisposableTracker     |
 
 ---
 
@@ -376,22 +378,22 @@ No direct UI. This is backend infrastructure.
 
 ### 9.1 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | ViewModel with 5 subscriptions | Disposed | All 5 subscriptions disposed |
-| 2 | Subscription throws on dispose | DisposeAll called | Other subscriptions still disposed |
-| 3 | ViewModel disposed | Track called | ObjectDisposedException thrown |
-| 4 | Document closed | Event published | ViewModel disposes itself |
-| 5 | CancellationTokenSource active | ViewModel disposed | Token cancelled |
+| #   | Given                          | When               | Then                               |
+| :-- | :----------------------------- | :----------------- | :--------------------------------- |
+| 1   | ViewModel with 5 subscriptions | Disposed           | All 5 subscriptions disposed       |
+| 2   | Subscription throws on dispose | DisposeAll called  | Other subscriptions still disposed |
+| 3   | ViewModel disposed             | Track called       | ObjectDisposedException thrown     |
+| 4   | Document closed                | Event published    | ViewModel disposes itself          |
+| 5   | CancellationTokenSource active | ViewModel disposed | Token cancelled                    |
 
 ### 9.2 Memory Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 6 | ViewModel disposed | GC runs | WeakReference returns false |
-| 7 | 100 open/close cycles | After GC | Memory growth < 5MB |
-| 8 | ViewModel with timer | Disposed | Timer stops firing |
-| 9 | ViewModel with event handler | Disposed | Handler not invoked |
+| #   | Given                        | When     | Then                        |
+| :-- | :--------------------------- | :------- | :-------------------------- |
+| 6   | ViewModel disposed           | GC runs  | WeakReference returns false |
+| 7   | 100 open/close cycles        | After GC | Memory growth < 5MB         |
+| 8   | ViewModel with timer         | Disposed | Timer stops firing          |
+| 9   | ViewModel with event handler | Disposed | Handler not invoked         |
 
 ---
 
@@ -976,6 +978,6 @@ public class NewViewModel : DisposableViewModel
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-037a` | Sub-part of STY-037 |
-| **Feature Name** | `Analysis Pipeline Debouncing and Buffering` | Request management |
-| **Target Version** | `v0.3.7a` | First sub-part of v0.3.7 |
-| **Module Scope** | `Lexichord.Modules.Style` | Style governance module |
-| **Swimlane** | `Governance` | Part of Style vertical |
-| **License Tier** | `Core` | Available to all users |
-| **Feature Gate Key** | N/A | Core infrastructure |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-037-INDEX](./LCS-DES-037-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-037 §3.1](./LCS-SBD-037.md#31-v037a-background-buffering) | |
+| Field                | Value                                                              | Description              |
+| :------------------- | :----------------------------------------------------------------- | :----------------------- |
+| **Feature ID**       | `STY-037a`                                                         | Sub-part of STY-037      |
+| **Feature Name**     | `Analysis Pipeline Debouncing and Buffering`                       | Request management       |
+| **Target Version**   | `v0.3.7a`                                                          | First sub-part of v0.3.7 |
+| **Module Scope**     | `Lexichord.Modules.Style`                                          | Style governance module  |
+| **Swimlane**         | `Governance`                                                       | Part of Style vertical   |
+| **License Tier**     | `Core`                                                             | Available to all users   |
+| **Feature Gate Key** | N/A                                                                | Core infrastructure      |
+| **Author**           | Lead Architect                                                     |                          |
+| **Status**           | `Draft`                                                            |                          |
+| **Last Updated**     | `2026-01-26`                                                       |                          |
+| **Parent Document**  | [LCS-DES-037-INDEX](./LCS-DES-037-INDEX.md)                        |                          |
+| **Scope Breakdown**  | [LCS-SBD-037 §3.1](./LCS-SBD-037.md#31-v037a-background-buffering) |                          |
 
 ---
 
@@ -49,16 +49,16 @@ Implement an `IAnalysisBuffer` that:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `ILintingOrchestrator` | v0.2.3a | Integration point |
-| `IConfigurationService` | v0.0.3d | Debounce settings |
+| Interface              | Source Version | Purpose                                                |
+| :--------------------- | :------------- | :----------------------------------------------------- |
+| `ILintingOrchestrator` | v0.2.3a        | Integration point                                      |
+| `IConfiguration`       | v0.0.3d        | Debounce settings (Microsoft.Extensions.Configuration) |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `System.Reactive` | 6.x | Observable throttling |
+| Package           | Version | Purpose               |
+| :---------------- | :------ | :-------------------- |
+| `System.Reactive` | 6.x     | Observable throttling |
 
 ### 3.2 Licensing Behavior
 
@@ -355,24 +355,24 @@ The status bar may show a subtle indicator during buffering:
 
 ## 7. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Request v{Version} submitted, debounce timer started"` |
+| Level | Message Template                                               |
+| :---- | :------------------------------------------------------------- |
+| Debug | `"Request v{Version} submitted, debounce timer started"`       |
 | Debug | `"Request v{Version} discarded (superseded by v{NewVersion})"` |
-| Info | `"Request v{Version} emitted after {IdleMs}ms idle"` |
-| Info | `"Request v{Version} force-emitted after {MaxPendingMs}ms"` |
-| Debug | `"Buffer cancelled, pending request discarded"` |
-| Debug | `"Buffer disposed"` |
+| Info  | `"Request v{Version} emitted after {IdleMs}ms idle"`           |
+| Info  | `"Request v{Version} force-emitted after {MaxPendingMs}ms"`    |
+| Debug | `"Buffer cancelled, pending request discarded"`                |
+| Debug | `"Buffer disposed"`                                            |
 
 ---
 
 ## 8. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| Memory pressure from large documents | Low | Content is not copied, only referenced |
-| Timer resource leak | Low | CancellationToken and Dispose cleanup |
-| Race conditions | Low | Thread-safe Subject usage |
+| Risk                                 | Level | Mitigation                             |
+| :----------------------------------- | :---- | :------------------------------------- |
+| Memory pressure from large documents | Low   | Content is not copied, only referenced |
+| Timer resource leak                  | Low   | CancellationToken and Dispose cleanup  |
+| Race conditions                      | Low   | Thread-safe Subject usage              |
 
 ---
 
@@ -380,21 +380,21 @@ The status bar may show a subtle indicator during buffering:
 
 ### 9.1 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Buffer with 500ms debounce | 10 requests submitted rapidly (10ms apart) | Only 1 request emitted |
-| 2 | Buffer with 500ms debounce | Request submitted, then 600ms idle | Request emitted |
-| 3 | Buffer with 500ms debounce | Request submitted, Cancel() called | No request emitted |
-| 4 | Buffer with 2000ms max pending | Continuous rapid requests for 2500ms | At least 1 request emitted |
-| 5 | Disposed buffer | Request submitted | No exception, no emission |
-| 6 | Request with same version | Submitted twice | Only first one processed |
+| #   | Given                          | When                                       | Then                       |
+| :-- | :----------------------------- | :----------------------------------------- | :------------------------- |
+| 1   | Buffer with 500ms debounce     | 10 requests submitted rapidly (10ms apart) | Only 1 request emitted     |
+| 2   | Buffer with 500ms debounce     | Request submitted, then 600ms idle         | Request emitted            |
+| 3   | Buffer with 500ms debounce     | Request submitted, Cancel() called         | No request emitted         |
+| 4   | Buffer with 2000ms max pending | Continuous rapid requests for 2500ms       | At least 1 request emitted |
+| 5   | Disposed buffer                | Request submitted                          | No exception, no emission  |
+| 6   | Request with same version      | Submitted twice                            | Only first one processed   |
 
 ### 9.2 Performance Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 7 | Buffer active | 1000 requests/second submitted | CPU usage < 5% for buffer |
-| 8 | Buffer active | Large document (100KB) submitted | Memory increase < 1MB |
+| #   | Given         | When                             | Then                      |
+| :-- | :------------ | :------------------------------- | :------------------------ |
+| 7   | Buffer active | 1000 requests/second submitted   | CPU usage < 5% for buffer |
+| 8   | Buffer active | Large document (100KB) submitted | Memory increase < 1MB     |
 
 ---
 
@@ -682,7 +682,7 @@ public class LintingOrchestrator : ILintingOrchestrator
 // In StyleModule.cs
 services.AddSingleton<AnalysisBufferOptions>(sp =>
 {
-    var config = sp.GetRequiredService<IConfigurationService>();
+    var config = sp.GetRequiredService<IConfiguration>();
     return new AnalysisBufferOptions(
         DebounceMs: config.GetValue("Analysis:DebounceMs", 500),
         MaxPendingMs: config.GetValue("Analysis:MaxPendingMs", 2000));
@@ -698,14 +698,14 @@ services.AddScoped<IAnalysisBuffer, AnalysisBuffer>();
 ```yaml
 # appsettings.yaml
 Analysis:
-  DebounceMs: 500      # 100-2000, default 500
-  MaxPendingMs: 2000   # 500-5000, default 2000
+    DebounceMs: 500 # 100-2000, default 500
+    MaxPendingMs: 2000 # 500-5000, default 2000
 ```
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

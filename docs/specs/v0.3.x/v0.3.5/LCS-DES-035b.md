@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-035b |
-| **Feature ID** | STY-035b |
-| **Feature Name** | Spider Chart with Configurable Axes |
-| **Target Version** | v0.3.5b |
-| **Module Scope** | Lexichord.Modules.Style |
-| **Swimlane** | Governance |
-| **License Tier** | Writer Pro |
-| **Feature Gate Key** | `FeatureFlags.Style.ResonanceDashboard` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-26 |
-| **Parent Document** | [LCS-DES-035-INDEX](./LCS-DES-035-INDEX.md) |
-| **Scope Breakdown** | [LCS-SBD-035 §3.2](./LCS-SBD-035.md#32-v035b-spider-chart) |
+| Field                | Value                                                      |
+| :------------------- | :--------------------------------------------------------- |
+| **Document ID**      | LCS-DES-035b                                               |
+| **Feature ID**       | STY-035b                                                   |
+| **Feature Name**     | Spider Chart with Configurable Axes                        |
+| **Target Version**   | v0.3.5b                                                    |
+| **Module Scope**     | Lexichord.Modules.Style                                    |
+| **Swimlane**         | Governance                                                 |
+| **License Tier**     | Writer Pro                                                 |
+| **Feature Gate Key** | `FeatureFlags.Style.ResonanceDashboard`                    |
+| **Status**           | Draft                                                      |
+| **Last Updated**     | 2026-01-26                                                 |
+| **Parent Document**  | [LCS-DES-035-INDEX](./LCS-DES-035-INDEX.md)                |
+| **Scope Breakdown**  | [LCS-SBD-035 §3.2](./LCS-SBD-035.md#32-v035b-spider-chart) |
 
 ---
 
@@ -46,19 +46,19 @@ Implement:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IChartDataService` | v0.3.5a | Normalized chart data |
-| `ResonanceChartData` | v0.3.5a | Data structure for chart |
-| `ILicenseContext` | v0.0.4c | License verification |
-| `ViewModelBase` | v0.1.1 | MVVM base class |
+| Interface            | Source Version        | Purpose                                    |
+| :------------------- | :-------------------- | :----------------------------------------- |
+| `IChartDataService`  | v0.3.5a               | Normalized chart data                      |
+| `ResonanceChartData` | v0.3.5a               | Data structure for chart                   |
+| `ILicenseContext`    | v0.0.4c               | License verification                       |
+| `ViewModelBase`      | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `LiveChartsCore.SkiaSharpView.Avalonia` | 2.x | PolarChart control |
-| `CommunityToolkit.Mvvm` | 8.x | ObservableProperty, RelayCommand |
+| Package                                 | Version | Purpose                          |
+| :-------------------------------------- | :------ | :------------------------------- |
+| `LiveChartsCore.SkiaSharpView.Avalonia` | 2.x     | PolarChart control               |
+| `CommunityToolkit.Mvvm`                 | 8.x     | ObservableProperty, RelayCommand |
 
 ### 3.2 Licensing Behavior
 
@@ -327,14 +327,14 @@ public sealed class DefaultAxisProvider : IResonanceAxisProvider
 
 ### 5.2 Normalization Examples
 
-| Axis | Raw Value | Normalization | Result |
-| :--- | :--- | :--- | :--- |
-| Readability | 72.4 | Direct: 72.4/100 × 100 | 72.4 |
-| Clarity | 15% passive | Inverse: 100 - 15 | 85.0 |
-| Precision | 8 weak words | Inverse: 100 - (8/50 × 100) | 84.0 |
-| Accessibility | Grade 8.2 | Inverse: 100 - (8.2/20 × 100) | 59.0 |
-| Density | 18 words (target 15) | Target: 100 - (|15-18|/15 × 100) | 80.0 |
-| Flow | Variance 12 (target 15) | Target: 100 - (|15-12|/30 × 100) | 90.0 |
+| Axis          | Raw Value               | Normalization                 | Result |
+| :------------ | :---------------------- | :---------------------------- | :----- | ---------- | ---- |
+| Readability   | 72.4                    | Direct: 72.4/100 × 100        | 72.4   |
+| Clarity       | 15% passive             | Inverse: 100 - 15             | 85.0   |
+| Precision     | 8 weak words            | Inverse: 100 - (8/50 × 100)   | 84.0   |
+| Accessibility | Grade 8.2               | Inverse: 100 - (8.2/20 × 100) | 59.0   |
+| Density       | 18 words (target 15)    | Target: 100 - (               | 15-18  | /15 × 100) | 80.0 |
+| Flow          | Variance 12 (target 15) | Target: 100 - (               | 15-12  | /30 × 100) | 90.0 |
 
 ### 5.3 Algorithm Flow
 
@@ -556,13 +556,13 @@ DECISION TREE:
 
 ## 8. User Stories
 
-| ID | As a... | I want to... | So that... | Priority |
-| :--- | :--- | :--- | :--- | :--- |
-| US-035b-01 | Writer | See a spider chart of my writing | I understand quality at a glance | P0 |
-| US-035b-02 | Writer | See 6 labeled axes | I know what each dimension means | P0 |
-| US-035b-03 | Writer | Hover to see raw values | I understand the actual metrics | P1 |
-| US-035b-04 | Writer | See values normalized 0-100 | Easy to compare dimensions | P0 |
-| US-035b-05 | Writer | See smooth polygon fill | Chart looks professional | P1 |
+| ID         | As a... | I want to...                     | So that...                       | Priority |
+| :--------- | :------ | :------------------------------- | :------------------------------- | :------- |
+| US-035b-01 | Writer  | See a spider chart of my writing | I understand quality at a glance | P0       |
+| US-035b-02 | Writer  | See 6 labeled axes               | I know what each dimension means | P0       |
+| US-035b-03 | Writer  | Hover to see raw values          | I understand the actual metrics  | P1       |
+| US-035b-04 | Writer  | See values normalized 0-100      | Easy to compare dimensions       | P0       |
+| US-035b-05 | Writer  | See smooth polygon fill          | Chart looks professional         | P1       |
 
 ---
 
@@ -573,6 +573,7 @@ DECISION TREE:
 **Actor:** Writer with Writer Pro license
 
 **Preconditions:**
+
 - Document is open and analyzed
 - Resonance Dashboard is visible
 
@@ -585,6 +586,7 @@ DECISION TREE:
 5. User sees visual representation of writing quality
 
 **Postconditions:**
+
 - Spider chart displays with 6 axes
 - Each axis shows normalized value (0-100)
 - Polygon fills the area under the line
@@ -788,14 +790,14 @@ public class ResonanceDashboardViewModelTests
 
 ## 11. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Building spider chart with {AxisCount} axes"` |
-| Debug | `"Axis {AxisName}: normalized={NormalizedValue:0.0}, raw={RawValue:0.0}"` |
-| Debug | `"Chart series updated: {SeriesCount} series"` |
-| Info | `"Resonance Dashboard initialized for profile: {ProfileName}"` |
-| Warning | `"Unknown axis requested: {AxisName}"` |
-| Error | `"Failed to build chart series: {Error}"` |
+| Level   | Message Template                                                          |
+| :------ | :------------------------------------------------------------------------ |
+| Debug   | `"Building spider chart with {AxisCount} axes"`                           |
+| Debug   | `"Axis {AxisName}: normalized={NormalizedValue:0.0}, raw={RawValue:0.0}"` |
+| Debug   | `"Chart series updated: {SeriesCount} series"`                            |
+| Info    | `"Resonance Dashboard initialized for profile: {ProfileName}"`            |
+| Warning | `"Unknown axis requested: {AxisName}"`                                    |
+| Error   | `"Failed to build chart series: {Error}"`                                 |
 
 ---
 
@@ -1059,32 +1061,32 @@ public record SummaryMetric
 
 ## 14. Acceptance Criteria (QA)
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Document analyzed | Dashboard opens | Spider chart displays |
-| 2 | 6 axes configured | Chart renders | All 6 labels visible |
-| 3 | Raw value 72.4 readability | Normalized | Shows 72 on chart |
-| 4 | 15% passive voice | Normalized (inverse) | Shows 85 clarity |
-| 5 | Hover over point | Tooltip shown | Displays raw value |
-| 6 | Target overlay enabled | Chart renders | Shows dashed green polygon |
-| 7 | Core license | Dashboard opens | Shows upgrade prompt |
+| #   | Given                      | When                 | Then                       |
+| :-- | :------------------------- | :------------------- | :------------------------- |
+| 1   | Document analyzed          | Dashboard opens      | Spider chart displays      |
+| 2   | 6 axes configured          | Chart renders        | All 6 labels visible       |
+| 3   | Raw value 72.4 readability | Normalized           | Shows 72 on chart          |
+| 4   | 15% passive voice          | Normalized (inverse) | Shows 85 clarity           |
+| 5   | Hover over point           | Tooltip shown        | Displays raw value         |
+| 6   | Target overlay enabled     | Chart renders        | Shows dashed green polygon |
+| 7   | Core license               | Dashboard opens      | Shows upgrade prompt       |
 
 ---
 
 ## 15. Deliverable Checklist
 
-| # | Task | Status |
-| :--- | :--- | :--- |
-| 1 | Create ResonanceAxisDefinition record | [ ] |
-| 2 | Implement NormalizationType enum | [ ] |
-| 3 | Create IResonanceAxisProvider interface | [ ] |
-| 4 | Implement DefaultAxisProvider | [ ] |
-| 5 | Create ResonanceDashboardView.axaml | [ ] |
-| 6 | Create ResonanceDashboardViewModel | [ ] |
-| 7 | Wire up LiveCharts PolarChart | [ ] |
-| 8 | Implement tooltip display | [ ] |
-| 9 | Write unit tests for normalization | [ ] |
-| 10 | Write unit tests for ViewModel | [ ] |
+| #   | Task                                    | Status |
+| :-- | :-------------------------------------- | :----- |
+| 1   | Create ResonanceAxisDefinition record   | [ ]    |
+| 2   | Implement NormalizationType enum        | [ ]    |
+| 3   | Create IResonanceAxisProvider interface | [ ]    |
+| 4   | Implement DefaultAxisProvider           | [ ]    |
+| 5   | Create ResonanceDashboardView.axaml     | [ ]    |
+| 6   | Create ResonanceDashboardViewModel      | [ ]    |
+| 7   | Wire up LiveCharts PolarChart           | [ ]    |
+| 8   | Implement tooltip display               | [ ]    |
+| 9   | Write unit tests for normalization      | [ ]    |
+| 10  | Write unit tests for ViewModel          | [ ]    |
 
 ---
 
@@ -1122,16 +1124,16 @@ dotnet build Lexichord.Modules.Style
 
 ## 18. Deferred Features
 
-| Feature | Reason | Target Version |
-| :--- | :--- | :--- |
-| Custom axis configuration | Complexity | v0.4.x |
-| 3D chart option | Low priority | v0.4.x |
-| Animation customization | Scope | v0.4.x |
+| Feature                   | Reason       | Target Version |
+| :------------------------ | :----------- | :------------- |
+| Custom axis configuration | Complexity   | v0.4.x         |
+| 3D chart option           | Low priority | v0.4.x         |
+| Animation customization   | Scope        | v0.4.x         |
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

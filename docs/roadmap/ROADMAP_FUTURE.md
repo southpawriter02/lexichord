@@ -69,3 +69,40 @@ They are categorized into **Expansion Packs**, consistent with the modular archi
 28. **[COL-02] Inline Commenting:** A review system where humans can tag specific sentences for discussion, and agents can reply to comments with suggestions.
 29. **[MOB-01] Lexichord Companion App:** A mobile read-only view for stakeholders to review and approve documentation drafts on the go.
 30. **[SDK-01] The Plugin SDK:** Public documentation and NuGet packages allowing third-party developers to write their own Lexichord Modules (e.g., a "WordPress Publisher" module or a "Trello" integration).
+
+Core Platform & Architecture
+ * Hierarchical Agent Orchestration: A central engine that analyzes user intent and coordinates specialized sub-agents to perform complex documentation tasks.
+ * Modular Monolith Architecture: A system design that allows features to be developed, tested, and deployed as independent modules (e.g., Style Engine, RAG) while maintaining a cohesive application.
+ * Local AI & Offline Mode: Support for running local LLMs (via Ollama/LlamaSharp) and local vector embeddings, enabling full functionality without internet access.
+ * Extensible Plugin Architecture: A secure framework for adding third-party agents, integrations, and output formats via sandboxed plugins.
+ * Cross-Platform Desktop App: A native-feeling application built on AvaloniaUI that runs consistently on Windows, macOS, and Linux.
+Style & Voice Engine
+ * Style Guide Management: A system to define, import (YAML), and manage organizational writing rules, including inheritance from base guides.
+ * Terminology Database: A comprehensive engine for managing preferred terms, synonyms, and "avoid" terms with fuzzy matching detection.
+ * Voice Analysis Metrics: NLP-based quantification of writing style using metrics like Formality, Directness, Complexity, and Passive Voice.
+ * Real-Time Style Checker: An inline editor feature that flags terminology and voice violations as the user types, offering quick fixes.
+ * Adaptive Style Learning: Machine learning capabilities that analyze existing approved documentation to automatically learn and suggest style patterns.
+Knowledge Hub (RAG Pipeline)
+ * Vector Storage Infrastructure: Integration with PostgreSQL and pgvector to store and query high-dimensional vector embeddings of documentation.
+ * Intelligent Document Chunking: Advanced strategies (Semantic, Recursive, Structure-Aware) to split documents into optimal segments for retrieval.
+ * Source Integration & Attribution: A pipeline that tracks the provenance of information, ensuring AI-generated content cites its original sources.
+ * Knowledge Base Connectors: Built-in integrations to index and retrieve context from external platforms like Confluence and Notion.
+ * Hybrid Search & Ranking: A retrieval engine that combines semantic vector search with keyword matching and re-ranks results for maximum relevance.
+Specialized Writer Agents
+ * Release Notes Agent: An agent that analyzes Git commit history, PRs, and issue trackers to auto-generate categorized release notes.
+ * API Documentation Agent: An agent capable of parsing code and specifications (OpenAPI) to generate reference documentation.
+ * Procedural Agent: An agent specialized in decomposing tasks into step-by-step tutorials and guides.
+ * Conceptual Agent: An agent designed to write high-level explanations, overviews, and architecture documentation at varying depth levels.
+ * Reference Agent: An agent that extracts entities from code to create cross-referenced indexes and glossaries.
+Code Intelligence & Developer Tools
+ * Integrated Code Editor: A multi-tab editor with syntax highlighting (TextMateSharp) for over 15 languages.
+ * Smart Code Proposals: A feature that extracts code blocks from AI responses and allows users to apply them to files with diff previews.
+ * Integrated Terminal: A built-in terminal emulator with shell detection, command extraction, and safety guardrails.
+ * Git Integration: Deep connectivity with Git repositories for history analysis, branch management, and commit parsing.
+ * Issue Tracker Integration: Connectors for Jira and Linear to pull context from tickets, sprints, and epics.
+Workflow, Collaboration & Quality
+ * Document Version Control: A custom versioning system optimized for documentation, supporting branching, merging, and semantic tagging.
+ * Human-in-the-Loop Reviews: Workflows for approval gates, SME routing, and manual review queues to ensure content quality.
+ * Feedback Loop: A system that captures user edits to AI content to continuously fine-tune agent prompts and behavior.
+ * Content Freshness Monitoring: Analytics that detect stale documentation based on code changes, deprecated features, or age.
+ * Multi-Language Localization: Infrastructure for managing translation workflows, detecting content language, and maintaining cross-language terminology consistency.

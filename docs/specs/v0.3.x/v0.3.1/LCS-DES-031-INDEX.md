@@ -13,7 +13,7 @@
 | **License Tier** | Writer Pro |
 | **Feature Gate Key** | `Feature.FuzzyMatching` |
 | **Status** | Draft |
-| **Last Updated** | 2026-01-26 |
+| **Last Updated** | 2026-01-27 |
 
 ---
 
@@ -68,16 +68,10 @@ Each sub-part has its own detailed design specification:
 
 | Sub-Part | Document | Title | Description |
 | :--- | :--- | :--- | :--- |
-| v0.3.1a | **[LCS-INF-031a](./LCS-INF-031a.md)** | Algorithm Integration | FuzzySharp integration & IFuzzyMatchService |
-| v0.3.1b | **[LCS-INF-031b](./LCS-INF-031b.md)** | Repository Update | Database schema for fuzzy columns |
-| v0.3.1c | **[LCS-INF-031c](./LCS-INF-031c.md)** | The Fuzzy Scanner | IDocumentTokenizer & IFuzzyScanner |
-| v0.3.1d | **[LCS-INF-031d](./LCS-INF-031d.md)** | License Gating | Feature gate implementation |
-
-### 2.3 Overall Design Specification
-
-| Document | Description |
-| :--- | :--- |
-| **[LCS-INF-031](./LCS-INF-031.md)** | Combined Design Specification (legacy format) |
+| v0.3.1a | **[LCS-DES-031a](./LCS-DES-031a.md)** | Algorithm Integration | FuzzySharp integration & IFuzzyMatchService |
+| v0.3.1b | **[LCS-DES-031b](./LCS-DES-031b.md)** | Repository Update | Database schema for fuzzy columns |
+| v0.3.1c | **[LCS-DES-031c](./LCS-DES-031c.md)** | The Fuzzy Scanner | IDocumentTokenizer & IFuzzyScanner |
+| v0.3.1d | **[LCS-DES-031d](./LCS-DES-031d.md)** | License Gating | Feature gate implementation |
 
 ---
 

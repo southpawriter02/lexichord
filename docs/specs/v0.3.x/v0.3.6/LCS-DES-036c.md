@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `INF-036c` | Sub-part of INF-036 |
-| **Feature Name** | `Rule Override Context Menu` | Ignore rules via UI |
-| **Target Version** | `v0.3.6c` | Third sub-part of v0.3.6 |
-| **Module Scope** | `Lexichord.Modules.Style` | Style governance module |
-| **Swimlane** | `Infrastructure` | Configuration infrastructure |
-| **License Tier** | `Writer Pro` | Required for project-level config |
-| **Feature Gate Key** | `FeatureFlags.Style.GlobalDictionary` | Shared with parent feature |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-036-INDEX](./LCS-DES-036-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-036 §3.3](./LCS-SBD-036.md#33-v036c-override-ui) | |
+| Field                | Value                                                     | Description                       |
+| :------------------- | :-------------------------------------------------------- | :-------------------------------- |
+| **Feature ID**       | `INF-036c`                                                | Sub-part of INF-036               |
+| **Feature Name**     | `Rule Override Context Menu`                              | Ignore rules via UI               |
+| **Target Version**   | `v0.3.6c`                                                 | Third sub-part of v0.3.6          |
+| **Module Scope**     | `Lexichord.Modules.Style`                                 | Style governance module           |
+| **Swimlane**         | `Infrastructure`                                          | Configuration infrastructure      |
+| **License Tier**     | `Writer Pro`                                              | Required for project-level config |
+| **Feature Gate Key** | `FeatureFlags.Style.GlobalDictionary`                     | Shared with parent feature        |
+| **Author**           | Lead Architect                                            |                                   |
+| **Status**           | `Draft`                                                   |                                   |
+| **Last Updated**     | `2026-01-26`                                              |                                   |
+| **Parent Document**  | [LCS-DES-036-INDEX](./LCS-DES-036-INDEX.md)               |                                   |
+| **Scope Breakdown**  | [LCS-SBD-036 §3.3](./LCS-SBD-036.md#33-v036c-override-ui) |                                   |
 
 ---
 
@@ -45,32 +45,32 @@ Implement a context menu in the Problems Panel that:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `ILayeredConfigurationProvider` | v0.3.6a | Configuration access and invalidation |
-| `IConflictResolver` | v0.3.6b | Term override logic |
-| `IQuickFixService` | v0.2.4d | Context menu integration |
-| `IProblemsPanelViewModel` | v0.2.6a | Problems panel integration |
-| `IWorkspaceService` | v0.1.2a | Workspace detection |
-| `ILicenseContext` | v0.0.4c | License tier checking |
-| `ILintingOrchestrator` | v0.2.3a | Trigger re-analysis |
-| `ViewModelBase` | v0.1.1 | MVVM base class |
+| Interface                       | Source Version        | Purpose                                    |
+| :------------------------------ | :-------------------- | :----------------------------------------- |
+| `ILayeredConfigurationProvider` | v0.3.6a               | Configuration access and invalidation      |
+| `IConflictResolver`             | v0.3.6b               | Term override logic                        |
+| `IQuickFixService`              | v0.2.4d               | Context menu integration                   |
+| `IProblemsPanelViewModel`       | v0.2.6a               | Problems panel integration                 |
+| `IWorkspaceService`             | v0.1.2a               | Workspace detection                        |
+| `ILicenseContext`               | v0.0.4c               | License tier checking                      |
+| `ILintingOrchestrator`          | v0.2.3a               | Trigger re-analysis                        |
+| `ViewModelBase`                 | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `YamlDotNet` | 16.x | YAML serialization |
-| `CommunityToolkit.Mvvm` | 8.x | MVVM source generators |
-| `MediatR` | 12.x | Event publishing |
+| Package                 | Version | Purpose                |
+| :---------------------- | :------ | :--------------------- |
+| `YamlDotNet`            | 16.x    | YAML serialization     |
+| `CommunityToolkit.Mvvm` | 8.x     | MVVM source generators |
+| `MediatR`               | 12.x    | Event publishing       |
 
 ### 3.2 Licensing Behavior
 
 - **Load Behavior:** UI Gate
-  - [x] UI elements are hidden/disabled for unlicensed users
+    - [x] UI elements are hidden/disabled for unlicensed users
 - **Fallback Experience:**
-  - Core users: Context menu items hidden or show lock icon
-  - Clicking locked item shows upgrade prompt modal
+    - Core users: Context menu items hidden or show lock icon
+    - Clicking locked item shows upgrade prompt modal
 
 ---
 
@@ -282,14 +282,14 @@ version: 1
 
 # Rules ignored for this project
 ignored_rules:
-  - TERM-001
-  - PASSIVE-003
+    - TERM-001
+    - PASSIVE-003
 
 # Terms excluded for this project
 terminology:
-  exclusions:
-    - whitelist
-    - blacklist
+    exclusions:
+        - whitelist
+        - blacklist
 ```
 
 ### 6.2 Atomic Write Strategy
@@ -367,45 +367,45 @@ When a violation is shown for a rule that has been partially overridden elsewher
 
 ### 7.5 Component Styling Requirements
 
-| Component | Theme Resource | Notes |
-| :--- | :--- | :--- |
-| Menu Item | `LexMenuItem` theme | Standard context menu styling |
-| Menu Separator | `MenuSeparator` | 1px horizontal line |
-| Menu Icon | Material Icons | 24x24, Text.Primary color |
-| Disabled Menu Item | Opacity 50% | For unlicensed features |
-| Lock Icon | `LockOutline` | 16x16, shown for unlicensed |
-| Confirmation Dialog | `LexDialog` theme | Standard dialog styling |
-| Warning Icon | `AlertTriangle` | Orange, 24x24 |
-| Checkbox | `LexCheckBox` | For "Don't ask again" |
+| Component           | Theme Resource      | Notes                         |
+| :------------------ | :------------------ | :---------------------------- |
+| Menu Item           | `LexMenuItem` theme | Standard context menu styling |
+| Menu Separator      | `MenuSeparator`     | 1px horizontal line           |
+| Menu Icon           | Material Icons      | 24x24, Text.Primary color     |
+| Disabled Menu Item  | Opacity 50%         | For unlicensed features       |
+| Lock Icon           | `LockOutline`       | 16x16, shown for unlicensed   |
+| Confirmation Dialog | `LexDialog` theme   | Standard dialog styling       |
+| Warning Icon        | `AlertTriangle`     | Orange, 24x24                 |
+| Checkbox            | `LexCheckBox`       | For "Don't ask again"         |
 
 ---
 
 ## 8. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Info | `"Rule {RuleId} added to project ignore list"` |
-| Info | `"Rule {RuleId} removed from project ignore list"` |
-| Info | `"Term '{Term}' added to project exclusions"` |
-| Info | `"Term '{Term}' removed from project exclusions"` |
-| Debug | `"Created project configuration file: {Path}"` |
-| Debug | `"Updated project configuration file: {Path}"` |
-| Warning | `"Failed to write project configuration: {Error}"` |
-| Debug | `"Override context menu shown for violation: {RuleId}"` |
-| Debug | `"User confirmed override action: {Action}"` |
-| Debug | `"User cancelled override action"` |
+| Level   | Message Template                                        |
+| :------ | :------------------------------------------------------ |
+| Info    | `"Rule {RuleId} added to project ignore list"`          |
+| Info    | `"Rule {RuleId} removed from project ignore list"`      |
+| Info    | `"Term '{Term}' added to project exclusions"`           |
+| Info    | `"Term '{Term}' removed from project exclusions"`       |
+| Debug   | `"Created project configuration file: {Path}"`          |
+| Debug   | `"Updated project configuration file: {Path}"`          |
+| Warning | `"Failed to write project configuration: {Error}"`      |
+| Debug   | `"Override context menu shown for violation: {RuleId}"` |
+| Debug   | `"User confirmed override action: {Action}"`            |
+| Debug   | `"User cancelled override action"`                      |
 
 ---
 
 ## 9. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| Arbitrary file write | Low | Only write to `.lexichord/` directory |
-| Path traversal | Low | Validate workspace root, sanitize paths |
-| YAML injection | Low | Use proper serialization, not string concat |
-| Concurrent writes | Medium | Use atomic write with temp file rename |
-| Config file corruption | Medium | Validate before write, backup on error |
+| Risk                   | Level  | Mitigation                                  |
+| :--------------------- | :----- | :------------------------------------------ |
+| Arbitrary file write   | Low    | Only write to `.lexichord/` directory       |
+| Path traversal         | Low    | Validate workspace root, sanitize paths     |
+| YAML injection         | Low    | Use proper serialization, not string concat |
+| Concurrent writes      | Medium | Use atomic write with temp file rename      |
+| Config file corruption | Medium | Validate before write, backup on error      |
 
 ---
 
@@ -413,25 +413,25 @@ When a violation is shown for a rule that has been partially overridden elsewher
 
 ### 10.1 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Writer Pro user, workspace open | Right-click violation | Override options visible and enabled |
-| 2 | Core user | Right-click violation | Override options show lock icon |
-| 3 | No workspace open | Right-click violation | Override options disabled with tooltip |
-| 4 | User clicks "Ignore rule" | Confirmation shown | Dialog appears with rule details |
-| 5 | User confirms ignore | Action completed | Rule added to style.yaml |
-| 6 | .lexichord/ doesn't exist | User ignores rule | Directory created automatically |
-| 7 | style.yaml doesn't exist | User ignores rule | File created with defaults |
-| 8 | Rule already ignored | User tries to ignore | No-op, success returned |
-| 9 | User clicks "Restore rule" | Action completed | Rule removed from style.yaml |
-| 10 | Configuration written | Linting triggered | Violation disappears immediately |
+| #   | Given                           | When                  | Then                                   |
+| :-- | :------------------------------ | :-------------------- | :------------------------------------- |
+| 1   | Writer Pro user, workspace open | Right-click violation | Override options visible and enabled   |
+| 2   | Core user                       | Right-click violation | Override options show lock icon        |
+| 3   | No workspace open               | Right-click violation | Override options disabled with tooltip |
+| 4   | User clicks "Ignore rule"       | Confirmation shown    | Dialog appears with rule details       |
+| 5   | User confirms ignore            | Action completed      | Rule added to style.yaml               |
+| 6   | .lexichord/ doesn't exist       | User ignores rule     | Directory created automatically        |
+| 7   | style.yaml doesn't exist        | User ignores rule     | File created with defaults             |
+| 8   | Rule already ignored            | User tries to ignore  | No-op, success returned                |
+| 9   | User clicks "Restore rule"      | Action completed      | Rule removed from style.yaml           |
+| 10  | Configuration written           | Linting triggered     | Violation disappears immediately       |
 
 ### 10.2 Performance Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 11 | Any override action | User confirms | File written in < 100ms |
-| 12 | Configuration change | Re-analysis triggered | Updates visible in < 500ms |
+| #   | Given                | When                  | Then                       |
+| :-- | :------------------- | :-------------------- | :------------------------- |
+| 11  | Any override action  | User confirms         | File written in < 100ms    |
+| 12  | Configuration change | Re-analysis triggered | Updates visible in < 500ms |
 
 ---
 
@@ -1054,6 +1054,6 @@ services.AddTransient<OverrideMenuViewModel>();
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

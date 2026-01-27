@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-034d |
-| **Feature ID** | STY-034d |
-| **Feature Name** | Voice Profile Selector (Status Bar) |
-| **Target Version** | v0.3.4d |
-| **Module Scope** | Lexichord.Modules.Style |
-| **Swimlane** | Governance |
-| **License Tier** | Writer Pro |
-| **Feature Gate Key** | `FeatureFlags.Style.VoiceProfiler` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-26 |
-| **Parent Document** | [LCS-DES-034-INDEX](./LCS-DES-034-INDEX.md) |
-| **Scope Breakdown** | [LCS-SBD-034 §3.4](./LCS-SBD-034.md#34-v034d-profile-selector-ui) |
+| Field                | Value                                                             |
+| :------------------- | :---------------------------------------------------------------- |
+| **Document ID**      | LCS-DES-034d                                                      |
+| **Feature ID**       | STY-034d                                                          |
+| **Feature Name**     | Voice Profile Selector (Status Bar)                               |
+| **Target Version**   | v0.3.4d                                                           |
+| **Module Scope**     | Lexichord.Modules.Style                                           |
+| **Swimlane**         | Governance                                                        |
+| **License Tier**     | Writer Pro                                                        |
+| **Feature Gate Key** | `FeatureFlags.Style.VoiceProfiler`                                |
+| **Status**           | Draft                                                             |
+| **Last Updated**     | 2026-01-26                                                        |
+| **Parent Document**  | [LCS-DES-034-INDEX](./LCS-DES-034-INDEX.md)                       |
+| **Scope Breakdown**  | [LCS-SBD-034 §3.4](./LCS-SBD-034.md#34-v034d-profile-selector-ui) |
 
 ---
 
@@ -45,21 +45,21 @@ Implement a Profile Selector dropdown in the Status Bar that:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IVoiceProfileService` | v0.3.4a | Profile retrieval and selection |
-| `VoiceProfile` | v0.3.4a | Profile data model |
-| `ProfileChangedEvent` | v0.3.4a | Event for profile changes |
-| `ILicenseContext` | v0.0.4c | License tier checking |
-| `ViewModelBase` | v0.1.1 | MVVM base class |
-| `IShellRegionView` | v0.0.8a | Status Bar region contribution |
+| Interface              | Source Version        | Purpose                                    |
+| :--------------------- | :-------------------- | :----------------------------------------- |
+| `IVoiceProfileService` | v0.3.4a               | Profile retrieval and selection            |
+| `VoiceProfile`         | v0.3.4a               | Profile data model                         |
+| `ProfileChangedEvent`  | v0.3.4a               | Event for profile changes                  |
+| `ILicenseContext`      | v0.0.4c               | License tier checking                      |
+| `ViewModelBase`        | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
+| `IShellRegionView`     | v0.0.8a               | Status Bar region contribution             |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `CommunityToolkit.Mvvm` | 8.x | MVVM source generators |
-| `System.Reactive` | 6.x | Observable profile changes |
+| Package                 | Version | Purpose                    |
+| :---------------------- | :------ | :------------------------- |
+| `CommunityToolkit.Mvvm` | 8.x     | MVVM source generators     |
+| `System.Reactive`       | 6.x     | Observable profile changes |
 
 ### 3.2 Licensing Behavior
 
@@ -357,29 +357,29 @@ Dimensions:
 
 ### 6.7 Component Styling
 
-| Component | Theme Resource | Notes |
-| :--- | :--- | :--- |
-| Selector Container | `Brush.Surface.Tertiary` | Status bar background |
-| Selector Border | `Brush.Border.Subtle` | 1px on hover only |
-| Selector Hover | `Brush.Surface.Hover` | Subtle highlight |
-| Dropdown Background | `Brush.Surface.Floating` | Elevated surface |
-| Dropdown Shadow | `Shadow.Medium` | 4px blur, 2px offset |
-| Selected Item BG | `Brush.Accent.Soft` | Highlight row |
-| Checkmark Icon | `Brush.Accent.Primary` | 16x16 |
-| Hover Item BG | `Brush.Surface.Hover` | Subtle |
-| Separator | `Brush.Border.Subtle` | 1px horizontal |
-| Lock Icon | `Brush.Text.Tertiary` | Disabled state |
-| Upgrade Button | `LexButtonPrimary` | Full width |
+| Component           | Theme Resource           | Notes                 |
+| :------------------ | :----------------------- | :-------------------- |
+| Selector Container  | `Brush.Surface.Tertiary` | Status bar background |
+| Selector Border     | `Brush.Border.Subtle`    | 1px on hover only     |
+| Selector Hover      | `Brush.Surface.Hover`    | Subtle highlight      |
+| Dropdown Background | `Brush.Surface.Floating` | Elevated surface      |
+| Dropdown Shadow     | `Shadow.Medium`          | 4px blur, 2px offset  |
+| Selected Item BG    | `Brush.Accent.Soft`      | Highlight row         |
+| Checkmark Icon      | `Brush.Accent.Primary`   | 16x16                 |
+| Hover Item BG       | `Brush.Surface.Hover`    | Subtle                |
+| Separator           | `Brush.Border.Subtle`    | 1px horizontal        |
+| Lock Icon           | `Brush.Text.Tertiary`    | Disabled state        |
+| Upgrade Button      | `LexButtonPrimary`       | Full width            |
 
 ### 6.8 Animations
 
-| Animation | Duration | Easing |
-| :--- | :--- | :--- |
-| Dropdown open | 150ms | EaseOutCubic |
-| Dropdown close | 100ms | EaseInCubic |
-| Item hover | 100ms | Linear |
-| Selection change | 200ms | EaseInOutCubic |
-| Loading spinner | 1000ms | Linear (loop) |
+| Animation        | Duration | Easing         |
+| :--------------- | :------- | :------------- |
+| Dropdown open    | 150ms    | EaseOutCubic   |
+| Dropdown close   | 100ms    | EaseInCubic    |
+| Item hover       | 100ms    | Linear         |
+| Selection change | 200ms    | EaseInOutCubic |
+| Loading spinner  | 1000ms   | Linear (loop)  |
 
 ---
 
@@ -427,17 +427,17 @@ START: "User clicks Profile Selector"
 
 ## 8. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Profile selector initialized, license status: {IsLicensed}"` |
-| Debug | `"Loaded {ProfileCount} profiles"` |
-| Debug | `"Profile dropdown opened"` |
-| Info | `"User selected profile: {ProfileName}"` |
-| Debug | `"Profile dropdown closed"` |
-| Warning | `"Profile selection blocked: license required"` |
-| Debug | `"Upgrade prompt shown"` |
-| Error | `"Failed to load profiles: {Error}"` |
-| Error | `"Failed to set profile: {Error}"` |
+| Level   | Message Template                                               |
+| :------ | :------------------------------------------------------------- |
+| Debug   | `"Profile selector initialized, license status: {IsLicensed}"` |
+| Debug   | `"Loaded {ProfileCount} profiles"`                             |
+| Debug   | `"Profile dropdown opened"`                                    |
+| Info    | `"User selected profile: {ProfileName}"`                       |
+| Debug   | `"Profile dropdown closed"`                                    |
+| Warning | `"Profile selection blocked: license required"`                |
+| Debug   | `"Upgrade prompt shown"`                                       |
+| Error   | `"Failed to load profiles: {Error}"`                           |
+| Error   | `"Failed to set profile: {Error}"`                             |
 
 ---
 
@@ -445,35 +445,35 @@ START: "User clicks Profile Selector"
 
 ### 9.1 Visual Criteria
 
-| # | Criterion |
-| :--- | :--- |
-| 1 | Profile Selector appears in Status Bar (right section) |
-| 2 | Current profile name displayed when licensed |
-| 3 | Lock icon displayed when unlicensed |
-| 4 | Dropdown shows all 5 built-in profiles |
-| 5 | Selected profile has checkmark indicator |
-| 6 | Tooltip shows profile constraints on hover |
-| 7 | Dropdown animates open/close smoothly |
+| #   | Criterion                                              |
+| :-- | :----------------------------------------------------- |
+| 1   | Profile Selector appears in Status Bar (right section) |
+| 2   | Current profile name displayed when licensed           |
+| 3   | Lock icon displayed when unlicensed                    |
+| 4   | Dropdown shows all 5 built-in profiles                 |
+| 5   | Selected profile has checkmark indicator               |
+| 6   | Tooltip shows profile constraints on hover             |
+| 7   | Dropdown animates open/close smoothly                  |
 
 ### 9.2 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Writer Pro user | Clicks selector | Dropdown opens with profiles |
-| 2 | Writer Pro user | Clicks different profile | Profile changes, dropdown closes |
-| 3 | Writer Pro user | Clicks same profile | Dropdown closes, no event |
-| 4 | Core user | Clicks selector | Upgrade prompt displayed |
-| 5 | Core user | Clicks "Upgrade" | Subscription page opens |
-| 6 | Profile changes | Dropdown closed | Re-analysis triggers |
-| 7 | Application starts | - | Last selected profile restored |
+| #   | Given              | When                     | Then                             |
+| :-- | :----------------- | :----------------------- | :------------------------------- |
+| 1   | Writer Pro user    | Clicks selector          | Dropdown opens with profiles     |
+| 2   | Writer Pro user    | Clicks different profile | Profile changes, dropdown closes |
+| 3   | Writer Pro user    | Clicks same profile      | Dropdown closes, no event        |
+| 4   | Core user          | Clicks selector          | Upgrade prompt displayed         |
+| 5   | Core user          | Clicks "Upgrade"         | Subscription page opens          |
+| 6   | Profile changes    | Dropdown closed          | Re-analysis triggers             |
+| 7   | Application starts | -                        | Last selected profile restored   |
 
 ### 9.3 Performance Criteria
 
-| # | Criterion | Target |
-| :--- | :--- | :--- |
-| 1 | Dropdown open time | < 100ms |
-| 2 | Profile switch + re-analysis | < 500ms |
-| 3 | Initial load (profiles) | < 200ms |
+| #   | Criterion                    | Target  |
+| :-- | :--------------------------- | :------ |
+| 1   | Dropdown open time           | < 100ms |
+| 2   | Profile switch + re-analysis | < 500ms |
+| 3   | Initial load (profiles)      | < 200ms |
 
 ---
 
@@ -980,6 +980,6 @@ services.AddSingleton<IShellRegionView>(sp =>
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

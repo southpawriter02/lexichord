@@ -255,18 +255,18 @@ If this foundation is flawed, the Voice Profiler (v0.3.4) and Resonance Dashboar
 
 ### 4.1 Required Interfaces (from earlier versions)
 
-| Interface                | Source Version | Purpose                              |
-| :----------------------- | :------------- | :----------------------------------- |
-| `StyleTerm`              | v0.2.2a        | Entity model for terminology         |
-| `ITerminologyRepository` | v0.2.2b        | Database access for terms            |
-| `ITerminologyService`    | v0.2.2d        | CRUD with events                     |
-| `ILicenseContext`        | v0.0.4c        | Read-only license tier access        |
-| `LicenseTier`            | v0.0.4c        | Core/WriterPro/Teams/Enterprise enum |
-| `RuleCategory`           | v0.2.1b        | Terminology/Formatting/Syntax enum   |
-| `ViolationSeverity`      | v0.2.1b        | Error/Warning/Info/Hint enum         |
-| `IFileService`           | v0.1.4b        | Atomic file I/O                      |
-| `Feature.FuzzyMatching`  | v0.3.1d        | Fuzzy feature gate key               |
-| `ViewModelBase`          | v0.1.1         | Base ViewModel class                 |
+| Interface                | Source Version        | Purpose                                   |
+| :----------------------- | :-------------------- | :---------------------------------------- |
+| `StyleTerm`              | v0.2.2a               | Entity model for terminology              |
+| `ITerminologyRepository` | v0.2.2b               | Database access for terms                 |
+| `ITerminologyService`    | v0.2.2d               | CRUD with events                          |
+| `ILicenseContext`        | v0.0.4c               | Read-only license tier access             |
+| `LicenseTier`            | v0.0.4c               | Core/WriterPro/Teams/Enterprise enum      |
+| `RuleCategory`           | v0.2.1b               | Terminology/Formatting/Syntax enum        |
+| `ViolationSeverity`      | v0.2.1b               | Error/Warning/Info/Hint enum              |
+| `IFileService`           | v0.1.4b               | Atomic file I/O                           |
+| `Feature.FuzzyMatching`  | v0.3.1d               | Fuzzy feature gate key                    |
+| `ViewModelBase`          | CommunityToolkit.Mvvm | ObservableObject wrapper (external NuGet) |
 
 ### 4.2 New Interfaces (defined in v0.3.2)
 

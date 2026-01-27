@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-033                              |
-| **Version**      | v0.3.3                                   |
-| **Codename**     | The Readability Engine (Metrics)         |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-26                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                      |
+| :--------------- | :--------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-033                                                |
+| **Version**      | v0.3.3                                                     |
+| **Codename**     | The Readability Engine (Metrics)                           |
+| **Status**       | Draft                                                      |
+| **Last Updated** | 2026-01-26                                                 |
+| **Owner**        | Lead Architect                                             |
 | **Depends On**   | v0.3.2 (Dictionary Manager), v0.2.3 (Linting Orchestrator) |
 
 ---
@@ -54,18 +54,18 @@ The Readability Engine is a **Writer Pro** feature. Lower tiers will see:
 
 ## 2. Dependencies on Prior Versions
 
-| Component                | Source Version | Usage in v0.3.3                                  |
-| :----------------------- | :------------- | :----------------------------------------------- |
-| `ILintingOrchestrator`   | v0.2.3a        | Integration point for triggering analysis        |
-| `LintingCompletedEvent`  | v0.2.3b        | Subscribe to trigger readability analysis        |
-| `IDocumentTokenizer`     | v0.3.1c        | Reuse word tokenization logic                    |
-| `ILicenseContext`        | v0.0.4c        | Read-only license tier access                    |
-| `LicenseTier`            | v0.0.4c        | Core/WriterPro/Teams/Enterprise enum             |
-| `Feature`                | v0.3.1d        | Feature gate constants                           |
-| `ViewModelBase`          | v0.1.1         | Base ViewModel class with INotifyPropertyChanged |
-| `System.Reactive`        | v0.2.3a        | Observable debouncing for real-time updates      |
-| `IConfigurationService`  | v0.0.3d        | User preference storage                          |
-| `Serilog`                | v0.0.3b        | Structured logging                               |
+| Component               | Source Version        | Usage in v0.3.3                             |
+| :---------------------- | :-------------------- | :------------------------------------------ |
+| `ILintingOrchestrator`  | v0.2.3a               | Integration point for triggering analysis   |
+| `LintingCompletedEvent` | v0.2.3b               | Subscribe to trigger readability analysis   |
+| `IDocumentTokenizer`    | v0.3.1c               | Reuse word tokenization logic               |
+| `ILicenseContext`       | v0.0.4c               | Read-only license tier access               |
+| `LicenseTier`           | v0.0.4c               | Core/WriterPro/Teams/Enterprise enum        |
+| `Feature`               | v0.3.1d               | Feature gate constants                      |
+| `ViewModelBase`         | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet)  |
+| `System.Reactive`       | v0.2.3a               | Observable debouncing for real-time updates |
+| `IConfiguration`        | v0.0.3d               | Microsoft.Extensions.Configuration access   |
+| `ILogger<T> / Serilog`  | v0.0.3b               | Structured logging                          |
 
 ---
 
@@ -73,12 +73,12 @@ The Readability Engine is a **Writer Pro** feature. Lower tiers will see:
 
 ### 3.1 v0.3.3a: Sentence Tokenizer
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-033a                                  |
-| **Title**        | Abbreviation-Aware Sentence Tokenizer     |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                                 |
+| :--------------- | :------------------------------------ |
+| **Sub-Part ID**  | INF-033a                              |
+| **Title**        | Abbreviation-Aware Sentence Tokenizer |
+| **Module**       | `Lexichord.Modules.Style`             |
+| **License Tier** | Writer Pro                            |
 
 **Goal:** Implement a robust text splitter that respects abbreviations and does not create false sentence breaks on periods within abbreviations.
 
@@ -169,12 +169,12 @@ Misc:        No., Vol., Fig., approx., est.
 
 ### 3.2 v0.3.3b: Syllable Counter
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-033b                                  |
-| **Title**        | Heuristic Syllable Counter                |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                      |
+| :--------------- | :------------------------- |
+| **Sub-Part ID**  | INF-033b                   |
+| **Title**        | Heuristic Syllable Counter |
+| **Module**       | `Lexichord.Modules.Style`  |
+| **License Tier** | Writer Pro                 |
 
 **Goal:** Implement a heuristic syllable counter that counts vowel groups and handles English language exceptions (silent 'e', diphthongs).
 
@@ -276,12 +276,12 @@ IS word complex?
 
 ### 3.3 v0.3.3c: The Calculator
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-033c                                  |
-| **Title**        | Readability Metrics Calculator            |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                          |
+| :--------------- | :----------------------------- |
+| **Sub-Part ID**  | INF-033c                       |
+| **Title**        | Readability Metrics Calculator |
+| **Module**       | `Lexichord.Modules.Style`      |
+| **License Tier** | Writer Pro                     |
 
 **Goal:** Implement `IReadabilityService` that calculates Flesch-Kincaid Grade Level, Gunning Fog Index, and Flesch Reading Ease using the sentence tokenizer and syllable counter.
 
@@ -434,12 +434,12 @@ public record ReadabilityAnalyzedEvent(
 
 ### 3.4 v0.3.3d: The HUD Widget
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-033d                                  |
-| **Title**        | Readability HUD Widget                    |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                     |
+| :--------------- | :------------------------ |
+| **Sub-Part ID**  | INF-033d                  |
+| **Title**        | Readability HUD Widget    |
+| **Module**       | `Lexichord.Modules.Style` |
+| **License Tier** | Writer Pro                |
 
 **Goal:** Create a floating status bar widget in the bottom-right corner of the Editor that displays real-time readability metrics with expandable detail view.
 
@@ -557,52 +557,52 @@ ON document change:
 
 **Animation Specifications:**
 
-| Animation | Duration | Easing |
-| :-------- | :------- | :----- |
-| Expand | 200ms | EaseOutCubic |
-| Collapse | 150ms | EaseInCubic |
-| Metrics fade-in | 100ms | Linear |
-| Spinner rotation | 1000ms | Linear (loop) |
+| Animation        | Duration | Easing        |
+| :--------------- | :------- | :------------ |
+| Expand           | 200ms    | EaseOutCubic  |
+| Collapse         | 150ms    | EaseInCubic   |
+| Metrics fade-in  | 100ms    | Linear        |
+| Spinner rotation | 1000ms   | Linear (loop) |
 
 **Dependencies:**
 
 - v0.3.3c: `IReadabilityService` (metrics calculation)
 - v0.2.3b: `LintingCompletedEvent` (trigger timing)
 - v0.0.4c: `ILicenseContext` (license check)
-- v0.1.1: `ViewModelBase` (MVVM base class)
+- CommunityToolkit.Mvvm: `ViewModelBase` (MVVM base class)
 
 ---
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.3.3a  | Create `ISentenceTokenizer` interface in Abstractions     | 0.5        |
-| 2  | v0.3.3a  | Create `SentenceInfo` record                              | 0.5        |
-| 3  | v0.3.3a  | Implement abbreviation dictionary (50+ entries)           | 1          |
-| 4  | v0.3.3a  | Implement `SentenceTokenizer` with abbreviation handling  | 3          |
-| 5  | v0.3.3a  | Unit tests for sentence tokenizer (edge cases)            | 2          |
-| 6  | v0.3.3b  | Create `ISyllableCounter` interface in Abstractions       | 0.5        |
-| 7  | v0.3.3b  | Implement exception dictionary for irregular words        | 1          |
-| 8  | v0.3.3b  | Implement `SyllableCounter` with heuristics               | 2          |
-| 9  | v0.3.3b  | Implement `IsComplexWord` for Gunning Fog                 | 1          |
-| 10 | v0.3.3b  | Unit tests for syllable counter (known values)            | 2          |
-| 11 | v0.3.3c  | Create `IReadabilityService` interface                    | 0.5        |
-| 12 | v0.3.3c  | Create `ReadabilityMetrics` record with computed props    | 1          |
-| 13 | v0.3.3c  | Implement `ReadabilityService` with all formulas          | 2          |
-| 14 | v0.3.3c  | Create `ReadabilityAnalyzedEvent` MediatR notification    | 0.5        |
-| 15 | v0.3.3c  | Unit tests with reference texts (Gettysburg Address)      | 2          |
-| 16 | v0.3.3d  | Create `ReadabilityHudView.axaml` (collapsed state)       | 2          |
-| 17 | v0.3.3d  | Implement expanded state with full metrics                | 2          |
-| 18 | v0.3.3d  | Create `ReadabilityHudViewModel` with observables         | 2          |
-| 19 | v0.3.3d  | Implement 300ms debounce with System.Reactive             | 1          |
-| 20 | v0.3.3d  | Add expand/collapse animations                            | 1          |
-| 21 | v0.3.3d  | Implement license gating with upgrade prompt              | 1          |
-| 22 | v0.3.3d  | Unit tests for ViewModel state transitions                | 1.5        |
-| 23 | All      | Integration with `LintingCompletedEvent`                  | 1          |
-| 24 | All      | DI registration in `StyleModule.cs`                       | 0.5        |
-| 25 | All      | Integration tests for full analysis pipeline              | 2          |
-| **Total** |   |                                                           | **32 hours** |
+| #         | Sub-Part | Task                                                     | Est. Hours   |
+| :-------- | :------- | :------------------------------------------------------- | :----------- |
+| 1         | v0.3.3a  | Create `ISentenceTokenizer` interface in Abstractions    | 0.5          |
+| 2         | v0.3.3a  | Create `SentenceInfo` record                             | 0.5          |
+| 3         | v0.3.3a  | Implement abbreviation dictionary (50+ entries)          | 1            |
+| 4         | v0.3.3a  | Implement `SentenceTokenizer` with abbreviation handling | 3            |
+| 5         | v0.3.3a  | Unit tests for sentence tokenizer (edge cases)           | 2            |
+| 6         | v0.3.3b  | Create `ISyllableCounter` interface in Abstractions      | 0.5          |
+| 7         | v0.3.3b  | Implement exception dictionary for irregular words       | 1            |
+| 8         | v0.3.3b  | Implement `SyllableCounter` with heuristics              | 2            |
+| 9         | v0.3.3b  | Implement `IsComplexWord` for Gunning Fog                | 1            |
+| 10        | v0.3.3b  | Unit tests for syllable counter (known values)           | 2            |
+| 11        | v0.3.3c  | Create `IReadabilityService` interface                   | 0.5          |
+| 12        | v0.3.3c  | Create `ReadabilityMetrics` record with computed props   | 1            |
+| 13        | v0.3.3c  | Implement `ReadabilityService` with all formulas         | 2            |
+| 14        | v0.3.3c  | Create `ReadabilityAnalyzedEvent` MediatR notification   | 0.5          |
+| 15        | v0.3.3c  | Unit tests with reference texts (Gettysburg Address)     | 2            |
+| 16        | v0.3.3d  | Create `ReadabilityHudView.axaml` (collapsed state)      | 2            |
+| 17        | v0.3.3d  | Implement expanded state with full metrics               | 2            |
+| 18        | v0.3.3d  | Create `ReadabilityHudViewModel` with observables        | 2            |
+| 19        | v0.3.3d  | Implement 300ms debounce with System.Reactive            | 1            |
+| 20        | v0.3.3d  | Add expand/collapse animations                           | 1            |
+| 21        | v0.3.3d  | Implement license gating with upgrade prompt             | 1            |
+| 22        | v0.3.3d  | Unit tests for ViewModel state transitions               | 1.5          |
+| 23        | All      | Integration with `LintingCompletedEvent`                 | 1            |
+| 24        | All      | DI registration in `StyleModule.cs`                      | 0.5          |
+| 25        | All      | Integration tests for full analysis pipeline             | 2            |
+| **Total** |          |                                                          | **32 hours** |
 
 ---
 
@@ -610,39 +610,39 @@ ON document change:
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                | Source Version | Purpose                              |
-| :----------------------- | :------------- | :----------------------------------- |
-| `IDocumentTokenizer`     | v0.3.1c        | Word tokenization for syllable count |
-| `ILintingOrchestrator`   | v0.2.3a        | Analysis pipeline integration        |
-| `LintingCompletedEvent`  | v0.2.3b        | Trigger for readability analysis     |
-| `ILicenseContext`        | v0.0.4c        | License tier checking                |
-| `LicenseTier`            | v0.0.4c        | Tier enumeration                     |
-| `Feature`                | v0.3.1d        | Feature gate constants               |
-| `ViewModelBase`          | v0.1.1         | Observable ViewModel base            |
-| `IConfigurationService`  | v0.0.3d        | Preference storage                   |
+| Interface               | Source Version        | Purpose                                    |
+| :---------------------- | :-------------------- | :----------------------------------------- |
+| `IDocumentTokenizer`    | v0.3.1c               | Word tokenization for syllable count       |
+| `ILintingOrchestrator`  | v0.2.3a               | Analysis pipeline integration              |
+| `LintingCompletedEvent` | v0.2.3b               | Trigger for readability analysis           |
+| `ILicenseContext`       | v0.0.4c               | License tier checking                      |
+| `LicenseTier`           | v0.0.4c               | Tier enumeration                           |
+| `Feature`               | v0.3.1d               | Feature gate constants                     |
+| `ViewModelBase`         | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
+| `IConfiguration`        | v0.0.3d               | Preference storage                         |
 
 ### 5.2 New Interfaces (defined in v0.3.3)
 
-| Interface                | Defined In | Module        | Purpose                          |
-| :----------------------- | :--------- | :------------ | :------------------------------- |
-| `ISentenceTokenizer`     | v0.3.3a    | Abstractions  | Abbreviation-aware tokenization  |
-| `ISyllableCounter`       | v0.3.3b    | Abstractions  | Heuristic syllable counting      |
-| `IReadabilityService`    | v0.3.3c    | Abstractions  | Readability metrics calculation  |
+| Interface             | Defined In | Module       | Purpose                         |
+| :-------------------- | :--------- | :----------- | :------------------------------ |
+| `ISentenceTokenizer`  | v0.3.3a    | Abstractions | Abbreviation-aware tokenization |
+| `ISyllableCounter`    | v0.3.3b    | Abstractions | Heuristic syllable counting     |
+| `IReadabilityService` | v0.3.3c    | Abstractions | Readability metrics calculation |
 
 ### 5.3 New Records/DTOs (defined in v0.3.3)
 
-| Record                     | Defined In | Purpose                                |
-| :------------------------- | :--------- | :------------------------------------- |
-| `SentenceInfo`             | v0.3.3a    | Sentence metadata (text, position)     |
-| `ReadabilityMetrics`       | v0.3.3c    | All calculated readability values      |
-| `ReadabilityAnalyzedEvent` | v0.3.3c    | MediatR notification for UI updates    |
+| Record                     | Defined In | Purpose                             |
+| :------------------------- | :--------- | :---------------------------------- |
+| `SentenceInfo`             | v0.3.3a    | Sentence metadata (text, position)  |
+| `ReadabilityMetrics`       | v0.3.3c    | All calculated readability values   |
+| `ReadabilityAnalyzedEvent` | v0.3.3c    | MediatR notification for UI updates |
 
 ### 5.4 NuGet Packages
 
-| Package          | Version | Purpose                    | New/Existing |
-| :--------------- | :------ | :------------------------- | :----------- |
-| `System.Reactive`| 6.x     | Observable debouncing      | Existing     |
-| `MediatR`        | 12.x    | Event publishing           | Existing     |
+| Package           | Version | Purpose               | New/Existing |
+| :---------------- | :------ | :-------------------- | :----------- |
+| `System.Reactive` | 6.x     | Observable debouncing | Existing     |
+| `MediatR`         | 12.x    | Event publishing      | Existing     |
 
 ---
 
@@ -750,30 +750,30 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Syllable counting inaccuracy for unusual words | Medium | Medium | Exception dictionary + user override capability |
-| Abbreviation dictionary incomplete | Low | Medium | Allow user-defined abbreviations in config |
-| Performance degradation on large documents (50k+ words) | High | Low | Chunk processing, background thread, cancellation token |
-| UI thread blocking during analysis | High | Low | All analysis on Task.Run(), UI only subscribes to events |
-| False sentence breaks on edge cases (ellipsis, URLs) | Medium | Medium | Add pattern detection for URLs, ellipsis before tokenizing |
-| Gunning Fog complex word detection inconsistent | Low | Medium | Document algorithm clearly, use established suffix rules |
-| Memory pressure from repeated analysis | Medium | Low | Cache results per document version, dispose subscriptions |
+| Risk                                                    | Impact | Probability | Mitigation                                                 |
+| :------------------------------------------------------ | :----- | :---------- | :--------------------------------------------------------- |
+| Syllable counting inaccuracy for unusual words          | Medium | Medium      | Exception dictionary + user override capability            |
+| Abbreviation dictionary incomplete                      | Low    | Medium      | Allow user-defined abbreviations in config                 |
+| Performance degradation on large documents (50k+ words) | High   | Low         | Chunk processing, background thread, cancellation token    |
+| UI thread blocking during analysis                      | High   | Low         | All analysis on Task.Run(), UI only subscribes to events   |
+| False sentence breaks on edge cases (ellipsis, URLs)    | Medium | Medium      | Add pattern detection for URLs, ellipsis before tokenizing |
+| Gunning Fog complex word detection inconsistent         | Low    | Medium      | Document algorithm clearly, use established suffix rules   |
+| Memory pressure from repeated analysis                  | Medium | Low         | Cache results per document version, dispose subscriptions  |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| FK Grade Level accuracy | ±0.1 of reference | Compare against NIST readability corpus |
-| Gunning Fog accuracy | ±0.2 of reference | Compare against published test texts |
-| Syllable count accuracy | 95%+ | Test against CMU Pronouncing Dictionary |
-| Sentence tokenizer accuracy | 98%+ | Test against Penn Treebank samples |
-| Analysis time (1,000 words) | < 50ms | Stopwatch timing |
-| Analysis time (10,000 words) | < 200ms | Stopwatch timing |
-| HUD update latency | < 500ms from typing stop | End-to-end timing |
-| Memory usage (analysis) | < 5MB overhead | Memory profiler |
+| Metric                       | Target                   | Measurement                             |
+| :--------------------------- | :----------------------- | :-------------------------------------- |
+| FK Grade Level accuracy      | ±0.1 of reference        | Compare against NIST readability corpus |
+| Gunning Fog accuracy         | ±0.2 of reference        | Compare against published test texts    |
+| Syllable count accuracy      | 95%+                     | Test against CMU Pronouncing Dictionary |
+| Sentence tokenizer accuracy  | 98%+                     | Test against Penn Treebank samples      |
+| Analysis time (1,000 words)  | < 50ms                   | Stopwatch timing                        |
+| Analysis time (10,000 words) | < 200ms                  | Stopwatch timing                        |
+| HUD update latency           | < 500ms from typing stop | End-to-end timing                       |
+| Memory usage (analysis)      | < 5MB overhead           | Memory profiler                         |
 
 ---
 
@@ -929,8 +929,8 @@ START: "Is this word followed by period an abbreviation?"
 3. "Dr." is recognized as abbreviation (not sentence end).
 4. "Inc." is recognized as abbreviation (not sentence end).
 5. System identifies 2 sentences:
-   - "Dr. Smith works at Acme Inc."
-   - "He is the CEO."
+    - "Dr. Smith works at Acme Inc."
+    - "He is the CEO."
 6. Sentence count = 2, word count = 11.
 7. Metrics calculated with correct sentence count.
 
@@ -1193,19 +1193,19 @@ public class ReadabilityHudViewModelTests
 
 ## 15. Observability & Logging
 
-| Level   | Source              | Message Template                                                       |
-| :------ | :------------------ | :--------------------------------------------------------------------- |
-| Debug   | SentenceTokenizer   | `Tokenizing text: {CharCount} characters`                              |
-| Debug   | SentenceTokenizer   | `Found {SentenceCount} sentences`                                      |
-| Trace   | SentenceTokenizer   | `Abbreviation detected: '{Word}' at position {Position}`               |
-| Debug   | SyllableCounter     | `Counting syllables for {WordCount} words`                             |
-| Trace   | SyllableCounter     | `Word '{Word}' has {SyllableCount} syllables (cached: {IsCached})`     |
-| Debug   | ReadabilityService  | `Analysis starting: {WordCount} words, {SentenceCount} sentences`      |
-| Info    | ReadabilityService  | `Analysis completed: FK={Grade:F1}, Fog={Fog:F1} in {ElapsedMs}ms`     |
-| Warning | ReadabilityService  | `Analysis exceeded threshold: {ElapsedMs}ms > {ThresholdMs}ms`         |
-| Debug   | ReadabilityHudVM    | `License check for Readability: {IsLicensed}`                          |
-| Debug   | ReadabilityHudVM    | `Metrics updated: Grade {GradeLevel}, {WordsPerSentence} w/s`          |
-| Debug   | ReadabilityHudVM    | `Debounce triggered, waiting 300ms`                                    |
+| Level   | Source             | Message Template                                                   |
+| :------ | :----------------- | :----------------------------------------------------------------- |
+| Debug   | SentenceTokenizer  | `Tokenizing text: {CharCount} characters`                          |
+| Debug   | SentenceTokenizer  | `Found {SentenceCount} sentences`                                  |
+| Trace   | SentenceTokenizer  | `Abbreviation detected: '{Word}' at position {Position}`           |
+| Debug   | SyllableCounter    | `Counting syllables for {WordCount} words`                         |
+| Trace   | SyllableCounter    | `Word '{Word}' has {SyllableCount} syllables (cached: {IsCached})` |
+| Debug   | ReadabilityService | `Analysis starting: {WordCount} words, {SentenceCount} sentences`  |
+| Info    | ReadabilityService | `Analysis completed: FK={Grade:F1}, Fog={Fog:F1} in {ElapsedMs}ms` |
+| Warning | ReadabilityService | `Analysis exceeded threshold: {ElapsedMs}ms > {ThresholdMs}ms`     |
+| Debug   | ReadabilityHudVM   | `License check for Readability: {IsLicensed}`                      |
+| Debug   | ReadabilityHudVM   | `Metrics updated: Grade {GradeLevel}, {WordsPerSentence} w/s`      |
+| Debug   | ReadabilityHudVM   | `Debounce triggered, waiting 300ms`                                |
 
 ---
 
@@ -1255,49 +1255,49 @@ Total height: ~300px
 
 ### 16.2 Component Styling Requirements
 
-| Component           | Theme Resource             | Notes                            |
-| :------------------ | :------------------------- | :------------------------------- |
-| HUD Container       | `Brush.Surface.Overlay`    | 80% opacity backdrop             |
-| HUD Border          | `Brush.Border.Subtle`      | 1px solid                        |
-| Metric Labels       | `Brush.Text.Secondary`     | Left-aligned                     |
-| Metric Values       | `Brush.Text.Primary`       | Right-aligned, monospace         |
-| Expand Button       | `LexButtonGhost` theme     | Icon only, no background         |
-| Separator           | `Brush.Border.Subtle`      | 1px horizontal                   |
-| Interpretation      | `Brush.Text.Tertiary`      | Italic, centered                 |
-| Upgrade Button      | `LexButtonPrimary` theme   | Full width in gated state        |
+| Component      | Theme Resource           | Notes                     |
+| :------------- | :----------------------- | :------------------------ |
+| HUD Container  | `Brush.Surface.Overlay`  | 80% opacity backdrop      |
+| HUD Border     | `Brush.Border.Subtle`    | 1px solid                 |
+| Metric Labels  | `Brush.Text.Secondary`   | Left-aligned              |
+| Metric Values  | `Brush.Text.Primary`     | Right-aligned, monospace  |
+| Expand Button  | `LexButtonGhost` theme   | Icon only, no background  |
+| Separator      | `Brush.Border.Subtle`    | 1px horizontal            |
+| Interpretation | `Brush.Text.Tertiary`    | Italic, centered          |
+| Upgrade Button | `LexButtonPrimary` theme | Full width in gated state |
 
 ### 16.3 Color Coding for Grade Levels
 
-| Grade Level | Color | Hex | Meaning |
-| :---------- | :---- | :-- | :------ |
-| 0-5 | Green | #22c55e | Very Easy |
-| 6-8 | Blue | #4a9eff | Standard |
-| 9-12 | Yellow | #eab308 | Challenging |
-| 13+ | Orange | #f97316 | Advanced |
+| Grade Level | Color  | Hex     | Meaning     |
+| :---------- | :----- | :------ | :---------- |
+| 0-5         | Green  | #22c55e | Very Easy   |
+| 6-8         | Blue   | #4a9eff | Standard    |
+| 9-12        | Yellow | #eab308 | Challenging |
+| 13+         | Orange | #f97316 | Advanced    |
 
 ---
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Algorithm]**     | FK Grade Level for "The cat sat on the mat." is < 2.0.                       |
-| 2   | **[Algorithm]**     | Syllable count for "queue" is 1, "documentation" is 5.                       |
-| 3   | **[Algorithm]**     | "Mr. Smith went home." tokenizes as 1 sentence.                              |
-| 4   | **[Algorithm]**     | Gunning Fog counts "understanding" as complex (4 syllables).                 |
-| 5   | **[Performance]**   | Analysis of 1,000 words completes in < 50ms.                                 |
-| 6   | **[Performance]**   | HUD updates within 500ms of typing stop.                                     |
-| 7   | **[UI]**            | Collapsed HUD shows "Grade X.X \| Y w/s" format.                             |
-| 8   | **[UI]**            | Expanded HUD shows all 5 metrics + interpretation.                           |
-| 9   | **[UI]**            | Expand/collapse animates smoothly (200ms/150ms).                             |
-| 10  | **[License Gate]**  | Core users see lock icon and upgrade prompt.                                 |
-| 11  | **[License Gate]**  | Core users cannot see actual readability values.                             |
-| 12  | **[License Gate]**  | Writer Pro users see full metrics.                                           |
-| 13  | **[Integration]**   | Analysis triggers on document change, not on every keystroke.                |
-| 14  | **[Integration]**   | HUD receives updates via `ReadabilityAnalyzedEvent`.                         |
-| 15  | **[Edge Cases]**    | Empty document shows "-- \| --" in HUD.                                      |
-| 16  | **[Edge Cases]**    | Document with only whitespace shows empty metrics.                           |
-| 17  | **[Accessibility]** | All HUD elements have `AutomationProperties.Name`.                           |
+| #   | Category            | Criterion                                                     |
+| :-- | :------------------ | :------------------------------------------------------------ |
+| 1   | **[Algorithm]**     | FK Grade Level for "The cat sat on the mat." is < 2.0.        |
+| 2   | **[Algorithm]**     | Syllable count for "queue" is 1, "documentation" is 5.        |
+| 3   | **[Algorithm]**     | "Mr. Smith went home." tokenizes as 1 sentence.               |
+| 4   | **[Algorithm]**     | Gunning Fog counts "understanding" as complex (4 syllables).  |
+| 5   | **[Performance]**   | Analysis of 1,000 words completes in < 50ms.                  |
+| 6   | **[Performance]**   | HUD updates within 500ms of typing stop.                      |
+| 7   | **[UI]**            | Collapsed HUD shows "Grade X.X \| Y w/s" format.              |
+| 8   | **[UI]**            | Expanded HUD shows all 5 metrics + interpretation.            |
+| 9   | **[UI]**            | Expand/collapse animates smoothly (200ms/150ms).              |
+| 10  | **[License Gate]**  | Core users see lock icon and upgrade prompt.                  |
+| 11  | **[License Gate]**  | Core users cannot see actual readability values.              |
+| 12  | **[License Gate]**  | Writer Pro users see full metrics.                            |
+| 13  | **[Integration]**   | Analysis triggers on document change, not on every keystroke. |
+| 14  | **[Integration]**   | HUD receives updates via `ReadabilityAnalyzedEvent`.          |
+| 15  | **[Edge Cases]**    | Empty document shows "-- \| --" in HUD.                       |
+| 16  | **[Edge Cases]**    | Document with only whitespace shows empty metrics.            |
+| 17  | **[Accessibility]** | All HUD elements have `AutomationProperties.Name`.            |
 
 ---
 
@@ -1337,30 +1337,30 @@ dotnet test --filter "Category=Performance&FullyQualifiedName~Readability"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `ISentenceTokenizer` interface in Abstractions                 | [ ]    |
-| 2  | `SentenceTokenizer` implementation with abbreviation handling  | [ ]    |
-| 3  | `SentenceInfo` record                                          | [ ]    |
-| 4  | Abbreviation dictionary (50+ entries)                          | [ ]    |
-| 5  | `ISyllableCounter` interface in Abstractions                   | [ ]    |
-| 6  | `SyllableCounter` implementation with heuristics               | [ ]    |
-| 7  | Exception dictionary for irregular words                       | [ ]    |
-| 8  | `IReadabilityService` interface in Abstractions                | [ ]    |
-| 9  | `ReadabilityService` implementation with all formulas          | [ ]    |
-| 10 | `ReadabilityMetrics` record with computed properties           | [ ]    |
-| 11 | `ReadabilityAnalyzedEvent` MediatR notification                | [ ]    |
-| 12 | `ReadabilityHudView.axaml` (collapsed and expanded states)     | [ ]    |
-| 13 | `ReadabilityHudViewModel` with reactive bindings               | [ ]    |
-| 14 | License gating with upgrade prompt                             | [ ]    |
-| 15 | 300ms debounce on document changes                             | [ ]    |
-| 16 | Expand/collapse animations                                     | [ ]    |
-| 17 | Unit tests for SentenceTokenizer                               | [ ]    |
-| 18 | Unit tests for SyllableCounter                                 | [ ]    |
-| 19 | Unit tests for ReadabilityService                              | [ ]    |
-| 20 | Unit tests for ReadabilityHudViewModel                         | [ ]    |
-| 21 | Integration tests for analysis pipeline                        | [ ]    |
-| 22 | DI registration in StyleModule.cs                              | [ ]    |
+| #   | Deliverable                                                   | Status |
+| :-- | :------------------------------------------------------------ | :----- |
+| 1   | `ISentenceTokenizer` interface in Abstractions                | [ ]    |
+| 2   | `SentenceTokenizer` implementation with abbreviation handling | [ ]    |
+| 3   | `SentenceInfo` record                                         | [ ]    |
+| 4   | Abbreviation dictionary (50+ entries)                         | [ ]    |
+| 5   | `ISyllableCounter` interface in Abstractions                  | [ ]    |
+| 6   | `SyllableCounter` implementation with heuristics              | [ ]    |
+| 7   | Exception dictionary for irregular words                      | [ ]    |
+| 8   | `IReadabilityService` interface in Abstractions               | [ ]    |
+| 9   | `ReadabilityService` implementation with all formulas         | [ ]    |
+| 10  | `ReadabilityMetrics` record with computed properties          | [ ]    |
+| 11  | `ReadabilityAnalyzedEvent` MediatR notification               | [ ]    |
+| 12  | `ReadabilityHudView.axaml` (collapsed and expanded states)    | [ ]    |
+| 13  | `ReadabilityHudViewModel` with reactive bindings              | [ ]    |
+| 14  | License gating with upgrade prompt                            | [ ]    |
+| 15  | 300ms debounce on document changes                            | [ ]    |
+| 16  | Expand/collapse animations                                    | [ ]    |
+| 17  | Unit tests for SentenceTokenizer                              | [ ]    |
+| 18  | Unit tests for SyllableCounter                                | [ ]    |
+| 19  | Unit tests for ReadabilityService                             | [ ]    |
+| 20  | Unit tests for ReadabilityHudViewModel                        | [ ]    |
+| 21  | Integration tests for analysis pipeline                       | [ ]    |
+| 22  | DI registration in StyleModule.cs                             | [ ]    |
 
 ---
 
@@ -1662,15 +1662,15 @@ public class SyllableCounter : ISyllableCounter
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| SMOG readability formula        | v0.3.4      | Additional formula adds complexity              |
-| Automated Readability Index     | v0.3.4      | Additional formula adds complexity              |
-| Custom abbreviation dictionary  | v0.3.6      | Requires configuration UI                       |
-| Paragraph-level analysis        | v0.3.5      | Resonance Dashboard will add granular analysis  |
-| Sentence-specific highlighting  | v0.3.5      | Requires editor integration                     |
-| AI-powered simplification       | v0.4.x      | Depends on Agent module                         |
-| Non-English language support    | v0.5.x      | Requires language detection and separate rules  |
+| Feature                        | Deferred To | Reason                                         |
+| :----------------------------- | :---------- | :--------------------------------------------- |
+| SMOG readability formula       | v0.3.4      | Additional formula adds complexity             |
+| Automated Readability Index    | v0.3.4      | Additional formula adds complexity             |
+| Custom abbreviation dictionary | v0.3.6      | Requires configuration UI                      |
+| Paragraph-level analysis       | v0.3.5      | Resonance Dashboard will add granular analysis |
+| Sentence-specific highlighting | v0.3.5      | Requires editor integration                    |
+| AI-powered simplification      | v0.4.x      | Depends on Agent module                        |
+| Non-English language support   | v0.5.x      | Requires language detection and separate rules |
 
 ---
 

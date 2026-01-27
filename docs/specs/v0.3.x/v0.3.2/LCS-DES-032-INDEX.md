@@ -2,18 +2,18 @@
 
 ## Document Control
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-032-INDEX |
-| **Feature ID** | STY-032 |
-| **Feature Name** | The Dictionary Manager (CRUD UI) |
-| **Target Version** | v0.3.2 |
-| **Module Scope** | Lexichord.Modules.Style |
-| **Swimlane** | Governance |
-| **License Tier** | Writer Pro |
-| **Feature Gate Key** | `Feature.DictionaryManager` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-26 |
+| Field                | Value                            |
+| :------------------- | :------------------------------- |
+| **Document ID**      | LCS-DES-032-INDEX                |
+| **Feature ID**       | STY-032                          |
+| **Feature Name**     | The Dictionary Manager (CRUD UI) |
+| **Target Version**   | v0.3.2                           |
+| **Module Scope**     | Lexichord.Modules.Style          |
+| **Swimlane**         | Governance                       |
+| **License Tier**     | Writer Pro                       |
+| **Feature Gate Key** | `Feature.DictionaryManager`      |
+| **Status**           | Draft                            |
+| **Last Updated**     | 2026-01-26                       |
 
 ---
 
@@ -28,14 +28,14 @@ Users need a visual interface to manage the terminology lexicon. Currently, term
 - Direct database access (developer-only)
 - Seed data modifications (requires rebuild)
 
-| User Need | Current Status | Expected Behavior |
-| :--- | :--- | :--- |
-| View all terms | Not possible | DataGrid with search/filter |
-| Add new term | Database SQL | Modal dialog |
-| Edit existing term | Database SQL | Modal dialog |
-| Delete term | Database SQL | Confirmation dialog |
-| Bulk import from CSV | Not possible | Import wizard |
-| Export terms | Not possible | JSON/CSV export |
+| User Need            | Current Status | Expected Behavior           |
+| :------------------- | :------------- | :-------------------------- |
+| View all terms       | Not possible   | DataGrid with search/filter |
+| Add new term         | Database SQL   | Modal dialog                |
+| Edit existing term   | Database SQL   | Modal dialog                |
+| Delete term          | Database SQL   | Confirmation dialog         |
+| Bulk import from CSV | Not possible   | Import wizard               |
+| Export terms         | Not possible   | JSON/CSV export             |
 
 ### 1.2 The Solution
 
@@ -48,13 +48,13 @@ Implement a Dictionary Manager UI with four sub-parts:
 
 ### 1.3 Business Value
 
-| Value | Description |
-| :--- | :--- |
-| **Self-Service** | Users manage terminology without developer intervention |
-| **Data Integrity** | Validation prevents invalid patterns from being saved |
-| **Bulk Operations** | Import from CSV for large terminology migrations |
-| **Portability** | Export to JSON for backup and sharing |
-| **Foundation** | Enables Voice Profiler (v0.3.4) and Resonance Dashboard (v0.3.5) configuration |
+| Value               | Description                                                                    |
+| :------------------ | :----------------------------------------------------------------------------- |
+| **Self-Service**    | Users manage terminology without developer intervention                        |
+| **Data Integrity**  | Validation prevents invalid patterns from being saved                          |
+| **Bulk Operations** | Import from CSV for large terminology migrations                               |
+| **Portability**     | Export to JSON for backup and sharing                                          |
+| **Foundation**      | Enables Voice Profiler (v0.3.4) and Resonance Dashboard (v0.3.5) configuration |
 
 ---
 
@@ -64,25 +64,25 @@ Implement a Dictionary Manager UI with four sub-parts:
 
 The detailed scope breakdown for v0.3.2, including all sub-parts, implementation checklists, user stories, and acceptance criteria:
 
-| Document | Description |
-| :--- | :--- |
+| Document                            | Description                              |
+| :---------------------------------- | :--------------------------------------- |
 | **[LCS-SBD-032](./LCS-SBD-032.md)** | Scope Breakdown — The Dictionary Manager |
 
 ### 2.2 Sub-Part Design Specifications
 
 Each sub-part has its own detailed design specification following the LDS-01 template:
 
-| Sub-Part | Document | Title | Description |
-| :--- | :--- | :--- | :--- |
-| v0.3.2a | **[LCS-DES-032a](./LCS-DES-032a.md)** | DataGrid Infrastructure | LexiconView with sorting, filtering |
-| v0.3.2b | **[LCS-DES-032b](./LCS-DES-032b.md)** | Term Editor Dialog | Modal CRUD dialog |
-| v0.3.2c | **[LCS-DES-032c](./LCS-DES-032c.md)** | Validation Logic | FluentValidation rules |
-| v0.3.2d | **[LCS-DES-032d](./LCS-DES-032d.md)** | Bulk Import/Export | CSV import and JSON export |
+| Sub-Part | Document                              | Title                   | Description                         |
+| :------- | :------------------------------------ | :---------------------- | :---------------------------------- |
+| v0.3.2a  | **[LCS-DES-032a](./LCS-DES-032a.md)** | DataGrid Infrastructure | LexiconView with sorting, filtering |
+| v0.3.2b  | **[LCS-DES-032b](./LCS-DES-032b.md)** | Term Editor Dialog      | Modal CRUD dialog                   |
+| v0.3.2c  | **[LCS-DES-032c](./LCS-DES-032c.md)** | Validation Logic        | FluentValidation rules              |
+| v0.3.2d  | **[LCS-DES-032d](./LCS-DES-032d.md)** | Bulk Import/Export      | CSV import and JSON export          |
 
 ### 2.3 Overall Design Specification
 
-| Document | Description |
-| :--- | :--- |
+| Document                            | Description                                   |
+| :---------------------------------- | :-------------------------------------------- |
 | **[LCS-INF-032](./LCS-INF-032.md)** | Combined Design Specification (legacy format) |
 
 ---
@@ -186,37 +186,37 @@ sequenceDiagram
 
 ### 4.1 Upstream Dependencies (Required)
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `StyleTerm` | v0.2.2a | Entity model for terminology |
-| `ITerminologyRepository` | v0.2.2b | Database access for terms |
-| `ITerminologyService` | v0.2.2d | CRUD operations with events |
-| `ILicenseContext` | v0.0.4c | Read-only license tier access |
-| `LicenseTier` | v0.0.4c | Core/WriterPro/Teams/Enterprise enum |
-| `RuleCategory` | v0.2.1b | Terminology/Formatting/Syntax enum |
-| `ViolationSeverity` | v0.2.1b | Error/Warning/Info/Hint enum |
-| `IFileService` | v0.1.4b | File picker dialogs |
-| `LexiconChangedEvent` | v0.2.2d | MediatR notification for term changes |
-| `ViewModelBase` | v0.1.1 | Base ViewModel class |
-| `Feature.FuzzyMatching` | v0.3.1d | Fuzzy feature gate key |
+| Interface                | Source Version        | Purpose                                   |
+| :----------------------- | :-------------------- | :---------------------------------------- |
+| `StyleTerm`              | v0.2.2a               | Entity model for terminology              |
+| `ITerminologyRepository` | v0.2.2b               | Database access for terms                 |
+| `ITerminologyService`    | v0.2.2d               | CRUD operations with events               |
+| `ILicenseContext`        | v0.0.4c               | Read-only license tier access             |
+| `LicenseTier`            | v0.0.4c               | Core/WriterPro/Teams/Enterprise enum      |
+| `RuleCategory`           | v0.2.1b               | Terminology/Formatting/Syntax enum        |
+| `ViolationSeverity`      | v0.2.1b               | Error/Warning/Info/Hint enum              |
+| `IFileService`           | v0.1.4b               | File picker dialogs                       |
+| `LexiconChangedEvent`    | v0.2.2d               | MediatR notification for term changes     |
+| `ViewModelBase`          | CommunityToolkit.Mvvm | ObservableObject wrapper (external NuGet) |
+| `Feature.FuzzyMatching`  | v0.3.1d               | Fuzzy feature gate key                    |
 
 ### 4.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `CsvHelper` | 31.x | CSV parsing and column mapping |
-| `FluentValidation` | 11.9.x | Input validation (existing) |
-| `Avalonia.Controls.DataGrid` | 11.x | DataGrid control (existing) |
-| `CommunityToolkit.Mvvm` | 8.x | MVVM source generators (existing) |
-| `System.Reactive` | 6.x | Debounced filter stream (existing) |
+| Package                      | Version | Purpose                            |
+| :--------------------------- | :------ | :--------------------------------- |
+| `CsvHelper`                  | 31.x    | CSV parsing and column mapping     |
+| `FluentValidation`           | 11.9.x  | Input validation (existing)        |
+| `Avalonia.Controls.DataGrid` | 11.x    | DataGrid control (existing)        |
+| `CommunityToolkit.Mvvm`      | 8.x     | MVVM source generators (existing)  |
+| `System.Reactive`            | 6.x     | Debounced filter stream (existing) |
 
 ### 4.3 Downstream Consumers (Future)
 
-| Version | Feature | Consumes |
-| :--- | :--- | :--- |
-| v0.3.4 | Voice Profiler | Term management via Dictionary Manager |
-| v0.3.5 | Resonance Dashboard | Term configuration interface |
-| v0.3.6 | Global Dictionary | Extended import/export formats |
+| Version | Feature             | Consumes                               |
+| :------ | :------------------ | :------------------------------------- |
+| v0.3.4  | Voice Profiler      | Term management via Dictionary Manager |
+| v0.3.5  | Resonance Dashboard | Term configuration interface           |
+| v0.3.6  | Global Dictionary   | Extended import/export formats         |
 
 ---
 
@@ -226,12 +226,12 @@ The Dictionary Manager is a **Writer Pro** feature using a **Soft Gate** strateg
 
 ### 5.1 Behavior by License Tier
 
-| Tier | LexiconView | Term Editor | Import/Export | Fuzzy Controls |
-| :--- | :--- | :--- | :--- | :--- |
-| Core | Upgrade prompt | N/A | N/A | Disabled |
-| Writer Pro | Full access | Full access | Full access | Enabled |
-| Teams | Full access | Full access | Full access | Enabled |
-| Enterprise | Full access | Full access | Full access | Enabled |
+| Tier       | LexiconView    | Term Editor | Import/Export | Fuzzy Controls |
+| :--------- | :------------- | :---------- | :------------ | :------------- |
+| Core       | Upgrade prompt | N/A         | N/A           | Disabled       |
+| Writer Pro | Full access    | Full access | Full access   | Enabled        |
+| Teams      | Full access    | Full access | Full access   | Enabled        |
+| Enterprise | Full access    | Full access | Full access   | Enabled        |
 
 ### 5.2 Implementation Pattern
 
@@ -297,33 +297,33 @@ public bool HasWriterPro => _licenseContext.HasFeature(Feature.DictionaryManager
 
 ## 7. Key Interfaces Summary
 
-| Interface | Defined In | Purpose |
-| :--- | :--- | :--- |
-| `IDialogService` | v0.3.2b | Modal dialog management |
-| `ITerminologyImporter` | v0.3.2d | CSV import contract |
-| `ITerminologyExporter` | v0.3.2d | JSON export contract |
+| Interface              | Defined In | Purpose                 |
+| :--------------------- | :--------- | :---------------------- |
+| `IDialogService`       | v0.3.2b    | Modal dialog management |
+| `ITerminologyImporter` | v0.3.2d    | CSV import contract     |
+| `ITerminologyExporter` | v0.3.2d    | JSON export contract    |
 
-| Record/DTO | Defined In | Purpose |
-| :--- | :--- | :--- |
-| `StyleTermDto` | v0.3.2a | View-layer term binding |
-| `DialogResult<T>` | v0.3.2b | Dialog return value wrapper |
-| `ImportMapping` | v0.3.2d | CSV column to DB field mapping |
-| `ImportResult` | v0.3.2d | Import operation outcome |
-| `ImportOptions` | v0.3.2d | Skip/overwrite configuration |
-| `ImportError` | v0.3.2d | Row-level import failure details |
+| Record/DTO        | Defined In | Purpose                          |
+| :---------------- | :--------- | :------------------------------- |
+| `StyleTermDto`    | v0.3.2a    | View-layer term binding          |
+| `DialogResult<T>` | v0.3.2b    | Dialog return value wrapper      |
+| `ImportMapping`   | v0.3.2d    | CSV column to DB field mapping   |
+| `ImportResult`    | v0.3.2d    | Import operation outcome         |
+| `ImportOptions`   | v0.3.2d    | Skip/overwrite configuration     |
+| `ImportError`     | v0.3.2d    | Row-level import failure details |
 
 ---
 
 ## 8. Implementation Checklist Summary
 
-| Sub-Part | Tasks | Est. Hours |
-| :--- | :--- | :--- |
-| v0.3.2a | DataGrid Infrastructure | 8 |
-| v0.3.2b | Term Editor Dialog | 6 |
-| v0.3.2c | Validation Logic | 4 |
-| v0.3.2d | Bulk Import/Export | 10 |
-| Integration | DI, Events, Tests | 4 |
-| **Total** | | **32 hours** |
+| Sub-Part    | Tasks                   | Est. Hours   |
+| :---------- | :---------------------- | :----------- |
+| v0.3.2a     | DataGrid Infrastructure | 8            |
+| v0.3.2b     | Term Editor Dialog      | 6            |
+| v0.3.2c     | Validation Logic        | 4            |
+| v0.3.2d     | Bulk Import/Export      | 10           |
+| Integration | DI, Events, Tests       | 4            |
+| **Total**   |                         | **32 hours** |
 
 See [LCS-SBD-032](./LCS-SBD-032.md) Section 3 for the detailed task breakdown.
 
@@ -331,15 +331,15 @@ See [LCS-SBD-032](./LCS-SBD-032.md) Section 3 for the detailed task breakdown.
 
 ## 9. Success Criteria Summary
 
-| Category | Criterion | Target |
-| :--- | :--- | :--- |
-| **DataGrid** | Display 1000+ terms with virtualization | No lag |
-| **Filter** | Real-time filtering with 300ms debounce | < 100ms |
-| **CRUD** | Add/Edit/Delete operations persist | Pass |
-| **Validation** | Invalid regex patterns blocked | Pass |
-| **Import** | CSV import with column mapping | Pass |
-| **Export** | JSON export creates valid file | Pass |
-| **License Gate** | Core users see upgrade prompt | Pass |
+| Category         | Criterion                               | Target  |
+| :--------------- | :-------------------------------------- | :------ |
+| **DataGrid**     | Display 1000+ terms with virtualization | No lag  |
+| **Filter**       | Real-time filtering with 300ms debounce | < 100ms |
+| **CRUD**         | Add/Edit/Delete operations persist      | Pass    |
+| **Validation**   | Invalid regex patterns blocked          | Pass    |
+| **Import**       | CSV import with column mapping          | Pass    |
+| **Export**       | JSON export creates valid file          | Pass    |
+| **License Gate** | Core users see upgrade prompt           | Pass    |
 
 See [LCS-SBD-032](./LCS-SBD-032.md) Section 12 for full acceptance criteria.
 
@@ -347,12 +347,12 @@ See [LCS-SBD-032](./LCS-SBD-032.md) Section 12 for full acceptance criteria.
 
 ## 10. Test Coverage Summary
 
-| Sub-Part | Unit Tests | Integration Tests |
-| :--- | :--- | :--- |
-| v0.3.2a | Filter logic, CRUD commands, license check | - |
-| v0.3.2b | Dialog state, save/cancel, field binding | Dialog service |
-| v0.3.2c | All validation rules, regex validation | - |
-| v0.3.2d | CSV parsing, column mapping, JSON serialization | File I/O |
+| Sub-Part | Unit Tests                                      | Integration Tests |
+| :------- | :---------------------------------------------- | :---------------- |
+| v0.3.2a  | Filter logic, CRUD commands, license check      | -                 |
+| v0.3.2b  | Dialog state, save/cancel, field binding        | Dialog service    |
+| v0.3.2c  | All validation rules, regex validation          | -                 |
+| v0.3.2d  | CSV parsing, column mapping, JSON serialization | File I/O          |
 
 See individual design specs for detailed test scenarios.
 
@@ -360,12 +360,12 @@ See individual design specs for detailed test scenarios.
 
 ## 11. What This Enables
 
-| Version | Feature | Uses From v0.3.2 |
-| :--- | :--- | :--- |
-| v0.3.3 | Readability Engine | Pattern management for readability terms |
-| v0.3.4 | Voice Profiler | Voice pattern configuration via Dictionary Manager |
-| v0.3.5 | Resonance Dashboard | Dashboard configuration interface |
-| v0.3.6 | Global Dictionary | Extended import/export formats |
+| Version | Feature             | Uses From v0.3.2                                   |
+| :------ | :------------------ | :------------------------------------------------- |
+| v0.3.3  | Readability Engine  | Pattern management for readability terms           |
+| v0.3.4  | Voice Profiler      | Voice pattern configuration via Dictionary Manager |
+| v0.3.5  | Resonance Dashboard | Dashboard configuration interface                  |
+| v0.3.6  | Global Dictionary   | Extended import/export formats                     |
 
 ---
 
@@ -427,6 +427,6 @@ START: "How to process this CSV row?"
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial index creation |
+| Version | Date       | Author         | Changes                |
+| :------ | :--------- | :------------- | :--------------------- |
+| 1.0     | 2026-01-26 | Lead Architect | Initial index creation |
