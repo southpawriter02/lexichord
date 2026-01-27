@@ -1,4 +1,4 @@
-# LCS-INF-003c: Global Exception Trap
+# LCS-DES-003c: Global Exception Trap
 
 ## 1. Metadata & Categorization
 

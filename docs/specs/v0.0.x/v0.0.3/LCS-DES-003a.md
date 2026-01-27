@@ -1,4 +1,4 @@
-# LCS-INF-003a: Dependency Injection Root
+# LCS-DES-003a: Dependency Injection Root
 
 ## 1. Metadata & Categorization
 

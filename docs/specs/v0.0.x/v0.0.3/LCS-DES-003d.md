@@ -1,4 +1,4 @@
-# LCS-INF-003d: Configuration Service
+# LCS-DES-003d: Configuration Service
 
 ## 1. Metadata & Categorization
 

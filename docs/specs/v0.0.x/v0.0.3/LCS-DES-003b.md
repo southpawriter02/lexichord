@@ -1,4 +1,4 @@
-# LCS-INF-003b: Serilog Pipeline
+# LCS-DES-003b: Serilog Pipeline
 
 ## 1. Metadata & Categorization
 
