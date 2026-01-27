@@ -1,4 +1,4 @@
-# LCS-INF-014c: Safe Close Workflow
+# LCS-DES-014c: Safe Close Workflow
 
 ## 1. Metadata & Categorization
 
