@@ -4,7 +4,8 @@
 
 | Field                | Value                  | Description                               |
 | :------------------- | :--------------------- | :---------------------------------------- |
-| **Feature ID**       | `INF-002b`             | Infrastructure - Podium Layout            |
+| **Document ID**      | LCS-DES-002b           | Design Specification v0.0.2b              |
+| **Feature ID**       | STY-002b               | Infrastructure - Podium Layout            |
 | **Feature Name**     | The Podium Layout      | MainWindow shell with structured regions. |
 | **Target Version**   | `v0.0.2b`              | Host Foundation Layer.                    |
 | **Module Scope**     | `Lexichord.Host/Views` | Shell UI components.                      |
@@ -13,7 +14,7 @@
 | **Feature Gate Key** | N/A                    | No runtime gating for shell layout.       |
 | **Author**           | System Architect       |                                           |
 | **Status**           | **Draft**              | Pending approval.                         |
-| **Last Updated**     | 2026-01-26             |                                           |
+| **Last Updated**     | 2026-01-27             |                                           |
 
 ---
 

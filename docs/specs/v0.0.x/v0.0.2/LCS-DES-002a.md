@@ -4,7 +4,8 @@
 
 | Field                | Value                          | Description                                 |
 | :------------------- | :----------------------------- | :------------------------------------------ |
-| **Feature ID**       | `INF-002a`                     | Infrastructure - Avalonia Bootstrap         |
+| **Document ID**      | LCS-DES-002a                   | Design Specification v0.0.2a                |
+| **Feature ID**       | STY-002a                       | Infrastructure - Avalonia Bootstrap         |
 | **Feature Name**     | Avalonia Application Lifecycle | Cross-platform UI framework initialization. |
 | **Target Version**   | `v0.0.2a`                      | Host Foundation Layer.                      |
 | **Module Scope**     | `Lexichord.Host`               | Primary application executable.             |
@@ -13,7 +14,7 @@
 | **Feature Gate Key** | N/A                            | No runtime gating for bootstrap.            |
 | **Author**           | System Architect               |                                             |
 | **Status**           | **Draft**                      | Pending approval.                           |
-| **Last Updated**     | 2026-01-26                     |                                             |
+| **Last Updated**     | 2026-01-27                     |                                             |
 
 ---
 

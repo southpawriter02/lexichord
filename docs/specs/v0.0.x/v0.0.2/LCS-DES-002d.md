@@ -4,7 +4,8 @@
 
 | Field                | Value                                      | Description                                    |
 | :------------------- | :----------------------------------------- | :--------------------------------------------- |
-| **Feature ID**       | `INF-002d`                                 | Infrastructure - Window State Persistence      |
+| **Document ID**      | LCS-DES-002d                               | Design Specification v0.0.2d                   |
+| **Feature ID**       | STY-002d                                   | Infrastructure - Window State Persistence      |
 | **Feature Name**     | Window State Persistence                   | Save/restore window geometry between sessions. |
 | **Target Version**   | `v0.0.2d`                                  | Host Foundation Layer.                         |
 | **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Host` | State contracts and implementation.            |
@@ -13,7 +14,7 @@
 | **Feature Gate Key** | N/A                                        | No runtime gating for window state.            |
 | **Author**           | System Architect                           |                                                |
 | **Status**           | **Draft**                                  | Pending approval.                              |
-| **Last Updated**     | 2026-01-26                                 |                                                |
+| **Last Updated**     | 2026-01-27                                 |                                                |
 
 ---
 

@@ -4,7 +4,8 @@
 
 | Field                | Value                                      | Description                                 |
 | :------------------- | :----------------------------------------- | :------------------------------------------ |
-| **Feature ID**       | `INF-002c`                                 | Infrastructure - Theme Infrastructure       |
+| **Document ID**      | LCS-DES-002c                               | Design Specification v0.0.2c                |
+| **Feature ID**       | STY-002c                                   | Infrastructure - Theme Infrastructure       |
 | **Feature Name**     | Runtime Theme Switching                    | Dark/Light mode with system detection.      |
 | **Target Version**   | `v0.0.2c`                                  | Host Foundation Layer.                      |
 | **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Host` | Theme contracts and implementation.         |
@@ -13,7 +14,7 @@
 | **Feature Gate Key** | N/A                                        | No runtime gating for theme infrastructure. |
 | **Author**           | System Architect                           |                                             |
 | **Status**           | **Draft**                                  | Pending approval.                           |
-| **Last Updated**     | 2026-01-26                                 |                                             |
+| **Last Updated**     | 2026-01-27                                 |                                             |
 
 ---
 
