@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-006d: Secure Vault Integration Testing
 
 ## 1. Metadata & Categorization
 

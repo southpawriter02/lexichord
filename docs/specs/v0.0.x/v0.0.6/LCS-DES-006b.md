@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-006b: WindowsSecureVault (DPAPI)
 
 ## 1. Metadata & Categorization
 

@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-006c: UnixSecureVault (libsecret/AES-256)
 
 ## 1. Metadata & Categorization
 

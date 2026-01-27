@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-006a: ISecureVault Interface
 
 ## 1. Metadata & Categorization
 
