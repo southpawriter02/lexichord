@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-034                              |
-| **Version**      | v0.3.4                                   |
-| **Codename**     | The Voice Profiler (Tone Analysis)       |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-26                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                      |
+| :--------------- | :--------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-034                                                |
+| **Version**      | v0.3.4                                                     |
+| **Codename**     | The Voice Profiler (Tone Analysis)                         |
+| **Status**       | Draft                                                      |
+| **Last Updated** | 2026-01-26                                                 |
+| **Owner**        | Lead Architect                                             |
 | **Depends On**   | v0.3.3 (Readability Engine), v0.2.3 (Linting Orchestrator) |
 
 ---
@@ -18,7 +18,7 @@
 
 ### 1.1 The Vision
 
-**v0.3.4** delivers the **Voice Profiler** — moving beyond error detection to style analysis. This release transforms Lexichord from a "Rule Enforcer" into a "Writing Coach," enabling writers to analyze and refine the *tone* of their content through detection of passive voice constructions, excessive adverbs, and weasel words.
+**v0.3.4** delivers the **Voice Profiler** — moving beyond error detection to style analysis. This release transforms Lexichord from a "Rule Enforcer" into a "Writing Coach," enabling writers to analyze and refine the _tone_ of their content through detection of passive voice constructions, excessive adverbs, and weasel words.
 
 While v0.3.3 introduced mathematical readability metrics, the Voice Profiler adds qualitative style analysis. Writers can now define target "Voice Profiles" (Technical, Marketing, Academic) with specific style constraints, then receive real-time feedback on how their writing matches the selected profile. The system detects constructions that weaken prose—passive voice, hedge words, and intensifiers—and provides actionable guidance.
 
@@ -56,21 +56,21 @@ The Voice Profiler is a **Writer Pro** feature. Lower tiers will see:
 
 ## 2. Dependencies on Prior Versions
 
-| Component                | Source Version | Usage in v0.3.4                                  |
-| :----------------------- | :------------- | :----------------------------------------------- |
-| `IReadabilityService`    | v0.3.3c        | Include readability metrics in profile scoring   |
-| `ReadabilityMetrics`     | v0.3.3c        | Profile targets reference grade level            |
-| `ISentenceTokenizer`     | v0.3.3a        | Sentence-level passive voice analysis            |
-| `ILintingOrchestrator`   | v0.2.3a        | Integration point for triggering analysis        |
-| `LintingCompletedEvent`  | v0.2.3b        | Subscribe to trigger voice analysis              |
-| `StyleViolation`         | v0.2.1b        | Report passive/adverb issues as violations       |
-| `ViolationSeverity`      | v0.2.1b        | Use `Info` severity for style suggestions        |
-| `ILicenseContext`        | v0.0.4c        | Read-only license tier access                    |
-| `LicenseTier`            | v0.0.4c        | Core/WriterPro/Teams/Enterprise enum             |
-| `Feature`                | v0.3.1d        | Feature gate constants                           |
-| `ViewModelBase`          | v0.1.1         | Base ViewModel class with INotifyPropertyChanged |
-| `IConfigurationService`  | v0.0.3d        | Persist selected profile preference              |
-| `Serilog`                | v0.0.3b        | Structured logging                               |
+| Component               | Source Version        | Usage in v0.3.4                                |
+| :---------------------- | :-------------------- | :--------------------------------------------- |
+| `IReadabilityService`   | v0.3.3c               | Include readability metrics in profile scoring |
+| `ReadabilityMetrics`    | v0.3.3c               | Profile targets reference grade level          |
+| `ISentenceTokenizer`    | v0.3.3a               | Sentence-level passive voice analysis          |
+| `ILintingOrchestrator`  | v0.2.3a               | Integration point for triggering analysis      |
+| `LintingCompletedEvent` | v0.2.3b               | Subscribe to trigger voice analysis            |
+| `StyleViolation`        | v0.2.1b               | Report passive/adverb issues as violations     |
+| `ViolationSeverity`     | v0.2.1b               | Use `Info` severity for style suggestions      |
+| `ILicenseContext`       | v0.0.4c               | Read-only license tier access                  |
+| `LicenseTier`           | v0.0.4c               | Core/WriterPro/Teams/Enterprise enum           |
+| `Feature`               | v0.3.1d               | Feature gate constants                         |
+| `ViewModelBase`         | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet)     |
+| `IConfiguration`        | v0.0.3d               | Persist selected profile preference            |
+| `ILogger<T> / Serilog`  | v0.0.3b               | Structured logging                             |
 
 ---
 
@@ -78,12 +78,12 @@ The Voice Profiler is a **Writer Pro** feature. Lower tiers will see:
 
 ### 3.1 v0.3.4a: Profile Definition
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | STY-034a                                  |
-| **Title**        | Voice Profile Definition & Repository     |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                                 |
+| :--------------- | :------------------------------------ |
+| **Sub-Part ID**  | STY-034a                              |
+| **Title**        | Voice Profile Definition & Repository |
+| **Module**       | `Lexichord.Modules.Style`             |
+| **License Tier** | Writer Pro                            |
 
 **Goal:** Create the `VoiceProfile` record and `IVoiceProfileService` to define, store, and retrieve voice profiles with style constraints.
 
@@ -177,13 +177,13 @@ public interface IVoiceProfileService
 
 **Default Profiles:**
 
-| Profile | Grade Level | Max Sentence | Passive Voice | Adverbs | Weasel Words |
-| :------ | :---------- | :----------- | :------------ | :------ | :----------- |
-| Technical | 10-12 | 20 | Forbidden | Flag | Flag |
-| Marketing | 8-10 | 25 | Allowed (20%) | Ignore | Flag |
-| Academic | 12-14 | 30 | Allowed (30%) | Ignore | Ignore |
-| Narrative | 8-10 | 35 | Allowed (15%) | Ignore | Ignore |
-| Casual | 6-8 | 20 | Allowed (25%) | Ignore | Ignore |
+| Profile   | Grade Level | Max Sentence | Passive Voice | Adverbs | Weasel Words |
+| :-------- | :---------- | :----------- | :------------ | :------ | :----------- |
+| Technical | 10-12       | 20           | Forbidden     | Flag    | Flag         |
+| Marketing | 8-10        | 25           | Allowed (20%) | Ignore  | Flag         |
+| Academic  | 12-14       | 30           | Allowed (30%) | Ignore  | Ignore       |
+| Narrative | 8-10        | 35           | Allowed (15%) | Ignore  | Ignore       |
+| Casual    | 6-8         | 20           | Allowed (25%) | Ignore  | Ignore       |
 
 **MediatR Event:**
 
@@ -202,18 +202,18 @@ public record ProfileChangedEvent(
 **Dependencies:**
 
 - v0.3.3c: `ReadabilityMetrics` (profile references grade level targets)
-- v0.0.3d: `IConfigurationService` (persist active profile selection)
+- v0.0.3d: `IConfiguration` (persist active profile selection)
 
 ---
 
 ### 3.2 v0.3.4b: Passive Voice Detector
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | STY-034b                                  |
-| **Title**        | Passive Voice Detection Analyzer          |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                            |
+| :--------------- | :------------------------------- |
+| **Sub-Part ID**  | STY-034b                         |
+| **Title**        | Passive Voice Detection Analyzer |
+| **Module**       | `Lexichord.Modules.Style`        |
+| **License Tier** | Writer Pro                       |
 
 **Goal:** Implement a dedicated analyzer using pattern matching to detect passive voice constructions in text.
 
@@ -358,12 +358,12 @@ HEURISTIC:
 
 ### 3.3 v0.3.4c: Adverb/Weasel Scanner
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | STY-034c                                  |
-| **Title**        | Weak Word Scanner (Adverbs & Weasel Words)|
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                                      |
+| :--------------- | :----------------------------------------- |
+| **Sub-Part ID**  | STY-034c                                   |
+| **Title**        | Weak Word Scanner (Adverbs & Weasel Words) |
+| **Module**       | `Lexichord.Modules.Style`                  |
+| **License Tier** | Writer Pro                                 |
 
 **Goal:** Create a static-list scanner that flags adverbs, intensifiers, and weasel words as `Severity.Info` suggestions.
 
@@ -551,12 +551,12 @@ SCAN text for weak words:
 
 ### 3.4 v0.3.4d: Profile Selector UI
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | STY-034d                                  |
-| **Title**        | Voice Profile Selector (Status Bar)       |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                               |
+| :--------------- | :---------------------------------- |
+| **Sub-Part ID**  | STY-034d                            |
+| **Title**        | Voice Profile Selector (Status Bar) |
+| **Module**       | `Lexichord.Modules.Style`           |
+| **License Tier** | Writer Pro                          |
 
 **Goal:** Add a dropdown in the Status Bar to switch the active Voice Profile, with instant rule set changes.
 
@@ -709,46 +709,46 @@ USER selects profile from dropdown:
 
 - v0.3.4a: `IVoiceProfileService`, `VoiceProfile`, `ProfileChangedEvent`
 - v0.0.4c: `ILicenseContext` (license check)
-- v0.0.3d: `IConfigurationService` (persist selection)
-- v0.1.1: `ViewModelBase`
+- v0.0.3d: `IConfiguration` (persist selection)
+- CommunityToolkit.Mvvm: `ViewModelBase`
 
 ---
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.3.4a  | Create `VoiceProfile` record with all properties          | 1          |
-| 2  | v0.3.4a  | Create `IVoiceProfileService` interface                   | 1          |
-| 3  | v0.3.4a  | Implement `VoiceProfileService` with in-memory cache      | 2          |
-| 4  | v0.3.4a  | Create `VoiceProfileRepository` with SQLite persistence   | 2          |
-| 5  | v0.3.4a  | Seed 5 default profiles (Technical, Marketing, etc.)      | 1          |
-| 6  | v0.3.4a  | Create `ProfileChangedEvent` MediatR notification         | 0.5        |
-| 7  | v0.3.4a  | Unit tests for profile service                            | 2          |
-| 8  | v0.3.4b  | Create `IPassiveVoiceDetector` interface                  | 0.5        |
-| 9  | v0.3.4b  | Create `PassiveVoiceMatch` record                         | 0.5        |
-| 10 | v0.3.4b  | Implement passive voice regex patterns                    | 3          |
-| 11 | v0.3.4b  | Implement adjective vs. passive disambiguation            | 2          |
-| 12 | v0.3.4b  | Integrate with sentence tokenizer                         | 1          |
-| 13 | v0.3.4b  | Unit tests for passive voice detection                    | 2          |
-| 14 | v0.3.4c  | Create `IWeakWordScanner` interface                       | 0.5        |
-| 15 | v0.3.4c  | Create `WeakWordMatch` record and `WeakWordCategory` enum | 0.5        |
-| 16 | v0.3.4c  | Build static word lists (adverbs, weasels, fillers)       | 1.5        |
-| 17 | v0.3.4c  | Implement `WeakWordScanner` with position tracking        | 2          |
-| 18 | v0.3.4c  | Add multi-word phrase detection                           | 1          |
-| 19 | v0.3.4c  | Unit tests for weak word scanning                         | 1.5        |
-| 20 | v0.3.4d  | Create `ProfileSelectorView.axaml`                        | 2          |
-| 21 | v0.3.4d  | Create `ProfileSelectorViewModel`                         | 2          |
-| 22 | v0.3.4d  | Implement profile dropdown with tooltips                  | 1.5        |
-| 23 | v0.3.4d  | Implement license gating UI                               | 1          |
-| 24 | v0.3.4d  | Integrate with Status Bar region                          | 1          |
-| 25 | v0.3.4d  | Unit tests for ViewModel                                  | 1.5        |
-| 26 | All      | Create `IVoiceAnalysisService` orchestrating all analyzers| 2          |
-| 27 | All      | Integrate with `LintingOrchestrator` pipeline             | 1.5        |
-| 28 | All      | Create `VoiceAnalysisResult` aggregate record             | 0.5        |
-| 29 | All      | Integration tests for full analysis pipeline              | 2          |
-| 30 | All      | DI registration in `StyleModule.cs`                       | 0.5        |
-| **Total** |   |                                                           | **40 hours** |
+| #         | Sub-Part | Task                                                       | Est. Hours   |
+| :-------- | :------- | :--------------------------------------------------------- | :----------- |
+| 1         | v0.3.4a  | Create `VoiceProfile` record with all properties           | 1            |
+| 2         | v0.3.4a  | Create `IVoiceProfileService` interface                    | 1            |
+| 3         | v0.3.4a  | Implement `VoiceProfileService` with in-memory cache       | 2            |
+| 4         | v0.3.4a  | Create `VoiceProfileRepository` with SQLite persistence    | 2            |
+| 5         | v0.3.4a  | Seed 5 default profiles (Technical, Marketing, etc.)       | 1            |
+| 6         | v0.3.4a  | Create `ProfileChangedEvent` MediatR notification          | 0.5          |
+| 7         | v0.3.4a  | Unit tests for profile service                             | 2            |
+| 8         | v0.3.4b  | Create `IPassiveVoiceDetector` interface                   | 0.5          |
+| 9         | v0.3.4b  | Create `PassiveVoiceMatch` record                          | 0.5          |
+| 10        | v0.3.4b  | Implement passive voice regex patterns                     | 3            |
+| 11        | v0.3.4b  | Implement adjective vs. passive disambiguation             | 2            |
+| 12        | v0.3.4b  | Integrate with sentence tokenizer                          | 1            |
+| 13        | v0.3.4b  | Unit tests for passive voice detection                     | 2            |
+| 14        | v0.3.4c  | Create `IWeakWordScanner` interface                        | 0.5          |
+| 15        | v0.3.4c  | Create `WeakWordMatch` record and `WeakWordCategory` enum  | 0.5          |
+| 16        | v0.3.4c  | Build static word lists (adverbs, weasels, fillers)        | 1.5          |
+| 17        | v0.3.4c  | Implement `WeakWordScanner` with position tracking         | 2            |
+| 18        | v0.3.4c  | Add multi-word phrase detection                            | 1            |
+| 19        | v0.3.4c  | Unit tests for weak word scanning                          | 1.5          |
+| 20        | v0.3.4d  | Create `ProfileSelectorView.axaml`                         | 2            |
+| 21        | v0.3.4d  | Create `ProfileSelectorViewModel`                          | 2            |
+| 22        | v0.3.4d  | Implement profile dropdown with tooltips                   | 1.5          |
+| 23        | v0.3.4d  | Implement license gating UI                                | 1            |
+| 24        | v0.3.4d  | Integrate with Status Bar region                           | 1            |
+| 25        | v0.3.4d  | Unit tests for ViewModel                                   | 1.5          |
+| 26        | All      | Create `IVoiceAnalysisService` orchestrating all analyzers | 2            |
+| 27        | All      | Integrate with `LintingOrchestrator` pipeline              | 1.5          |
+| 28        | All      | Create `VoiceAnalysisResult` aggregate record              | 0.5          |
+| 29        | All      | Integration tests for full analysis pipeline               | 2            |
+| 30        | All      | DI registration in `StyleModule.cs`                        | 0.5          |
+| **Total** |          |                                                            | **40 hours** |
 
 ---
 
@@ -756,45 +756,45 @@ USER selects profile from dropdown:
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                | Source Version | Purpose                              |
-| :----------------------- | :------------- | :----------------------------------- |
-| `IReadabilityService`    | v0.3.3c        | Get current readability for profiles |
-| `ReadabilityMetrics`     | v0.3.3c        | Profile targets reference grade level|
-| `ISentenceTokenizer`     | v0.3.3a        | Sentence-level passive voice analysis|
-| `ILintingOrchestrator`   | v0.2.3a        | Analysis pipeline integration        |
-| `LintingCompletedEvent`  | v0.2.3b        | Trigger for voice analysis           |
-| `StyleViolation`         | v0.2.1b        | Report issues as violations          |
-| `ViolationSeverity`      | v0.2.1b        | Use Info/Warning severity            |
-| `ILicenseContext`        | v0.0.4c        | License tier checking                |
-| `IConfigurationService`  | v0.0.3d        | Persist active profile               |
-| `ViewModelBase`          | v0.1.1         | MVVM base class                      |
+| Interface               | Source Version        | Purpose                                    |
+| :---------------------- | :-------------------- | :----------------------------------------- |
+| `IReadabilityService`   | v0.3.3c               | Get current readability for profiles       |
+| `ReadabilityMetrics`    | v0.3.3c               | Profile targets reference grade level      |
+| `ISentenceTokenizer`    | v0.3.3a               | Sentence-level passive voice analysis      |
+| `ILintingOrchestrator`  | v0.2.3a               | Analysis pipeline integration              |
+| `LintingCompletedEvent` | v0.2.3b               | Trigger for voice analysis                 |
+| `StyleViolation`        | v0.2.1b               | Report issues as violations                |
+| `ViolationSeverity`     | v0.2.1b               | Use Info/Warning severity                  |
+| `ILicenseContext`       | v0.0.4c               | License tier checking                      |
+| `IConfiguration`        | v0.0.3d               | Persist active profile                     |
+| `ViewModelBase`         | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet) |
 
 ### 5.2 New Interfaces (defined in v0.3.4)
 
-| Interface                   | Defined In | Module        | Purpose                          |
-| :-------------------------- | :--------- | :------------ | :------------------------------- |
-| `IVoiceProfileService`      | v0.3.4a    | Abstractions  | Profile CRUD and selection       |
-| `IPassiveVoiceDetector`     | v0.3.4b    | Abstractions  | Passive voice detection          |
-| `IWeakWordScanner`          | v0.3.4c    | Abstractions  | Adverb/weasel word scanning      |
-| `IVoiceAnalysisService`     | v0.3.4     | Modules.Style | Orchestrates all voice analyzers |
+| Interface               | Defined In | Module        | Purpose                          |
+| :---------------------- | :--------- | :------------ | :------------------------------- |
+| `IVoiceProfileService`  | v0.3.4a    | Abstractions  | Profile CRUD and selection       |
+| `IPassiveVoiceDetector` | v0.3.4b    | Abstractions  | Passive voice detection          |
+| `IWeakWordScanner`      | v0.3.4c    | Abstractions  | Adverb/weasel word scanning      |
+| `IVoiceAnalysisService` | v0.3.4     | Modules.Style | Orchestrates all voice analyzers |
 
 ### 5.3 New Records/DTOs (defined in v0.3.4)
 
-| Record                   | Defined In | Purpose                                |
-| :----------------------- | :--------- | :------------------------------------- |
-| `VoiceProfile`           | v0.3.4a    | Voice profile constraints              |
-| `PassiveVoiceMatch`      | v0.3.4b    | Passive voice detection result         |
-| `WeakWordMatch`          | v0.3.4c    | Weak word detection result             |
-| `WeakWordCategory`       | v0.3.4c    | Enum for word categories               |
-| `ProfileChangedEvent`    | v0.3.4a    | MediatR notification for profile switch|
-| `VoiceAnalysisResult`    | v0.3.4     | Aggregate analysis results             |
+| Record                | Defined In | Purpose                                 |
+| :-------------------- | :--------- | :-------------------------------------- |
+| `VoiceProfile`        | v0.3.4a    | Voice profile constraints               |
+| `PassiveVoiceMatch`   | v0.3.4b    | Passive voice detection result          |
+| `WeakWordMatch`       | v0.3.4c    | Weak word detection result              |
+| `WeakWordCategory`    | v0.3.4c    | Enum for word categories                |
+| `ProfileChangedEvent` | v0.3.4a    | MediatR notification for profile switch |
+| `VoiceAnalysisResult` | v0.3.4     | Aggregate analysis results              |
 
 ### 5.4 NuGet Packages
 
-| Package          | Version | Purpose                    | New/Existing |
-| :--------------- | :------ | :------------------------- | :----------- |
-| `System.Reactive`| 6.x     | Observable profile changes | Existing     |
-| `MediatR`        | 12.x    | Event publishing           | Existing     |
+| Package           | Version | Purpose                    | New/Existing |
+| :---------------- | :------ | :------------------------- | :----------- |
+| `System.Reactive` | 6.x     | Observable profile changes | Existing     |
+| `MediatR`         | 12.x    | Event publishing           | Existing     |
 
 ---
 
@@ -914,28 +914,28 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Passive voice false positives (adjectives flagged as passive) | Medium | High | Implement disambiguation heuristics, allow user dismissal |
-| Adverb flagging too aggressive for creative writing | Medium | Medium | Profiles control flagging; Narrative profile ignores adverbs |
-| Performance degradation with complex patterns | Medium | Low | Cache regex, process sentences in parallel |
-| Profile switching causes UI flicker | Low | Medium | Debounce analysis, fade transitions |
-| Custom profile creation complexity | Low | Low | Defer custom profiles to Teams tier, start with built-in only |
-| Word lists incomplete or culturally biased | Medium | Medium | Make lists configurable, allow additions via settings |
-| Passive voice detection accuracy varies by sentence structure | Medium | High | Target 90% accuracy, document known limitations |
+| Risk                                                          | Impact | Probability | Mitigation                                                    |
+| :------------------------------------------------------------ | :----- | :---------- | :------------------------------------------------------------ |
+| Passive voice false positives (adjectives flagged as passive) | Medium | High        | Implement disambiguation heuristics, allow user dismissal     |
+| Adverb flagging too aggressive for creative writing           | Medium | Medium      | Profiles control flagging; Narrative profile ignores adverbs  |
+| Performance degradation with complex patterns                 | Medium | Low         | Cache regex, process sentences in parallel                    |
+| Profile switching causes UI flicker                           | Low    | Medium      | Debounce analysis, fade transitions                           |
+| Custom profile creation complexity                            | Low    | Low         | Defer custom profiles to Teams tier, start with built-in only |
+| Word lists incomplete or culturally biased                    | Medium | Medium      | Make lists configurable, allow additions via settings         |
+| Passive voice detection accuracy varies by sentence structure | Medium | High        | Target 90% accuracy, document known limitations               |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Passive voice detection accuracy | 90%+ | Test against labeled corpus |
-| False positive rate (adjectives as passive) | < 10% | Manual review of flagged sentences |
-| Weak word scanning (1,000 words) | < 20ms | Stopwatch timing |
-| Profile switch + re-analysis | < 500ms | End-to-end timing |
-| Voice analysis time (1,000 words) | < 100ms | Stopwatch timing |
-| Memory usage (analysis) | < 10MB overhead | Memory profiler |
+| Metric                                      | Target          | Measurement                        |
+| :------------------------------------------ | :-------------- | :--------------------------------- |
+| Passive voice detection accuracy            | 90%+            | Test against labeled corpus        |
+| False positive rate (adjectives as passive) | < 10%           | Manual review of flagged sentences |
+| Weak word scanning (1,000 words)            | < 20ms          | Stopwatch timing                   |
+| Profile switch + re-analysis                | < 500ms         | End-to-end timing                  |
+| Voice analysis time (1,000 words)           | < 100ms         | Stopwatch timing                   |
+| Memory usage (analysis)                     | < 10MB overhead | Memory profiler                    |
 
 ---
 
@@ -1001,17 +1001,17 @@ START: "Can user select this profile?"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                     |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :------------------------------------------------------ |
-| US-01 | Writer Pro User | As a writer, I want to select a Voice Profile so my analysis matches my content type. | Profile dropdown shows 5 built-in profiles.            |
-| US-02 | Writer Pro User | As a writer, I want passive voice highlighted so I can strengthen my prose.           | Passive sentences show blue squiggly underline.        |
-| US-03 | Writer Pro User | As a writer, I want adverbs flagged so I can tighten my writing.                      | "Very", "really", etc. show Info-level highlight.      |
-| US-04 | Writer Pro User | As a writer, I want weasel words flagged so I write more confidently.                 | "Perhaps", "maybe", etc. show Info-level highlight.    |
-| US-05 | Writer Pro User | As a writer, I want to see profile constraints so I understand the rules.             | Tooltip shows grade level, sentence length, flags.     |
-| US-06 | Core User       | As a free user, I understand Voice Profiles are a premium feature.                    | Dropdown shows lock icon and upgrade prompt.           |
-| US-07 | Technical Writer| As a tech writer, I want strict passive voice rules in Technical profile.             | Technical profile forbids passive voice entirely.      |
-| US-08 | Marketing Writer| As a marketer, I want relaxed adverb rules in Marketing profile.                      | Marketing profile doesn't flag adverbs.                |
-| US-09 | Developer       | As a developer, I want profile switch to trigger instant re-analysis.                 | Switching profiles updates squigglies within 500ms.    |
+| ID    | Role             | Story                                                                                 | Acceptance Criteria                                 |
+| :---- | :--------------- | :------------------------------------------------------------------------------------ | :-------------------------------------------------- |
+| US-01 | Writer Pro User  | As a writer, I want to select a Voice Profile so my analysis matches my content type. | Profile dropdown shows 5 built-in profiles.         |
+| US-02 | Writer Pro User  | As a writer, I want passive voice highlighted so I can strengthen my prose.           | Passive sentences show blue squiggly underline.     |
+| US-03 | Writer Pro User  | As a writer, I want adverbs flagged so I can tighten my writing.                      | "Very", "really", etc. show Info-level highlight.   |
+| US-04 | Writer Pro User  | As a writer, I want weasel words flagged so I write more confidently.                 | "Perhaps", "maybe", etc. show Info-level highlight. |
+| US-05 | Writer Pro User  | As a writer, I want to see profile constraints so I understand the rules.             | Tooltip shows grade level, sentence length, flags.  |
+| US-06 | Core User        | As a free user, I understand Voice Profiles are a premium feature.                    | Dropdown shows lock icon and upgrade prompt.        |
+| US-07 | Technical Writer | As a tech writer, I want strict passive voice rules in Technical profile.             | Technical profile forbids passive voice entirely.   |
+| US-08 | Marketing Writer | As a marketer, I want relaxed adverb rules in Marketing profile.                      | Marketing profile doesn't flag adverbs.             |
+| US-09 | Developer        | As a developer, I want profile switch to trigger instant re-analysis.                 | Switching profiles updates squigglies within 500ms. |
 
 ---
 
@@ -1063,10 +1063,10 @@ START: "Can user select this profile?"
 5. `PassiveVoiceDetector` analyzes each sentence.
 6. Detector finds "was written" pattern.
 7. Detector returns `PassiveVoiceMatch` with:
-   - Sentence: "The code was written by the developer."
-   - PassiveConstruction: "was written"
-   - Confidence: 0.95
-   - Suggestion: "Consider: 'The developer wrote the code.'"
+    - Sentence: "The code was written by the developer."
+    - PassiveConstruction: "was written"
+    - Confidence: 0.95
+    - Suggestion: "Consider: 'The developer wrote the code.'"
 8. System creates `StyleViolation` with `Severity.Warning` (profile forbids passive).
 9. Editor shows warning squiggly under "was written".
 10. User hovers, sees tooltip with suggestion.
@@ -1431,21 +1431,21 @@ public class ProfileSelectorViewModelTests
 
 ## 15. Observability & Logging
 
-| Level   | Source                | Message Template                                                       |
-| :------ | :-------------------- | :--------------------------------------------------------------------- |
-| Debug   | VoiceProfileService   | `Loading voice profiles from repository`                               |
-| Info    | VoiceProfileService   | `Active profile changed: {PreviousProfile} -> {NewProfile}`            |
-| Debug   | VoiceProfileService   | `Profile {ProfileName} loaded with {ConstraintCount} constraints`      |
-| Debug   | PassiveVoiceDetector  | `Analyzing {SentenceCount} sentences for passive voice`                |
-| Trace   | PassiveVoiceDetector  | `Passive voice detected: '{Construction}' confidence {Confidence:F2}`  |
-| Debug   | PassiveVoiceDetector  | `Detection completed: {PassiveCount} passive sentences found`          |
-| Debug   | WeakWordScanner       | `Scanning for weak words with profile {ProfileName}`                   |
-| Trace   | WeakWordScanner       | `Weak word found: '{Word}' category {Category} at position {Position}` |
-| Debug   | WeakWordScanner       | `Scan completed: {MatchCount} weak words found in {ElapsedMs}ms`       |
-| Warning | PassiveVoiceDetector  | `Low confidence detection ({Confidence:F2}): '{Sentence}'`             |
-| Debug   | ProfileSelectorVM     | `Profile dropdown opened, {ProfileCount} profiles available`           |
-| Debug   | ProfileSelectorVM     | `User selected profile: {ProfileName}`                                 |
-| Warning | ProfileSelectorVM     | `License check failed for Voice Profiles feature`                      |
+| Level   | Source               | Message Template                                                       |
+| :------ | :------------------- | :--------------------------------------------------------------------- |
+| Debug   | VoiceProfileService  | `Loading voice profiles from repository`                               |
+| Info    | VoiceProfileService  | `Active profile changed: {PreviousProfile} -> {NewProfile}`            |
+| Debug   | VoiceProfileService  | `Profile {ProfileName} loaded with {ConstraintCount} constraints`      |
+| Debug   | PassiveVoiceDetector | `Analyzing {SentenceCount} sentences for passive voice`                |
+| Trace   | PassiveVoiceDetector | `Passive voice detected: '{Construction}' confidence {Confidence:F2}`  |
+| Debug   | PassiveVoiceDetector | `Detection completed: {PassiveCount} passive sentences found`          |
+| Debug   | WeakWordScanner      | `Scanning for weak words with profile {ProfileName}`                   |
+| Trace   | WeakWordScanner      | `Weak word found: '{Word}' category {Category} at position {Position}` |
+| Debug   | WeakWordScanner      | `Scan completed: {MatchCount} weak words found in {ElapsedMs}ms`       |
+| Warning | PassiveVoiceDetector | `Low confidence detection ({Confidence:F2}): '{Sentence}'`             |
+| Debug   | ProfileSelectorVM    | `Profile dropdown opened, {ProfileCount} profiles available`           |
+| Debug   | ProfileSelectorVM    | `User selected profile: {ProfileName}`                                 |
+| Warning | ProfileSelectorVM    | `License check failed for Voice Profiles feature`                      |
 
 ---
 
@@ -1490,53 +1490,53 @@ Dimensions:
 
 ### 16.3 Component Styling Requirements
 
-| Component           | Theme Resource             | Notes                            |
-| :------------------ | :------------------------- | :------------------------------- |
-| Selector Container  | `Brush.Surface.Overlay`    | Status bar background            |
-| Selector Border     | `Brush.Border.Subtle`      | 1px on hover                     |
-| Dropdown Background | `Brush.Surface.Floating`   | Elevated surface                 |
-| Selected Item       | `Brush.Accent.Soft`        | Background highlight             |
-| Checkmark Icon      | `Brush.Accent.Primary`     | 16x16, left of text              |
-| Hover Item          | `Brush.Surface.Hover`      | Subtle highlight                 |
-| Separator           | `Brush.Border.Subtle`      | 1px horizontal                   |
-| Disabled Text       | `Brush.Text.Disabled`      | For Core users                   |
+| Component           | Theme Resource           | Notes                 |
+| :------------------ | :----------------------- | :-------------------- |
+| Selector Container  | `Brush.Surface.Overlay`  | Status bar background |
+| Selector Border     | `Brush.Border.Subtle`    | 1px on hover          |
+| Dropdown Background | `Brush.Surface.Floating` | Elevated surface      |
+| Selected Item       | `Brush.Accent.Soft`      | Background highlight  |
+| Checkmark Icon      | `Brush.Accent.Primary`   | 16x16, left of text   |
+| Hover Item          | `Brush.Surface.Hover`    | Subtle highlight      |
+| Separator           | `Brush.Border.Subtle`    | 1px horizontal        |
+| Disabled Text       | `Brush.Text.Disabled`    | For Core users        |
 
 ### 16.4 Violation Styling (Squigglies)
 
-| Violation Type | Severity | Squiggly Color | Notes |
-| :------------- | :------- | :------------- | :---- |
-| Passive Voice (forbidden) | Warning | Yellow (#eab308) | Profile forbids passive |
-| Passive Voice (over threshold) | Info | Blue (#4a9eff) | Exceeds percentage |
-| Adverb | Info | Blue (#4a9eff) | Style suggestion |
-| Weasel Word | Info | Blue (#4a9eff) | Style suggestion |
-| Filler Word | Info | Blue (#4a9eff) | Always flagged |
+| Violation Type                 | Severity | Squiggly Color   | Notes                   |
+| :----------------------------- | :------- | :--------------- | :---------------------- |
+| Passive Voice (forbidden)      | Warning  | Yellow (#eab308) | Profile forbids passive |
+| Passive Voice (over threshold) | Info     | Blue (#4a9eff)   | Exceeds percentage      |
+| Adverb                         | Info     | Blue (#4a9eff)   | Style suggestion        |
+| Weasel Word                    | Info     | Blue (#4a9eff)   | Style suggestion        |
+| Filler Word                    | Info     | Blue (#4a9eff)   | Always flagged          |
 
 ---
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Profile]**       | 5 built-in profiles available: Technical, Marketing, Academic, Narrative, Casual |
-| 2   | **[Profile]**       | Profile selection persists across sessions via configuration                 |
-| 3   | **[Profile]**       | Profile switch publishes `ProfileChangedEvent`                               |
-| 4   | **[Profile]**       | Profile tooltip shows all constraints summary                                |
-| 5   | **[Passive]**       | "The code was written by the developer." flagged as passive                  |
-| 6   | **[Passive]**       | "The developer wrote the code." NOT flagged                                  |
-| 7   | **[Passive]**       | "The door is closed." NOT flagged (adjective)                                |
-| 8   | **[Passive]**       | Passive voice shows Warning severity when profile forbids it                 |
-| 9   | **[Passive]**       | Passive voice shows Info severity when over threshold                        |
-| 10  | **[Weak Words]**    | "very", "really", "quite" flagged as adverbs                                 |
-| 11  | **[Weak Words]**    | "perhaps", "maybe", "somewhat" flagged as weasel words                       |
-| 12  | **[Weak Words]**    | "basically", "actually" flagged as filler (always)                           |
-| 13  | **[Weak Words]**    | Multi-word phrases "sort of", "kind of" detected                             |
-| 14  | **[UI]**            | Profile Selector appears in Status Bar (right section)                       |
-| 15  | **[UI]**            | Dropdown shows checkmark on selected profile                                 |
-| 16  | **[UI]**            | Profile switch triggers re-analysis within 500ms                             |
-| 17  | **[Performance]**   | Voice analysis of 1,000 words completes in < 100ms                           |
-| 18  | **[License Gate]**  | Core users see disabled dropdown with upgrade tooltip                        |
-| 19  | **[License Gate]**  | Core users cannot change profile selection                                   |
-| 20  | **[Integration]**   | Voice violations integrate with existing Problems Panel                      |
+| #   | Category           | Criterion                                                                        |
+| :-- | :----------------- | :------------------------------------------------------------------------------- |
+| 1   | **[Profile]**      | 5 built-in profiles available: Technical, Marketing, Academic, Narrative, Casual |
+| 2   | **[Profile]**      | Profile selection persists across sessions via configuration                     |
+| 3   | **[Profile]**      | Profile switch publishes `ProfileChangedEvent`                                   |
+| 4   | **[Profile]**      | Profile tooltip shows all constraints summary                                    |
+| 5   | **[Passive]**      | "The code was written by the developer." flagged as passive                      |
+| 6   | **[Passive]**      | "The developer wrote the code." NOT flagged                                      |
+| 7   | **[Passive]**      | "The door is closed." NOT flagged (adjective)                                    |
+| 8   | **[Passive]**      | Passive voice shows Warning severity when profile forbids it                     |
+| 9   | **[Passive]**      | Passive voice shows Info severity when over threshold                            |
+| 10  | **[Weak Words]**   | "very", "really", "quite" flagged as adverbs                                     |
+| 11  | **[Weak Words]**   | "perhaps", "maybe", "somewhat" flagged as weasel words                           |
+| 12  | **[Weak Words]**   | "basically", "actually" flagged as filler (always)                               |
+| 13  | **[Weak Words]**   | Multi-word phrases "sort of", "kind of" detected                                 |
+| 14  | **[UI]**           | Profile Selector appears in Status Bar (right section)                           |
+| 15  | **[UI]**           | Dropdown shows checkmark on selected profile                                     |
+| 16  | **[UI]**           | Profile switch triggers re-analysis within 500ms                                 |
+| 17  | **[Performance]**  | Voice analysis of 1,000 words completes in < 100ms                               |
+| 18  | **[License Gate]** | Core users see disabled dropdown with upgrade tooltip                            |
+| 19  | **[License Gate]** | Core users cannot change profile selection                                       |
+| 20  | **[Integration]**  | Voice violations integrate with existing Problems Panel                          |
 
 ---
 
@@ -1574,35 +1574,35 @@ dotnet test --filter "Version=v0.3.4"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `VoiceProfile` record with all constraint properties           | [ ]    |
-| 2  | `IVoiceProfileService` interface                               | [ ]    |
-| 3  | `VoiceProfileService` implementation                           | [ ]    |
-| 4  | `VoiceProfileRepository` with SQLite persistence               | [ ]    |
-| 5  | 5 built-in profile seeds                                       | [ ]    |
-| 6  | `ProfileChangedEvent` MediatR notification                     | [ ]    |
-| 7  | `IPassiveVoiceDetector` interface                              | [ ]    |
-| 8  | `PassiveVoiceDetector` implementation with patterns            | [ ]    |
-| 9  | `PassiveVoiceMatch` record                                     | [ ]    |
-| 10 | Adjective vs. passive disambiguation logic                     | [ ]    |
-| 11 | `IWeakWordScanner` interface                                   | [ ]    |
-| 12 | `WeakWordScanner` implementation                               | [ ]    |
-| 13 | `WeakWordMatch` record and `WeakWordCategory` enum             | [ ]    |
-| 14 | Static word lists (adverbs, weasels, fillers)                  | [ ]    |
-| 15 | Multi-word phrase detection                                    | [ ]    |
-| 16 | `ProfileSelectorView.axaml`                                    | [ ]    |
-| 17 | `ProfileSelectorViewModel`                                     | [ ]    |
-| 18 | Profile dropdown with tooltips                                 | [ ]    |
-| 19 | License gating UI for Core users                               | [ ]    |
-| 20 | `IVoiceAnalysisService` orchestrator                           | [ ]    |
-| 21 | Integration with `LintingOrchestrator`                         | [ ]    |
-| 22 | Unit tests for VoiceProfileService                             | [ ]    |
-| 23 | Unit tests for PassiveVoiceDetector                            | [ ]    |
-| 24 | Unit tests for WeakWordScanner                                 | [ ]    |
-| 25 | Unit tests for ProfileSelectorViewModel                        | [ ]    |
-| 26 | Integration tests for analysis pipeline                        | [ ]    |
-| 27 | DI registration in StyleModule.cs                              | [ ]    |
+| #   | Deliverable                                          | Status |
+| :-- | :--------------------------------------------------- | :----- |
+| 1   | `VoiceProfile` record with all constraint properties | [ ]    |
+| 2   | `IVoiceProfileService` interface                     | [ ]    |
+| 3   | `VoiceProfileService` implementation                 | [ ]    |
+| 4   | `VoiceProfileRepository` with SQLite persistence     | [ ]    |
+| 5   | 5 built-in profile seeds                             | [ ]    |
+| 6   | `ProfileChangedEvent` MediatR notification           | [ ]    |
+| 7   | `IPassiveVoiceDetector` interface                    | [ ]    |
+| 8   | `PassiveVoiceDetector` implementation with patterns  | [ ]    |
+| 9   | `PassiveVoiceMatch` record                           | [ ]    |
+| 10  | Adjective vs. passive disambiguation logic           | [ ]    |
+| 11  | `IWeakWordScanner` interface                         | [ ]    |
+| 12  | `WeakWordScanner` implementation                     | [ ]    |
+| 13  | `WeakWordMatch` record and `WeakWordCategory` enum   | [ ]    |
+| 14  | Static word lists (adverbs, weasels, fillers)        | [ ]    |
+| 15  | Multi-word phrase detection                          | [ ]    |
+| 16  | `ProfileSelectorView.axaml`                          | [ ]    |
+| 17  | `ProfileSelectorViewModel`                           | [ ]    |
+| 18  | Profile dropdown with tooltips                       | [ ]    |
+| 19  | License gating UI for Core users                     | [ ]    |
+| 20  | `IVoiceAnalysisService` orchestrator                 | [ ]    |
+| 21  | Integration with `LintingOrchestrator`               | [ ]    |
+| 22  | Unit tests for VoiceProfileService                   | [ ]    |
+| 23  | Unit tests for PassiveVoiceDetector                  | [ ]    |
+| 24  | Unit tests for WeakWordScanner                       | [ ]    |
+| 25  | Unit tests for ProfileSelectorViewModel              | [ ]    |
+| 26  | Integration tests for analysis pipeline              | [ ]    |
+| 27  | DI registration in StyleModule.cs                    | [ ]    |
 
 ---
 
@@ -2058,15 +2058,15 @@ public class WeakWordScanner : IWeakWordScanner
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Custom profile creation UI      | v0.3.6      | Requires Teams license infrastructure           |
-| AI-powered rewriting suggestions| v0.4.x      | Depends on Agent module                         |
-| Sentence-level highlighting     | v0.3.5      | Resonance Dashboard will add granular views     |
-| Part-of-speech tagging (NLP)    | v0.4.x      | Requires NLP library integration                |
-| Non-English language support    | v0.5.x      | Requires separate word lists per language       |
-| Organization profile sharing    | Enterprise  | Requires team collaboration features            |
-| Profile analytics/metrics       | v0.3.5      | Resonance Dashboard feature                     |
+| Feature                          | Deferred To | Reason                                      |
+| :------------------------------- | :---------- | :------------------------------------------ |
+| Custom profile creation UI       | v0.3.6      | Requires Teams license infrastructure       |
+| AI-powered rewriting suggestions | v0.4.x      | Depends on Agent module                     |
+| Sentence-level highlighting      | v0.3.5      | Resonance Dashboard will add granular views |
+| Part-of-speech tagging (NLP)     | v0.4.x      | Requires NLP library integration            |
+| Non-English language support     | v0.5.x      | Requires separate word lists per language   |
+| Organization profile sharing     | Enterprise  | Requires team collaboration features        |
+| Profile analytics/metrics        | v0.3.5      | Resonance Dashboard feature                 |
 
 ---
 

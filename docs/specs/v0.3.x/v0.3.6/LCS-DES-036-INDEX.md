@@ -2,18 +2,18 @@
 
 ## Document Control
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-036-INDEX |
-| **Feature ID** | INF-036 |
-| **Feature Name** | The Global Dictionary (Project Settings) |
-| **Target Version** | v0.3.6 |
-| **Module Scope** | Lexichord.Modules.Style |
-| **Swimlane** | Infrastructure |
-| **License Tier** | Writer Pro |
-| **Feature Gate Key** | `FeatureFlags.Style.GlobalDictionary` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-26 |
+| Field                | Value                                    |
+| :------------------- | :--------------------------------------- |
+| **Document ID**      | LCS-DES-036-INDEX                        |
+| **Feature ID**       | INF-036                                  |
+| **Feature Name**     | The Global Dictionary (Project Settings) |
+| **Target Version**   | v0.3.6                                   |
+| **Module Scope**     | Lexichord.Modules.Style                  |
+| **Swimlane**         | Infrastructure                           |
+| **License Tier**     | Writer Pro                               |
+| **Feature Gate Key** | `FeatureFlags.Style.GlobalDictionary`    |
+| **Status**           | Draft                                    |
+| **Last Updated**     | 2026-01-26                               |
 
 ---
 
@@ -36,14 +36,14 @@ Implement a Global Dictionary system that:
 
 ### 1.3 Business Value
 
-| Value | Description |
-| :--- | :--- |
-| **Project Context** | Writers maintain different style rules per project without manual switching |
-| **Team Consistency** | Teams share project-level configurations via version control |
-| **Override Hierarchy** | Project rules always win over global defaults |
-| **Ignore Files** | Skip analysis on generated files, minimized assets, and third-party content |
-| **Enterprise Ready** | Organizations distribute approved configurations across projects |
-| **Foundation** | Enables future workspace presets and configuration templates |
+| Value                  | Description                                                                 |
+| :--------------------- | :-------------------------------------------------------------------------- |
+| **Project Context**    | Writers maintain different style rules per project without manual switching |
+| **Team Consistency**   | Teams share project-level configurations via version control                |
+| **Override Hierarchy** | Project rules always win over global defaults                               |
+| **Ignore Files**       | Skip analysis on generated files, minimized assets, and third-party content |
+| **Enterprise Ready**   | Organizations distribute approved configurations across projects            |
+| **Foundation**         | Enables future workspace presets and configuration templates                |
 
 ---
 
@@ -53,20 +53,20 @@ Implement a Global Dictionary system that:
 
 The detailed scope breakdown for v0.3.6, including all sub-parts, implementation checklists, user stories, and acceptance criteria:
 
-| Document | Description |
-| :--- | :--- |
+| Document                            | Description                             |
+| :---------------------------------- | :-------------------------------------- |
 | **[LCS-SBD-036](./LCS-SBD-036.md)** | Scope Breakdown — The Global Dictionary |
 
 ### 2.2 Sub-Part Design Specifications
 
 Each sub-part has its own detailed design specification following the LDS-01 template:
 
-| Sub-Part | Document | Title | Description |
-| :--- | :--- | :--- | :--- |
-| v0.3.6a | **[LCS-DES-036a](./LCS-DES-036a.md)** | Layered Configuration | ConfigurationProvider merging dictionaries |
-| v0.3.6b | **[LCS-DES-036b](./LCS-DES-036b.md)** | Conflict Resolution | Project-wins semantics for conflicts |
-| v0.3.6c | **[LCS-DES-036c](./LCS-DES-036c.md)** | Override UI | Context menu for "Ignore rule for this project" |
-| v0.3.6d | **[LCS-DES-036d](./LCS-DES-036d.md)** | Ignored Files | `.lexichordignore` with glob patterns |
+| Sub-Part | Document                              | Title                 | Description                                     |
+| :------- | :------------------------------------ | :-------------------- | :---------------------------------------------- |
+| v0.3.6a  | **[LCS-DES-036a](./LCS-DES-036a.md)** | Layered Configuration | ConfigurationProvider merging dictionaries      |
+| v0.3.6b  | **[LCS-DES-036b](./LCS-DES-036b.md)** | Conflict Resolution   | Project-wins semantics for conflicts            |
+| v0.3.6c  | **[LCS-DES-036c](./LCS-DES-036c.md)** | Override UI           | Context menu for "Ignore rule for this project" |
+| v0.3.6d  | **[LCS-DES-036d](./LCS-DES-036d.md)** | Ignored Files         | `.lexichordignore` with glob patterns           |
 
 ---
 
@@ -254,44 +254,44 @@ sequenceDiagram
 
 ### 4.1 Upstream Dependencies (Required)
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IVoiceProfileService` | v0.3.4a | Project-level profile defaults |
-| `VoiceProfile` | v0.3.4a | Profile constraints from configuration |
-| `ProfileChangedEvent` | v0.3.4a | Trigger on profile default change |
-| `IChartDataService` | v0.3.5a | Project-level dashboard configuration |
-| `IReadabilityService` | v0.3.3c | Readability thresholds per project |
-| `ITerminologyRepository` | v0.2.2b | Project-specific term additions/exclusions |
-| `StyleTerm` | v0.2.2a | Term override model |
-| `ILintingOrchestrator` | v0.2.3a | Integration point for triggering re-analysis |
-| `StyleViolation` | v0.2.1b | Override violations at project level |
-| `IQuickFixService` | v0.2.4d | Context menu integration |
-| `IProblemsPanelViewModel` | v0.2.6a | Problems panel integration |
-| `IWorkspaceService` | v0.1.2a | Detect current workspace root |
-| `WorkspaceOpenedEvent` | v0.1.2a | Trigger project config loading |
-| `WorkspaceClosedEvent` | v0.1.2a | Clear project config cache |
-| `IRobustFileSystemWatcher` | v0.1.2b | Config file change detection |
-| `ILicenseContext` | v0.0.4c | License tier checking |
-| `IConfigurationService` | v0.0.3d | User-level preference storage |
-| `ViewModelBase` | v0.1.1 | MVVM base class |
+| Interface                  | Source Version        | Purpose                                                            |
+| :------------------------- | :-------------------- | :----------------------------------------------------------------- |
+| `IVoiceProfileService`     | v0.3.4a               | Project-level profile defaults                                     |
+| `VoiceProfile`             | v0.3.4a               | Profile constraints from configuration                             |
+| `ProfileChangedEvent`      | v0.3.4a               | Trigger on profile default change                                  |
+| `IChartDataService`        | v0.3.5a               | Project-level dashboard configuration                              |
+| `IReadabilityService`      | v0.3.3c               | Readability thresholds per project                                 |
+| `ITerminologyRepository`   | v0.2.2b               | Project-specific term additions/exclusions                         |
+| `StyleTerm`                | v0.2.2a               | Term override model                                                |
+| `ILintingOrchestrator`     | v0.2.3a               | Integration point for triggering re-analysis                       |
+| `StyleViolation`           | v0.2.1b               | Override violations at project level                               |
+| `IQuickFixService`         | v0.2.4d               | Context menu integration                                           |
+| `IProblemsPanelViewModel`  | v0.2.6a               | Problems panel integration                                         |
+| `IWorkspaceService`        | v0.1.2a               | Detect current workspace root                                      |
+| `WorkspaceOpenedEvent`     | v0.1.2a               | Trigger project config loading                                     |
+| `WorkspaceClosedEvent`     | v0.1.2a               | Clear project config cache                                         |
+| `IRobustFileSystemWatcher` | v0.1.2b               | Config file change detection                                       |
+| `ILicenseContext`          | v0.0.4c               | License tier checking                                              |
+| `IConfiguration`           | v0.0.3d               | User-level preference storage (Microsoft.Extensions.Configuration) |
+| `ViewModelBase`            | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet)                         |
 
 ### 4.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `YamlDotNet` | 16.x | YAML parsing/serialization |
-| `Microsoft.Extensions.FileSystemGlobbing` | 9.x | Glob pattern matching |
-| `System.Reactive` | 6.x | File watcher debouncing |
-| `MediatR` | 12.x | Event publishing/handling |
-| `CommunityToolkit.Mvvm` | 8.x | MVVM source generators |
+| Package                                   | Version | Purpose                    |
+| :---------------------------------------- | :------ | :------------------------- |
+| `YamlDotNet`                              | 16.x    | YAML parsing/serialization |
+| `Microsoft.Extensions.FileSystemGlobbing` | 9.x     | Glob pattern matching      |
+| `System.Reactive`                         | 6.x     | File watcher debouncing    |
+| `MediatR`                                 | 12.x    | Event publishing/handling  |
+| `CommunityToolkit.Mvvm`                   | 8.x     | MVVM source generators     |
 
 ### 4.3 Downstream Consumers (Future)
 
-| Version | Feature | Consumes |
-| :--- | :--- | :--- |
-| v0.3.7 | Performance Tuning | `IIgnorePatternService` for skip-before-analysis |
-| v0.4.x | Configuration Templates | `ILayeredConfigurationProvider` for template loading |
-| v0.4.x | Configuration Inspector | `IConflictResolver` for source visualization |
+| Version | Feature                 | Consumes                                             |
+| :------ | :---------------------- | :--------------------------------------------------- |
+| v0.3.7  | Performance Tuning      | `IIgnorePatternService` for skip-before-analysis     |
+| v0.4.x  | Configuration Templates | `ILayeredConfigurationProvider` for template loading |
+| v0.4.x  | Configuration Inspector | `IConflictResolver` for source visualization         |
 
 ---
 
@@ -301,12 +301,12 @@ The Global Dictionary is a **Writer Pro** feature using a **Soft Gate** strategy
 
 ### 5.1 Behavior by License Tier
 
-| Tier | Project Config | Override UI | Ignore Patterns | Configuration Sources |
-| :--- | :--- | :--- | :--- | :--- |
-| Core | Ignored | Disabled + lock icon | Limited to 5 | System + User only |
-| Writer Pro | Full access | Full access | Unlimited | System + User + Project |
-| Teams | Full access | Full access | Unlimited | All sources |
-| Enterprise | Full access | Full access | Unlimited | All sources |
+| Tier       | Project Config | Override UI          | Ignore Patterns | Configuration Sources   |
+| :--------- | :------------- | :------------------- | :-------------- | :---------------------- |
+| Core       | Ignored        | Disabled + lock icon | Limited to 5    | System + User only      |
+| Writer Pro | Full access    | Full access          | Unlimited       | System + User + Project |
+| Teams      | Full access    | Full access          | Unlimited       | All sources             |
+| Enterprise | Full access    | Full access          | Unlimited       | All sources             |
 
 ### 5.2 Implementation Pattern
 
@@ -371,12 +371,12 @@ PRIORITY (highest to lowest):
 
 ### 6.2 Storage Locations
 
-| Source | Path | Scope |
-| :--- | :--- | :--- |
-| System | `Lexichord.Modules.Style/Resources/defaults.yaml` | All users |
-| User | `%APPDATA%/Lexichord/style/user.yaml` (Windows) | Current user |
-| User | `~/.config/lexichord/style/user.yaml` (Linux/macOS) | Current user |
-| Project | `{workspace}/.lexichord/style.yaml` | Current workspace |
+| Source  | Path                                                | Scope             |
+| :------ | :-------------------------------------------------- | :---------------- |
+| System  | `Lexichord.Modules.Style/Resources/defaults.yaml`   | All users         |
+| User    | `%APPDATA%/Lexichord/style/user.yaml` (Windows)     | Current user      |
+| User    | `~/.config/lexichord/style/user.yaml` (Linux/macOS) | Current user      |
+| Project | `{workspace}/.lexichord/style.yaml`                 | Current workspace |
 
 ### 6.3 Configuration File Structure
 
@@ -386,69 +386,69 @@ version: 1
 
 # Profile settings
 profile:
-  default: Technical
-  allow_switching: true
+    default: Technical
+    allow_switching: true
 
 # Readability constraints
 readability:
-  target_grade_level: 10
-  max_sentence_length: 25
-  tolerance: 2
+    target_grade_level: 10
+    max_sentence_length: 25
+    tolerance: 2
 
 # Voice analysis settings
 voice:
-  passive_voice_threshold: 15
-  flag_adverbs: true
-  flag_weasels: true
+    passive_voice_threshold: 15
+    flag_adverbs: true
+    flag_weasels: true
 
 # Term overrides
 terminology:
-  additions:
-    - pattern: "proprietary-term"
-      recommendation: "Use 'standard-term' instead"
-      severity: warning
-  exclusions:
-    - "whitelist"   # Allow this term in this project
-    - "blacklist"   # Allow this term in this project
+    additions:
+        - pattern: "proprietary-term"
+          recommendation: "Use 'standard-term' instead"
+          severity: warning
+    exclusions:
+        - "whitelist" # Allow this term in this project
+        - "blacklist" # Allow this term in this project
 
 # Ignored rules
 ignored_rules:
-  - "TERM-001"      # Specific rule ID
-  - "PASSIVE-*"     # Wildcard pattern
+    - "TERM-001" # Specific rule ID
+    - "PASSIVE-*" # Wildcard pattern
 ```
 
 ---
 
 ## 7. Key Interfaces Summary
 
-| Interface | Defined In | Purpose |
-| :--- | :--- | :--- |
-| `ILayeredConfigurationProvider` | v0.3.6a | Hierarchical configuration access |
-| `IConflictResolver` | v0.3.6b | Configuration conflict resolution |
-| `IProjectConfigurationWriter` | v0.3.6c | Project config file updates |
-| `IIgnorePatternService` | v0.3.6d | Ignore file pattern matching |
+| Interface                       | Defined In | Purpose                           |
+| :------------------------------ | :--------- | :-------------------------------- |
+| `ILayeredConfigurationProvider` | v0.3.6a    | Hierarchical configuration access |
+| `IConflictResolver`             | v0.3.6b    | Configuration conflict resolution |
+| `IProjectConfigurationWriter`   | v0.3.6c    | Project config file updates       |
+| `IIgnorePatternService`         | v0.3.6d    | Ignore file pattern matching      |
 
-| Record/DTO | Defined In | Purpose |
-| :--- | :--- | :--- |
-| `StyleConfiguration` | v0.3.6a | Complete configuration settings |
-| `ConfigurationSource` | v0.3.6a | Priority level enum |
-| `ConfigurationChangedEventArgs` | v0.3.6a | Configuration change notification |
-| `ConfigurationConflict` | v0.3.6b | Conflict description record |
-| `TermAddition` | v0.3.6a | Project-specific term to flag |
-| `PatternsReloadedEventArgs` | v0.3.6d | Pattern reload notification |
+| Record/DTO                      | Defined In | Purpose                           |
+| :------------------------------ | :--------- | :-------------------------------- |
+| `StyleConfiguration`            | v0.3.6a    | Complete configuration settings   |
+| `ConfigurationSource`           | v0.3.6a    | Priority level enum               |
+| `ConfigurationChangedEventArgs` | v0.3.6a    | Configuration change notification |
+| `ConfigurationConflict`         | v0.3.6b    | Conflict description record       |
+| `TermAddition`                  | v0.3.6a    | Project-specific term to flag     |
+| `PatternsReloadedEventArgs`     | v0.3.6d    | Pattern reload notification       |
 
 ---
 
 ## 8. Implementation Checklist Summary
 
-| Sub-Part | Tasks | Est. Hours |
-| :--- | :--- | :--- |
-| v0.3.6a | Layered Configuration Provider | 13.5 |
-| v0.3.6b | Conflict Resolution | 8 |
-| v0.3.6c | Override UI | 11 |
-| v0.3.6d | Ignored Files | 8.5 |
-| Integration | DI, wiring, E2E tests | 3 |
-| **Total** | | **44 hours** |
+| Sub-Part    | Tasks                          | Est. Hours   |
+| :---------- | :----------------------------- | :----------- |
+| v0.3.6a     | Layered Configuration Provider | 13.5         |
+| v0.3.6b     | Conflict Resolution            | 8            |
+| v0.3.6c     | Override UI                    | 11           |
+| v0.3.6d     | Ignored Files                  | 8.5          |
+| Integration | DI, wiring, E2E tests          | 3            |
+| **Total**   |                                | **44 hours** |
 
 See [LCS-SBD-036](./LCS-SBD-036.md) Section 4 for the detailed task breakdown.
 
@@ -456,15 +456,15 @@ See [LCS-SBD-036](./LCS-SBD-036.md) Section 4 for the detailed task breakdown.
 
 ## 9. Success Criteria Summary
 
-| Category | Criterion | Target |
-| :--- | :--- | :--- |
-| **Performance** | Configuration load time | < 50ms |
-| **Performance** | Configuration merge time | < 10ms |
-| **Performance** | File change detection latency | < 500ms |
-| **Performance** | Glob pattern matching (1000 files) | < 100ms |
-| **Performance** | Override action latency | < 200ms |
-| **Reliability** | YAML file size limit | < 100KB |
-| **License** | Pattern count limit (Core) | 5 patterns |
+| Category        | Criterion                          | Target     |
+| :-------------- | :--------------------------------- | :--------- |
+| **Performance** | Configuration load time            | < 50ms     |
+| **Performance** | Configuration merge time           | < 10ms     |
+| **Performance** | File change detection latency      | < 500ms    |
+| **Performance** | Glob pattern matching (1000 files) | < 100ms    |
+| **Performance** | Override action latency            | < 200ms    |
+| **Reliability** | YAML file size limit               | < 100KB    |
+| **License**     | Pattern count limit (Core)         | 5 patterns |
 
 See [LCS-SBD-036](./LCS-SBD-036.md) Section 9 for full success metrics.
 
@@ -472,12 +472,12 @@ See [LCS-SBD-036](./LCS-SBD-036.md) Section 9 for full success metrics.
 
 ## 10. Test Coverage Summary
 
-| Sub-Part | Unit Tests | Integration Tests |
-| :--- | :--- | :--- |
-| v0.3.6a | Configuration merging, caching | Workspace-triggered loading |
-| v0.3.6b | Conflict detection, term resolution | End-to-end conflict logging |
-| v0.3.6c | Override commands, license gating | Full override flow |
-| v0.3.6d | Glob matching, negation patterns | Linting orchestrator integration |
+| Sub-Part | Unit Tests                          | Integration Tests                |
+| :------- | :---------------------------------- | :------------------------------- |
+| v0.3.6a  | Configuration merging, caching      | Workspace-triggered loading      |
+| v0.3.6b  | Conflict detection, term resolution | End-to-end conflict logging      |
+| v0.3.6c  | Override commands, license gating   | Full override flow               |
+| v0.3.6d  | Glob matching, negation patterns    | Linting orchestrator integration |
 
 See individual design specs for detailed test scenarios.
 
@@ -485,18 +485,18 @@ See individual design specs for detailed test scenarios.
 
 ## 11. What This Enables
 
-| Version | Feature | Uses From v0.3.6 |
-| :--- | :--- | :--- |
-| v0.3.7 | Performance Tuning | Skip ignored files before analysis |
-| v0.3.8 | Hardening | Test configuration edge cases |
-| v0.4.x | Configuration Templates | Pre-built configs for project types |
-| v0.4.x | Configuration Inspector | Visual source debugging |
-| v0.5.x | Cloud Sync | Team configuration sharing |
+| Version | Feature                 | Uses From v0.3.6                    |
+| :------ | :---------------------- | :---------------------------------- |
+| v0.3.7  | Performance Tuning      | Skip ignored files before analysis  |
+| v0.3.8  | Hardening               | Test configuration edge cases       |
+| v0.4.x  | Configuration Templates | Pre-built configs for project types |
+| v0.4.x  | Configuration Inspector | Visual source debugging             |
+| v0.5.x  | Cloud Sync              | Team configuration sharing          |
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-033a` | Sub-part of STY-033 |
-| **Feature Name** | `Abbreviation-Aware Sentence Tokenizer` | Robust text splitter |
-| **Target Version** | `v0.3.3a` | First sub-part of v0.3.3 |
-| **Module Scope** | `Lexichord.Modules.Style` | Style governance module |
-| **Swimlane** | `Governance` | Part of Style vertical |
-| **License Tier** | `Writer Pro` | Required for readability features |
-| **Feature Gate Key** | `FeatureFlags.Style.Readability` | Shared with parent feature |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-033-INDEX](./LCS-DES-033-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-033 §3.1](./LCS-SBD-033.md#31-v033a-sentence-tokenizer) | |
+| Field                | Value                                                            | Description                       |
+| :------------------- | :--------------------------------------------------------------- | :-------------------------------- |
+| **Feature ID**       | `STY-033a`                                                       | Sub-part of STY-033               |
+| **Feature Name**     | `Abbreviation-Aware Sentence Tokenizer`                          | Robust text splitter              |
+| **Target Version**   | `v0.3.3a`                                                        | First sub-part of v0.3.3          |
+| **Module Scope**     | `Lexichord.Modules.Style`                                        | Style governance module           |
+| **Swimlane**         | `Governance`                                                     | Part of Style vertical            |
+| **License Tier**     | `Writer Pro`                                                     | Required for readability features |
+| **Feature Gate Key** | `FeatureFlags.Style.Readability`                                 | Shared with parent feature        |
+| **Author**           | Lead Architect                                                   |                                   |
+| **Status**           | `Draft`                                                          |                                   |
+| **Last Updated**     | `2026-01-26`                                                     |                                   |
+| **Parent Document**  | [LCS-DES-033-INDEX](./LCS-DES-033-INDEX.md)                      |                                   |
+| **Scope Breakdown**  | [LCS-SBD-033 §3.1](./LCS-SBD-033.md#31-v033a-sentence-tokenizer) |                                   |
 
 ---
 
@@ -44,9 +44,9 @@ Implement an `ISentenceTokenizer` that:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IConfigurationService` | v0.0.3d | Custom abbreviation loading |
+| Interface        | Source Version | Purpose                     |
+| :--------------- | :------------- | :-------------------------- |
+| `IConfiguration` | v0.0.3d        | Custom abbreviation loading |
 
 #### 3.1.2 NuGet Packages
 
@@ -72,7 +72,7 @@ namespace Lexichord.Abstractions.Contracts;
 /// <para>The tokenizer SHALL NOT create false sentence breaks on periods within
 /// abbreviations (Mr., Dr., Inc., U.S.A., etc.).</para>
 /// <para>The tokenizer uses a standard dictionary of 50+ common English abbreviations.</para>
-/// <para>Custom abbreviations MAY be configured via <see cref="IConfigurationService"/>.</para>
+/// <para>Custom abbreviations MAY be configured via <see cref="IConfiguration"/>.</para>
 /// </remarks>
 /// <example>
 /// <code>
@@ -222,20 +222,20 @@ private static readonly HashSet<string> StandardAbbreviations = new(
 
 ### 5.4 Edge Case Handling
 
-| Edge Case | Input | Expected Sentences | Handling |
-| :--- | :--- | :--- | :--- |
-| Ellipsis | `"Wait... I see."` | 1 | Detect `...` pattern, don't split |
-| Multiple periods | `"Really?!."` | 1 | Treat as single terminal |
-| URLs | `"See https://example.com for info."` | 1 | Detect URL pattern, skip periods |
-| Decimal numbers | `"The value is 3.14 meters."` | 1 | Period between digits = not sentence end |
-| File extensions | `"Open file.txt now."` | 1 | Common extensions dictionary |
-| Quotations | `'He said "Hello." She replied.'` | 2 | Period inside quotes ends sentence |
+| Edge Case        | Input                                 | Expected Sentences | Handling                                 |
+| :--------------- | :------------------------------------ | :----------------- | :--------------------------------------- |
+| Ellipsis         | `"Wait... I see."`                    | 1                  | Detect `...` pattern, don't split        |
+| Multiple periods | `"Really?!."`                         | 1                  | Treat as single terminal                 |
+| URLs             | `"See https://example.com for info."` | 1                  | Detect URL pattern, skip periods         |
+| Decimal numbers  | `"The value is 3.14 meters."`         | 1                  | Period between digits = not sentence end |
+| File extensions  | `"Open file.txt now."`                | 1                  | Common extensions dictionary             |
+| Quotations       | `'He said "Hello." She replied.'`     | 2                  | Period inside quotes ends sentence       |
 
 ---
 
 ## 6. Data Persistence
 
-**None required.** The abbreviation dictionary is compiled into the assembly. Custom abbreviations are loaded from `IConfigurationService` at runtime.
+**None required.** The abbreviation dictionary is compiled into the assembly. Custom abbreviations are loaded from `IConfiguration` at runtime.
 
 ---
 
@@ -247,22 +247,22 @@ private static readonly HashSet<string> StandardAbbreviations = new(
 
 ## 8. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Tokenizing text: {CharCount} characters"` |
-| Debug | `"Found {SentenceCount} sentences"` |
+| Level | Message Template                                           |
+| :---- | :--------------------------------------------------------- |
+| Debug | `"Tokenizing text: {CharCount} characters"`                |
+| Debug | `"Found {SentenceCount} sentences"`                        |
 | Trace | `"Abbreviation detected: '{Word}' at position {Position}"` |
-| Trace | `"Sentence break confirmed at position {Position}"` |
-| Debug | `"Tokenization completed in {ElapsedMs}ms"` |
+| Trace | `"Sentence break confirmed at position {Position}"`        |
+| Debug | `"Tokenization completed in {ElapsedMs}ms"`                |
 
 ---
 
 ## 9. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| ReDoS (Regex DoS) | Low | Use simple patterns, no nested quantifiers |
-| Large input | Low | Process sequentially, no full-text copies |
+| Risk              | Level | Mitigation                                 |
+| :---------------- | :---- | :----------------------------------------- |
+| ReDoS (Regex DoS) | Low   | Use simple patterns, no nested quantifiers |
+| Large input       | Low   | Process sequentially, no full-text copies  |
 
 ---
 
@@ -270,25 +270,25 @@ private static readonly HashSet<string> StandardAbbreviations = new(
 
 ### 10.1 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Text `"Hello world."` | Tokenized | Returns 1 sentence |
-| 2 | Text `"Hello. World."` | Tokenized | Returns 2 sentences |
-| 3 | Text `"Mr. Smith went home."` | Tokenized | Returns 1 sentence |
-| 4 | Text `"Dr. Jones and Mrs. Smith met."` | Tokenized | Returns 1 sentence |
-| 5 | Text `"She works at Acme Inc. in NY."` | Tokenized | Returns 1 sentence |
-| 6 | Text `"The U.S.A. is a country. It is large."` | Tokenized | Returns 2 sentences |
-| 7 | Text `"Wait... I have an idea."` | Tokenized | Returns 1 sentence (ellipsis) |
-| 8 | Text `""` (empty) | Tokenized | Returns empty list |
-| 9 | Text `"   "` (whitespace) | Tokenized | Returns empty list |
-| 10 | Text `"Hello! World? Yes."` | Tokenized | Returns 3 sentences |
+| #   | Given                                          | When      | Then                          |
+| :-- | :--------------------------------------------- | :-------- | :---------------------------- |
+| 1   | Text `"Hello world."`                          | Tokenized | Returns 1 sentence            |
+| 2   | Text `"Hello. World."`                         | Tokenized | Returns 2 sentences           |
+| 3   | Text `"Mr. Smith went home."`                  | Tokenized | Returns 1 sentence            |
+| 4   | Text `"Dr. Jones and Mrs. Smith met."`         | Tokenized | Returns 1 sentence            |
+| 5   | Text `"She works at Acme Inc. in NY."`         | Tokenized | Returns 1 sentence            |
+| 6   | Text `"The U.S.A. is a country. It is large."` | Tokenized | Returns 2 sentences           |
+| 7   | Text `"Wait... I have an idea."`               | Tokenized | Returns 1 sentence (ellipsis) |
+| 8   | Text `""` (empty)                              | Tokenized | Returns empty list            |
+| 9   | Text `"   "` (whitespace)                      | Tokenized | Returns empty list            |
+| 10  | Text `"Hello! World? Yes."`                    | Tokenized | Returns 3 sentences           |
 
 ### 10.2 Performance Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 11 | Text with 1,000 sentences | Tokenized | Completes in < 20ms |
-| 12 | Text with 10,000 sentences | Tokenized | Completes in < 100ms |
+| #   | Given                      | When      | Then                 |
+| :-- | :------------------------- | :-------- | :------------------- |
+| 11  | Text with 1,000 sentences  | Tokenized | Completes in < 20ms  |
+| 12  | Text with 10,000 sentences | Tokenized | Completes in < 100ms |
 
 ---
 
@@ -587,6 +587,6 @@ services.AddSingleton<ISentenceTokenizer, SentenceTokenizer>();
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                                        |
-| :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-SBD-037                                                  |
-| **Version**      | v0.3.7                                                       |
-| **Codename**     | The Performance Tuning (Async Pipelines)                     |
-| **Status**       | Draft                                                        |
-| **Last Updated** | 2026-01-26                                                   |
-| **Owner**        | Lead Architect                                               |
+| Field            | Value                                                                                  |
+| :--------------- | :------------------------------------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-037                                                                            |
+| **Version**      | v0.3.7                                                                                 |
+| **Codename**     | The Performance Tuning (Async Pipelines)                                               |
+| **Status**       | Draft                                                                                  |
+| **Last Updated** | 2026-01-26                                                                             |
+| **Owner**        | Lead Architect                                                                         |
 | **Depends On**   | v0.3.6 (Global Dictionary), v0.2.3 (Linting Orchestrator), v0.3.3 (Readability Engine) |
 
 ---
@@ -50,21 +50,21 @@ The Performance Tuning is a **Core** feature. All license tiers benefit from per
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.3.7                                          |
-| :------------------------- | :------------- | :------------------------------------------------------- |
-| `ILintingOrchestrator`     | v0.2.3a        | Primary integration point for analysis pipeline          |
-| `LintingCompletedEvent`    | v0.2.3b        | Event to debounce and buffer                             |
-| `IStyleScanner`            | v0.2.3c        | Regex scanner to parallelize                             |
-| `IFuzzyScanner`            | v0.3.1c        | Fuzzy scanner to parallelize                             |
-| `IReadabilityService`      | v0.3.3c        | Readability calculator to parallelize                    |
-| `IVoiceScanner`            | v0.3.4b        | Voice scanner to parallelize                             |
-| `IProblemsPanelViewModel`  | v0.2.6a        | Problems panel requiring virtualization                  |
-| `System.Reactive`          | v0.2.3a        | Observable debouncing and buffering                      |
-| `IConfigurationService`    | v0.0.3d        | Debounce timing configuration                            |
-| `DocumentViewModel`        | v0.1.1d        | Document lifecycle for subscription management           |
-| `DocumentClosedEvent`      | v0.1.4c        | Trigger for subscription cleanup                         |
-| `IMediator`                | v0.0.7a        | Event bus for pipeline coordination                      |
-| `Serilog`                  | v0.0.3b        | Performance logging                                      |
+| Component                 | Source Version | Usage in v0.3.7                                                    |
+| :------------------------ | :------------- | :----------------------------------------------------------------- |
+| `ILintingOrchestrator`    | v0.2.3a        | Primary integration point for analysis pipeline                    |
+| `LintingCompletedEvent`   | v0.2.3b        | Event to debounce and buffer                                       |
+| `IStyleScanner`           | v0.2.3c        | Regex scanner to parallelize                                       |
+| `IFuzzyScanner`           | v0.3.1c        | Fuzzy scanner to parallelize                                       |
+| `IReadabilityService`     | v0.3.3c        | Readability calculator to parallelize                              |
+| `IVoiceScanner`           | v0.3.4b        | Voice scanner to parallelize                                       |
+| `IProblemsPanelViewModel` | v0.2.6a        | Problems panel requiring virtualization                            |
+| `System.Reactive`         | v0.2.3a        | Observable debouncing and buffering                                |
+| `IConfiguration`          | v0.0.3d        | Debounce timing configuration (Microsoft.Extensions.Configuration) |
+| `DocumentViewModel`       | v0.1.1d        | Document lifecycle for subscription management                     |
+| `DocumentClosedEvent`     | v0.1.4c        | Trigger for subscription cleanup                                   |
+| `IMediator`               | v0.0.7a        | Event bus for pipeline coordination                                |
+| `ILogger<T>`              | v0.0.3b        | Performance logging (Microsoft.Extensions.Logging)                 |
 
 ---
 
@@ -72,12 +72,12 @@ The Performance Tuning is a **Core** feature. All license tiers benefit from per
 
 ### 3.1 v0.3.7a: Background Buffering
 
-| Field            | Value                                               |
-| :--------------- | :-------------------------------------------------- |
-| **Sub-Part ID**  | INF-037a                                            |
-| **Title**        | Analysis Pipeline Debouncing and Buffering          |
-| **Module**       | `Lexichord.Modules.Style`                           |
-| **License Tier** | Core                                                |
+| Field            | Value                                      |
+| :--------------- | :----------------------------------------- |
+| **Sub-Part ID**  | INF-037a                                   |
+| **Title**        | Analysis Pipeline Debouncing and Buffering |
+| **Module**       | `Lexichord.Modules.Style`                  |
+| **License Tier** | Core                                       |
 
 **Goal:** Implement a buffer on the analysis pipeline that discards intermediate analysis requests during rapid typing, processing only the latest document snapshot after 500ms of idle time.
 
@@ -85,7 +85,7 @@ The Performance Tuning is a **Core** feature. All license tiers benefit from per
 
 - `IAnalysisBuffer` interface in `Lexichord.Abstractions`
 - `AnalysisBuffer` implementation using `System.Reactive`
-- Configurable debounce duration via `IConfigurationService`
+- Configurable debounce duration via `IConfiguration` / `IOptions`
 - `AnalysisRequest` record encapsulating document snapshot
 - `AnalysisBufferOptions` for timeout and cancellation settings
 - Integration with `ILintingOrchestrator`
@@ -184,18 +184,18 @@ _requests = _inputSubject
 **Dependencies:**
 
 - v0.2.3a: `ILintingOrchestrator` (integration point)
-- v0.0.3d: `IConfigurationService` (debounce settings)
+- v0.0.3d: `IConfiguration` / `IOptions` (debounce settings)
 
 ---
 
 ### 3.2 v0.3.7b: Parallelization
 
-| Field            | Value                                               |
-| :--------------- | :-------------------------------------------------- |
-| **Sub-Part ID**  | INF-037b                                            |
-| **Title**        | Parallel Scanner Execution                          |
-| **Module**       | `Lexichord.Modules.Style`                           |
-| **License Tier** | Core                                                |
+| Field            | Value                      |
+| :--------------- | :------------------------- |
+| **Sub-Part ID**  | INF-037b                   |
+| **Title**        | Parallel Scanner Execution |
+| **Module**       | `Lexichord.Modules.Style`  |
+| **License Tier** | Core                       |
 
 **Goal:** Execute the `RegexScanner`, `FuzzyScanner`, `ReadabilityCalculator`, and `VoiceScanner` in parallel using `Task.WhenAll()` to minimize total analysis time.
 
@@ -322,12 +322,12 @@ public async Task<ParallelAnalysisResult> ExecuteAsync(
 
 ### 3.3 v0.3.7c: Virtualization
 
-| Field            | Value                                               |
-| :--------------- | :-------------------------------------------------- |
-| **Sub-Part ID**  | INF-037c                                            |
-| **Title**        | Problems Panel Virtualization                       |
-| **Module**       | `Lexichord.Modules.Style`                           |
-| **License Tier** | Core                                                |
+| Field            | Value                         |
+| :--------------- | :---------------------------- |
+| **Sub-Part ID**  | INF-037c                      |
+| **Title**        | Problems Panel Virtualization |
+| **Module**       | `Lexichord.Modules.Style`     |
+| **License Tier** | Core                          |
 
 **Goal:** Ensure the Problems Panel uses `VirtualizingStackPanel` to render 5,000+ violations without UI freeze.
 
@@ -427,12 +427,12 @@ VIEWPORT shows 20 items at a time
 
 ### 3.4 v0.3.7d: Memory Leak Check
 
-| Field            | Value                                               |
-| :--------------- | :-------------------------------------------------- |
-| **Sub-Part ID**  | INF-037d                                            |
-| **Title**        | Subscription Cleanup and Leak Prevention            |
-| **Module**       | `Lexichord.Modules.Style`                           |
-| **License Tier** | Core                                                |
+| Field            | Value                                    |
+| :--------------- | :--------------------------------------- |
+| **Sub-Part ID**  | INF-037d                                 |
+| **Title**        | Subscription Cleanup and Leak Prevention |
+| **Module**       | `Lexichord.Modules.Style`                |
+| **License Tier** | Core                                     |
 
 **Goal:** Profile the application with memory analysis tools to ensure that closing a tab fully releases the `LintingOrchestrator` subscription and doesn't leave analyzers running on closed documents.
 
@@ -662,37 +662,37 @@ public class MemoryLeakTests
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.3.7a  | Create `IAnalysisBuffer` interface in Abstractions        | 0.5        |
-| 2  | v0.3.7a  | Create `AnalysisRequest` and `AnalysisBufferOptions`      | 0.5        |
-| 3  | v0.3.7a  | Implement `AnalysisBuffer` with System.Reactive           | 3          |
-| 4  | v0.3.7a  | Add debounce configuration to settings                    | 1          |
-| 5  | v0.3.7a  | Integrate buffer with `LintingOrchestrator`               | 2          |
-| 6  | v0.3.7a  | Unit tests for buffer debounce and cancellation           | 2          |
-| 7  | v0.3.7b  | Create `IParallelAnalysisPipeline` interface              | 0.5        |
-| 8  | v0.3.7b  | Create `ParallelAnalysisResult` record                    | 0.5        |
-| 9  | v0.3.7b  | Implement `ParallelAnalysisPipeline` with Task.WhenAll    | 3          |
-| 10 | v0.3.7b  | Add timed execution wrapper for profiling                 | 1          |
-| 11 | v0.3.7b  | Implement partial result handling on scanner failure      | 1.5        |
-| 12 | v0.3.7b  | Unit tests for parallel execution                         | 2          |
-| 13 | v0.3.7c  | Update `ProblemsPanel.axaml` with VirtualizingStackPanel  | 1          |
-| 14 | v0.3.7c  | Configure container recycling mode                        | 0.5        |
-| 15 | v0.3.7c  | Implement scroll position preservation                    | 1.5        |
-| 16 | v0.3.7c  | Add incremental loading for 10,000+ items                 | 2          |
-| 17 | v0.3.7c  | Performance tests for render time                         | 1.5        |
-| 18 | v0.3.7c  | Unit tests for virtualization behavior                    | 1          |
-| 19 | v0.3.7d  | Create `IDisposableTracker` interface                     | 0.5        |
-| 20 | v0.3.7d  | Implement `DisposableTracker`                             | 1          |
-| 21 | v0.3.7d  | Create `DisposableViewModel` base class                   | 1          |
-| 22 | v0.3.7d  | Refactor existing ViewModels to use disposal pattern      | 3          |
-| 23 | v0.3.7d  | Add DocumentClosedEvent subscription for cleanup          | 1          |
-| 24 | v0.3.7d  | Memory leak detection tests with WeakReference            | 2          |
-| 25 | v0.3.7d  | Profile with dotMemory, document findings                 | 2          |
-| 26 | All      | Integration tests for full pipeline                       | 2          |
-| 27 | All      | Performance benchmarks (typing latency, analysis time)    | 2          |
-| 28 | All      | DI registration in StyleModule.cs                         | 0.5        |
-| **Total** |   |                                                           | **39 hours** |
+| #         | Sub-Part | Task                                                     | Est. Hours   |
+| :-------- | :------- | :------------------------------------------------------- | :----------- |
+| 1         | v0.3.7a  | Create `IAnalysisBuffer` interface in Abstractions       | 0.5          |
+| 2         | v0.3.7a  | Create `AnalysisRequest` and `AnalysisBufferOptions`     | 0.5          |
+| 3         | v0.3.7a  | Implement `AnalysisBuffer` with System.Reactive          | 3            |
+| 4         | v0.3.7a  | Add debounce configuration to settings                   | 1            |
+| 5         | v0.3.7a  | Integrate buffer with `LintingOrchestrator`              | 2            |
+| 6         | v0.3.7a  | Unit tests for buffer debounce and cancellation          | 2            |
+| 7         | v0.3.7b  | Create `IParallelAnalysisPipeline` interface             | 0.5          |
+| 8         | v0.3.7b  | Create `ParallelAnalysisResult` record                   | 0.5          |
+| 9         | v0.3.7b  | Implement `ParallelAnalysisPipeline` with Task.WhenAll   | 3            |
+| 10        | v0.3.7b  | Add timed execution wrapper for profiling                | 1            |
+| 11        | v0.3.7b  | Implement partial result handling on scanner failure     | 1.5          |
+| 12        | v0.3.7b  | Unit tests for parallel execution                        | 2            |
+| 13        | v0.3.7c  | Update `ProblemsPanel.axaml` with VirtualizingStackPanel | 1            |
+| 14        | v0.3.7c  | Configure container recycling mode                       | 0.5          |
+| 15        | v0.3.7c  | Implement scroll position preservation                   | 1.5          |
+| 16        | v0.3.7c  | Add incremental loading for 10,000+ items                | 2            |
+| 17        | v0.3.7c  | Performance tests for render time                        | 1.5          |
+| 18        | v0.3.7c  | Unit tests for virtualization behavior                   | 1            |
+| 19        | v0.3.7d  | Create `IDisposableTracker` interface                    | 0.5          |
+| 20        | v0.3.7d  | Implement `DisposableTracker`                            | 1            |
+| 21        | v0.3.7d  | Create `DisposableViewModel` base class                  | 1            |
+| 22        | v0.3.7d  | Refactor existing ViewModels to use disposal pattern     | 3            |
+| 23        | v0.3.7d  | Add DocumentClosedEvent subscription for cleanup         | 1            |
+| 24        | v0.3.7d  | Memory leak detection tests with WeakReference           | 2            |
+| 25        | v0.3.7d  | Profile with dotMemory, document findings                | 2            |
+| 26        | All      | Integration tests for full pipeline                      | 2            |
+| 27        | All      | Performance benchmarks (typing latency, analysis time)   | 2            |
+| 28        | All      | DI registration in StyleModule.cs                        | 0.5          |
+| **Total** |          |                                                          | **39 hours** |
 
 ---
 
@@ -700,42 +700,42 @@ public class MemoryLeakTests
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `ILintingOrchestrator`     | v0.2.3a        | Analysis pipeline integration        |
-| `LintingCompletedEvent`    | v0.2.3b        | Event to debounce                    |
-| `IStyleScanner`            | v0.2.3c        | Regex scanner                        |
-| `IFuzzyScanner`            | v0.3.1c        | Fuzzy matching scanner               |
-| `IReadabilityService`      | v0.3.3c        | Readability calculator               |
-| `IVoiceScanner`            | v0.3.4b        | Voice analysis                       |
-| `IProblemsPanelViewModel`  | v0.2.6a        | Problems panel data source           |
-| `DocumentViewModel`        | v0.1.1d        | Document lifecycle                   |
-| `DocumentClosedEvent`      | v0.1.4c        | Cleanup trigger                      |
-| `IConfigurationService`    | v0.0.3d        | Settings access                      |
-| `IMediator`                | v0.0.7a        | Event bus                            |
+| Interface                 | Source Version | Purpose                                              |
+| :------------------------ | :------------- | :--------------------------------------------------- |
+| `ILintingOrchestrator`    | v0.2.3a        | Analysis pipeline integration                        |
+| `LintingCompletedEvent`   | v0.2.3b        | Event to debounce                                    |
+| `IStyleScanner`           | v0.2.3c        | Regex scanner                                        |
+| `IFuzzyScanner`           | v0.3.1c        | Fuzzy matching scanner                               |
+| `IReadabilityService`     | v0.3.3c        | Readability calculator                               |
+| `IVoiceScanner`           | v0.3.4b        | Voice analysis                                       |
+| `IProblemsPanelViewModel` | v0.2.6a        | Problems panel data source                           |
+| `DocumentViewModel`       | v0.1.1d        | Document lifecycle                                   |
+| `DocumentClosedEvent`     | v0.1.4c        | Cleanup trigger                                      |
+| `IConfiguration`          | v0.0.3d        | Settings access (Microsoft.Extensions.Configuration) |
+| `IMediator`               | v0.0.7a        | Event bus                                            |
 
 ### 5.2 New Interfaces (defined in v0.3.7)
 
-| Interface                    | Defined In | Module        | Purpose                          |
-| :--------------------------- | :--------- | :------------ | :------------------------------- |
-| `IAnalysisBuffer`            | v0.3.7a    | Abstractions  | Request debouncing and buffering |
-| `IParallelAnalysisPipeline`  | v0.3.7b    | Abstractions  | Parallel scanner execution       |
-| `IDisposableTracker`         | v0.3.7d    | Abstractions  | Subscription lifecycle           |
+| Interface                   | Defined In | Module       | Purpose                          |
+| :-------------------------- | :--------- | :----------- | :------------------------------- |
+| `IAnalysisBuffer`           | v0.3.7a    | Abstractions | Request debouncing and buffering |
+| `IParallelAnalysisPipeline` | v0.3.7b    | Abstractions | Parallel scanner execution       |
+| `IDisposableTracker`        | v0.3.7d    | Abstractions | Subscription lifecycle           |
 
 ### 5.3 New Records/DTOs (defined in v0.3.7)
 
-| Record                     | Defined In | Purpose                                |
-| :------------------------- | :--------- | :------------------------------------- |
-| `AnalysisRequest`          | v0.3.7a    | Document snapshot for analysis         |
-| `AnalysisBufferOptions`    | v0.3.7a    | Buffer configuration                   |
-| `ParallelAnalysisResult`   | v0.3.7b    | Aggregated scanner results             |
+| Record                   | Defined In | Purpose                        |
+| :----------------------- | :--------- | :----------------------------- |
+| `AnalysisRequest`        | v0.3.7a    | Document snapshot for analysis |
+| `AnalysisBufferOptions`  | v0.3.7a    | Buffer configuration           |
+| `ParallelAnalysisResult` | v0.3.7b    | Aggregated scanner results     |
 
 ### 5.4 NuGet Packages
 
-| Package          | Version | Purpose                    | New/Existing |
-| :--------------- | :------ | :------------------------- | :----------- |
-| `System.Reactive`| 6.x     | Observable debouncing      | Existing     |
-| `MediatR`        | 12.x    | Event publishing           | Existing     |
+| Package           | Version | Purpose               | New/Existing |
+| :---------------- | :------ | :-------------------- | :----------- |
+| `System.Reactive` | 6.x     | Observable debouncing | Existing     |
+| `MediatR`         | 12.x    | Event publishing      | Existing     |
 
 ---
 
@@ -847,31 +847,31 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Parallel execution increases memory pressure | Medium | Medium | Set max parallelism, use memory pools |
-| Debounce too aggressive, analysis feels delayed | Medium | Low | Make debounce configurable (300-1000ms) |
-| Virtualization breaks keyboard navigation | Medium | Medium | Test accessibility, ensure focus management |
-| Disposal happens during active analysis | High | Low | CancellationToken propagation, null checks |
-| Scanner exceptions crash parallel pipeline | High | Low | Exception isolation, partial result preservation |
-| Weak references collected too aggressively | Medium | Low | Balance weak/strong references carefully |
-| Thread contention on shared state | Medium | Medium | Lock-free patterns, immutable data |
-| Profiling tools unavailable on all platforms | Low | Medium | Provide manual memory tests as fallback |
+| Risk                                            | Impact | Probability | Mitigation                                       |
+| :---------------------------------------------- | :----- | :---------- | :----------------------------------------------- |
+| Parallel execution increases memory pressure    | Medium | Medium      | Set max parallelism, use memory pools            |
+| Debounce too aggressive, analysis feels delayed | Medium | Low         | Make debounce configurable (300-1000ms)          |
+| Virtualization breaks keyboard navigation       | Medium | Medium      | Test accessibility, ensure focus management      |
+| Disposal happens during active analysis         | High   | Low         | CancellationToken propagation, null checks       |
+| Scanner exceptions crash parallel pipeline      | High   | Low         | Exception isolation, partial result preservation |
+| Weak references collected too aggressively      | Medium | Low         | Balance weak/strong references carefully         |
+| Thread contention on shared state               | Medium | Medium      | Lock-free patterns, immutable data               |
+| Profiling tools unavailable on all platforms    | Low    | Medium      | Provide manual memory tests as fallback          |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Typing latency (50,000 words) | < 16ms | Frame timing during analysis |
-| Analysis discard rate during typing | > 90% | Counter for discarded requests |
-| Parallel speedup vs sequential | > 2x | Stopwatch comparison |
-| Problems Panel render (5,000 items) | < 16ms | Frame timing on scroll |
-| Problems Panel render (10,000 items) | < 20ms | Frame timing on scroll |
-| Memory after 100 open/close cycles | < 5MB growth | GC.GetTotalMemory comparison |
-| Subscription count after doc close | 0 | DisposableTracker.Count |
-| VM garbage collection after dispose | 100% | WeakReference.TryGetTarget |
+| Metric                               | Target       | Measurement                    |
+| :----------------------------------- | :----------- | :----------------------------- |
+| Typing latency (50,000 words)        | < 16ms       | Frame timing during analysis   |
+| Analysis discard rate during typing  | > 90%        | Counter for discarded requests |
+| Parallel speedup vs sequential       | > 2x         | Stopwatch comparison           |
+| Problems Panel render (5,000 items)  | < 16ms       | Frame timing on scroll         |
+| Problems Panel render (10,000 items) | < 20ms       | Frame timing on scroll         |
+| Memory after 100 open/close cycles   | < 5MB growth | GC.GetTotalMemory comparison   |
+| Subscription count after doc close   | 0            | DisposableTracker.Count        |
+| VM garbage collection after dispose  | 100%         | WeakReference.TryGetTarget     |
 
 ---
 
@@ -939,15 +939,15 @@ START: "Should this ViewModel be disposed?"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer          | As a writer, I want smooth typing even during analysis so my flow isn't interrupted. | Typing latency < 16ms during analysis.                |
-| US-02 | Writer          | As a writer, I want analysis results quickly after I stop typing.                   | Results appear within 500ms of last keystroke.        |
-| US-03 | Writer          | As a writer, I want to scroll through many problems without lag.                    | 5,000+ problems scroll smoothly at 60FPS.             |
-| US-04 | Power User      | As a power user, I want to configure the analysis delay.                            | Settings UI allows 100-2000ms debounce.               |
-| US-05 | Power User      | As a power user, I want the app to stay fast over long sessions.                    | No memory growth after hours of editing.              |
-| US-06 | Developer       | As a developer, I want clear disposal patterns to follow.                           | DisposableViewModel base class documented.            |
-| US-07 | Developer       | As a developer, I want performance metrics during development.                      | ScannerDurations in ParallelAnalysisResult.           |
+| ID    | Role       | Story                                                                                | Acceptance Criteria                            |
+| :---- | :--------- | :----------------------------------------------------------------------------------- | :--------------------------------------------- |
+| US-01 | Writer     | As a writer, I want smooth typing even during analysis so my flow isn't interrupted. | Typing latency < 16ms during analysis.         |
+| US-02 | Writer     | As a writer, I want analysis results quickly after I stop typing.                    | Results appear within 500ms of last keystroke. |
+| US-03 | Writer     | As a writer, I want to scroll through many problems without lag.                     | 5,000+ problems scroll smoothly at 60FPS.      |
+| US-04 | Power User | As a power user, I want to configure the analysis delay.                             | Settings UI allows 100-2000ms debounce.        |
+| US-05 | Power User | As a power user, I want the app to stay fast over long sessions.                     | No memory growth after hours of editing.       |
+| US-06 | Developer  | As a developer, I want clear disposal patterns to follow.                            | DisposableViewModel base class documented.     |
+| US-07 | Developer  | As a developer, I want performance metrics during development.                       | ScannerDurations in ParallelAnalysisResult.    |
 
 ---
 
@@ -1422,20 +1422,20 @@ public class TestDisposableViewModel : DisposableViewModel
 
 ## 15. Observability & Logging
 
-| Level   | Source              | Message Template                                                       |
-| :------ | :------------------ | :--------------------------------------------------------------------- |
-| Debug   | AnalysisBuffer      | `"Request {Version} submitted, debounce timer started"`                |
-| Debug   | AnalysisBuffer      | `"Request {Version} discarded (newer request received)"`               |
-| Info    | AnalysisBuffer      | `"Request {Version} emitted after {IdleMs}ms idle"`                    |
-| Debug   | ParallelPipeline    | `"Starting parallel analysis: {ScannerCount} scanners"`                |
+| Level   | Source              | Message Template                                                                                                      |
+| :------ | :------------------ | :-------------------------------------------------------------------------------------------------------------------- |
+| Debug   | AnalysisBuffer      | `"Request {Version} submitted, debounce timer started"`                                                               |
+| Debug   | AnalysisBuffer      | `"Request {Version} discarded (newer request received)"`                                                              |
+| Info    | AnalysisBuffer      | `"Request {Version} emitted after {IdleMs}ms idle"`                                                                   |
+| Debug   | ParallelPipeline    | `"Starting parallel analysis: {ScannerCount} scanners"`                                                               |
 | Info    | ParallelPipeline    | `"Parallel analysis completed in {TotalMs}ms (Regex: {RegexMs}, Fuzzy: {FuzzyMs}, Read: {ReadMs}, Voice: {VoiceMs})"` |
-| Warning | ParallelPipeline    | `"Scanner {ScannerName} failed: {Error}"`                              |
-| Debug   | ProblemsPanel       | `"Virtualizing {ItemCount} items, viewport: {ViewportSize}"`           |
-| Trace   | ProblemsPanel       | `"Container recycled for item {Index}"`                                |
-| Debug   | DisposableTracker   | `"Tracking subscription, count: {Count}"`                              |
-| Info    | DisposableTracker   | `"Disposed {Count} subscriptions"`                                     |
-| Warning | DisposableTracker   | `"Error disposing subscription: {Error}"`                              |
-| Debug   | DisposableViewModel | `"ViewModel {Type} disposing, {SubscriptionCount} subscriptions"`      |
+| Warning | ParallelPipeline    | `"Scanner {ScannerName} failed: {Error}"`                                                                             |
+| Debug   | ProblemsPanel       | `"Virtualizing {ItemCount} items, viewport: {ViewportSize}"`                                                          |
+| Trace   | ProblemsPanel       | `"Container recycled for item {Index}"`                                                                               |
+| Debug   | DisposableTracker   | `"Tracking subscription, count: {Count}"`                                                                             |
+| Info    | DisposableTracker   | `"Disposed {Count} subscriptions"`                                                                                    |
+| Warning | DisposableTracker   | `"Error disposing subscription: {Error}"`                                                                             |
+| Debug   | DisposableViewModel | `"ViewModel {Type} disposing, {SubscriptionCount} subscriptions"`                                                     |
 
 ---
 
@@ -1493,39 +1493,39 @@ public class TestDisposableViewModel : DisposableViewModel
 
 ### 16.3 Component Styling Requirements
 
-| Component           | Theme Resource             | Notes                            |
-| :------------------ | :------------------------- | :------------------------------- |
-| Problems List       | `Brush.Surface.Primary`    | Standard list background         |
-| Virtual Container   | Recycled, no custom style  | Performance-critical             |
-| Scrollbar Track     | `Brush.Surface.Secondary`  | Subtle background                |
-| Scrollbar Thumb     | `Brush.Accent.Primary`     | Visible, draggable               |
-| Settings Slider     | `LexSlider` theme          | Standard slider control          |
-| Performance Toggle  | `LexCheckBox` theme        | Standard checkbox                |
+| Component          | Theme Resource            | Notes                    |
+| :----------------- | :------------------------ | :----------------------- |
+| Problems List      | `Brush.Surface.Primary`   | Standard list background |
+| Virtual Container  | Recycled, no custom style | Performance-critical     |
+| Scrollbar Track    | `Brush.Surface.Secondary` | Subtle background        |
+| Scrollbar Thumb    | `Brush.Accent.Primary`    | Visible, draggable       |
+| Settings Slider    | `LexSlider` theme         | Standard slider control  |
+| Performance Toggle | `LexCheckBox` theme       | Standard checkbox        |
 
 ---
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Buffering]**     | Typing 50 chars/sec produces only 1 analysis request per 500ms.              |
-| 2   | **[Buffering]**     | Analysis starts within 600ms of typing stop (500ms + scheduling).            |
-| 3   | **[Buffering]**     | MaxPending (2000ms) forces analysis even during continuous typing.           |
-| 4   | **[Parallel]**      | All 4 scanners execute concurrently (verified via timing).                   |
-| 5   | **[Parallel]**      | Total analysis time < sum of individual scanner times.                       |
-| 6   | **[Parallel]**      | Scanner failure doesn't crash pipeline (partial results returned).           |
-| 7   | **[Parallel]**      | Cancellation token stops all in-flight scanners.                             |
-| 8   | **[Virtualization]**| Problems Panel with 5,000 items scrolls at 60FPS.                            |
-| 9   | **[Virtualization]**| Problems Panel with 10,000 items renders in < 20ms.                          |
-| 10  | **[Virtualization]**| Only ~25 containers exist regardless of item count.                          |
-| 11  | **[Virtualization]**| Keyboard navigation works through virtualized list.                          |
-| 12  | **[Memory]**        | Closing document releases all subscriptions (count = 0).                     |
-| 13  | **[Memory]**        | ViewModel garbage collected after Dispose().                                 |
-| 14  | **[Memory]**        | 100 open/close cycles show < 5MB growth.                                     |
-| 15  | **[Memory]**        | No leaked timers or event handlers after document close.                     |
-| 16  | **[Performance]**   | Typing latency < 16ms during active analysis.                                |
-| 17  | **[Config]**        | Debounce duration configurable 100-2000ms.                                   |
-| 18  | **[Logging]**       | Scanner durations logged at Info level.                                      |
+| #   | Category             | Criterion                                                          |
+| :-- | :------------------- | :----------------------------------------------------------------- |
+| 1   | **[Buffering]**      | Typing 50 chars/sec produces only 1 analysis request per 500ms.    |
+| 2   | **[Buffering]**      | Analysis starts within 600ms of typing stop (500ms + scheduling).  |
+| 3   | **[Buffering]**      | MaxPending (2000ms) forces analysis even during continuous typing. |
+| 4   | **[Parallel]**       | All 4 scanners execute concurrently (verified via timing).         |
+| 5   | **[Parallel]**       | Total analysis time < sum of individual scanner times.             |
+| 6   | **[Parallel]**       | Scanner failure doesn't crash pipeline (partial results returned). |
+| 7   | **[Parallel]**       | Cancellation token stops all in-flight scanners.                   |
+| 8   | **[Virtualization]** | Problems Panel with 5,000 items scrolls at 60FPS.                  |
+| 9   | **[Virtualization]** | Problems Panel with 10,000 items renders in < 20ms.                |
+| 10  | **[Virtualization]** | Only ~25 containers exist regardless of item count.                |
+| 11  | **[Virtualization]** | Keyboard navigation works through virtualized list.                |
+| 12  | **[Memory]**         | Closing document releases all subscriptions (count = 0).           |
+| 13  | **[Memory]**         | ViewModel garbage collected after Dispose().                       |
+| 14  | **[Memory]**         | 100 open/close cycles show < 5MB growth.                           |
+| 15  | **[Memory]**         | No leaked timers or event handlers after document close.           |
+| 16  | **[Performance]**    | Typing latency < 16ms during active analysis.                      |
+| 17  | **[Config]**         | Debounce duration configurable 100-2000ms.                         |
+| 18  | **[Logging]**        | Scanner durations logged at Info level.                            |
 
 ---
 
@@ -1572,32 +1572,32 @@ dotnet test --filter "Version=v0.3.7"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `IAnalysisBuffer` interface in Abstractions                    | [ ]    |
-| 2  | `AnalysisRequest` record                                       | [ ]    |
-| 3  | `AnalysisBufferOptions` record                                 | [ ]    |
-| 4  | `AnalysisBuffer` implementation with System.Reactive           | [ ]    |
-| 5  | Debounce settings integration                                  | [ ]    |
-| 6  | `IParallelAnalysisPipeline` interface in Abstractions          | [ ]    |
-| 7  | `ParallelAnalysisResult` record                                | [ ]    |
-| 8  | `ParallelAnalysisPipeline` implementation                      | [ ]    |
-| 9  | Timed execution wrapper                                        | [ ]    |
-| 10 | Updated `ProblemsPanel.axaml` with VirtualizingStackPanel      | [ ]    |
-| 11 | Container recycling configuration                              | [ ]    |
-| 12 | Scroll position preservation                                   | [ ]    |
-| 13 | `IDisposableTracker` interface                                 | [ ]    |
-| 14 | `DisposableTracker` implementation                             | [ ]    |
-| 15 | `DisposableViewModel` base class                               | [ ]    |
-| 16 | Refactored ViewModels using disposal pattern                   | [ ]    |
-| 17 | Unit tests for AnalysisBuffer                                  | [ ]    |
-| 18 | Unit tests for ParallelAnalysisPipeline                        | [ ]    |
-| 19 | Unit tests for DisposableTracker                               | [ ]    |
-| 20 | Memory leak tests                                              | [ ]    |
-| 21 | Performance benchmark tests                                    | [ ]    |
-| 22 | Integration tests for full pipeline                            | [ ]    |
-| 23 | DI registration in StyleModule.cs                              | [ ]    |
-| 24 | Settings UI for performance options                            | [ ]    |
+| #   | Deliverable                                               | Status |
+| :-- | :-------------------------------------------------------- | :----- |
+| 1   | `IAnalysisBuffer` interface in Abstractions               | [ ]    |
+| 2   | `AnalysisRequest` record                                  | [ ]    |
+| 3   | `AnalysisBufferOptions` record                            | [ ]    |
+| 4   | `AnalysisBuffer` implementation with System.Reactive      | [ ]    |
+| 5   | Debounce settings integration                             | [ ]    |
+| 6   | `IParallelAnalysisPipeline` interface in Abstractions     | [ ]    |
+| 7   | `ParallelAnalysisResult` record                           | [ ]    |
+| 8   | `ParallelAnalysisPipeline` implementation                 | [ ]    |
+| 9   | Timed execution wrapper                                   | [ ]    |
+| 10  | Updated `ProblemsPanel.axaml` with VirtualizingStackPanel | [ ]    |
+| 11  | Container recycling configuration                         | [ ]    |
+| 12  | Scroll position preservation                              | [ ]    |
+| 13  | `IDisposableTracker` interface                            | [ ]    |
+| 14  | `DisposableTracker` implementation                        | [ ]    |
+| 15  | `DisposableViewModel` base class                          | [ ]    |
+| 16  | Refactored ViewModels using disposal pattern              | [ ]    |
+| 17  | Unit tests for AnalysisBuffer                             | [ ]    |
+| 18  | Unit tests for ParallelAnalysisPipeline                   | [ ]    |
+| 19  | Unit tests for DisposableTracker                          | [ ]    |
+| 20  | Memory leak tests                                         | [ ]    |
+| 21  | Performance benchmark tests                               | [ ]    |
+| 22  | Integration tests for full pipeline                       | [ ]    |
+| 23  | DI registration in StyleModule.cs                         | [ ]    |
+| 24  | Settings UI for performance options                       | [ ]    |
 
 ---
 
@@ -1935,14 +1935,14 @@ public sealed class DisposableTracker : IDisposableTracker
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Priority-based analysis queue   | v0.4.x      | Requires additional complexity                  |
-| Multi-document parallel analysis| v0.4.x      | Single document focus for v0.3.x                |
-| GPU acceleration for scanners   | v0.5.x      | Requires significant infrastructure             |
-| Distributed analysis (worker)   | v1.0.x      | Enterprise feature                              |
-| Custom virtualization behavior  | v0.4.x      | Advanced configuration for power users          |
-| Memory profiling UI             | v0.4.x      | Developer-focused feature                       |
+| Feature                          | Deferred To | Reason                                 |
+| :------------------------------- | :---------- | :------------------------------------- |
+| Priority-based analysis queue    | v0.4.x      | Requires additional complexity         |
+| Multi-document parallel analysis | v0.4.x      | Single document focus for v0.3.x       |
+| GPU acceleration for scanners    | v0.5.x      | Requires significant infrastructure    |
+| Distributed analysis (worker)    | v1.0.x      | Enterprise feature                     |
+| Custom virtualization behavior   | v0.4.x      | Advanced configuration for power users |
+| Memory profiling UI              | v0.4.x      | Developer-focused feature              |
 
 ---
 

@@ -2,13 +2,13 @@
 
 ## Document Control
 
-| Field            | Value                                                                                              |
-| :--------------- | :------------------------------------------------------------------------------------------------- |
-| **Document ID**  | LCS-SBD-026                                                                                        |
-| **Version**      | v0.2.6                                                                                             |
-| **Status**       | Draft                                                                                              |
-| **Last Updated** | 2026-01-26                                                                                         |
-| **Depends On**   | v0.2.3 (Linter Engine), v0.2.4 (Editor Integration), v0.1.1 (Layout Engine), v0.0.7 (Event Bus)   |
+| Field            | Value                                                                                           |
+| :--------------- | :---------------------------------------------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-026                                                                                     |
+| **Version**      | v0.2.6                                                                                          |
+| **Status**       | Draft                                                                                           |
+| **Last Updated** | 2026-01-26                                                                                      |
+| **Depends On**   | v0.2.3 (Linter Engine), v0.2.4 (Editor Integration), v0.1.1 (Layout Engine), v0.0.7 (Event Bus) |
 
 ---
 
@@ -31,22 +31,22 @@ This module transforms passive violation display (squiggly underlines from v0.2.
 
 ### 1.3 Dependencies on Previous Versions
 
-| Component | Source | Usage |
-|:----------|:-------|:------|
-| LintingCompletedEvent | v0.2.3d | Primary data source for violation updates |
-| StyleViolation | v0.2.3a | Violation data model with position, severity, message |
-| ViolationSeverity | v0.2.3a | Error, Warning, Info severity levels |
-| ILintingOrchestrator | v0.2.3a | Access to linting state and trigger linting |
-| IViolationAggregator | v0.2.3d | Get violations for specific documents |
-| IStyleScanner | v0.2.3c | File scanning for project-wide linting |
-| ILintingConfiguration | v0.2.3b | Debounce and configuration settings |
-| ManuscriptView | v0.2.4a | Editor integration for scroll-to-line |
-| IViolationProvider | v0.2.4a | Current document violations |
-| IRegionManager | v0.1.1b | Register sidebar in Bottom dock region |
-| ILayoutService | v0.1.1c | Persist panel visibility and size |
-| ShellRegion.Bottom | v0.1.1a | Target dock region |
-| IMediator | v0.0.7a | Event subscription for lint completions |
-| IEditorService | v0.1.3 | Access to open documents and active document |
+| Component             | Source  | Usage                                                 |
+| :-------------------- | :------ | :---------------------------------------------------- |
+| LintingCompletedEvent | v0.2.3d | Primary data source for violation updates             |
+| StyleViolation        | v0.2.1b | Violation data model with position, severity, message |
+| ViolationSeverity     | v0.2.1b | Error, Warning, Info severity levels                  |
+| ILintingOrchestrator  | v0.2.3a | Access to linting state and trigger linting           |
+| IViolationAggregator  | v0.2.3d | Get violations for specific documents                 |
+| IStyleScanner         | v0.2.3c | File scanning for project-wide linting                |
+| ILintingConfiguration | v0.2.3b | Debounce and configuration settings                   |
+| ManuscriptView        | v0.2.4a | Editor integration for scroll-to-line                 |
+| IViolationProvider    | v0.2.4a | Current document violations                           |
+| IRegionManager        | v0.1.1b | Register sidebar in Bottom dock region                |
+| ILayoutService        | v0.1.1c | Persist panel visibility and size                     |
+| ShellRegion.Bottom    | v0.1.1a | Target dock region                                    |
+| IMediator             | v0.0.7a | Event subscription for lint completions               |
+| IEditorService        | v0.1.3a | Access to open documents and active document          |
 
 ---
 
@@ -54,17 +54,18 @@ This module transforms passive violation display (squiggly underlines from v0.2.
 
 ### 2.1 v0.2.6a: Problems Panel
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-026a |
-| **Title** | Problems Panel |
+| Field             | Value                                |
+| :---------------- | :----------------------------------- |
+| **Sub-Part ID**   | INF-026a                             |
+| **Title**         | Problems Panel                       |
 | **Spec Document** | [LCS-INF-026a.md](./LCS-INF-026a.md) |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | Core |
+| **Module**        | `Lexichord.Modules.Style`            |
+| **License Tier**  | Core                                 |
 
 **Goal:** Create a VS Code-style Problems Panel sidebar view that displays all style violations. Bind the panel to `LintingCompletedEvent` for real-time updates.
 
 **Key Deliverables:**
+
 - Create `ProblemsPanel.axaml` UserControl with grouped TreeView/ItemsControl
 - Create `ProblemsPanelViewModel` with observable violation collection
 - Create `ProblemItemViewModel` for individual violation display
@@ -75,6 +76,7 @@ This module transforms passive violation display (squiggly underlines from v0.2.
 - Register panel in `ShellRegion.Bottom` via IRegionManager
 
 **Key Interfaces:**
+
 ```csharp
 public interface IProblemsPanelViewModel
 {
@@ -92,6 +94,7 @@ public interface IProblemsPanelViewModel
 ```
 
 **Dependencies:**
+
 - v0.2.3d: LintingCompletedEvent (subscription)
 - v0.0.7a: IMediator (event bus)
 - v0.1.1b: IRegionManager (dock registration)
@@ -100,17 +103,18 @@ public interface IProblemsPanelViewModel
 
 ### 2.2 v0.2.6b: Navigation Sync
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-026b |
-| **Title** | Navigation Sync |
+| Field             | Value                                |
+| :---------------- | :----------------------------------- |
+| **Sub-Part ID**   | INF-026b                             |
+| **Title**         | Navigation Sync                      |
 | **Spec Document** | [LCS-INF-026b.md](./LCS-INF-026b.md) |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | Core |
+| **Module**        | `Lexichord.Modules.Style`            |
+| **License Tier**  | Core                                 |
 
 **Goal:** Implement double-click behavior on Problems Panel items that scrolls the Editor to the specific line and column of the selected violation, placing the cursor at the exact violation position.
 
 **Key Deliverables:**
+
 - Define `IEditorNavigationService` interface for cross-module navigation
 - Implement `EditorNavigationService` that resolves document and scrolls to offset
 - Create `NavigateToViolationCommand` with document ID, line, and column parameters
@@ -120,6 +124,7 @@ public interface IProblemsPanelViewModel
 - Support keyboard navigation (Enter key on selected item)
 
 **Key Interfaces:**
+
 ```csharp
 public interface IEditorNavigationService
 {
@@ -140,28 +145,30 @@ public interface IEditorNavigationService
 ```
 
 **Dependencies:**
+
 - v0.2.6a: ProblemsPanelViewModel (command binding)
 - v0.2.4a: ManuscriptView (scroll control)
-- v0.1.3: IEditorService (document activation)
+- v0.1.3a: IEditorService (document activation)
 
 ---
 
 ### 2.3 v0.2.6c: Scorecard Widget
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-026c |
-| **Title** | Scorecard Widget |
+| Field             | Value                                |
+| :---------------- | :----------------------------------- |
+| **Sub-Part ID**   | INF-026c                             |
+| **Title**         | Scorecard Widget                     |
 | **Spec Document** | [LCS-INF-026c.md](./LCS-INF-026c.md) |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | Core |
+| **Module**        | `Lexichord.Modules.Style`            |
+| **License Tier**  | Core                                 |
 
 **Goal:** Create a Scorecard widget at the top of the Problems Panel showing "Total Errors: X" and a gamification "Compliance Score" calculated as 100% minus penalty points based on violation count and severity.
 
 **Key Deliverables:**
+
 - Create `ScorecardWidget.axaml` UserControl with score display
 - Create `ScorecardViewModel` with reactive score calculation
-- Implement scoring algorithm: 100 - (errors*5 + warnings*2 + info*0.5)
+- Implement scoring algorithm: 100 - (errors*5 + warnings*2 + info\*0.5)
 - Create animated score gauge (circular progress or horizontal bar)
 - Display trend indicator (improving/declining based on recent history)
 - Color-code score: Green (90-100), Yellow (70-89), Orange (50-69), Red (0-49)
@@ -169,6 +176,7 @@ public interface IEditorNavigationService
 - Integrate widget at top of ProblemsPanel
 
 **Key Interfaces:**
+
 ```csharp
 public interface IScorecardViewModel
 {
@@ -190,6 +198,7 @@ public enum ScoreTrend { Improving, Stable, Declining }
 ```
 
 **Dependencies:**
+
 - v0.2.6a: ProblemsPanelViewModel (violation counts)
 - v0.2.3d: LintingCompletedEvent (score updates)
 
@@ -197,17 +206,18 @@ public enum ScoreTrend { Improving, Stable, Declining }
 
 ### 2.4 v0.2.6d: Filter Scope
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-026d |
-| **Title** | Filter Scope |
+| Field             | Value                                |
+| :---------------- | :----------------------------------- |
+| **Sub-Part ID**   | INF-026d                             |
+| **Title**         | Filter Scope                         |
 | **Spec Document** | [LCS-INF-026d.md](./LCS-INF-026d.md) |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | Core |
+| **Module**        | `Lexichord.Modules.Style`            |
+| **License Tier**  | Core                                 |
 
 **Goal:** Implement a toggle to switch between "Current File", "Open Files", and "Project" scope. Project-wide linting runs as a background Task with progress indication.
 
 **Key Deliverables:**
+
 - Create `ProblemScopeMode` enum: CurrentFile, OpenFiles, Project
 - Add scope toggle buttons/dropdown to Problems Panel header
 - Define `IProjectLintingService` interface for background project scanning
@@ -219,6 +229,7 @@ public enum ScoreTrend { Improving, Stable, Declining }
 - Respect `.lexichordignore` patterns for project scope
 
 **Key Interfaces:**
+
 ```csharp
 public interface IProjectLintingService
 {
@@ -246,82 +257,83 @@ public enum ProblemScopeMode
 ```
 
 **Dependencies:**
+
 - v0.2.6a: ProblemsPanelViewModel (UI binding)
 - v0.2.3b: ILintingConfiguration (debounce settings)
 - v0.2.3c: IStyleScanner (file scanning)
 - v0.0.7a: IMediator (progress events)
-- v0.1.3: IEditorService (open documents list)
+- v0.1.3a: IEditorService (open documents list)
 
 ---
 
 ## 3. Implementation Checklist
 
-| # | Sub-Part | Task | Est. Hours |
-|:--|:---------|:-----|:-----------|
-| 1 | v0.2.6a | Define IProblemsPanelViewModel interface | 1 |
-| 2 | v0.2.6a | Create ProblemItemViewModel | 2 |
-| 3 | v0.2.6a | Create ProblemGroupViewModel | 1 |
-| 4 | v0.2.6a | Create ProblemsPanel.axaml layout | 3 |
-| 5 | v0.2.6a | Implement ProblemsPanelViewModel | 4 |
-| 6 | v0.2.6a | Implement TreeView with grouping | 4 |
-| 7 | v0.2.6a | Subscribe to LintingCompletedEvent | 2 |
-| 8 | v0.2.6a | Register in Bottom dock region | 2 |
-| 9 | v0.2.6a | Unit tests for ProblemsPanelViewModel | 3 |
-| 10 | v0.2.6b | Define IEditorNavigationService interface | 1 |
-| 11 | v0.2.6b | Implement EditorNavigationService | 3 |
-| 12 | v0.2.6b | Implement NavigateToViolationCommand | 2 |
-| 13 | v0.2.6b | Add scroll-to-line-column in ManuscriptView | 3 |
-| 14 | v0.2.6b | Implement violation highlight animation | 2 |
-| 15 | v0.2.6b | Handle cross-document navigation | 2 |
-| 16 | v0.2.6b | Add keyboard navigation (Enter key) | 1 |
-| 17 | v0.2.6b | Unit tests for navigation | 3 |
-| 18 | v0.2.6c | Define IScorecardViewModel interface | 1 |
-| 19 | v0.2.6c | Create ScorecardWidget.axaml | 2 |
-| 20 | v0.2.6c | Implement ScorecardViewModel | 3 |
-| 21 | v0.2.6c | Implement scoring algorithm | 2 |
-| 22 | v0.2.6c | Implement visual score indicators | 2 |
-| 23 | v0.2.6c | Add trend calculation | 2 |
-| 24 | v0.2.6c | Unit tests for score calculation | 3 |
-| 25 | v0.2.6d | Define ProblemScopeMode enum | 0.5 |
-| 26 | v0.2.6d | Add scope toggle UI | 2 |
-| 27 | v0.2.6d | Define IProjectLintingService interface | 1 |
-| 28 | v0.2.6d | Implement ProjectLintingService | 5 |
-| 29 | v0.2.6d | Implement background task execution | 3 |
-| 30 | v0.2.6d | Add file grouping in TreeView | 3 |
-| 31 | v0.2.6d | Add severity filtering | 2 |
-| 32 | v0.2.6d | Implement .lexichordignore support | 2 |
-| 33 | v0.2.6d | Unit tests for project linting | 3 |
-| 34 | All | Integration tests for full pipeline | 5 |
-| 35 | All | Performance tests with 1000+ violations | 3 |
-| **Total** | | | **83.5 hours** |
+| #         | Sub-Part | Task                                        | Est. Hours     |
+| :-------- | :------- | :------------------------------------------ | :------------- |
+| 1         | v0.2.6a  | Define IProblemsPanelViewModel interface    | 1              |
+| 2         | v0.2.6a  | Create ProblemItemViewModel                 | 2              |
+| 3         | v0.2.6a  | Create ProblemGroupViewModel                | 1              |
+| 4         | v0.2.6a  | Create ProblemsPanel.axaml layout           | 3              |
+| 5         | v0.2.6a  | Implement ProblemsPanelViewModel            | 4              |
+| 6         | v0.2.6a  | Implement TreeView with grouping            | 4              |
+| 7         | v0.2.6a  | Subscribe to LintingCompletedEvent          | 2              |
+| 8         | v0.2.6a  | Register in Bottom dock region              | 2              |
+| 9         | v0.2.6a  | Unit tests for ProblemsPanelViewModel       | 3              |
+| 10        | v0.2.6b  | Define IEditorNavigationService interface   | 1              |
+| 11        | v0.2.6b  | Implement EditorNavigationService           | 3              |
+| 12        | v0.2.6b  | Implement NavigateToViolationCommand        | 2              |
+| 13        | v0.2.6b  | Add scroll-to-line-column in ManuscriptView | 3              |
+| 14        | v0.2.6b  | Implement violation highlight animation     | 2              |
+| 15        | v0.2.6b  | Handle cross-document navigation            | 2              |
+| 16        | v0.2.6b  | Add keyboard navigation (Enter key)         | 1              |
+| 17        | v0.2.6b  | Unit tests for navigation                   | 3              |
+| 18        | v0.2.6c  | Define IScorecardViewModel interface        | 1              |
+| 19        | v0.2.6c  | Create ScorecardWidget.axaml                | 2              |
+| 20        | v0.2.6c  | Implement ScorecardViewModel                | 3              |
+| 21        | v0.2.6c  | Implement scoring algorithm                 | 2              |
+| 22        | v0.2.6c  | Implement visual score indicators           | 2              |
+| 23        | v0.2.6c  | Add trend calculation                       | 2              |
+| 24        | v0.2.6c  | Unit tests for score calculation            | 3              |
+| 25        | v0.2.6d  | Define ProblemScopeMode enum                | 0.5            |
+| 26        | v0.2.6d  | Add scope toggle UI                         | 2              |
+| 27        | v0.2.6d  | Define IProjectLintingService interface     | 1              |
+| 28        | v0.2.6d  | Implement ProjectLintingService             | 5              |
+| 29        | v0.2.6d  | Implement background task execution         | 3              |
+| 30        | v0.2.6d  | Add file grouping in TreeView               | 3              |
+| 31        | v0.2.6d  | Add severity filtering                      | 2              |
+| 32        | v0.2.6d  | Implement .lexichordignore support          | 2              |
+| 33        | v0.2.6d  | Unit tests for project linting              | 3              |
+| 34        | All      | Integration tests for full pipeline         | 5              |
+| 35        | All      | Performance tests with 1000+ violations     | 3              |
+| **Total** |          |                                             | **83.5 hours** |
 
 ---
 
 ## 4. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|:-----|:-------|:------------|:-----------|
-| Performance with many violations | High | Medium | Virtualize TreeView; limit displayed items; pagination |
-| Background linting blocks UI | High | Medium | Use Task.Run with proper async patterns; respect cancellation |
-| Memory pressure with large projects | Medium | Medium | Clear stale results; LRU cache with max size |
-| Navigation fails for closed documents | Medium | Medium | Verify document open before navigate; show toast error |
-| Score calculation complexity | Low | Low | Simple weighted formula; configurable weights |
-| TreeView sorting performance | Medium | Low | Use ObservableRangeCollection with batch updates |
-| Event subscription memory leaks | Medium | Low | Proper IDisposable; weak event references |
+| Risk                                  | Impact | Probability | Mitigation                                                    |
+| :------------------------------------ | :----- | :---------- | :------------------------------------------------------------ |
+| Performance with many violations      | High   | Medium      | Virtualize TreeView; limit displayed items; pagination        |
+| Background linting blocks UI          | High   | Medium      | Use Task.Run with proper async patterns; respect cancellation |
+| Memory pressure with large projects   | Medium | Medium      | Clear stale results; LRU cache with max size                  |
+| Navigation fails for closed documents | Medium | Medium      | Verify document open before navigate; show toast error        |
+| Score calculation complexity          | Low    | Low         | Simple weighted formula; configurable weights                 |
+| TreeView sorting performance          | Medium | Low         | Use ObservableRangeCollection with batch updates              |
+| Event subscription memory leaks       | Medium | Low         | Proper IDisposable; weak event references                     |
 
 ---
 
 ## 5. Success Metrics
 
-| Metric | Target | Measurement |
-|:-------|:-------|:------------|
-| Panel render time | < 100ms | Stopwatch from event to display |
-| Navigation latency | < 200ms | Time from double-click to scroll complete |
-| Score calculation time | < 10ms | Stopwatch in CalculateScore method |
-| Background lint (10 files) | < 5s | Total time for multi-document lint |
-| Project lint (100 files) | < 30s | Total time for project-wide lint |
-| Memory per 1000 violations | < 10MB | Memory profiler measurement |
-| UI responsiveness during lint | 60fps | Frame counter during background lint |
+| Metric                        | Target  | Measurement                               |
+| :---------------------------- | :------ | :---------------------------------------- |
+| Panel render time             | < 100ms | Stopwatch from event to display           |
+| Navigation latency            | < 200ms | Time from double-click to scroll complete |
+| Score calculation time        | < 10ms  | Stopwatch in CalculateScore method        |
+| Background lint (10 files)    | < 5s    | Total time for multi-document lint        |
+| Project lint (100 files)      | < 30s   | Total time for project-wide lint          |
+| Memory per 1000 violations    | < 10MB  | Memory profiler measurement               |
+| UI responsiveness during lint | 60fps   | Frame counter during background lint      |
 
 ---
 

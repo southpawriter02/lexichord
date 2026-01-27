@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-034a |
-| **Feature ID** | STY-034a |
-| **Feature Name** | Voice Profile Definition & Repository |
-| **Target Version** | v0.3.4a |
-| **Module Scope** | Lexichord.Modules.Style |
-| **Swimlane** | Governance |
-| **License Tier** | Writer Pro |
-| **Feature Gate Key** | `FeatureFlags.Style.VoiceProfiler` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-26 |
-| **Parent Document** | [LCS-DES-034-INDEX](./LCS-DES-034-INDEX.md) |
-| **Scope Breakdown** | [LCS-SBD-034 §3.1](./LCS-SBD-034.md#31-v034a-profile-definition) |
+| Field                | Value                                                            |
+| :------------------- | :--------------------------------------------------------------- |
+| **Document ID**      | LCS-DES-034a                                                     |
+| **Feature ID**       | STY-034a                                                         |
+| **Feature Name**     | Voice Profile Definition & Repository                            |
+| **Target Version**   | v0.3.4a                                                          |
+| **Module Scope**     | Lexichord.Modules.Style                                          |
+| **Swimlane**         | Governance                                                       |
+| **License Tier**     | Writer Pro                                                       |
+| **Feature Gate Key** | `FeatureFlags.Style.VoiceProfiler`                               |
+| **Status**           | Draft                                                            |
+| **Last Updated**     | 2026-01-26                                                       |
+| **Parent Document**  | [LCS-DES-034-INDEX](./LCS-DES-034-INDEX.md)                      |
+| **Scope Breakdown**  | [LCS-SBD-034 §3.1](./LCS-SBD-034.md#31-v034a-profile-definition) |
 
 ---
 
@@ -45,19 +45,19 @@ Implement:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IConfigurationService` | v0.0.3d | Persist active profile selection |
-| `IDbConnectionFactory` | v0.0.5b | Database connection for repository |
-| `IMediator` | v0.0.7a | Publish profile change events |
-| `ReadabilityMetrics` | v0.3.3c | Profile targets reference grade level |
+| Interface              | Source Version | Purpose                               |
+| :--------------------- | :------------- | :------------------------------------ |
+| `IConfiguration`       | v0.0.3d        | Persist active profile selection      |
+| `IDbConnectionFactory` | v0.0.5b        | Database connection for repository    |
+| `IMediator`            | v0.0.7a        | Publish profile change events         |
+| `ReadabilityMetrics`   | v0.3.3c        | Profile targets reference grade level |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `Dapper` | 2.1.x | Micro-ORM for repository |
-| `MediatR` | 12.x | Event publishing |
+| Package   | Version | Purpose                  |
+| :-------- | :------ | :----------------------- |
+| `Dapper`  | 2.1.x   | Micro-ORM for repository |
+| `MediatR` | 12.x    | Event publishing         |
 
 ### 3.2 Licensing Behavior
 
@@ -551,30 +551,30 @@ START: "Can user create a custom profile?"
 
 ## 9. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Loading voice profiles from repository"` |
-| Debug | `"Loaded {Count} voice profiles ({BuiltInCount} built-in, {CustomCount} custom)"` |
-| Info | `"Active profile changed: {PreviousProfile} -> {NewProfile}"` |
-| Debug | `"Profile {ProfileName} activated with constraints: Grade={Grade}, MaxSentence={MaxSentence}"` |
-| Warning | `"Attempted to delete built-in profile: {ProfileName}"` |
-| Warning | `"Attempted to create custom profile without Teams license"` |
-| Error | `"Failed to load profiles: {Error}"` |
+| Level   | Message Template                                                                               |
+| :------ | :--------------------------------------------------------------------------------------------- |
+| Debug   | `"Loading voice profiles from repository"`                                                     |
+| Debug   | `"Loaded {Count} voice profiles ({BuiltInCount} built-in, {CustomCount} custom)"`              |
+| Info    | `"Active profile changed: {PreviousProfile} -> {NewProfile}"`                                  |
+| Debug   | `"Profile {ProfileName} activated with constraints: Grade={Grade}, MaxSentence={MaxSentence}"` |
+| Warning | `"Attempted to delete built-in profile: {ProfileName}"`                                        |
+| Warning | `"Attempted to create custom profile without Teams license"`                                   |
+| Error   | `"Failed to load profiles: {Error}"`                                                           |
 
 ---
 
 ## 10. Acceptance Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Fresh install | GetAllProfilesAsync called | Returns 5 built-in profiles |
-| 2 | No active profile set | GetActiveProfileAsync called | Returns Technical (default) |
-| 3 | User with Writer Pro | SetActiveProfileAsync called | Profile changes, event published |
-| 4 | User with Teams license | CreateProfileAsync called | Custom profile created |
-| 5 | User with Writer Pro (not Teams) | CreateProfileAsync called | Throws InvalidOperationException |
-| 6 | Any user | DeleteProfileAsync for built-in | Throws InvalidOperationException |
-| 7 | Profile already active | SetActiveProfileAsync same ID | No event published (no-op) |
-| 8 | Invalid profile data | CreateProfileAsync called | Throws ValidationException |
+| #   | Given                            | When                            | Then                             |
+| :-- | :------------------------------- | :------------------------------ | :------------------------------- |
+| 1   | Fresh install                    | GetAllProfilesAsync called      | Returns 5 built-in profiles      |
+| 2   | No active profile set            | GetActiveProfileAsync called    | Returns Technical (default)      |
+| 3   | User with Writer Pro             | SetActiveProfileAsync called    | Profile changes, event published |
+| 4   | User with Teams license          | CreateProfileAsync called       | Custom profile created           |
+| 5   | User with Writer Pro (not Teams) | CreateProfileAsync called       | Throws InvalidOperationException |
+| 6   | Any user                         | DeleteProfileAsync for built-in | Throws InvalidOperationException |
+| 7   | Profile already active           | SetActiveProfileAsync same ID   | No event published (no-op)       |
+| 8   | Invalid profile data             | CreateProfileAsync called       | Throws ValidationException       |
 
 ---
 
@@ -726,7 +726,7 @@ public class VoiceProfileService : IVoiceProfileService
     private const string ActiveProfileKey = "VoiceProfile.ActiveId";
 
     private readonly IVoiceProfileRepository _repository;
-    private readonly IConfigurationService _configService;
+    private readonly IConfiguration _configuration;
     private readonly ILicenseContext _licenseContext;
     private readonly IMediator _mediator;
     private readonly ILogger<VoiceProfileService> _logger;
@@ -736,13 +736,13 @@ public class VoiceProfileService : IVoiceProfileService
 
     public VoiceProfileService(
         IVoiceProfileRepository repository,
-        IConfigurationService configService,
+        IConfiguration configuration,
         ILicenseContext licenseContext,
         IMediator mediator,
         ILogger<VoiceProfileService> logger)
     {
         _repository = repository;
-        _configService = configService;
+        _configuration = configuration;
         _licenseContext = licenseContext;
         _mediator = mediator;
         _logger = logger;
@@ -975,6 +975,6 @@ services.AddSingleton<IVoiceProfileRepository, VoiceProfileRepository>();
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

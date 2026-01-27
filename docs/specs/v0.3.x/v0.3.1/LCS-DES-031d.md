@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `STY-031d` | Sub-part of STY-031 |
-| **Feature Name** | `Fuzzy License Gating` | UI/UX and feature gate implementation |
-| **Target Version** | `v0.3.1d` | Fourth sub-part of v0.3.1 |
-| **Module Scope** | `Lexichord.Modules.Style`, `Lexichord.Client` | Backend gate + UI indication |
-| **Swimlane** | `Governance` | Style & Terminology Enforcement |
-| **License Tier** | `Writer Pro` | Premium feature (Core users see UI hints) |
-| **Feature Gate Key** | `Feature.FuzzyMatching` | Key used in `ILicenseContext.HasFeature()` |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-031 §2.4](./LCS-SBD-031.md#v031d-license-gating) | |
+| Field                | Value                                                     | Description                                |
+| :------------------- | :-------------------------------------------------------- | :----------------------------------------- |
+| **Feature ID**       | `STY-031d`                                                | Sub-part of STY-031                        |
+| **Feature Name**     | `Fuzzy License Gating`                                    | UI/UX and feature gate implementation      |
+| **Target Version**   | `v0.3.1d`                                                 | Fourth sub-part of v0.3.1                  |
+| **Module Scope**     | `Lexichord.Modules.Style`, `Lexichord.Client`             | Backend gate + UI indication               |
+| **Swimlane**         | `Governance`                                              | Style & Terminology Enforcement            |
+| **License Tier**     | `Writer Pro`                                              | Premium feature (Core users see UI hints)  |
+| **Feature Gate Key** | `Feature.FuzzyMatching`                                   | Key used in `ILicenseContext.HasFeature()` |
+| **Author**           | Lead Architect                                            |                                            |
+| **Status**           | `Draft`                                                   |                                            |
+| **Last Updated**     | `2026-01-26`                                              |                                            |
+| **Parent Document**  | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md)               |                                            |
+| **Scope Breakdown**  | [LCS-SBD-031 §2.4](./LCS-SBD-031.md#v031d-license-gating) |                                            |
 
 ---
 
@@ -79,7 +79,7 @@ graph TB
 graph TB
     subgraph "Lexichord.Abstractions"
         LC[ILicenseContext<br/>v0.0.4c]
-        FM[FeatureMatrix<br/>v0.0.4b]
+        FM[IFeatureMatrix<br/>v0.3.1d]
         LT[LicenseTier<br/>v0.0.4c]
     end
 
@@ -128,7 +128,7 @@ src/Lexichord.Client/
 | :---------------- | :------------- | :------------------------------- |
 | `ILicenseContext` | v0.0.4c        | Read-only license tier access    |
 | `LicenseTier`     | v0.0.4c        | Core/WriterPro/Teams/Enterprise  |
-| `FeatureMatrix`   | v0.0.4b        | Feature → Tier mapping           |
+| `IFeatureMatrix`  | v0.3.1d        | Feature → Tier mapping (NEW)     |
 | `FuzzyScanner`    | v0.3.1c        | Already implements license check |
 
 ---

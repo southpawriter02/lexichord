@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `INF-036a` | Sub-part of INF-036 |
-| **Feature Name** | `Layered Configuration Provider` | Hierarchical config merging |
-| **Target Version** | `v0.3.6a` | First sub-part of v0.3.6 |
-| **Module Scope** | `Lexichord.Modules.Style` | Style governance module |
-| **Swimlane** | `Infrastructure` | Configuration infrastructure |
-| **License Tier** | `Writer Pro` | Required for project-level config |
-| **Feature Gate Key** | `FeatureFlags.Style.GlobalDictionary` | Shared with parent feature |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-26` | |
-| **Parent Document** | [LCS-DES-036-INDEX](./LCS-DES-036-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-036 §3.1](./LCS-SBD-036.md#31-v036a-the-layered-configuration) | |
+| Field                | Value                                                                   | Description                       |
+| :------------------- | :---------------------------------------------------------------------- | :-------------------------------- |
+| **Feature ID**       | `INF-036a`                                                              | Sub-part of INF-036               |
+| **Feature Name**     | `Layered Configuration Provider`                                        | Hierarchical config merging       |
+| **Target Version**   | `v0.3.6a`                                                               | First sub-part of v0.3.6          |
+| **Module Scope**     | `Lexichord.Modules.Style`                                               | Style governance module           |
+| **Swimlane**         | `Infrastructure`                                                        | Configuration infrastructure      |
+| **License Tier**     | `Writer Pro`                                                            | Required for project-level config |
+| **Feature Gate Key** | `FeatureFlags.Style.GlobalDictionary`                                   | Shared with parent feature        |
+| **Author**           | Lead Architect                                                          |                                   |
+| **Status**           | `Draft`                                                                 |                                   |
+| **Last Updated**     | `2026-01-26`                                                            |                                   |
+| **Parent Document**  | [LCS-DES-036-INDEX](./LCS-DES-036-INDEX.md)                             |                                   |
+| **Scope Breakdown**  | [LCS-SBD-036 §3.1](./LCS-SBD-036.md#31-v036a-the-layered-configuration) |                                   |
 
 ---
 
@@ -45,30 +45,30 @@ Implement an `ILayeredConfigurationProvider` that:
 
 #### 3.1.1 Upstream Dependencies
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IWorkspaceService` | v0.1.2a | Workspace root detection |
-| `WorkspaceOpenedEvent` | v0.1.2a | Trigger config loading |
-| `WorkspaceClosedEvent` | v0.1.2a | Clear config cache |
-| `IRobustFileSystemWatcher` | v0.1.2b | Config file change detection |
-| `IConfigurationService` | v0.0.3d | User preferences access |
-| `ILicenseContext` | v0.0.4c | License tier checking |
+| Interface                  | Source Version | Purpose                                                      |
+| :------------------------- | :------------- | :----------------------------------------------------------- |
+| `IWorkspaceService`        | v0.1.2a        | Workspace root detection                                     |
+| `WorkspaceOpenedEvent`     | v0.1.2a        | Trigger config loading                                       |
+| `WorkspaceClosedEvent`     | v0.1.2a        | Clear config cache                                           |
+| `IRobustFileSystemWatcher` | v0.1.2b        | Config file change detection                                 |
+| `IConfiguration`           | v0.0.3d        | User preferences access (Microsoft.Extensions.Configuration) |
+| `ILicenseContext`          | v0.0.4c        | License tier checking                                        |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `YamlDotNet` | 16.x | YAML parsing/serialization |
-| `System.Reactive` | 6.x | Event debouncing |
-| `MediatR` | 12.x | Event publishing |
+| Package           | Version | Purpose                    |
+| :---------------- | :------ | :------------------------- |
+| `YamlDotNet`      | 16.x    | YAML parsing/serialization |
+| `System.Reactive` | 6.x     | Event debouncing           |
+| `MediatR`         | 12.x    | Event publishing           |
 
 ### 3.2 Licensing Behavior
 
 - **Load Behavior:** Soft Gate
-  - [x] The Module loads, but project configuration is ignored for non-licensed users
+    - [x] The Module loads, but project configuration is ignored for non-licensed users
 - **Fallback Experience:**
-  - Core users: System + User configuration only
-  - Writer Pro+: Full three-layer configuration with project overrides
+    - Core users: System + User configuration only
+    - Writer Pro+: Full three-layer configuration with project overrides
 
 ---
 
@@ -295,11 +295,11 @@ MERGE configurations (lower, higher):
 
 ### 5.3 File Locations
 
-| Source | Windows Path | Linux/macOS Path |
-| :--- | :--- | :--- |
-| System | Embedded resource | Embedded resource |
-| User | `%APPDATA%/Lexichord/style/user.yaml` | `~/.config/lexichord/style/user.yaml` |
-| Project | `{workspace}/.lexichord/style.yaml` | `{workspace}/.lexichord/style.yaml` |
+| Source  | Windows Path                          | Linux/macOS Path                      |
+| :------ | :------------------------------------ | :------------------------------------ |
+| System  | Embedded resource                     | Embedded resource                     |
+| User    | `%APPDATA%/Lexichord/style/user.yaml` | `~/.config/lexichord/style/user.yaml` |
+| Project | `{workspace}/.lexichord/style.yaml`   | `{workspace}/.lexichord/style.yaml`   |
 
 ### 5.4 YAML Configuration Format
 
@@ -309,35 +309,35 @@ version: 1
 
 # Profile settings
 profile:
-  default: Technical
-  allow_switching: true
+    default: Technical
+    allow_switching: true
 
 # Readability constraints
 readability:
-  target_grade_level: 10
-  max_sentence_length: 25
-  tolerance: 2
+    target_grade_level: 10
+    max_sentence_length: 25
+    tolerance: 2
 
 # Voice analysis settings
 voice:
-  passive_voice_threshold: 15
-  flag_adverbs: true
-  flag_weasels: true
+    passive_voice_threshold: 15
+    flag_adverbs: true
+    flag_weasels: true
 
 # Term overrides
 terminology:
-  additions:
-    - pattern: "proprietary-term"
-      recommendation: "Use 'standard-term' instead"
-      severity: warning
-  exclusions:
-    - "whitelist"
-    - "blacklist"
+    additions:
+        - pattern: "proprietary-term"
+          recommendation: "Use 'standard-term' instead"
+          severity: warning
+    exclusions:
+        - "whitelist"
+        - "blacklist"
 
 # Ignored rules
 ignored_rules:
-  - "TERM-001"
-  - "PASSIVE-*"
+    - "TERM-001"
+    - "PASSIVE-*"
 ```
 
 ### 5.5 Hot-Reload Strategy
@@ -371,6 +371,7 @@ sequenceDiagram
 ## 7. UI/UX Specifications
 
 **None.** This is a backend service. UI integration occurs through:
+
 - `ILintingOrchestrator` subscribing to `ConfigurationChangedEvent`
 - `ResonanceDashboardViewModel` refreshing on configuration change
 - `VoiceProfileService` updating default profile on change
@@ -379,27 +380,27 @@ sequenceDiagram
 
 ## 8. Observability & Logging
 
-| Level | Message Template |
-| :--- | :--- |
-| Debug | `"Loading configuration from {Source}: {Path}"` |
-| Debug | `"Configuration merged: {KeyCount} keys from {Source}"` |
-| Info | `"Effective configuration loaded in {ElapsedMs}ms"` |
-| Debug | `"Configuration cache invalidated"` |
-| Warning | `"Failed to load configuration from {Path}: {Error}"` |
-| Debug | `"Project configuration skipped: license not available"` |
-| Debug | `"Project configuration skipped: no workspace open"` |
-| Debug | `"File watcher detected change in {Path}"` |
+| Level   | Message Template                                         |
+| :------ | :------------------------------------------------------- |
+| Debug   | `"Loading configuration from {Source}: {Path}"`          |
+| Debug   | `"Configuration merged: {KeyCount} keys from {Source}"`  |
+| Info    | `"Effective configuration loaded in {ElapsedMs}ms"`      |
+| Debug   | `"Configuration cache invalidated"`                      |
+| Warning | `"Failed to load configuration from {Path}: {Error}"`    |
+| Debug   | `"Project configuration skipped: license not available"` |
+| Debug   | `"Project configuration skipped: no workspace open"`     |
+| Debug   | `"File watcher detected change in {Path}"`               |
 
 ---
 
 ## 9. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
+| Risk                | Level  | Mitigation                                     |
+| :------------------ | :----- | :--------------------------------------------- |
 | YAML parsing errors | Medium | Catch exceptions, return defaults, log warning |
-| Large config files | Low | Limit file size to 100KB |
-| Invalid YAML syntax | Medium | Validate schema, provide clear error messages |
-| Path traversal | Low | Sanitize paths, stay within workspace bounds |
+| Large config files  | Low    | Limit file size to 100KB                       |
+| Invalid YAML syntax | Medium | Validate schema, provide clear error messages  |
+| Path traversal      | Low    | Sanitize paths, stay within workspace bounds   |
 
 ---
 
@@ -407,24 +408,24 @@ sequenceDiagram
 
 ### 10.1 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | No project/user config | Configuration loaded | System defaults returned |
-| 2 | User config exists | Configuration loaded | User overrides system defaults |
-| 3 | Project config exists | Writer Pro user loads config | Project overrides user |
-| 4 | Project config exists | Core user loads config | Project config ignored |
-| 5 | Config file changes | File watcher detects | Cache invalidated, event raised |
-| 6 | Workspace opened | WorkspaceOpenedEvent received | Project config loaded |
-| 7 | Workspace closed | WorkspaceClosedEvent received | Project config cleared |
-| 8 | Invalid YAML in file | Configuration loaded | Warning logged, defaults used |
+| #   | Given                  | When                          | Then                            |
+| :-- | :--------------------- | :---------------------------- | :------------------------------ |
+| 1   | No project/user config | Configuration loaded          | System defaults returned        |
+| 2   | User config exists     | Configuration loaded          | User overrides system defaults  |
+| 3   | Project config exists  | Writer Pro user loads config  | Project overrides user          |
+| 4   | Project config exists  | Core user loads config        | Project config ignored          |
+| 5   | Config file changes    | File watcher detects          | Cache invalidated, event raised |
+| 6   | Workspace opened       | WorkspaceOpenedEvent received | Project config loaded           |
+| 7   | Workspace closed       | WorkspaceClosedEvent received | Project config cleared          |
+| 8   | Invalid YAML in file   | Configuration loaded          | Warning logged, defaults used   |
 
 ### 10.2 Performance Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 9 | Any configuration | Full load | Completes in < 50ms |
-| 10 | Configuration cached | Subsequent access | Returns in < 1ms |
-| 11 | File change detected | Hot-reload | Completes in < 500ms |
+| #   | Given                | When              | Then                 |
+| :-- | :------------------- | :---------------- | :------------------- |
+| 9   | Any configuration    | Full load         | Completes in < 50ms  |
+| 10  | Configuration cached | Subsequent access | Returns in < 1ms     |
+| 11  | File change detected | Hot-reload        | Completes in < 500ms |
 
 ---
 
@@ -627,7 +628,7 @@ namespace Lexichord.Modules.Style.Services;
 public sealed class LayeredConfigurationProvider : ILayeredConfigurationProvider, IDisposable
 {
     private readonly IWorkspaceService _workspaceService;
-    private readonly IConfigurationService _configService;
+    private readonly IConfiguration _configuration;
     private readonly ILicenseContext _licenseContext;
     private readonly ILogger<LayeredConfigurationProvider> _logger;
     private readonly IFileSystemWatcher? _fileWatcher;
@@ -643,13 +644,13 @@ public sealed class LayeredConfigurationProvider : ILayeredConfigurationProvider
 
     public LayeredConfigurationProvider(
         IWorkspaceService workspaceService,
-        IConfigurationService configService,
+        IConfiguration configuration,
         ILicenseContext licenseContext,
         ILogger<LayeredConfigurationProvider> logger,
         IFileSystemWatcher? fileWatcher = null)
     {
         _workspaceService = workspaceService;
-        _configService = configService;
+        _configuration = configuration;
         _licenseContext = licenseContext;
         _logger = logger;
         _fileWatcher = fileWatcher;
@@ -922,6 +923,6 @@ services.AddSingleton<ILayeredConfigurationProvider, LayeredConfigurationProvide
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-26 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-26 | Lead Architect | Initial draft |

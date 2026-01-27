@@ -2,12 +2,12 @@
 
 ## Document Control
 
-| Field            | Value                                                    |
-| :--------------- | :------------------------------------------------------- |
-| **Document ID**  | LCS-SBD-021                                               |
-| **Version**      | v0.2.1                                                    |
-| **Status**       | Draft                                                     |
-| **Last Updated** | 2026-01-26                                                |
+| Field            | Value                                                        |
+| :--------------- | :----------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-021                                                  |
+| **Version**      | v0.2.1                                                       |
+| **Status**       | Draft                                                        |
+| **Last Updated** | 2026-01-26                                                   |
 | **Depends On**   | v0.1.3 (Editor Module), v0.0.7 (Event Bus), v0.0.4 (IModule) |
 
 ---
@@ -41,15 +41,15 @@ In Lexichord, "Concordance" extends this concept:
 
 ### 1.4 Dependencies on Previous Versions
 
-| Component            | Source   | Usage                                           |
-|:---------------------|:---------|:------------------------------------------------|
-| IModule              | v0.0.4a  | Style module implements IModule interface       |
-| ModuleLoader         | v0.0.4b  | Discovers and loads Style module at startup     |
-| IMediator/Event Bus  | v0.0.7   | Publish StyleViolationDetectedEvent             |
-| IConfigurationService| v0.0.3d  | Load style configuration paths                  |
-| IEditorService       | v0.1.3a  | Access document content for style analysis      |
-| ManuscriptViewModel  | v0.1.3a  | Wire violation squiggles to editor              |
-| Serilog              | v0.0.3b  | Log rule loading and violation detection        |
+| Component           | Source  | Usage                                                         |
+| :------------------ | :------ | :------------------------------------------------------------ |
+| IModule             | v0.0.4a | Style module implements IModule interface                     |
+| ModuleLoader        | v0.0.4b | Discovers and loads Style module at startup                   |
+| IMediator/Event Bus | v0.0.7  | Publish StyleViolationDetectedEvent                           |
+| IConfiguration      | v0.0.3d | Load style configuration paths via IOptions<LexichordOptions> |
+| IEditorService      | v0.1.3a | Access document content for style analysis                    |
+| ManuscriptViewModel | v0.1.3a | Wire violation squiggles to editor                            |
+| Serilog             | v0.0.3b | Log rule loading and violation detection                      |
 
 ---
 
@@ -57,16 +57,17 @@ In Lexichord, "Concordance" extends this concept:
 
 ### 2.1 v0.2.1a: Module Scaffolding
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-021a |
-| **Title** | Module Scaffolding |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | Core |
+| Field            | Value                     |
+| :--------------- | :------------------------ |
+| **Sub-Part ID**  | INF-021a                  |
+| **Title**        | Module Scaffolding        |
+| **Module**       | `Lexichord.Modules.Style` |
+| **License Tier** | Core                      |
 
 **Goal:** Create the `Lexichord.Modules.Style` project with proper structure, add reference to `Lexichord.Abstractions`, implement `IModule`, and register in Host.
 
 **Key Deliverables:**
+
 - Create `Lexichord.Modules.Style` class library project
 - Add project reference to `Lexichord.Abstractions`
 - Implement `StyleModule : IModule` with proper lifecycle
@@ -74,6 +75,7 @@ In Lexichord, "Concordance" extends this concept:
 - Define `IStyleEngine` core interface in Abstractions
 
 **Key Interfaces:**
+
 ```csharp
 public interface IStyleEngine
 {
@@ -89,6 +91,7 @@ public interface IStyleEngine
 ```
 
 **Dependencies:**
+
 - v0.0.4a: IModule (module contract)
 - v0.0.4b: ModuleLoader (discovery and loading)
 
@@ -96,16 +99,17 @@ public interface IStyleEngine
 
 ### 2.2 v0.2.1b: Rule Object Model
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-021b |
-| **Title** | Rule Object Model |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | Core |
+| Field            | Value                     |
+| :--------------- | :------------------------ |
+| **Sub-Part ID**  | INF-021b                  |
+| **Title**        | Rule Object Model         |
+| **Module**       | `Lexichord.Modules.Style` |
+| **License Tier** | Core                      |
 
 **Goal:** Define the core domain objects that represent style rules, categories, and violations. This is the vocabulary of the Concordance philosophy.
 
 **Key Deliverables:**
+
 - Define `StyleRule` record with pattern matching support
 - Define `RuleCategory` enum: Terminology, Formatting, Syntax
 - Define `ViolationSeverity` enum: Error, Warning, Info, Hint
@@ -113,6 +117,7 @@ public interface IStyleEngine
 - Define `StyleSheet` aggregate containing rule collections
 
 **Key Interfaces:**
+
 ```csharp
 public record StyleRule(
     string Id,
@@ -130,22 +135,24 @@ public enum ViolationSeverity { Error, Warning, Info, Hint }
 ```
 
 **Dependencies:**
+
 - v0.2.1a: Module project (location for domain objects)
 
 ---
 
 ### 2.3 v0.2.1c: YAML Deserializer
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-021c |
-| **Title** | YAML Deserializer |
-| **Module** | `Lexichord.Modules.Style` |
+| Field            | Value                               |
+| :--------------- | :---------------------------------- |
+| **Sub-Part ID**  | INF-021c                            |
+| **Title**        | YAML Deserializer                   |
+| **Module**       | `Lexichord.Modules.Style`           |
 | **License Tier** | Core (embedded), WriterPro (custom) |
 
 **Goal:** Install YamlDotNet, implement `StyleSheetLoader` service that deserializes YAML rule definitions, and create a default `lexichord.yaml` embedded resource with standard rules.
 
 **Key Deliverables:**
+
 - Install `YamlDotNet` NuGet package
 - Implement `IStyleSheetLoader` interface
 - Implement `YamlStyleSheetLoader` with embedded resource support
@@ -153,6 +160,7 @@ public enum ViolationSeverity { Error, Warning, Info, Hint }
 - Validation for YAML schema (report malformed rule files)
 
 **Key Interfaces:**
+
 ```csharp
 public interface IStyleSheetLoader
 {
@@ -164,23 +172,25 @@ public interface IStyleSheetLoader
 ```
 
 **Dependencies:**
+
 - v0.2.1b: Domain objects (StyleSheet, StyleRule)
-- v0.0.3d: IConfigurationService (locate style files)
+- v0.0.3d: IConfiguration + IOptions<LexichordOptions> (locate style files)
 
 ---
 
 ### 2.4 v0.2.1d: Configuration Watcher
 
-| Field | Value |
-|:------|:------|
-| **Sub-Part ID** | INF-021d |
-| **Title** | Configuration Watcher |
-| **Module** | `Lexichord.Modules.Style` |
-| **License Tier** | WriterPro |
+| Field            | Value                     |
+| :--------------- | :------------------------ |
+| **Sub-Part ID**  | INF-021d                  |
+| **Title**        | Configuration Watcher     |
+| **Module**       | `Lexichord.Modules.Style` |
+| **License Tier** | WriterPro                 |
 
 **Goal:** Implement `FileSystemWatcher` for project root `.lexichord/style.yaml`, enabling auto-reload of rules without application restart. This enables the "live editing" workflow.
 
 **Key Deliverables:**
+
 - Implement `IStyleConfigurationWatcher` interface
 - Implement `FileSystemStyleWatcher` with debouncing
 - Wire to `IStyleEngine.SetActiveStyleSheet()` on file change
@@ -188,6 +198,7 @@ public interface IStyleSheetLoader
 - Handle file errors gracefully (revert to previous valid rules)
 
 **Key Interfaces:**
+
 ```csharp
 public interface IStyleConfigurationWatcher : IDisposable
 {
@@ -201,6 +212,7 @@ public interface IStyleConfigurationWatcher : IDisposable
 ```
 
 **Dependencies:**
+
 - v0.2.1c: StyleSheetLoader (reload rules)
 - v0.0.7: Event Bus (publish reload events)
 - License: WriterPro (custom rules feature)
@@ -209,63 +221,63 @@ public interface IStyleConfigurationWatcher : IDisposable
 
 ## 3. Implementation Checklist
 
-| # | Sub-Part | Task | Est. Hours |
-|:--|:---------|:-----|:-----------|
-| 1 | v0.2.1a | Create `Lexichord.Modules.Style` project | 0.5 |
-| 2 | v0.2.1a | Add reference to `Lexichord.Abstractions` | 0.25 |
-| 3 | v0.2.1a | Configure output to `./Modules/` directory | 0.25 |
-| 4 | v0.2.1a | Define `IStyleEngine` interface in Abstractions | 1 |
-| 5 | v0.2.1a | Implement `StyleModule : IModule` | 2 |
-| 6 | v0.2.1a | Register services in `RegisterServices()` | 1 |
-| 7 | v0.2.1a | Unit tests for StyleModule lifecycle | 2 |
-| 8 | v0.2.1b | Define `RuleCategory` enum | 0.5 |
-| 9 | v0.2.1b | Define `ViolationSeverity` enum | 0.5 |
-| 10 | v0.2.1b | Define `PatternType` enum | 0.5 |
-| 11 | v0.2.1b | Define `StyleRule` record | 2 |
-| 12 | v0.2.1b | Define `StyleViolation` record | 1 |
-| 13 | v0.2.1b | Define `StyleSheet` aggregate | 2 |
-| 14 | v0.2.1b | Unit tests for domain objects | 2 |
-| 15 | v0.2.1c | Install YamlDotNet NuGet package | 0.25 |
-| 16 | v0.2.1c | Define `IStyleSheetLoader` interface | 1 |
-| 17 | v0.2.1c | Implement `YamlStyleSheetLoader` | 4 |
-| 18 | v0.2.1c | Create embedded `lexichord.yaml` with 25+ rules | 4 |
-| 19 | v0.2.1c | Implement YAML validation with error reporting | 2 |
-| 20 | v0.2.1c | Unit tests for YAML deserialization | 3 |
-| 21 | v0.2.1d | Define `IStyleConfigurationWatcher` interface | 1 |
-| 22 | v0.2.1d | Implement `FileSystemStyleWatcher` | 3 |
-| 23 | v0.2.1d | Implement debouncing (300ms default) | 1 |
-| 24 | v0.2.1d | Wire to StyleEngine for auto-reload | 1 |
-| 25 | v0.2.1d | Define and publish `StyleSheetReloadedEvent` | 1 |
-| 26 | v0.2.1d | Handle file errors with graceful fallback | 2 |
-| 27 | v0.2.1d | Unit tests for file watcher | 3 |
-| 28 | All | Integration tests for Style module | 4 |
-| **Total** | | | **46 hours** |
+| #         | Sub-Part | Task                                            | Est. Hours   |
+| :-------- | :------- | :---------------------------------------------- | :----------- |
+| 1         | v0.2.1a  | Create `Lexichord.Modules.Style` project        | 0.5          |
+| 2         | v0.2.1a  | Add reference to `Lexichord.Abstractions`       | 0.25         |
+| 3         | v0.2.1a  | Configure output to `./Modules/` directory      | 0.25         |
+| 4         | v0.2.1a  | Define `IStyleEngine` interface in Abstractions | 1            |
+| 5         | v0.2.1a  | Implement `StyleModule : IModule`               | 2            |
+| 6         | v0.2.1a  | Register services in `RegisterServices()`       | 1            |
+| 7         | v0.2.1a  | Unit tests for StyleModule lifecycle            | 2            |
+| 8         | v0.2.1b  | Define `RuleCategory` enum                      | 0.5          |
+| 9         | v0.2.1b  | Define `ViolationSeverity` enum                 | 0.5          |
+| 10        | v0.2.1b  | Define `PatternType` enum                       | 0.5          |
+| 11        | v0.2.1b  | Define `StyleRule` record                       | 2            |
+| 12        | v0.2.1b  | Define `StyleViolation` record                  | 1            |
+| 13        | v0.2.1b  | Define `StyleSheet` aggregate                   | 2            |
+| 14        | v0.2.1b  | Unit tests for domain objects                   | 2            |
+| 15        | v0.2.1c  | Install YamlDotNet NuGet package                | 0.25         |
+| 16        | v0.2.1c  | Define `IStyleSheetLoader` interface            | 1            |
+| 17        | v0.2.1c  | Implement `YamlStyleSheetLoader`                | 4            |
+| 18        | v0.2.1c  | Create embedded `lexichord.yaml` with 25+ rules | 4            |
+| 19        | v0.2.1c  | Implement YAML validation with error reporting  | 2            |
+| 20        | v0.2.1c  | Unit tests for YAML deserialization             | 3            |
+| 21        | v0.2.1d  | Define `IStyleConfigurationWatcher` interface   | 1            |
+| 22        | v0.2.1d  | Implement `FileSystemStyleWatcher`              | 3            |
+| 23        | v0.2.1d  | Implement debouncing (300ms default)            | 1            |
+| 24        | v0.2.1d  | Wire to StyleEngine for auto-reload             | 1            |
+| 25        | v0.2.1d  | Define and publish `StyleSheetReloadedEvent`    | 1            |
+| 26        | v0.2.1d  | Handle file errors with graceful fallback       | 2            |
+| 27        | v0.2.1d  | Unit tests for file watcher                     | 3            |
+| 28        | All      | Integration tests for Style module              | 4            |
+| **Total** |          |                                                 | **46 hours** |
 
 ---
 
 ## 4. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|:-----|:-------|:------------|:-----------|
-| YamlDotNet breaking changes | High | Low | Pin specific version; wrap in adapter |
-| Regex patterns cause ReDoS | High | Medium | Timeout pattern execution; complexity limits |
-| File watcher events flood | Medium | Medium | Debounce at 300ms; coalesce rapid changes |
-| Invalid YAML crashes app | High | Medium | Validate before loading; fallback to defaults |
-| Large rule sets slow analysis | Medium | Low | Lazy evaluation; parallel pattern matching |
-| User deletes style.yaml mid-edit | Low | Medium | Keep last valid rules in memory |
+| Risk                             | Impact | Probability | Mitigation                                    |
+| :------------------------------- | :----- | :---------- | :-------------------------------------------- |
+| YamlDotNet breaking changes      | High   | Low         | Pin specific version; wrap in adapter         |
+| Regex patterns cause ReDoS       | High   | Medium      | Timeout pattern execution; complexity limits  |
+| File watcher events flood        | Medium | Medium      | Debounce at 300ms; coalesce rapid changes     |
+| Invalid YAML crashes app         | High   | Medium      | Validate before loading; fallback to defaults |
+| Large rule sets slow analysis    | Medium | Low         | Lazy evaluation; parallel pattern matching    |
+| User deletes style.yaml mid-edit | Low    | Medium      | Keep last valid rules in memory               |
 
 ---
 
 ## 5. Success Metrics
 
-| Metric | Target | Measurement |
-|:-------|:-------|:------------|
-| Module load time | < 50ms | Stopwatch in InitializeAsync |
-| YAML parse time (100 rules) | < 100ms | Stopwatch in LoadFromFileAsync |
-| File change detection | < 500ms | Time from save to reload event |
-| Analysis latency (1000 lines) | < 200ms | Stopwatch in AnalyzeAsync |
-| Memory per rule | < 1KB | Memory profiler |
-| False positive rate | < 5% | Manual review of standard rules |
+| Metric                        | Target  | Measurement                     |
+| :---------------------------- | :------ | :------------------------------ |
+| Module load time              | < 50ms  | Stopwatch in InitializeAsync    |
+| YAML parse time (100 rules)   | < 100ms | Stopwatch in LoadFromFileAsync  |
+| File change detection         | < 500ms | Time from save to reload event  |
+| Analysis latency (1000 lines) | < 200ms | Stopwatch in AnalyzeAsync       |
+| Memory per rule               | < 1KB   | Memory profiler                 |
+| False positive rate           | < 5%    | Manual review of standard rules |
 
 ---
 

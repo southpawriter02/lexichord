@@ -2,15 +2,15 @@
 
 ## Document Control
 
-| Field            | Value                                                        |
-| :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-SBD-025                                                  |
-| **Version**      | v0.2.5                                                       |
-| **Codename**     | The Librarian (Terminology Management UI)                    |
-| **Status**       | Draft                                                        |
-| **Last Updated** | 2026-01-26                                                   |
-| **Owner**        | Lead Architect                                               |
-| **Depends On**   | v0.2.2 (Terminology Database), v0.1.1 (Layout Engine)        |
+| Field            | Value                                                 |
+| :--------------- | :---------------------------------------------------- |
+| **Document ID**  | LCS-SBD-025                                           |
+| **Version**      | v0.2.5                                                |
+| **Codename**     | The Librarian (Terminology Management UI)             |
+| **Status**       | Draft                                                 |
+| **Last Updated** | 2026-01-26                                            |
+| **Owner**        | Lead Architect                                        |
+| **Depends On**   | v0.2.2 (Terminology Database), v0.1.1 (Layout Engine) |
 
 ---
 
@@ -49,17 +49,17 @@ The Librarian is a **WriterPro** feature. Core and Writer tiers will see:
 
 ## 2. Dependencies on Prior Versions
 
-| Component                | Source Version | Usage in v0.2.5                                  |
-| :----------------------- | :------------- | :----------------------------------------------- |
-| `ITerminologyRepository` | v0.2.2b        | Data access for term CRUD operations             |
-| `ITerminologyService`    | v0.2.2d        | Business logic and event publication             |
-| `StyleTerm`              | v0.2.2b        | Entity model displayed in DataGrid               |
-| `LexiconChangedEvent`    | v0.2.2d        | Refresh grid when terms change                   |
-| `IRegionManager`         | v0.1.1b        | Register LexiconView in Right dock region        |
-| `ILayoutService`         | v0.1.1c        | Persist panel state                              |
-| `ILicenseContext`        | v0.0.4c        | Read-only license tier check                     |
-| `ILicenseService`        | v0.1.6c        | Gate WriterPro features (extends ILicenseContext)|
-| `IMediator`              | v0.0.7a        | Handle LexiconChangedEvent for refresh           |
+| Component                | Source Version | Usage in v0.2.5                                   |
+| :----------------------- | :------------- | :------------------------------------------------ |
+| `ITerminologyRepository` | v0.2.2b        | Data access for term CRUD operations              |
+| `ITerminologyService`    | v0.2.2d        | Business logic and event publication              |
+| `StyleTerm`              | v0.2.2b        | Entity model displayed in DataGrid                |
+| `LexiconChangedEvent`    | v0.2.2d        | Refresh grid when terms change                    |
+| `IRegionManager`         | v0.1.1b        | Register LexiconView in Right dock region         |
+| `ILayoutService`         | v0.1.1c        | Persist panel state                               |
+| `ILicenseContext`        | v0.0.4c        | Read-only license tier check                      |
+| `ILicenseService`        | v0.1.6c        | Gate WriterPro features (extends ILicenseContext) |
+| `IMediator`              | v0.0.7a        | Handle LexiconChangedEvent for refresh            |
 
 ---
 
@@ -67,16 +67,17 @@ The Librarian is a **WriterPro** feature. Core and Writer tiers will see:
 
 ### 3.1 v0.2.5a: Terminology Grid View
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-025a                                  |
-| **Title**        | Terminology Grid View                     |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | WriterPro (read-only for lower tiers)     |
+| Field            | Value                                 |
+| :--------------- | :------------------------------------ |
+| **Sub-Part ID**  | INF-025a                              |
+| **Title**        | Terminology Grid View                 |
+| **Module**       | `Lexichord.Modules.Style`             |
+| **License Tier** | WriterPro (read-only for lower tiers) |
 
 **Goal:** Create a "Lexicon" tab/dock view using Avalonia.DataGrid to list all terms with sorting by Severity and Category.
 
 **Key Deliverables:**
+
 - `LexiconView.axaml` with Avalonia.DataGrid control
 - `LexiconViewModel` with `ObservableCollection<StyleTermRowViewModel>`
 - Column definitions: Pattern, Recommendation (truncated), Category, Severity, Active
@@ -86,6 +87,7 @@ The Librarian is a **WriterPro** feature. Core and Writer tiers will see:
 - Selection binding for toolbar commands
 
 **Key UI Components:**
+
 ```
 +------------------------------------------------------------------+
 |  Lexicon                                               [?] [_] [x]|
@@ -103,6 +105,7 @@ The Librarian is a **WriterPro** feature. Core and Writer tiers will see:
 ```
 
 **Dependencies:**
+
 - v0.2.2b: `ITerminologyRepository` for loading terms
 - v0.1.1b: `IRegionManager` for docking
 
@@ -110,16 +113,17 @@ The Librarian is a **WriterPro** feature. Core and Writer tiers will see:
 
 ### 3.2 v0.2.5b: Search & Filter
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-025b                                  |
-| **Title**        | Search & Filter                           |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Core (available to all tiers)             |
+| Field            | Value                         |
+| :--------------- | :---------------------------- |
+| **Sub-Part ID**  | INF-025b                      |
+| **Title**        | Search & Filter               |
+| **Module**       | `Lexichord.Modules.Style`     |
+| **License Tier** | Core (available to all tiers) |
 
 **Goal:** Search bar to filter terms with checkboxes to toggle "Show Deprecated" and "Show Forbidden" visibility.
 
 **Key Deliverables:**
+
 - `SearchFilterViewModel` with filter properties
 - Real-time filtering as user types (debounced 300ms)
 - `ICollectionView` filtering on Pattern, Recommendation, Category
@@ -131,6 +135,7 @@ The Librarian is a **WriterPro** feature. Core and Writer tiers will see:
 - Filter state persistence in user settings
 
 **Filter Logic:**
+
 ```
 DISPLAY term IF:
   (search_text is empty OR term.Pattern CONTAINS search_text OR term.Recommendation CONTAINS search_text)
@@ -140,23 +145,25 @@ DISPLAY term IF:
 ```
 
 **Dependencies:**
+
 - v0.2.5a: LexiconView (provides grid to filter)
-- v0.0.3d: `IConfigurationService` for persisting filter state
+- v0.0.3d: `IConfiguration` + `IOptions<FilterOptions>` for persisting filter state
 
 ---
 
 ### 3.3 v0.2.5c: Term Editor Dialog
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-025c                                  |
-| **Title**        | Term Editor Dialog                        |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                     |
+| :--------------- | :------------------------ |
+| **Sub-Part ID**  | INF-025c                  |
+| **Title**        | Term Editor Dialog        |
+| **Module**       | `Lexichord.Modules.Style` |
+| **License Tier** | WriterPro                 |
 
 **Goal:** Modal dialog to Add/Edit term with regex validation. Show validation error if invalid pattern and prevent Save.
 
 **Key Deliverables:**
+
 - `TermEditorWindow.axaml` modal dialog
 - `TermEditorViewModel` with validation logic
 - Pattern field with real-time regex validation
@@ -171,6 +178,7 @@ DISPLAY term IF:
 - Cancel button with dirty state confirmation
 
 **Validation Rules:**
+
 1. Pattern is required (non-empty)
 2. Pattern must be valid regex (compile test)
 3. Pattern must not exceed 500 characters
@@ -179,6 +187,7 @@ DISPLAY term IF:
 6. Category is required
 
 **Dialog Layout:**
+
 ```
 +--------------------------------------------------+
 |  Edit Term                               [X]     |
@@ -208,23 +217,25 @@ DISPLAY term IF:
 ```
 
 **Dependencies:**
+
 - v0.2.2d: `ITerminologyService.CreateAsync()` / `UpdateAsync()`
-- v0.0.4c: `ILicenseService` for feature gate check
+- v0.1.6c: `ILicenseService` for feature gate check (extends ILicenseContext)
 
 ---
 
 ### 3.4 v0.2.5d: Bulk Import/Export
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-025d                                  |
-| **Title**        | Bulk Import/Export                        |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                     |
+| :--------------- | :------------------------ |
+| **Sub-Part ID**  | INF-025d                  |
+| **Title**        | Bulk Import/Export        |
+| **Module**       | `Lexichord.Modules.Style` |
+| **License Tier** | WriterPro                 |
 
 **Goal:** Import terms from CSV/Excel files and export current database to JSON for sharing between teams.
 
 **Key Deliverables:**
+
 - `ITerminologyImporter` interface and implementations
 - `CsvTerminologyImporter` for CSV files
 - `ExcelTerminologyImporter` for .xlsx files (using ClosedXML)
@@ -237,6 +248,7 @@ DISPLAY term IF:
 - Include/exclude filters for export
 
 **CSV Format:**
+
 ```csv
 pattern,recommendation,category,severity,match_case
 "click on","Use 'select' instead","Terminology","warning",false
@@ -244,25 +256,27 @@ pattern,recommendation,category,severity,match_case
 ```
 
 **JSON Export Format:**
+
 ```json
 {
-  "version": "1.0",
-  "exported_at": "2026-01-26T10:30:00Z",
-  "exported_by": "Lexichord v0.2.5",
-  "term_count": 127,
-  "terms": [
-    {
-      "pattern": "click on",
-      "match_case": false,
-      "recommendation": "Use 'select' instead",
-      "category": "Terminology",
-      "severity": "warning"
-    }
-  ]
+    "version": "1.0",
+    "exported_at": "2026-01-26T10:30:00Z",
+    "exported_by": "Lexichord v0.2.5",
+    "term_count": 127,
+    "terms": [
+        {
+            "pattern": "click on",
+            "match_case": false,
+            "recommendation": "Use 'select' instead",
+            "category": "Terminology",
+            "severity": "warning"
+        }
+    ]
 }
 ```
 
 **Import Dialog:**
+
 ```
 +--------------------------------------------------+
 |  Import Terms                            [X]     |
@@ -286,6 +300,7 @@ pattern,recommendation,category,severity,match_case
 ```
 
 **Dependencies:**
+
 - v0.2.2d: `ITerminologyService` for bulk insert
 - ClosedXML NuGet package for Excel support
 - Avalonia file dialogs for file selection
@@ -294,41 +309,41 @@ pattern,recommendation,category,severity,match_case
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                            | Est. Hours |
-| :- | :------- | :---------------------------------------------- | :--------- |
-| 1  | v0.2.5a  | Create `LexiconView.axaml` with DataGrid        | 4          |
-| 2  | v0.2.5a  | Implement `LexiconViewModel`                    | 3          |
-| 3  | v0.2.5a  | Create `StyleTermRowViewModel`                  | 1          |
-| 4  | v0.2.5a  | Implement column sorting                        | 2          |
-| 5  | v0.2.5a  | Add context menu actions                        | 2          |
-| 6  | v0.2.5a  | Register view with IRegionManager               | 1          |
-| 7  | v0.2.5a  | Unit tests for ViewModel                        | 2          |
-| 8  | v0.2.5b  | Create `SearchFilterViewModel`                  | 2          |
-| 9  | v0.2.5b  | Implement ICollectionView filtering             | 3          |
-| 10 | v0.2.5b  | Add debounced search input                      | 1          |
-| 11 | v0.2.5b  | Implement filter checkboxes                     | 1          |
-| 12 | v0.2.5b  | Add category/severity dropdowns                 | 2          |
-| 13 | v0.2.5b  | Persist filter state                            | 1          |
-| 14 | v0.2.5b  | Unit tests for filtering                        | 2          |
-| 15 | v0.2.5c  | Create `TermEditorWindow.axaml`                 | 3          |
-| 16 | v0.2.5c  | Implement `TermEditorViewModel`                 | 3          |
-| 17 | v0.2.5c  | Implement regex validation                      | 2          |
-| 18 | v0.2.5c  | Add pattern test preview                        | 2          |
-| 19 | v0.2.5c  | Wire Save/Cancel with dirty state               | 1          |
-| 20 | v0.2.5c  | Integrate license gating                        | 1          |
-| 21 | v0.2.5c  | Unit tests for validation                       | 2          |
-| 22 | v0.2.5d  | Define `ITerminologyImporter` interface         | 1          |
-| 23 | v0.2.5d  | Implement `CsvTerminologyImporter`              | 3          |
-| 24 | v0.2.5d  | Implement `ExcelTerminologyImporter`            | 3          |
-| 25 | v0.2.5d  | Define `ITerminologyExporter` interface         | 1          |
-| 26 | v0.2.5d  | Implement `JsonTerminologyExporter`             | 2          |
-| 27 | v0.2.5d  | Create import preview dialog                    | 3          |
-| 28 | v0.2.5d  | Implement conflict resolution                   | 2          |
-| 29 | v0.2.5d  | Add progress reporting                          | 1          |
-| 30 | v0.2.5d  | Unit tests for import/export                    | 3          |
-| 31 | All      | Integration tests                               | 4          |
-| 32 | All      | Update module registration                      | 1          |
-| **Total** |   |                                                 | **64 hours** |
+| #         | Sub-Part | Task                                     | Est. Hours   |
+| :-------- | :------- | :--------------------------------------- | :----------- |
+| 1         | v0.2.5a  | Create `LexiconView.axaml` with DataGrid | 4            |
+| 2         | v0.2.5a  | Implement `LexiconViewModel`             | 3            |
+| 3         | v0.2.5a  | Create `StyleTermRowViewModel`           | 1            |
+| 4         | v0.2.5a  | Implement column sorting                 | 2            |
+| 5         | v0.2.5a  | Add context menu actions                 | 2            |
+| 6         | v0.2.5a  | Register view with IRegionManager        | 1            |
+| 7         | v0.2.5a  | Unit tests for ViewModel                 | 2            |
+| 8         | v0.2.5b  | Create `SearchFilterViewModel`           | 2            |
+| 9         | v0.2.5b  | Implement ICollectionView filtering      | 3            |
+| 10        | v0.2.5b  | Add debounced search input               | 1            |
+| 11        | v0.2.5b  | Implement filter checkboxes              | 1            |
+| 12        | v0.2.5b  | Add category/severity dropdowns          | 2            |
+| 13        | v0.2.5b  | Persist filter state                     | 1            |
+| 14        | v0.2.5b  | Unit tests for filtering                 | 2            |
+| 15        | v0.2.5c  | Create `TermEditorWindow.axaml`          | 3            |
+| 16        | v0.2.5c  | Implement `TermEditorViewModel`          | 3            |
+| 17        | v0.2.5c  | Implement regex validation               | 2            |
+| 18        | v0.2.5c  | Add pattern test preview                 | 2            |
+| 19        | v0.2.5c  | Wire Save/Cancel with dirty state        | 1            |
+| 20        | v0.2.5c  | Integrate license gating                 | 1            |
+| 21        | v0.2.5c  | Unit tests for validation                | 2            |
+| 22        | v0.2.5d  | Define `ITerminologyImporter` interface  | 1            |
+| 23        | v0.2.5d  | Implement `CsvTerminologyImporter`       | 3            |
+| 24        | v0.2.5d  | Implement `ExcelTerminologyImporter`     | 3            |
+| 25        | v0.2.5d  | Define `ITerminologyExporter` interface  | 1            |
+| 26        | v0.2.5d  | Implement `JsonTerminologyExporter`      | 2            |
+| 27        | v0.2.5d  | Create import preview dialog             | 3            |
+| 28        | v0.2.5d  | Implement conflict resolution            | 2            |
+| 29        | v0.2.5d  | Add progress reporting                   | 1            |
+| 30        | v0.2.5d  | Unit tests for import/export             | 3            |
+| 31        | All      | Integration tests                        | 4            |
+| 32        | All      | Update module registration               | 1            |
+| **Total** |          |                                          | **64 hours** |
 
 ---
 
@@ -438,26 +453,26 @@ sequenceDiagram
 
 ## 7. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| DataGrid performance with 10,000+ terms | Medium | Medium | Implement virtualization; paginate if needed |
-| Regex validation bypassed via import | High | Low | Validate all imported patterns before insert |
-| Excel file corrupted or malformed | Medium | Medium | Robust error handling; preview before import |
-| Large import blocks UI thread | High | Medium | Use async/await; show progress dialog |
-| User loses unsaved changes | Medium | Low | Confirm before closing dirty editor |
-| License check latency affects UX | Low | Low | Cache license state; async check |
+| Risk                                    | Impact | Probability | Mitigation                                   |
+| :-------------------------------------- | :----- | :---------- | :------------------------------------------- |
+| DataGrid performance with 10,000+ terms | Medium | Medium      | Implement virtualization; paginate if needed |
+| Regex validation bypassed via import    | High   | Low         | Validate all imported patterns before insert |
+| Excel file corrupted or malformed       | Medium | Medium      | Robust error handling; preview before import |
+| Large import blocks UI thread           | High   | Medium      | Use async/await; show progress dialog        |
+| User loses unsaved changes              | Medium | Low         | Confirm before closing dirty editor          |
+| License check latency affects UX        | Low    | Low         | Cache license state; async check             |
 
 ---
 
 ## 8. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Grid load time (500 terms) | < 200ms | Stopwatch timing |
-| Filter response time | < 100ms | Debounce + refresh timing |
-| Import 100 terms | < 2s | Progress dialog timing |
-| Export 1000 terms to JSON | < 1s | File write timing |
-| Memory usage (grid with 1000 rows) | < 50MB | Memory profiler |
+| Metric                             | Target  | Measurement               |
+| :--------------------------------- | :------ | :------------------------ |
+| Grid load time (500 terms)         | < 200ms | Stopwatch timing          |
+| Filter response time               | < 100ms | Debounce + refresh timing |
+| Import 100 terms                   | < 2s    | Progress dialog timing    |
+| Export 1000 terms to JSON          | < 1s    | File write timing         |
+| Memory usage (grid with 1000 rows) | < 50MB  | Memory profiler           |
 
 ---
 
@@ -518,35 +533,35 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Lexicon"
 
 ## 11. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `LexiconView.axaml` with Avalonia.DataGrid                     | [ ]    |
-| 2  | `LexiconViewModel` with term loading and commands              | [ ]    |
-| 3  | `StyleTermRowViewModel` for grid row binding                   | [ ]    |
-| 4  | Column sorting on all columns                                  | [ ]    |
-| 5  | Context menu: Edit, Delete, Toggle Active                      | [ ]    |
-| 6  | `SearchFilterViewModel` with filter logic                      | [ ]    |
-| 7  | Debounced search text filtering                                | [ ]    |
-| 8  | Show Deprecated checkbox filter                                | [ ]    |
-| 9  | Category dropdown filter                                       | [ ]    |
-| 10 | Severity dropdown filter                                       | [ ]    |
-| 11 | `TermEditorWindow.axaml` modal dialog                          | [ ]    |
-| 12 | `TermEditorViewModel` with validation                          | [ ]    |
-| 13 | Regex pattern validation with error display                    | [ ]    |
-| 14 | Pattern test preview feature                                   | [ ]    |
-| 15 | Save button disabled until valid                               | [ ]    |
-| 16 | WriterPro license gate on edit features                        | [ ]    |
-| 17 | `ITerminologyImporter` interface                               | [ ]    |
-| 18 | `CsvTerminologyImporter` implementation                        | [ ]    |
-| 19 | `ExcelTerminologyImporter` implementation                      | [ ]    |
-| 20 | Import preview dialog                                          | [ ]    |
-| 21 | Conflict resolution (Skip/Overwrite/Rename)                    | [ ]    |
-| 22 | `ITerminologyExporter` interface                               | [ ]    |
-| 23 | `JsonTerminologyExporter` implementation                       | [ ]    |
-| 24 | Export format selection                                        | [ ]    |
-| 25 | Unit tests for LexiconViewModel                                | [ ]    |
-| 26 | Unit tests for SearchFilterViewModel                           | [ ]    |
-| 27 | Unit tests for TermEditorViewModel                             | [ ]    |
-| 28 | Unit tests for importers/exporters                             | [ ]    |
-| 29 | Integration tests for full workflow                            | [ ]    |
-| 30 | View registered in Right dock region via IRegionManager        | [ ]    |
+| #   | Deliverable                                             | Status |
+| :-- | :------------------------------------------------------ | :----- |
+| 1   | `LexiconView.axaml` with Avalonia.DataGrid              | [ ]    |
+| 2   | `LexiconViewModel` with term loading and commands       | [ ]    |
+| 3   | `StyleTermRowViewModel` for grid row binding            | [ ]    |
+| 4   | Column sorting on all columns                           | [ ]    |
+| 5   | Context menu: Edit, Delete, Toggle Active               | [ ]    |
+| 6   | `SearchFilterViewModel` with filter logic               | [ ]    |
+| 7   | Debounced search text filtering                         | [ ]    |
+| 8   | Show Deprecated checkbox filter                         | [ ]    |
+| 9   | Category dropdown filter                                | [ ]    |
+| 10  | Severity dropdown filter                                | [ ]    |
+| 11  | `TermEditorWindow.axaml` modal dialog                   | [ ]    |
+| 12  | `TermEditorViewModel` with validation                   | [ ]    |
+| 13  | Regex pattern validation with error display             | [ ]    |
+| 14  | Pattern test preview feature                            | [ ]    |
+| 15  | Save button disabled until valid                        | [ ]    |
+| 16  | WriterPro license gate on edit features                 | [ ]    |
+| 17  | `ITerminologyImporter` interface                        | [ ]    |
+| 18  | `CsvTerminologyImporter` implementation                 | [ ]    |
+| 19  | `ExcelTerminologyImporter` implementation               | [ ]    |
+| 20  | Import preview dialog                                   | [ ]    |
+| 21  | Conflict resolution (Skip/Overwrite/Rename)             | [ ]    |
+| 22  | `ITerminologyExporter` interface                        | [ ]    |
+| 23  | `JsonTerminologyExporter` implementation                | [ ]    |
+| 24  | Export format selection                                 | [ ]    |
+| 25  | Unit tests for LexiconViewModel                         | [ ]    |
+| 26  | Unit tests for SearchFilterViewModel                    | [ ]    |
+| 27  | Unit tests for TermEditorViewModel                      | [ ]    |
+| 28  | Unit tests for importers/exporters                      | [ ]    |
+| 29  | Integration tests for full workflow                     | [ ]    |
+| 30  | View registered in Right dock region via IRegionManager | [ ]    |

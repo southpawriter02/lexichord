@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                                        |
-| :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-SBD-036                                                  |
-| **Version**      | v0.3.6                                                       |
-| **Codename**     | The Global Dictionary (Project Settings)                     |
-| **Status**       | Draft                                                        |
-| **Last Updated** | 2026-01-26                                                   |
-| **Owner**        | Lead Architect                                               |
+| Field            | Value                                                                   |
+| :--------------- | :---------------------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-036                                                             |
+| **Version**      | v0.3.6                                                                  |
+| **Codename**     | The Global Dictionary (Project Settings)                                |
+| **Status**       | Draft                                                                   |
+| **Last Updated** | 2026-01-26                                                              |
+| **Owner**        | Lead Architect                                                          |
 | **Depends On**   | v0.3.5 (Resonance Dashboard), v0.3.4 (Voice Profiler), v0.2.2 (Lexicon) |
 
 ---
@@ -54,23 +54,23 @@ The Global Dictionary is a **Writer Pro** feature. Lower tiers will see:
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.3.6                                  |
-| :------------------------- | :------------- | :----------------------------------------------- |
-| `IVoiceProfileService`     | v0.3.4a        | Profile selection per project                    |
-| `VoiceProfile`             | v0.3.4a        | Project-level profile defaults                   |
-| `IChartDataService`        | v0.3.5a        | Project-level dashboard configuration            |
-| `IReadabilityService`      | v0.3.3c        | Readability thresholds per project               |
-| `ITerminologyRepository`   | v0.2.2b        | Project-specific term additions/exclusions       |
-| `StyleTerm`                | v0.2.2a        | Term override model                              |
-| `ILintingOrchestrator`     | v0.2.3a        | Integration point for triggering re-analysis     |
-| `LintingCompletedEvent`    | v0.2.3b        | Subscribe for configuration change effects       |
-| `StyleViolation`           | v0.2.1b        | Override violations at project level             |
-| `IWorkspaceService`        | v0.1.2a        | Detect current workspace root                    |
-| `WorkspaceOpenedEvent`     | v0.1.2a        | Trigger project config loading                   |
-| `WorkspaceClosedEvent`     | v0.1.2a        | Clear project config cache                       |
-| `ILicenseContext`          | v0.0.4c        | License tier checking                            |
-| `IConfigurationService`    | v0.0.3d        | User-level preference storage                    |
-| `ViewModelBase`            | v0.1.1         | MVVM base class                                  |
+| Component                | Source Version        | Usage in v0.3.6                                                    |
+| :----------------------- | :-------------------- | :----------------------------------------------------------------- |
+| `IVoiceProfileService`   | v0.3.4a               | Profile selection per project                                      |
+| `VoiceProfile`           | v0.3.4a               | Project-level profile defaults                                     |
+| `IChartDataService`      | v0.3.5a               | Project-level dashboard configuration                              |
+| `IReadabilityService`    | v0.3.3c               | Readability thresholds per project                                 |
+| `ITerminologyRepository` | v0.2.2b               | Project-specific term additions/exclusions                         |
+| `StyleTerm`              | v0.2.2a               | Term override model                                                |
+| `ILintingOrchestrator`   | v0.2.3a               | Integration point for triggering re-analysis                       |
+| `LintingCompletedEvent`  | v0.2.3b               | Subscribe for configuration change effects                         |
+| `StyleViolation`         | v0.2.1b               | Override violations at project level                               |
+| `IWorkspaceService`      | v0.1.2a               | Detect current workspace root                                      |
+| `WorkspaceOpenedEvent`   | v0.1.2a               | Trigger project config loading                                     |
+| `WorkspaceClosedEvent`   | v0.1.2a               | Clear project config cache                                         |
+| `ILicenseContext`        | v0.0.4c               | License tier checking                                              |
+| `IConfiguration`         | v0.0.3d               | User-level preference storage (Microsoft.Extensions.Configuration) |
+| `ViewModelBase`          | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet)                         |
 
 ---
 
@@ -78,12 +78,12 @@ The Global Dictionary is a **Writer Pro** feature. Lower tiers will see:
 
 ### 3.1 v0.3.6a: The Layered Configuration
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-036a                                  |
-| **Title**        | Layered Configuration Provider            |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                          |
+| :--------------- | :----------------------------- |
+| **Sub-Part ID**  | INF-036a                       |
+| **Title**        | Layered Configuration Provider |
+| **Module**       | `Lexichord.Modules.Style`      |
+| **License Tier** | Writer Pro                     |
 
 **Goal:** Implement a `ConfigurationProvider` that merges dictionaries from multiple sources with defined priority hierarchy.
 
@@ -161,35 +161,35 @@ version: 1
 
 # Profile settings
 profile:
-  default: Technical
-  allow_switching: true
+    default: Technical
+    allow_switching: true
 
 # Readability constraints
 readability:
-  target_grade_level: 10
-  max_sentence_length: 25
-  tolerance: 2
+    target_grade_level: 10
+    max_sentence_length: 25
+    tolerance: 2
 
 # Voice analysis settings
 voice:
-  passive_voice_threshold: 15
-  flag_adverbs: true
-  flag_weasels: true
+    passive_voice_threshold: 15
+    flag_adverbs: true
+    flag_weasels: true
 
 # Term overrides
 terminology:
-  additions:
-    - pattern: "proprietary-term"
-      recommendation: "Use 'standard-term' instead"
-      severity: warning
-  exclusions:
-    - "whitelist"   # Allow this term in this project
-    - "blacklist"   # Allow this term in this project
+    additions:
+        - pattern: "proprietary-term"
+          recommendation: "Use 'standard-term' instead"
+          severity: warning
+    exclusions:
+        - "whitelist" # Allow this term in this project
+        - "blacklist" # Allow this term in this project
 
 # Ignored rules
 ignored_rules:
-  - "TERM-001"      # Specific rule ID
-  - "PASSIVE-*"     # Wildcard pattern
+    - "TERM-001" # Specific rule ID
+    - "PASSIVE-*" # Wildcard pattern
 ```
 
 **Storage Locations:**
@@ -224,19 +224,19 @@ MERGE configurations:
 **Dependencies:**
 
 - v0.1.2a: `IWorkspaceService` (workspace root detection)
-- v0.0.3d: `IConfigurationService` (user preferences)
+- v0.0.3d: `IConfiguration` / `IOptions` (user preferences)
 - v0.2.1c: `IStyleSheetLoader` (YAML parsing reuse)
 
 ---
 
 ### 3.2 v0.3.6b: Conflict Resolution
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-036b                                  |
-| **Title**        | Configuration Conflict Resolution         |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                             |
+| :--------------- | :-------------------------------- |
+| **Sub-Part ID**  | INF-036b                          |
+| **Title**        | Configuration Conflict Resolution |
+| **Module**       | `Lexichord.Modules.Style`         |
+| **License Tier** | Writer Pro                        |
 
 **Goal:** Implement conflict resolution logic when Project rules contradict Global rules, ensuring project configuration always wins.
 
@@ -371,12 +371,12 @@ SHOULD flag term "{term}"?
 
 ### 3.3 v0.3.6c: Override UI
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-036c                                  |
-| **Title**        | Rule Override Context Menu                |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Writer Pro                                |
+| Field            | Value                      |
+| :--------------- | :------------------------- |
+| **Sub-Part ID**  | INF-036c                   |
+| **Title**        | Rule Override Context Menu |
+| **Module**       | `Lexichord.Modules.Style`  |
+| **License Tier** | Writer Pro                 |
 
 **Goal:** Add a context menu option in the Problems Panel to ignore specific rules for the current project, automatically updating the project configuration.
 
@@ -533,12 +533,12 @@ USER right-clicks on violation:
 
 ### 3.4 v0.3.6d: Ignored Files
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | INF-036d                                  |
-| **Title**        | Ignore File Pattern Matching              |
-| **Module**       | `Lexichord.Modules.Style`                 |
-| **License Tier** | Core (limited), Writer Pro (full)         |
+| Field            | Value                             |
+| :--------------- | :-------------------------------- |
+| **Sub-Part ID**  | INF-036d                          |
+| **Title**        | Ignore File Pattern Matching      |
+| **Module**       | `Lexichord.Modules.Style`         |
+| **License Tier** | Core (limited), Writer Pro (full) |
 
 **Goal:** Implement `.lexichordignore` file support to skip analysis on matching files using glob patterns.
 
@@ -634,13 +634,13 @@ third-party/**
 
 **Glob Pattern Syntax:**
 
-| Pattern | Description | Example Match |
-| :--- | :--- | :--- |
-| `*` | Any characters except `/` | `*.js` matches `file.js` |
-| `**` | Any characters including `/` | `**/*.js` matches `src/app/file.js` |
-| `?` | Single character | `file?.txt` matches `file1.txt` |
-| `[abc]` | Character class | `file[0-9].txt` matches `file5.txt` |
-| `!` | Negation (include) | `!important.js` includes despite other rules |
+| Pattern | Description                  | Example Match                                |
+| :------ | :--------------------------- | :------------------------------------------- |
+| `*`     | Any characters except `/`    | `*.js` matches `file.js`                     |
+| `**`    | Any characters including `/` | `**/*.js` matches `src/app/file.js`          |
+| `?`     | Single character             | `file?.txt` matches `file1.txt`              |
+| `[abc]` | Character class              | `file[0-9].txt` matches `file5.txt`          |
+| `!`     | Negation (include)           | `!important.js` includes despite other rules |
 
 **Pattern Matching Logic:**
 
@@ -708,38 +708,38 @@ Both files are merged, with project patterns taking precedence.
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                        | Est. Hours |
-| :- | :------- | :---------------------------------------------------------- | :--------- |
-| 1  | v0.3.6a  | Create `ILayeredConfigurationProvider` interface            | 1          |
-| 2  | v0.3.6a  | Create `StyleConfiguration` record with all settings        | 1.5        |
-| 3  | v0.3.6a  | Implement configuration file discovery                      | 2          |
-| 4  | v0.3.6a  | Implement YAML parsing for style.yaml                       | 2          |
-| 5  | v0.3.6a  | Implement configuration merging logic                       | 3          |
-| 6  | v0.3.6a  | Implement hot-reload on file changes                        | 2          |
-| 7  | v0.3.6a  | Unit tests for configuration provider                       | 2          |
-| 8  | v0.3.6b  | Create `IConflictResolver` interface                        | 0.5        |
-| 9  | v0.3.6b  | Create `ConfigurationConflict` record                       | 0.5        |
-| 10 | v0.3.6b  | Implement conflict detection logic                          | 2          |
-| 11 | v0.3.6b  | Implement term override resolution                          | 2          |
-| 12 | v0.3.6b  | Add conflict logging                                        | 1          |
-| 13 | v0.3.6b  | Unit tests for conflict scenarios                           | 2          |
-| 14 | v0.3.6c  | Create `IProjectConfigurationWriter` interface              | 0.5        |
-| 15 | v0.3.6c  | Implement YAML serialization for project config             | 2          |
-| 16 | v0.3.6c  | Create context menu items in Problems Panel                 | 2          |
-| 17 | v0.3.6c  | Create `OverrideMenuViewModel` with commands                | 2          |
-| 18 | v0.3.6c  | Implement confirmation dialog                               | 1.5        |
-| 19 | v0.3.6c  | Add visual indicator for overridden rules                   | 1          |
-| 20 | v0.3.6c  | Unit tests for override flow                                | 2          |
-| 21 | v0.3.6d  | Create `IIgnorePatternService` interface                    | 0.5        |
-| 22 | v0.3.6d  | Implement glob pattern matching                             | 3          |
-| 23 | v0.3.6d  | Implement negative pattern support                          | 1          |
-| 24 | v0.3.6d  | Implement file watcher for hot-reload                       | 1.5        |
-| 25 | v0.3.6d  | Integrate with `ILintingOrchestrator`                       | 1          |
-| 26 | v0.3.6d  | Unit tests for glob patterns                                | 2          |
-| 27 | All      | Integration with workspace events                           | 1.5        |
-| 28 | All      | DI registration in `StyleModule.cs`                         | 0.5        |
-| 29 | All      | Integration tests for full configuration flow               | 3          |
-| **Total** |   |                                                             | **44 hours** |
+| #         | Sub-Part | Task                                                 | Est. Hours   |
+| :-------- | :------- | :--------------------------------------------------- | :----------- |
+| 1         | v0.3.6a  | Create `ILayeredConfigurationProvider` interface     | 1            |
+| 2         | v0.3.6a  | Create `StyleConfiguration` record with all settings | 1.5          |
+| 3         | v0.3.6a  | Implement configuration file discovery               | 2            |
+| 4         | v0.3.6a  | Implement YAML parsing for style.yaml                | 2            |
+| 5         | v0.3.6a  | Implement configuration merging logic                | 3            |
+| 6         | v0.3.6a  | Implement hot-reload on file changes                 | 2            |
+| 7         | v0.3.6a  | Unit tests for configuration provider                | 2            |
+| 8         | v0.3.6b  | Create `IConflictResolver` interface                 | 0.5          |
+| 9         | v0.3.6b  | Create `ConfigurationConflict` record                | 0.5          |
+| 10        | v0.3.6b  | Implement conflict detection logic                   | 2            |
+| 11        | v0.3.6b  | Implement term override resolution                   | 2            |
+| 12        | v0.3.6b  | Add conflict logging                                 | 1            |
+| 13        | v0.3.6b  | Unit tests for conflict scenarios                    | 2            |
+| 14        | v0.3.6c  | Create `IProjectConfigurationWriter` interface       | 0.5          |
+| 15        | v0.3.6c  | Implement YAML serialization for project config      | 2            |
+| 16        | v0.3.6c  | Create context menu items in Problems Panel          | 2            |
+| 17        | v0.3.6c  | Create `OverrideMenuViewModel` with commands         | 2            |
+| 18        | v0.3.6c  | Implement confirmation dialog                        | 1.5          |
+| 19        | v0.3.6c  | Add visual indicator for overridden rules            | 1            |
+| 20        | v0.3.6c  | Unit tests for override flow                         | 2            |
+| 21        | v0.3.6d  | Create `IIgnorePatternService` interface             | 0.5          |
+| 22        | v0.3.6d  | Implement glob pattern matching                      | 3            |
+| 23        | v0.3.6d  | Implement negative pattern support                   | 1            |
+| 24        | v0.3.6d  | Implement file watcher for hot-reload                | 1.5          |
+| 25        | v0.3.6d  | Integrate with `ILintingOrchestrator`                | 1            |
+| 26        | v0.3.6d  | Unit tests for glob patterns                         | 2            |
+| 27        | All      | Integration with workspace events                    | 1.5          |
+| 28        | All      | DI registration in `StyleModule.cs`                  | 0.5          |
+| 29        | All      | Integration tests for full configuration flow        | 3            |
+| **Total** |          |                                                      | **44 hours** |
 
 ---
 
@@ -747,50 +747,50 @@ Both files are merged, with project patterns taking precedence.
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `IWorkspaceService`        | v0.1.2a        | Workspace root detection             |
-| `WorkspaceOpenedEvent`     | v0.1.2a        | Trigger config loading               |
-| `WorkspaceClosedEvent`     | v0.1.2a        | Clear config cache                   |
-| `IRobustFileSystemWatcher` | v0.1.2b        | Config file change detection         |
-| `IConfigurationService`    | v0.0.3d        | User preferences access              |
-| `ILintingOrchestrator`     | v0.2.3a        | Analysis pipeline integration        |
-| `ITerminologyRepository`   | v0.2.2b        | Global term database                 |
-| `StyleTerm`                | v0.2.2a        | Term model                           |
-| `IQuickFixService`         | v0.2.4d        | Context menu integration             |
-| `IProblemsPanelViewModel`  | v0.2.6a        | Problems panel integration           |
-| `ILicenseContext`          | v0.0.4c        | License tier checking                |
-| `IVoiceProfileService`     | v0.3.4a        | Project-level profile defaults       |
-| `IChartDataService`        | v0.3.5a        | Project dashboard config             |
-| `ViewModelBase`            | v0.1.1         | MVVM base class                      |
+| Interface                  | Source Version        | Purpose                                                      |
+| :------------------------- | :-------------------- | :----------------------------------------------------------- |
+| `IWorkspaceService`        | v0.1.2a               | Workspace root detection                                     |
+| `WorkspaceOpenedEvent`     | v0.1.2a               | Trigger config loading                                       |
+| `WorkspaceClosedEvent`     | v0.1.2a               | Clear config cache                                           |
+| `IRobustFileSystemWatcher` | v0.1.2b               | Config file change detection                                 |
+| `IConfiguration`           | v0.0.3d               | User preferences access (Microsoft.Extensions.Configuration) |
+| `ILintingOrchestrator`     | v0.2.3a               | Analysis pipeline integration                                |
+| `ITerminologyRepository`   | v0.2.2b               | Global term database                                         |
+| `StyleTerm`                | v0.2.2a               | Term model                                                   |
+| `IQuickFixService`         | v0.2.4d               | Context menu integration                                     |
+| `IProblemsPanelViewModel`  | v0.2.6a               | Problems panel integration                                   |
+| `ILicenseContext`          | v0.0.4c               | License tier checking                                        |
+| `IVoiceProfileService`     | v0.3.4a               | Project-level profile defaults                               |
+| `IChartDataService`        | v0.3.5a               | Project dashboard config                                     |
+| `ViewModelBase`            | CommunityToolkit.Mvvm | Observable ViewModel base (external NuGet)                   |
 
 ### 5.2 New Interfaces (defined in v0.3.6)
 
-| Interface                       | Defined In | Module        | Purpose                            |
-| :------------------------------ | :--------- | :------------ | :--------------------------------- |
-| `ILayeredConfigurationProvider` | v0.3.6a    | Abstractions  | Hierarchical config access         |
-| `IConflictResolver`             | v0.3.6b    | Abstractions  | Configuration conflict resolution  |
-| `IProjectConfigurationWriter`   | v0.3.6c    | Modules.Style | Project config file updates        |
-| `IIgnorePatternService`         | v0.3.6d    | Abstractions  | Ignore file pattern matching       |
+| Interface                       | Defined In | Module        | Purpose                           |
+| :------------------------------ | :--------- | :------------ | :-------------------------------- |
+| `ILayeredConfigurationProvider` | v0.3.6a    | Abstractions  | Hierarchical config access        |
+| `IConflictResolver`             | v0.3.6b    | Abstractions  | Configuration conflict resolution |
+| `IProjectConfigurationWriter`   | v0.3.6c    | Modules.Style | Project config file updates       |
+| `IIgnorePatternService`         | v0.3.6d    | Abstractions  | Ignore file pattern matching      |
 
 ### 5.3 New Records/DTOs (defined in v0.3.6)
 
-| Record                         | Defined In | Purpose                                |
-| :----------------------------- | :--------- | :------------------------------------- |
-| `StyleConfiguration`           | v0.3.6a    | Complete configuration settings        |
-| `ConfigurationSource`          | v0.3.6a    | Priority level enum                    |
-| `ConfigurationChangedEventArgs`| v0.3.6a    | Configuration change notification      |
-| `ConfigurationConflict`        | v0.3.6b    | Conflict description record            |
-| `PatternsReloadedEventArgs`    | v0.3.6d    | Pattern reload notification            |
+| Record                          | Defined In | Purpose                           |
+| :------------------------------ | :--------- | :-------------------------------- |
+| `StyleConfiguration`            | v0.3.6a    | Complete configuration settings   |
+| `ConfigurationSource`           | v0.3.6a    | Priority level enum               |
+| `ConfigurationChangedEventArgs` | v0.3.6a    | Configuration change notification |
+| `ConfigurationConflict`         | v0.3.6b    | Conflict description record       |
+| `PatternsReloadedEventArgs`     | v0.3.6d    | Pattern reload notification       |
 
 ### 5.4 NuGet Packages
 
-| Package          | Version | Purpose                    | New/Existing |
-| :--------------- | :------ | :------------------------- | :----------- |
-| `YamlDotNet`     | 16.x    | YAML parsing/serialization | Existing     |
-| `System.Reactive`| 6.x     | File watcher debouncing    | Existing     |
-| `MediatR`        | 12.x    | Event publishing           | Existing     |
-| `Microsoft.Extensions.FileSystemGlobbing` | 9.x | Glob pattern matching | New |
+| Package                                   | Version | Purpose                    | New/Existing |
+| :---------------------------------------- | :------ | :------------------------- | :----------- |
+| `YamlDotNet`                              | 16.x    | YAML parsing/serialization | Existing     |
+| `System.Reactive`                         | 6.x     | File watcher debouncing    | Existing     |
+| `MediatR`                                 | 12.x    | Event publishing           | Existing     |
+| `Microsoft.Extensions.FileSystemGlobbing` | 9.x     | Glob pattern matching      | New          |
 
 ---
 
@@ -950,29 +950,29 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Configuration file corruption | High | Low | Validate YAML before loading, backup on write |
-| Merge conflicts in team environments | Medium | Medium | Document merge semantics, add conflict warnings |
-| Hot-reload race conditions | Medium | Low | Debounce file changes, use atomic writes |
-| Glob pattern performance on large repos | Medium | Medium | Cache compiled patterns, limit recursion depth |
-| Users confused by override hierarchy | Medium | Medium | Add "Configuration Inspector" tool in future |
-| Ignore patterns too aggressive | Low | Medium | Require explicit opt-in, show ignored file count |
-| YAML parsing errors | Medium | Low | Provide clear error messages, fall back to defaults |
+| Risk                                    | Impact | Probability | Mitigation                                          |
+| :-------------------------------------- | :----- | :---------- | :-------------------------------------------------- |
+| Configuration file corruption           | High   | Low         | Validate YAML before loading, backup on write       |
+| Merge conflicts in team environments    | Medium | Medium      | Document merge semantics, add conflict warnings     |
+| Hot-reload race conditions              | Medium | Low         | Debounce file changes, use atomic writes            |
+| Glob pattern performance on large repos | Medium | Medium      | Cache compiled patterns, limit recursion depth      |
+| Users confused by override hierarchy    | Medium | Medium      | Add "Configuration Inspector" tool in future        |
+| Ignore patterns too aggressive          | Low    | Medium      | Require explicit opt-in, show ignored file count    |
+| YAML parsing errors                     | Medium | Low         | Provide clear error messages, fall back to defaults |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Configuration load time | < 50ms | Stopwatch timing |
-| Configuration merge time | < 10ms | Stopwatch timing |
-| File change detection latency | < 500ms | End-to-end timing |
-| Glob pattern matching (1000 files) | < 100ms | Benchmark |
-| Override action latency | < 200ms | User action to file write |
-| YAML file size limit | < 100KB | File size check |
-| Pattern count limit (Core) | 5 patterns | License check |
+| Metric                             | Target     | Measurement               |
+| :--------------------------------- | :--------- | :------------------------ |
+| Configuration load time            | < 50ms     | Stopwatch timing          |
+| Configuration merge time           | < 10ms     | Stopwatch timing          |
+| File change detection latency      | < 500ms    | End-to-end timing         |
+| Glob pattern matching (1000 files) | < 100ms    | Benchmark                 |
+| Override action latency            | < 200ms    | User action to file write |
+| YAML file size limit               | < 100KB    | File size check           |
+| Pattern count limit (Core)         | 5 patterns | License check             |
 
 ---
 
@@ -1053,16 +1053,16 @@ START: "Should ignore file for linting?"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer Pro User | As a writer, I want project-specific style rules so different projects can have different standards. | Project config overrides global config. |
-| US-02 | Writer Pro User | As a writer, I want to ignore a rule for my project via right-click menu. | Rule added to project config, violation disappears. |
-| US-03 | Writer Pro User | As a writer, I want to exclude generated files from analysis. | `.lexichordignore` patterns skip matching files. |
-| US-04 | Team Lead       | As a team lead, I want to share style configuration via version control. | `.lexichord/style.yaml` can be committed to Git. |
-| US-05 | Writer Pro User | As a writer, I want configuration changes to take effect immediately. | Hot-reload on file change, no restart needed. |
-| US-06 | Core User       | As a free user, I understand project settings are a premium feature. | Global settings work, project ignored. |
-| US-07 | Developer       | As a developer, I want to see which configuration source a setting came from. | Conflict logging shows source priority. |
-| US-08 | Writer Pro User | As a writer, I want to allow a term in one project that's forbidden globally. | Project exclusions override global rules. |
+| ID    | Role            | Story                                                                                                | Acceptance Criteria                                 |
+| :---- | :-------------- | :--------------------------------------------------------------------------------------------------- | :-------------------------------------------------- |
+| US-01 | Writer Pro User | As a writer, I want project-specific style rules so different projects can have different standards. | Project config overrides global config.             |
+| US-02 | Writer Pro User | As a writer, I want to ignore a rule for my project via right-click menu.                            | Rule added to project config, violation disappears. |
+| US-03 | Writer Pro User | As a writer, I want to exclude generated files from analysis.                                        | `.lexichordignore` patterns skip matching files.    |
+| US-04 | Team Lead       | As a team lead, I want to share style configuration via version control.                             | `.lexichord/style.yaml` can be committed to Git.    |
+| US-05 | Writer Pro User | As a writer, I want configuration changes to take effect immediately.                                | Hot-reload on file change, no restart needed.       |
+| US-06 | Core User       | As a free user, I understand project settings are a premium feature.                                 | Global settings work, project ignored.              |
+| US-07 | Developer       | As a developer, I want to see which configuration source a setting came from.                        | Conflict logging shows source priority.             |
+| US-08 | Writer Pro User | As a writer, I want to allow a term in one project that's forbidden globally.                        | Project exclusions override global rules.           |
 
 ---
 
@@ -1393,22 +1393,22 @@ ignored_rules:
 
 ## 15. Observability & Logging
 
-| Level   | Source                    | Message Template                                                       |
-| :------ | :------------------------ | :--------------------------------------------------------------------- |
-| Debug   | ConfigurationProvider     | `Loading configuration from {Source}: {Path}`                          |
-| Debug   | ConfigurationProvider     | `Configuration merged: {KeyCount} keys from {Source}`                  |
-| Info    | ConfigurationProvider     | `Effective configuration loaded in {ElapsedMs}ms`                      |
-| Debug   | ConfigurationProvider     | `Configuration cache invalidated`                                      |
-| Warning | ConfigurationProvider     | `Failed to load configuration from {Path}: {Error}`                    |
-| Debug   | ConflictResolver          | `Conflict detected: {Key} = {LowerValue} ({LowerSource}) → {HigherValue} ({HigherSource})` |
-| Debug   | ConflictResolver          | `Term '{Term}' excluded by {Source} configuration`                     |
-| Info    | ConfigurationWriter       | `Rule {RuleId} added to project ignore list`                           |
-| Info    | ConfigurationWriter       | `Term '{Term}' added to project exclusions`                            |
-| Debug   | ConfigurationWriter       | `Created project configuration file: {Path}`                           |
-| Debug   | IgnorePatternService      | `Loaded {PatternCount} ignore patterns from {Path}`                    |
-| Debug   | IgnorePatternService      | `File '{Path}' matches ignore pattern '{Pattern}'`                     |
-| Debug   | IgnorePatternService      | `File '{Path}' force-included by negation pattern '{Pattern}'`         |
-| Warning | IgnorePatternService      | `Core license: limited to {Limit} ignore patterns`                     |
+| Level   | Source                | Message Template                                                                           |
+| :------ | :-------------------- | :----------------------------------------------------------------------------------------- |
+| Debug   | ConfigurationProvider | `Loading configuration from {Source}: {Path}`                                              |
+| Debug   | ConfigurationProvider | `Configuration merged: {KeyCount} keys from {Source}`                                      |
+| Info    | ConfigurationProvider | `Effective configuration loaded in {ElapsedMs}ms`                                          |
+| Debug   | ConfigurationProvider | `Configuration cache invalidated`                                                          |
+| Warning | ConfigurationProvider | `Failed to load configuration from {Path}: {Error}`                                        |
+| Debug   | ConflictResolver      | `Conflict detected: {Key} = {LowerValue} ({LowerSource}) → {HigherValue} ({HigherSource})` |
+| Debug   | ConflictResolver      | `Term '{Term}' excluded by {Source} configuration`                                         |
+| Info    | ConfigurationWriter   | `Rule {RuleId} added to project ignore list`                                               |
+| Info    | ConfigurationWriter   | `Term '{Term}' added to project exclusions`                                                |
+| Debug   | ConfigurationWriter   | `Created project configuration file: {Path}`                                               |
+| Debug   | IgnorePatternService  | `Loaded {PatternCount} ignore patterns from {Path}`                                        |
+| Debug   | IgnorePatternService  | `File '{Path}' matches ignore pattern '{Pattern}'`                                         |
+| Debug   | IgnorePatternService  | `File '{Path}' force-included by negation pattern '{Pattern}'`                             |
+| Warning | IgnorePatternService  | `Core license: limited to {Limit} ignore patterns`                                         |
 
 ---
 
@@ -1436,39 +1436,39 @@ ignored_rules:
 
 ### 16.2 Component Styling Requirements
 
-| Component           | Theme Resource             | Notes                            |
-| :------------------ | :------------------------- | :------------------------------- |
-| Menu Item           | `LexMenuItem` theme        | Standard context menu styling    |
-| Menu Separator      | `MenuSeparator`            | 1px horizontal line              |
-| Menu Icon           | Material Icons             | 24x24, Text.Primary color        |
-| Disabled Menu Item  | Opacity 50%                | For unlicensed features          |
-| Confirmation Dialog | `LexDialog` theme          | Standard dialog styling          |
-| Override Badge      | `Badge.Info` style         | Small indicator on overridden items |
+| Component           | Theme Resource      | Notes                               |
+| :------------------ | :------------------ | :---------------------------------- |
+| Menu Item           | `LexMenuItem` theme | Standard context menu styling       |
+| Menu Separator      | `MenuSeparator`     | 1px horizontal line                 |
+| Menu Icon           | Material Icons      | 24x24, Text.Primary color           |
+| Disabled Menu Item  | Opacity 50%         | For unlicensed features             |
+| Confirmation Dialog | `LexDialog` theme   | Standard dialog styling             |
+| Override Badge      | `Badge.Info` style  | Small indicator on overridden items |
 
 ---
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Config]**        | System defaults load without project/user config present.                    |
-| 2   | **[Config]**        | User config overrides system defaults.                                       |
-| 3   | **[Config]**        | Project config overrides user config.                                        |
-| 4   | **[Config]**        | Core license ignores project config.                                         |
-| 5   | **[Config]**        | Configuration hot-reloads on file change.                                    |
-| 6   | **[Override]**      | "Ignore rule" creates `.lexichord/style.yaml` if not exists.                 |
-| 7   | **[Override]**      | "Ignore rule" appends to existing config without data loss.                  |
-| 8   | **[Override]**      | Ignored rules do not produce violations.                                     |
-| 9   | **[Override]**      | Term exclusions allow otherwise-forbidden terms.                             |
-| 10  | **[Ignore File]**   | `.lexichordignore` patterns skip matching files.                             |
-| 11  | **[Ignore File]**   | Negative patterns (!) include files despite other patterns.                  |
-| 12  | **[Ignore File]**   | Core license limits to 5 patterns.                                           |
-| 13  | **[Performance]**   | Configuration load < 50ms.                                                   |
-| 14  | **[Performance]**   | Glob matching (1000 files) < 100ms.                                          |
-| 15  | **[License Gate]**  | Core users cannot access project settings menu.                              |
-| 16  | **[License Gate]**  | Core users cannot use override context menu.                                 |
-| 17  | **[Integration]**   | Workspace open triggers config reload.                                       |
-| 18  | **[Integration]**   | Workspace close clears project config cache.                                 |
+| #   | Category           | Criterion                                                    |
+| :-- | :----------------- | :----------------------------------------------------------- |
+| 1   | **[Config]**       | System defaults load without project/user config present.    |
+| 2   | **[Config]**       | User config overrides system defaults.                       |
+| 3   | **[Config]**       | Project config overrides user config.                        |
+| 4   | **[Config]**       | Core license ignores project config.                         |
+| 5   | **[Config]**       | Configuration hot-reloads on file change.                    |
+| 6   | **[Override]**     | "Ignore rule" creates `.lexichord/style.yaml` if not exists. |
+| 7   | **[Override]**     | "Ignore rule" appends to existing config without data loss.  |
+| 8   | **[Override]**     | Ignored rules do not produce violations.                     |
+| 9   | **[Override]**     | Term exclusions allow otherwise-forbidden terms.             |
+| 10  | **[Ignore File]**  | `.lexichordignore` patterns skip matching files.             |
+| 11  | **[Ignore File]**  | Negative patterns (!) include files despite other patterns.  |
+| 12  | **[Ignore File]**  | Core license limits to 5 patterns.                           |
+| 13  | **[Performance]**  | Configuration load < 50ms.                                   |
+| 14  | **[Performance]**  | Glob matching (1000 files) < 100ms.                          |
+| 15  | **[License Gate]** | Core users cannot access project settings menu.              |
+| 16  | **[License Gate]** | Core users cannot use override context menu.                 |
+| 17  | **[Integration]**  | Workspace open triggers config reload.                       |
+| 18  | **[Integration]**  | Workspace close clears project config cache.                 |
 
 ---
 
@@ -1507,29 +1507,29 @@ dotnet test --filter "Version=v0.3.6"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `ILayeredConfigurationProvider` interface in Abstractions      | [ ]    |
-| 2  | `LayeredConfigurationProvider` implementation                  | [ ]    |
-| 3  | `StyleConfiguration` record with all settings                  | [ ]    |
-| 4  | `ConfigurationSource` enum                                     | [ ]    |
-| 5  | `IConflictResolver` interface in Abstractions                  | [ ]    |
-| 6  | `ConflictResolver` implementation                              | [ ]    |
-| 7  | `ConfigurationConflict` record                                 | [ ]    |
-| 8  | `IProjectConfigurationWriter` interface                        | [ ]    |
-| 9  | `ProjectConfigurationWriter` implementation                    | [ ]    |
-| 10 | Override context menu items                                    | [ ]    |
-| 11 | `OverrideMenuViewModel` with commands                          | [ ]    |
-| 12 | Confirmation dialog for overrides                              | [ ]    |
-| 13 | `IIgnorePatternService` interface in Abstractions              | [ ]    |
-| 14 | `IgnorePatternService` with glob matching                      | [ ]    |
-| 15 | Integration with `ILintingOrchestrator`                        | [ ]    |
-| 16 | Unit tests for configuration provider                          | [ ]    |
-| 17 | Unit tests for conflict resolver                               | [ ]    |
-| 18 | Unit tests for ignore patterns                                 | [ ]    |
-| 19 | Unit tests for configuration writer                            | [ ]    |
-| 20 | Integration tests for full configuration flow                  | [ ]    |
-| 21 | DI registration in StyleModule.cs                              | [ ]    |
+| #   | Deliverable                                               | Status |
+| :-- | :-------------------------------------------------------- | :----- |
+| 1   | `ILayeredConfigurationProvider` interface in Abstractions | [ ]    |
+| 2   | `LayeredConfigurationProvider` implementation             | [ ]    |
+| 3   | `StyleConfiguration` record with all settings             | [ ]    |
+| 4   | `ConfigurationSource` enum                                | [ ]    |
+| 5   | `IConflictResolver` interface in Abstractions             | [ ]    |
+| 6   | `ConflictResolver` implementation                         | [ ]    |
+| 7   | `ConfigurationConflict` record                            | [ ]    |
+| 8   | `IProjectConfigurationWriter` interface                   | [ ]    |
+| 9   | `ProjectConfigurationWriter` implementation               | [ ]    |
+| 10  | Override context menu items                               | [ ]    |
+| 11  | `OverrideMenuViewModel` with commands                     | [ ]    |
+| 12  | Confirmation dialog for overrides                         | [ ]    |
+| 13  | `IIgnorePatternService` interface in Abstractions         | [ ]    |
+| 14  | `IgnorePatternService` with glob matching                 | [ ]    |
+| 15  | Integration with `ILintingOrchestrator`                   | [ ]    |
+| 16  | Unit tests for configuration provider                     | [ ]    |
+| 17  | Unit tests for conflict resolver                          | [ ]    |
+| 18  | Unit tests for ignore patterns                            | [ ]    |
+| 19  | Unit tests for configuration writer                       | [ ]    |
+| 20  | Integration tests for full configuration flow             | [ ]    |
+| 21  | DI registration in StyleModule.cs                         | [ ]    |
 
 ---
 
@@ -1627,7 +1627,7 @@ namespace Lexichord.Modules.Style.Services;
 public class LayeredConfigurationProvider : ILayeredConfigurationProvider
 {
     private readonly IWorkspaceService _workspaceService;
-    private readonly IConfigurationService _configService;
+    private readonly IConfiguration _configuration;
     private readonly ILicenseContext _licenseContext;
     private readonly ILogger<LayeredConfigurationProvider> _logger;
 
@@ -1638,12 +1638,12 @@ public class LayeredConfigurationProvider : ILayeredConfigurationProvider
 
     public LayeredConfigurationProvider(
         IWorkspaceService workspaceService,
-        IConfigurationService configService,
+        IConfiguration configuration,
         ILicenseContext licenseContext,
         ILogger<LayeredConfigurationProvider> logger)
     {
         _workspaceService = workspaceService;
-        _configService = configService;
+        _configuration = configuration;
         _licenseContext = licenseContext;
         _logger = logger;
     }
@@ -1912,14 +1912,14 @@ public class IgnorePatternService : IIgnorePatternService
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Configuration Inspector UI      | v0.4.x      | Visual tool to see configuration sources        |
-| Configuration Templates         | v0.4.x      | Pre-built configs for project types             |
-| Cloud Configuration Sync        | v0.5.x      | Requires Teams infrastructure                   |
-| Organization Policy Enforcement | v0.5.x      | Requires Enterprise admin features              |
-| Configuration Diff View         | v0.4.x      | Compare project vs global settings              |
-| Auto-generate .lexichordignore  | v0.4.x      | Detect generated files automatically            |
+| Feature                         | Deferred To | Reason                                   |
+| :------------------------------ | :---------- | :--------------------------------------- |
+| Configuration Inspector UI      | v0.4.x      | Visual tool to see configuration sources |
+| Configuration Templates         | v0.4.x      | Pre-built configs for project types      |
+| Cloud Configuration Sync        | v0.5.x      | Requires Teams infrastructure            |
+| Organization Policy Enforcement | v0.5.x      | Requires Enterprise admin features       |
+| Configuration Diff View         | v0.4.x      | Compare project vs global settings       |
+| Auto-generate .lexichordignore  | v0.4.x      | Detect generated files automatically     |
 
 ---
 
