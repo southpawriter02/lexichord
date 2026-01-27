@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-007d: Validation Pipeline Behavior
 
 ## 1. Metadata & Categorization
 

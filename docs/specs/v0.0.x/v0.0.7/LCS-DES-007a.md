@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-007a: MediatR Bootstrap
 
 ## 1. Metadata & Categorization
 

@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-007c: Logging Pipeline Behavior
 
 ## 1. Metadata & Categorization
 

@@ -1,4 +1,4 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-007b: Shared Domain Events
 
 ## 1. Metadata & Categorization
 
