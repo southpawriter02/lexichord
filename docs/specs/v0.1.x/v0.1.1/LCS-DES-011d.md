@@ -1,4 +1,4 @@
-# LCS-INF-011d: Tab Infrastructure
+# LCS-DES-011d: Tab Infrastructure
 
 ## 1. Metadata & Categorization
 

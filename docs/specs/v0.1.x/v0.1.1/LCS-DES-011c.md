@@ -1,4 +1,4 @@
-# LCS-INF-011c: Layout Serialization
+# LCS-DES-011c: Layout Serialization
 
 ## 1. Metadata & Categorization
 

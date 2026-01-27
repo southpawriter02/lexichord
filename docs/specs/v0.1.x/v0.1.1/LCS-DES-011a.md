@@ -1,4 +1,4 @@
-# LCS-INF-011a: Dock Library Integration
+# LCS-DES-011a: Dock Library Integration
 
 ## 1. Metadata & Categorization
 

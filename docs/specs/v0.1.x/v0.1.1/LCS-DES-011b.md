@@ -1,4 +1,4 @@
-# LCS-INF-011b: Region Injection Service
+# LCS-DES-011b: Region Injection Service
 
 ## 1. Metadata & Categorization
 
