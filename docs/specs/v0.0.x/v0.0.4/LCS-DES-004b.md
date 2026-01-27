@@ -1,4 +1,4 @@
-# LCS-INF-004b: The Discovery Engine (ModuleLoader)
+# LCS-DES-004b: The Discovery Engine (ModuleLoader)
 
 ## 1. Metadata & Categorization
 

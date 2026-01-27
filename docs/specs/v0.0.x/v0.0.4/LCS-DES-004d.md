@@ -1,4 +1,4 @@
-# LCS-INF-004d: The Sandbox Module (Proof of Concept)
+# LCS-DES-004d: The Sandbox Module (Proof of Concept)
 
 ## 1. Metadata & Categorization
 

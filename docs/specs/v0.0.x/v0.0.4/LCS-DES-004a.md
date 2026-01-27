@@ -1,4 +1,4 @@
-# LCS-INF-004a: The Contract (IModule Interface)
+# LCS-DES-004a: The Contract (IModule Interface)
 
 ## 1. Metadata & Categorization
 

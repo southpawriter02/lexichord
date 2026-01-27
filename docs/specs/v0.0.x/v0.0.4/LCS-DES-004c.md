@@ -1,4 +1,4 @@
-# LCS-INF-004c: The License Gate (Skeleton)
+# LCS-DES-004c: The License Gate (Skeleton)
 
 ## 1. Metadata & Categorization
 
