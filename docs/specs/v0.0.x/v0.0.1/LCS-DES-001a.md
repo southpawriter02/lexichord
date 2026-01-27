@@ -1,19 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-001a: Design Specification — Solution Scaffolding
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                            | Description                                    |
-|:---------------------|:---------------------------------|:-----------------------------------------------|
-| **Feature ID**       | `INF-001a`                       | Infrastructure - Solution Scaffolding          |
-| **Feature Name**     | Solution Scaffolding & Hierarchy | The physical foundation of the codebase.       |
-| **Target Version**   | `v0.0.1a`                        | The Genesis commit.                            |
-| **Module Scope**     | `Root`                           | Global Solution scope.                         |
-| **Swimlane**         | `Infrastructure`                 | The Podium (Platform).                         |
-| **License Tier**     | `Core`                           | Foundation (Required for all tiers).           |
-| **Feature Gate Key** | N/A                              | No runtime gating required for file structure. |
-| **Author**           | System Architect                 |                                                |
-| **Status**           | **Approved**                     | Ready for execution.                           |
-| **Last Updated**     | 2026-01-26                       |                                                |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `INF-001a` | Sub-part of INF-001 |
+| **Feature Name** | `Solution Scaffolding & Hierarchy` | The physical foundation of the codebase |
+| **Target Version** | `v0.0.1a` | First sub-part of v0.0.1 |
+| **Module Scope** | `Root` | Global Solution scope |
+| **Swimlane** | `Infrastructure` | The Podium (Platform) |
+| **License Tier** | `Core` | Foundation (Required for all tiers) |
+| **Feature Gate Key** | N/A | No runtime gating required for file structure |
+| **Author** | System Architect | |
+| **Status** | **Approved** | Ready for execution |
+| **Last Updated** | 2026-01-26 | |
+| **Parent Document** | [LCS-DES-001-INDEX](./LCS-DES-001-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-001 §2.1](./LCS-SBD-001.md#v001a-solution-scaffolding) | |
 
 ---
 

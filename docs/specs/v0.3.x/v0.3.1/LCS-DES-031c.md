@@ -1,20 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-031c: Design Specification — The Fuzzy Scanner
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                                               | Description                                          |
-| :------------------- | :-------------------------------------------------- | :--------------------------------------------------- |
-| **Feature ID**       | `STY-031c`                                          | Style Module - Fuzzy Scanner                         |
-| **Feature Name**     | Fuzzy Scanner                                       | Secondary scan loop for approximate string matching. |
-| **Target Version**   | `v0.3.1c`                                           | Algorithmic Analysis Phase (Sub-Part C).             |
-| **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Interface and implementation.                        |
-| **Swimlane**         | `Governance`                                        | Style & Terminology Enforcement.                     |
-| **License Tier**     | `Writer Pro`                                        | Premium feature (Core users see regex only).         |
-| **Feature Gate Key** | `Feature.FuzzyMatching`                             | Key used in `ILicenseContext.HasFeature()`.          |
-| **Author**           | System Architect                                    |                                                      |
-| **Reviewer**         | Lead Architect                                      |                                                      |
-| **Status**           | **Draft**                                           | Pending approval.                                    |
-| **Last Updated**     | 2026-01-26                                          |                                                      |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `STY-031c` | Sub-part of STY-031 |
+| **Feature Name** | `Fuzzy Scanner` | Secondary scan loop for approximate string matching |
+| **Target Version** | `v0.3.1c` | Third sub-part of v0.3.1 |
+| **Module Scope** | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Interface and implementation |
+| **Swimlane** | `Governance` | Style & Terminology Enforcement |
+| **License Tier** | `Writer Pro` | Premium feature (Core users see regex only) |
+| **Feature Gate Key** | `Feature.FuzzyMatching` | Key used in `ILicenseContext.HasFeature()` |
+| **Author** | Lead Architect | |
+| **Status** | `Draft` | |
+| **Last Updated** | `2026-01-26` | |
+| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-031 §2.3](./LCS-SBD-031.md#v031c-the-fuzzy-scanner) | |
 
 ---
 

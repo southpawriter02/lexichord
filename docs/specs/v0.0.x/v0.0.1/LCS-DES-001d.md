@@ -1,19 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-001d: Design Specification — Continuous Integration Pipeline
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                           | Description                                 |
-| :------------------- | :------------------------------ | :------------------------------------------ |
-| **Feature ID**       | `INF-001d`                      | Infrastructure - CI/CD Pipeline             |
-| **Feature Name**     | Continuous Integration Pipeline | Automated build and test on every commit.   |
-| **Target Version**   | `v0.0.1d`                       | Foundation Layer.                           |
-| **Module Scope**     | `.github/workflows/`            | GitHub Actions configuration.               |
-| **Swimlane**         | `Infrastructure`                | The Podium (Platform).                      |
-| **License Tier**     | `Core`                          | Foundation (Required for all tiers).        |
-| **Feature Gate Key** | N/A                             | No runtime gating for CI/CD infrastructure. |
-| **Author**           | System Architect                |                                             |
-| **Status**           | **Draft**                       | Pending approval.                           |
-| **Last Updated**     | 2026-01-26                      |                                             |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `INF-001d` | Sub-part of INF-001 |
+| **Feature Name** | `Continuous Integration Pipeline` | Automated build and test on every commit |
+| **Target Version** | `v0.0.1d` | Fourth sub-part of v0.0.1 |
+| **Module Scope** | `.github/workflows/` | GitHub Actions configuration |
+| **Swimlane** | `Infrastructure` | The Podium (Platform) |
+| **License Tier** | `Core` | Foundation (Required for all tiers) |
+| **Feature Gate Key** | N/A | No runtime gating for CI/CD infrastructure |
+| **Author** | System Architect | |
+| **Status** | **Draft** | Pending approval |
+| **Last Updated** | 2026-01-26 | |
+| **Parent Document** | [LCS-DES-001-INDEX](./LCS-DES-001-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-001 §2.4](./LCS-SBD-001.md#v001d-cicd-pipeline) | |
 
 ---
 

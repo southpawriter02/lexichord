@@ -1,19 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-001c: Design Specification — Test Suite Foundation
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                 | Description                                      |
-| :------------------- | :-------------------- | :----------------------------------------------- |
-| **Feature ID**       | `INF-001c`            | Infrastructure - Test Suite Genesis              |
-| **Feature Name**     | Test Suite Foundation | Establishing the safety net for all future code. |
-| **Target Version**   | `v0.0.1c`             | Foundation Layer.                                |
-| **Module Scope**     | `tests/`              | Test project directory.                          |
-| **Swimlane**         | `Infrastructure`      | The Podium (Platform).                           |
-| **License Tier**     | `Core`                | Foundation (Required for all tiers).             |
-| **Feature Gate Key** | N/A                   | No runtime gating for test infrastructure.       |
-| **Author**           | System Architect      |                                                  |
-| **Status**           | **Draft**             | Pending approval.                                |
-| **Last Updated**     | 2026-01-26            |                                                  |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `INF-001c` | Sub-part of INF-001 |
+| **Feature Name** | `Test Suite Foundation` | Establishing the safety net for all future code |
+| **Target Version** | `v0.0.1c` | Third sub-part of v0.0.1 |
+| **Module Scope** | `tests/` | Test project directory |
+| **Swimlane** | `Infrastructure` | The Podium (Platform) |
+| **License Tier** | `Core` | Foundation (Required for all tiers) |
+| **Feature Gate Key** | N/A | No runtime gating for test infrastructure |
+| **Author** | System Architect | |
+| **Status** | **Draft** | Pending approval |
+| **Last Updated** | 2026-01-26 | |
+| **Parent Document** | [LCS-DES-001-INDEX](./LCS-DES-001-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-001 §2.3](./LCS-SBD-001.md#v001c-test-suite-genesis) | |
 
 ---
 

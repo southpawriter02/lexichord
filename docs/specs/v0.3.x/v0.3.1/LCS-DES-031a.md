@@ -1,19 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-031a: Design Specification — Algorithm Integration
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                                               | Description                                         |
-| :------------------- | :-------------------------------------------------- | :-------------------------------------------------- |
-| **Feature ID**       | `STY-031a`                                          | Style Module - Algorithm Integration                |
-| **Feature Name**     | Fuzzy Match Service                                 | Levenshtein distance wrapper for string comparison. |
-| **Target Version**   | `v0.3.1a`                                           | Algorithmic Analysis Phase (Sub-Part A).            |
-| **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Interface and implementation.                       |
-| **Swimlane**         | `Governance`                                        | Style & Terminology Enforcement.                    |
-| **License Tier**     | `Writer Pro`                                        | Part of fuzzy matching premium feature.             |
-| **Feature Gate Key** | N/A                                                 | No gate at service level (gate is in FuzzyScanner). |
-| **Author**           | System Architect                                    |                                                     |
-| **Status**           | **Draft**                                           | Pending approval.                                   |
-| **Last Updated**     | 2026-01-26                                          |                                                     |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `STY-031a` | Sub-part of STY-031 |
+| **Feature Name** | `Fuzzy Match Service` | Levenshtein distance wrapper for string comparison |
+| **Target Version** | `v0.3.1a` | First sub-part of v0.3.1 |
+| **Module Scope** | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Interface and implementation |
+| **Swimlane** | `Governance` | Style & Terminology Enforcement |
+| **License Tier** | `Writer Pro` | Part of fuzzy matching premium feature |
+| **Feature Gate Key** | N/A | No gate at service level (gate is in FuzzyScanner) |
+| **Author** | Lead Architect | |
+| **Status** | `Draft` | |
+| **Last Updated** | `2026-01-26` | |
+| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-031 §2.1](./LCS-SBD-031.md#v031a-algorithm-integration) | |
 
 ---
 

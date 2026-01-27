@@ -1,20 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-031d: Design Specification — License Gating
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                                         | Description                                 |
-| :------------------- | :-------------------------------------------- | :------------------------------------------ |
-| **Feature ID**       | `STY-031d`                                    | Style Module - Fuzzy License Gate           |
-| **Feature Name**     | Fuzzy License Gating                          | UI/UX and feature gate implementation.      |
-| **Target Version**   | `v0.3.1d`                                     | Algorithmic Analysis Phase (Sub-Part D).    |
-| **Module Scope**     | `Lexichord.Modules.Style`, `Lexichord.Client` | Backend gate + UI indication.               |
-| **Swimlane**         | `Governance`                                  | Style & Terminology Enforcement.            |
-| **License Tier**     | `Writer Pro`                                  | Premium feature (Core users see UI hints).  |
-| **Feature Gate Key** | `Feature.FuzzyMatching`                       | Key used in `ILicenseContext.HasFeature()`. |
-| **Author**           | System Architect                              |                                             |
-| **Reviewer**         | Lead Architect                                |                                             |
-| **Status**           | **Draft**                                     | Pending approval.                           |
-| **Last Updated**     | 2026-01-26                                    |                                             |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `STY-031d` | Sub-part of STY-031 |
+| **Feature Name** | `Fuzzy License Gating` | UI/UX and feature gate implementation |
+| **Target Version** | `v0.3.1d` | Fourth sub-part of v0.3.1 |
+| **Module Scope** | `Lexichord.Modules.Style`, `Lexichord.Client` | Backend gate + UI indication |
+| **Swimlane** | `Governance` | Style & Terminology Enforcement |
+| **License Tier** | `Writer Pro` | Premium feature (Core users see UI hints) |
+| **Feature Gate Key** | `Feature.FuzzyMatching` | Key used in `ILicenseContext.HasFeature()` |
+| **Author** | Lead Architect | |
+| **Status** | `Draft` | |
+| **Last Updated** | `2026-01-26` | |
+| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-031 §2.4](./LCS-SBD-031.md#v031d-license-gating) | |
 
 ---
 

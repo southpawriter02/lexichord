@@ -1,20 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-031b: Design Specification — Repository Update
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                                               | Description                                                   |
-| :------------------- | :-------------------------------------------------- | :------------------------------------------------------------ |
-| **Feature ID**       | `STY-031b`                                          | Style Module - Repository Update                              |
-| **Feature Name**     | Fuzzy Terminology Schema                            | Database schema and repository extensions for fuzzy matching. |
-| **Target Version**   | `v0.3.1b`                                           | Algorithmic Analysis Phase (Sub-Part B).                      |
-| **Module Scope**     | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Entity, migration, and repository.                            |
-| **Swimlane**         | `Governance`                                        | Style & Terminology Enforcement.                              |
-| **License Tier**     | `Core`                                              | Schema exists for all tiers; feature gated in scanner.        |
-| **Feature Gate Key** | N/A                                                 | No gate at repository level (gate is in FuzzyScanner).        |
-| **Author**           | System Architect                                    |                                                               |
-| **Reviewer**         | Lead Architect                                      |                                                               |
-| **Status**           | **Draft**                                           | Pending approval.                                             |
-| **Last Updated**     | 2026-01-26                                          |                                                               |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `STY-031b` | Sub-part of STY-031 |
+| **Feature Name** | `Fuzzy Terminology Schema` | Database schema and repository extensions for fuzzy matching |
+| **Target Version** | `v0.3.1b` | Second sub-part of v0.3.1 |
+| **Module Scope** | `Lexichord.Abstractions`, `Lexichord.Modules.Style` | Entity, migration, and repository |
+| **Swimlane** | `Governance` | Style & Terminology Enforcement |
+| **License Tier** | `Core` | Schema exists for all tiers; feature gated in scanner |
+| **Feature Gate Key** | N/A | No gate at repository level (gate is in FuzzyScanner) |
+| **Author** | Lead Architect | |
+| **Status** | `Draft` | |
+| **Last Updated** | `2026-01-26` | |
+| **Parent Document** | [LCS-DES-031-INDEX](./LCS-DES-031-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-031 §2.2](./LCS-SBD-031.md#v031b-repository-update) | |
 
 ---
 

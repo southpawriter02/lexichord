@@ -5,7 +5,7 @@
 | Field | Value |
 |:------|:------|
 | **Document ID** | LCS-DEP-MATRIX |
-| **Last Updated** | 2026-01-26 |
+| **Last Updated** | 2026-01-27 (v0.3.2 added) |
 | **Purpose** | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -97,6 +97,64 @@
 | `IThreadMarshaller` | v0.2.7a | Abstractions | UI thread dispatching |
 | `IContentFilter` | v0.2.7b | Modules.Style | Pre-scan content filtering |
 
+### 1.4 v0.3.x Fuzzy Engine Interfaces
+
+| Interface | Defined In | Module | Purpose |
+|:----------|:-----------|:-------|:--------|
+| `IFuzzyMatchService` | v0.3.1a | Abstractions | Levenshtein distance / fuzzy ratio calculation |
+| `IDocumentTokenizer` | v0.3.1c | Abstractions | Text tokenization for scanning |
+| `IFuzzyScanner` | v0.3.1c | Abstractions | Fuzzy violation detection |
+| `FeatureKeys` | v0.3.1d | Abstractions | Feature gate key constants |
+| `IFeatureMatrix` | v0.3.1d | Abstractions | Feature → License tier mapping |
+| `IModuleFeatureRegistrar` | v0.3.1d | Abstractions | Module feature registration contract |
+| `StyleFeatureRegistry` | v0.3.1d | Modules.Style | Style module feature registration |
+
+### 1.5 v0.3.2 Dictionary Manager Interfaces
+
+| Interface | Defined In | Module | Purpose |
+|:----------|:-----------|:-------|:--------|
+| `IDialogService` | v0.3.2b | Abstractions | Modal dialog management |
+| `ITerminologyImporter` | v0.3.2d | Abstractions | CSV import contract (supersedes v0.2.5d) |
+| `ITerminologyExporter` | v0.3.2d | Abstractions | JSON export contract (supersedes v0.2.5d) |
+
+**New Records (v0.3.2):**
+
+| Record | Defined In | Module | Purpose |
+|:-------|:-----------|:-------|:--------|
+| `StyleTermDto` | v0.3.2a | Modules.Style | View-layer term representation |
+| `DialogResult<T>` | v0.3.2b | Abstractions | Dialog return value wrapper |
+| `ImportMapping` | v0.3.2d | Abstractions | CSV column to DB field mapping |
+| `ImportResult` | v0.3.2d | Abstractions | Import operation outcome |
+| `ImportOptions` | v0.3.2d | Abstractions | Skip/overwrite configuration |
+| `ImportError` | v0.3.2d | Abstractions | Row-level import failure details |
+| `ExportDocument` | v0.3.2d | Modules.Style | Export JSON structure |
+| `ExportedTerm` | v0.3.2d | Modules.Style | Term representation in export |
+
+**New Classes (v0.3.2):**
+
+| Class | Defined In | Module | Purpose |
+|:------|:-----------|:-------|:--------|
+| `StyleTermValidator` | v0.3.2c | Modules.Style | FluentValidation validator |
+| `ValidationConstants` | v0.3.2c | Modules.Style | Centralized validation constants |
+| `CsvTerminologyImporter` | v0.3.2d | Modules.Style | CSV import implementation |
+| `JsonTerminologyExporter` | v0.3.2d | Modules.Style | JSON export implementation |
+| `LexiconViewModel` | v0.3.2a | Modules.Style | DataGrid ViewModel |
+| `TermEditorViewModel` | v0.3.2b | Modules.Style | Term editor dialog ViewModel |
+| `ImportWizardViewModel` | v0.3.2d | Modules.Style | Import wizard ViewModel |
+
+**Extended Records (v0.3.1):**
+
+| Record | Extended In | New Properties | Purpose |
+|:-------|:------------|:---------------|:--------|
+| `StyleTerm` | v0.3.1b | `FuzzyEnabled`, `FuzzyThreshold` | Per-term fuzzy configuration |
+| `StyleViolation` | v0.3.1c | `IsFuzzyMatch`, `FuzzyRatio` | Fuzzy match identification |
+
+**Extended Interfaces (v0.3.1):**
+
+| Interface | Extended In | New Methods | Purpose |
+|:----------|:------------|:------------|:--------|
+| `ITerminologyRepository` | v0.3.1b | `GetFuzzyEnabledTermsAsync()` | Query fuzzy-enabled terms |
+
 ---
 
 ## 2. MediatR Events Registry
@@ -152,6 +210,7 @@
 | `System.Reactive` | 6.x | v0.2.3a | Reactive extensions |
 | `Velopack` | 0.x | v0.1.7a | Auto-updater |
 | `Sentry` | 4.x | v0.1.7d | Crash reporting |
+| `CsvHelper` | 31.x | v0.3.2d | CSV parsing for terminology import |
 
 ---
 
@@ -165,6 +224,7 @@
 | v0.2.4 | `IThemeManager` from v0.0.5 | `IThemeManager` from **v0.0.2c** |
 | v0.2.4 | `ILinterService` from v0.2.3b | `ILintingOrchestrator` from **v0.2.3a** |
 | v0.2.5 | `ILicenseService` from v0.0.4c | `ILicenseService` from **v0.1.6c** (or use `ILicenseContext` from v0.0.4c) |
+| v0.3.1d | `IFeatureMatrix` from v0.0.4b | `IFeatureMatrix` is **NEW** in **v0.3.1d** (not from v0.0.4b) |
 
 ### 4.2 Missing Definitions (Addressed)
 
@@ -173,6 +233,17 @@
 | `ISettingsService` | Was phantom in v0.0.x | Properly defined in v0.1.6a |
 | `IThemeManager` | Referenced but not detailed | Defined in v0.0.2c (Shell specification) |
 | `IEditorNavigationService` | New in v0.2.6b | Added to registry |
+| `IFeatureMatrix` | Was incorrectly cited as v0.0.4b | New interface defined in v0.3.1d |
+| `IModuleFeatureRegistrar` | New in v0.3.1d | Added to registry |
+
+### 4.3 Interface Migrations (v0.3.2)
+
+| Interface | Original Location | New Location | Reason |
+|:----------|:------------------|:-------------|:-------|
+| `ITerminologyImporter` | v0.2.5d Modules.Style | v0.3.2d Abstractions | Elevated to abstraction layer for broader use |
+| `ITerminologyExporter` | v0.2.5d Modules.Style | v0.3.2d Abstractions | Elevated to abstraction layer for broader use |
+
+**Note:** v0.3.2d redefines these interfaces with enhanced signatures in `Lexichord.Abstractions.Contracts`. The v0.2.5d definitions in `Modules.Style` are superseded.
 
 ---
 
@@ -209,6 +280,11 @@ graph TB
         V027[v0.2.7 Polish]
     end
 
+    subgraph "v0.3.x Advanced Matching"
+        V031[v0.3.1 Fuzzy Matching]
+        V032[v0.3.2 Dictionary Manager]
+    end
+
     %% v0.0.x internal
     V003 --> V004
     V004 --> V005
@@ -239,6 +315,16 @@ graph TB
     V011 --> V026
     V023 --> V027
     V024 --> V027
+
+    %% v0.3.x depends on v0.2.x, v0.1.x, and v0.0.x
+    V022 --> V031
+    V023 --> V031
+    V004 --> V031
+
+    %% v0.3.2 depends on v0.3.1, v0.2.x, v0.1.x, and v0.0.x
+    V031 --> V032
+    V022 --> V032
+    V014 --> V032
 ```
 
 ---
@@ -269,3 +355,37 @@ graph TB
 - [x] ILintingOrchestrator (v0.2.3a)
 - [x] StyleViolation (v0.2.1b)
 - [x] LintingCompletedEvent (v0.2.3d)
+
+### v0.2.x Prerequisites for v0.3.x
+- [x] StyleTerm entity (v0.2.2a)
+- [x] ITerminologyRepository (v0.2.2b)
+- [x] ITerminologySeeder (v0.2.2c)
+- [x] ILintingOrchestrator (v0.2.3a)
+- [x] IStyleScanner (v0.2.3c)
+- [x] StyleViolation (v0.2.1b)
+- [x] RuleCategory / ViolationSeverity enums (v0.2.1b)
+
+### v0.0.x/v0.1.x Prerequisites for v0.3.x
+- [x] ILicenseContext (v0.0.4c)
+- [x] LicenseTier enum (v0.0.4c)
+- [x] IDbConnectionFactory (v0.0.5b)
+- [x] FuzzySharp NuGet (v0.1.5b)
+- [x] Microsoft.Extensions.Caching.Memory (v0.2.2b)
+- [x] FluentMigrator (v0.0.5c)
+
+### v0.3.1 Prerequisites for v0.3.2
+- [x] StyleTerm with FuzzyEnabled/FuzzyThreshold columns (v0.3.1b)
+- [x] Feature.FuzzyMatching feature gate key (v0.3.1d)
+- [x] IFuzzyMatchService (v0.3.1a)
+
+### v0.2.x/v0.1.x/v0.0.x Prerequisites for v0.3.2
+- [x] StyleTerm entity (v0.2.2a)
+- [x] ITerminologyRepository (v0.2.2b)
+- [x] ITerminologyService (v0.2.2d)
+- [x] LexiconChangedEvent (v0.2.2d)
+- [x] RuleCategory / ViolationSeverity enums (v0.2.1b)
+- [x] ILicenseContext (v0.0.4c)
+- [x] LicenseTier enum (v0.0.4c)
+- [x] IFileService (v0.1.4b)
+- [x] FluentValidation NuGet (v0.0.7d)
+- [x] System.Reactive NuGet (v0.2.3a)

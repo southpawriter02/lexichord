@@ -1,19 +1,21 @@
-# LCS-01: Feature Design Composition
+# LCS-DES-001b: Design Specification — Dependency Graph Enforcement
 
 ## 1. Metadata & Categorization
 
-| Field                | Value                        | Description                                           |
-| :------------------- | :--------------------------- | :---------------------------------------------------- |
-| **Feature ID**       | `INF-001b`                   | Infrastructure - Project Reference Lock               |
-| **Feature Name**     | Dependency Graph Enforcement | Compile-time enforcement of Onion Architecture rules. |
-| **Target Version**   | `v0.0.1b`                    | Foundation Layer.                                     |
-| **Module Scope**     | `Root`                       | Global Solution scope (`.csproj` configuration).      |
-| **Swimlane**         | `Infrastructure`             | The Podium (Platform).                                |
-| **License Tier**     | `Core`                       | Foundation (Required for all tiers).                  |
-| **Feature Gate Key** | N/A                          | No runtime gating required for build configuration.   |
-| **Author**           | System Architect             |                                                       |
-| **Status**           | **Draft**                    | Pending approval.                                     |
-| **Last Updated**     | 2026-01-26                   |                                                       |
+| Field | Value | Description |
+| :--- | :--- | :--- |
+| **Feature ID** | `INF-001b` | Sub-part of INF-001 |
+| **Feature Name** | `Dependency Graph Enforcement` | Compile-time enforcement of Onion Architecture rules |
+| **Target Version** | `v0.0.1b` | Second sub-part of v0.0.1 |
+| **Module Scope** | `Root` | Global Solution scope (`.csproj` configuration) |
+| **Swimlane** | `Infrastructure` | The Podium (Platform) |
+| **License Tier** | `Core` | Foundation (Required for all tiers) |
+| **Feature Gate Key** | N/A | No runtime gating required for build configuration |
+| **Author** | System Architect | |
+| **Status** | **Draft** | Pending approval |
+| **Last Updated** | 2026-01-26 | |
+| **Parent Document** | [LCS-DES-001-INDEX](./LCS-DES-001-INDEX.md) | |
+| **Scope Breakdown** | [LCS-SBD-001 §2.2](./LCS-SBD-001.md#v001b-project-reference-lock) | |
 
 ---
 
