@@ -1,4 +1,4 @@
-# LCS-INF-005d: Repository Base
+# LCS-DES-005d: Repository Base
 
 ## 1. Metadata & Categorization
 

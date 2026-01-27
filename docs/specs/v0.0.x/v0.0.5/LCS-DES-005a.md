@@ -1,4 +1,4 @@
-# LCS-INF-005a: Docker Orchestration
+# LCS-DES-005a: Docker Orchestration
 
 ## 1. Metadata & Categorization
 

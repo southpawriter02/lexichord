@@ -1,4 +1,4 @@
-# LCS-INF-005b: Database Connector
+# LCS-DES-005b: Database Connector
 
 ## 1. Metadata & Categorization
 

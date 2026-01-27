@@ -1,4 +1,4 @@
-# LCS-INF-005c: FluentMigrator Runner
+# LCS-DES-005c: FluentMigrator Runner
 
 ## 1. Metadata & Categorization
 
