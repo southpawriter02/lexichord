@@ -1,4 +1,4 @@
-# LCS-INF-012d: Context Menu Actions Specification
+# LCS-DES-012d: Context Menu Actions Specification
 
 ## 1. Metadata & Categorization
 

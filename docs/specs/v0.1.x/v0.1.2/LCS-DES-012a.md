@@ -1,4 +1,4 @@
-# LCS-INF-012a: Workspace Service Specification
+# LCS-DES-012a: Workspace Service Specification
 
 ## 1. Metadata & Categorization
 

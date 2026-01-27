@@ -1,4 +1,4 @@
-# LCS-INF-012c: Tree View UI Specification
+# LCS-DES-012c: Tree View UI Specification
 
 ## 1. Metadata & Categorization
 

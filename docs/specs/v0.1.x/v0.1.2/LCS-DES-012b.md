@@ -1,4 +1,4 @@
-# LCS-INF-012b: File System Watcher Specification
+# LCS-DES-012b: File System Watcher Specification
 
 ## 1. Metadata & Categorization
 
