@@ -1,4 +1,4 @@
-Review all v0.3.3 design specifications for dependencies and deferrals. Make sure all dependencies are rooted in reality and do not contain ghost functions or incorrect references. Update the matrix accordingly as needed.
+Review all v0.3.3 design specifications for dependencies and deferrals. Make sure all dependencies are rooted in reality and do not contain ghost functions or incorrect references. Update the matrix and specs as needed.
 
 @docs/specs/DEPENDENCY-MATRIX.md  
 
