@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-041                              |
-| **Version**      | v0.4.1                                   |
-| **Codename**     | The Vector Foundation (pgvector Setup)   |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                    |
+| :--------------- | :------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-041                                              |
+| **Version**      | v0.4.1                                                   |
+| **Codename**     | The Vector Foundation (pgvector Setup)                   |
+| **Status**       | Draft                                                    |
+| **Last Updated** | 2026-01-27                                               |
+| **Owner**        | Lead Architect                                           |
 | **Depends On**   | v0.0.5b (IDbConnectionFactory), v0.0.5c (FluentMigrator) |
 
 ---
@@ -52,14 +52,14 @@ The Vector Foundation is **Core** infrastructure. All license tiers have access 
 
 ## 2. Dependencies on Prior Versions
 
-| Component                | Source Version | Usage in v0.4.1                                  |
-| :----------------------- | :------------- | :----------------------------------------------- |
-| `IDbConnectionFactory`   | v0.0.5b        | PostgreSQL connection creation                   |
-| `FluentMigrator`         | v0.0.5c        | Schema migration execution                       |
-| `IGenericRepository<T>`  | v0.0.5d        | Base repository pattern                          |
-| `Polly`                  | v0.0.5d        | Retry policies for database operations           |
-| `IConfigurationService`  | v0.0.3d        | Database connection string configuration         |
-| `Serilog`                | v0.0.3b        | Structured logging                               |
+| Component               | Source Version | Usage in v0.4.1                                                 |
+| :---------------------- | :------------- | :-------------------------------------------------------------- |
+| `IDbConnectionFactory`  | v0.0.5b        | PostgreSQL connection creation                                  |
+| `FluentMigrator`        | v0.0.5c        | Schema migration execution                                      |
+| `IGenericRepository<T>` | v0.0.5d        | Base repository pattern                                         |
+| `Polly`                 | v0.0.5d        | Retry policies for database operations                          |
+| `IConfiguration`        | v0.0.3d        | Database connection string (Microsoft.Extensions.Configuration) |
+| `ILogger<T>`            | v0.0.3b        | Structured logging (Microsoft.Extensions.Logging via Serilog)   |
 
 ---
 
@@ -67,12 +67,12 @@ The Vector Foundation is **Core** infrastructure. All license tiers have access 
 
 ### 3.1 v0.4.1a: pgvector Extension
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-041a                                  |
-| **Title**        | pgvector Docker Configuration             |
-| **Module**       | `Lexichord.Host`                          |
-| **License Tier** | Core                                      |
+| Field            | Value                         |
+| :--------------- | :---------------------------- |
+| **Sub-Part ID**  | RAG-041a                      |
+| **Title**        | pgvector Docker Configuration |
+| **Module**       | `Lexichord.Host`              |
+| **License Tier** | Core                          |
 
 **Goal:** Update Docker Compose to use a PostgreSQL image with pgvector pre-installed and verify extension loads on container startup.
 
@@ -88,22 +88,26 @@ The Vector Foundation is **Core** infrastructure. All license tiers have access 
 
 ```yaml
 services:
-  postgres:
-    image: pgvector/pgvector:pg16
-    environment:
-      POSTGRES_USER: lexichord
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: lexichord
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lexichord && psql -U lexichord -c 'SELECT 1 FROM pg_extension WHERE extname = $$vector$$'"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    postgres:
+        image: pgvector/pgvector:pg16
+        environment:
+            POSTGRES_USER: lexichord
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: lexichord
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+            - ./init-scripts:/docker-entrypoint-initdb.d
+        ports:
+            - "5432:5432"
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U lexichord && psql -U lexichord -c 'SELECT 1 FROM pg_extension WHERE extname = $$vector$$'",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 ```
 
 **Initialization Script (`init-pgvector.sql`):**
@@ -137,12 +141,12 @@ SELECT * FROM pg_extension WHERE extname = 'vector';
 
 ### 3.2 v0.4.1b: Schema Migration
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-041b                                  |
-| **Title**        | Vector Schema Migration                   |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-041b                |
+| **Title**        | Vector Schema Migration |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 **Goal:** Create FluentMigrator migration defining `documents` and `chunks` tables with vector column and HNSW index.
 
@@ -214,11 +218,11 @@ CREATE INDEX idx_chunks_document_id ON chunks(document_id);
 
 **HNSW Index Parameters:**
 
-| Parameter | Value | Description |
-| :-------- | :---- | :---------- |
-| `m` | 16 | Maximum number of connections per layer (higher = more accurate, more memory) |
-| `ef_construction` | 64 | Size of dynamic candidate list during index construction |
-| `vector_cosine_ops` | - | Use cosine similarity for distance calculation |
+| Parameter           | Value | Description                                                                   |
+| :------------------ | :---- | :---------------------------------------------------------------------------- |
+| `m`                 | 16    | Maximum number of connections per layer (higher = more accurate, more memory) |
+| `ef_construction`   | 64    | Size of dynamic candidate list during index construction                      |
+| `vector_cosine_ops` | -     | Use cosine similarity for distance calculation                                |
 
 **Dependencies:**
 
@@ -229,12 +233,12 @@ CREATE INDEX idx_chunks_document_id ON chunks(document_id);
 
 ### 3.3 v0.4.1c: Repository Abstractions
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-041c                                  |
-| **Title**        | Document and Chunk Repository Interfaces  |
-| **Module**       | `Lexichord.Abstractions`                  |
-| **License Tier** | Core                                      |
+| Field            | Value                                    |
+| :--------------- | :--------------------------------------- |
+| **Sub-Part ID**  | RAG-041c                                 |
+| **Title**        | Document and Chunk Repository Interfaces |
+| **Module**       | `Lexichord.Abstractions`                 |
+| **License Tier** | Core                                     |
 
 **Goal:** Define `IDocumentRepository` and `IChunkRepository` interfaces in Abstractions for data access layer abstraction.
 
@@ -492,12 +496,12 @@ public record ChunkSearchResult
 
 ### 3.4 v0.4.1d: Dapper Implementation
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-041d                                  |
-| **Title**        | Repository Dapper Implementation          |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                            |
+| :--------------- | :------------------------------- |
+| **Sub-Part ID**  | RAG-041d                         |
+| **Title**        | Repository Dapper Implementation |
+| **Module**       | `Lexichord.Modules.RAG`          |
+| **License Tier** | Core                             |
 
 **Goal:** Implement `DocumentRepository` and `ChunkRepository` using Dapper with custom type handlers for pgvector `VECTOR` to `float[]` conversion.
 
@@ -695,35 +699,35 @@ public static IServiceCollection AddRAGModule(this IServiceCollection services)
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.4.1a  | Update docker-compose.yml with pgvector image             | 0.5        |
-| 2  | v0.4.1a  | Create init-pgvector.sql initialization script            | 0.5        |
-| 3  | v0.4.1a  | Add health check for pgvector extension                   | 0.5        |
-| 4  | v0.4.1a  | Document local development setup                          | 1          |
-| 5  | v0.4.1a  | Create verification test for extension                    | 1          |
-| 6  | v0.4.1b  | Create Migration_003_VectorSchema.cs                      | 2          |
-| 7  | v0.4.1b  | Define documents table with all columns                   | 0.5        |
-| 8  | v0.4.1b  | Define chunks table with vector column                    | 0.5        |
-| 9  | v0.4.1b  | Create HNSW index on embedding column                     | 0.5        |
-| 10 | v0.4.1b  | Implement rollback (Down) migration                       | 0.5        |
-| 11 | v0.4.1b  | Unit tests for migration up/down                          | 1          |
-| 12 | v0.4.1c  | Create IDocumentRepository interface                      | 1          |
-| 13 | v0.4.1c  | Create IChunkRepository interface                         | 1          |
-| 14 | v0.4.1c  | Create Document entity record                             | 0.5        |
-| 15 | v0.4.1c  | Create Chunk entity record                                | 0.5        |
-| 16 | v0.4.1c  | Create ChunkSearchResult record                           | 0.5        |
-| 17 | v0.4.1c  | Create DocumentStatus enum                                | 0.5        |
-| 18 | v0.4.1d  | Install Npgsql.Pgvector NuGet package                     | 0.5        |
-| 19 | v0.4.1d  | Implement VectorTypeHandler                               | 1          |
-| 20 | v0.4.1d  | Implement DocumentRepository                              | 3          |
-| 21 | v0.4.1d  | Implement ChunkRepository                                 | 3          |
-| 22 | v0.4.1d  | Implement vector search query with pgvector               | 2          |
-| 23 | v0.4.1d  | Unit tests for repositories (mocked connection)           | 2          |
-| 24 | v0.4.1d  | Integration tests with real PostgreSQL                    | 2          |
-| 25 | All      | DI registration in RAGModule.cs                           | 0.5        |
-| 26 | All      | End-to-end integration test                               | 1          |
-| **Total** |   |                                                           | **27 hours** |
+| #         | Sub-Part | Task                                            | Est. Hours   |
+| :-------- | :------- | :---------------------------------------------- | :----------- |
+| 1         | v0.4.1a  | Update docker-compose.yml with pgvector image   | 0.5          |
+| 2         | v0.4.1a  | Create init-pgvector.sql initialization script  | 0.5          |
+| 3         | v0.4.1a  | Add health check for pgvector extension         | 0.5          |
+| 4         | v0.4.1a  | Document local development setup                | 1            |
+| 5         | v0.4.1a  | Create verification test for extension          | 1            |
+| 6         | v0.4.1b  | Create Migration_003_VectorSchema.cs            | 2            |
+| 7         | v0.4.1b  | Define documents table with all columns         | 0.5          |
+| 8         | v0.4.1b  | Define chunks table with vector column          | 0.5          |
+| 9         | v0.4.1b  | Create HNSW index on embedding column           | 0.5          |
+| 10        | v0.4.1b  | Implement rollback (Down) migration             | 0.5          |
+| 11        | v0.4.1b  | Unit tests for migration up/down                | 1            |
+| 12        | v0.4.1c  | Create IDocumentRepository interface            | 1            |
+| 13        | v0.4.1c  | Create IChunkRepository interface               | 1            |
+| 14        | v0.4.1c  | Create Document entity record                   | 0.5          |
+| 15        | v0.4.1c  | Create Chunk entity record                      | 0.5          |
+| 16        | v0.4.1c  | Create ChunkSearchResult record                 | 0.5          |
+| 17        | v0.4.1c  | Create DocumentStatus enum                      | 0.5          |
+| 18        | v0.4.1d  | Install Npgsql.Pgvector NuGet package           | 0.5          |
+| 19        | v0.4.1d  | Implement VectorTypeHandler                     | 1            |
+| 20        | v0.4.1d  | Implement DocumentRepository                    | 3            |
+| 21        | v0.4.1d  | Implement ChunkRepository                       | 3            |
+| 22        | v0.4.1d  | Implement vector search query with pgvector     | 2            |
+| 23        | v0.4.1d  | Unit tests for repositories (mocked connection) | 2            |
+| 24        | v0.4.1d  | Integration tests with real PostgreSQL          | 2            |
+| 25        | All      | DI registration in RAGModule.cs                 | 0.5          |
+| 26        | All      | End-to-end integration test                     | 1            |
+| **Total** |          |                                                 | **27 hours** |
 
 ---
 
@@ -731,37 +735,37 @@ public static IServiceCollection AddRAGModule(this IServiceCollection services)
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                | Source Version | Purpose                              |
-| :----------------------- | :------------- | :----------------------------------- |
-| `IDbConnectionFactory`   | v0.0.5b        | PostgreSQL connection creation       |
-| `IGenericRepository<T>`  | v0.0.5d        | Base repository pattern (optional)   |
-| `IConfigurationService`  | v0.0.3d        | Connection string configuration      |
+| Interface               | Source Version | Purpose                                                              |
+| :---------------------- | :------------- | :------------------------------------------------------------------- |
+| `IDbConnectionFactory`  | v0.0.5b        | PostgreSQL connection creation                                       |
+| `IGenericRepository<T>` | v0.0.5d        | Base repository pattern (optional)                                   |
+| `IConfiguration`        | v0.0.3d        | Connection string configuration (Microsoft.Extensions.Configuration) |
 
 ### 5.2 New Interfaces (defined in v0.4.1)
 
-| Interface                   | Defined In | Module        | Purpose                 |
-| :-------------------------- | :--------- | :------------ | :---------------------- |
-| `IDocumentRepository`       | v0.4.1c    | Abstractions  | Document CRUD operations |
-| `IChunkRepository`          | v0.4.1c    | Abstractions  | Chunk storage and vector search |
+| Interface             | Defined In | Module       | Purpose                         |
+| :-------------------- | :--------- | :----------- | :------------------------------ |
+| `IDocumentRepository` | v0.4.1c    | Abstractions | Document CRUD operations        |
+| `IChunkRepository`    | v0.4.1c    | Abstractions | Chunk storage and vector search |
 
 ### 5.3 New Records/DTOs (defined in v0.4.1)
 
-| Record            | Defined In | Purpose                                |
-| :---------------- | :--------- | :------------------------------------- |
-| `Document`        | v0.4.1c    | Indexed document entity                |
-| `Chunk`           | v0.4.1c    | Text chunk with embedding              |
-| `ChunkSearchResult` | v0.4.1c  | Vector search result with score        |
-| `DocumentStatus`  | v0.4.1c    | Indexing status enum                   |
+| Record              | Defined In | Purpose                         |
+| :------------------ | :--------- | :------------------------------ |
+| `Document`          | v0.4.1c    | Indexed document entity         |
+| `Chunk`             | v0.4.1c    | Text chunk with embedding       |
+| `ChunkSearchResult` | v0.4.1c    | Vector search result with score |
+| `DocumentStatus`    | v0.4.1c    | Indexing status enum            |
 
 ### 5.4 NuGet Packages
 
-| Package             | Version | Purpose                    | New/Existing |
-| :------------------ | :------ | :------------------------- | :----------- |
-| `Npgsql`            | 9.0.x   | PostgreSQL driver          | Existing     |
-| `Npgsql.Pgvector`   | 0.2.x   | pgvector type mapping      | New          |
-| `Dapper`            | 2.1.x   | Micro-ORM                  | Existing     |
-| `FluentMigrator`    | 6.2.x   | Schema migrations          | Existing     |
-| `Polly`             | 8.5.x   | Retry policies             | Existing     |
+| Package           | Version | Purpose               | New/Existing |
+| :---------------- | :------ | :-------------------- | :----------- |
+| `Npgsql`          | 9.0.x   | PostgreSQL driver     | Existing     |
+| `Npgsql.Pgvector` | 0.2.x   | pgvector type mapping | New          |
+| `Dapper`          | 2.1.x   | Micro-ORM             | Existing     |
+| `FluentMigrator`  | 6.2.x   | Schema migrations     | Existing     |
+| `Polly`           | 8.5.x   | Retry policies        | Existing     |
 
 ---
 
@@ -853,28 +857,28 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| pgvector extension not available in prod PostgreSQL | High | Low | Document required PostgreSQL setup; provide alternative hosted options (Supabase, Neon) |
-| HNSW index build time on large datasets | Medium | Medium | Build index asynchronously; use CONCURRENTLY option |
-| Vector dimension mismatch (not 1536) | High | Low | Validate embedding dimensions before insert; fail fast |
-| Memory pressure with large embeddings | Medium | Medium | Limit batch sizes; implement connection pooling |
-| Migration rollback loses data | High | Low | Backup before migration; test rollback in staging |
-| Dapper type handler registration order | Low | Medium | Register handler in module initialization before any queries |
+| Risk                                                | Impact | Probability | Mitigation                                                                              |
+| :-------------------------------------------------- | :----- | :---------- | :-------------------------------------------------------------------------------------- |
+| pgvector extension not available in prod PostgreSQL | High   | Low         | Document required PostgreSQL setup; provide alternative hosted options (Supabase, Neon) |
+| HNSW index build time on large datasets             | Medium | Medium      | Build index asynchronously; use CONCURRENTLY option                                     |
+| Vector dimension mismatch (not 1536)                | High   | Low         | Validate embedding dimensions before insert; fail fast                                  |
+| Memory pressure with large embeddings               | Medium | Medium      | Limit batch sizes; implement connection pooling                                         |
+| Migration rollback loses data                       | High   | Low         | Backup before migration; test rollback in staging                                       |
+| Dapper type handler registration order              | Low    | Medium      | Register handler in module initialization before any queries                            |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Extension verification | < 1s | `SELECT FROM pg_extension` execution time |
-| Migration execution | < 5s | FluentMigrator timing |
-| Document insert | < 10ms | Stopwatch timing |
-| Chunk batch insert (100 chunks) | < 500ms | Stopwatch timing |
-| Vector search (10K chunks, top-10) | < 200ms | Query execution time |
-| Vector search (100K chunks, top-10) | < 500ms | Query execution time |
-| HNSW index build (10K vectors) | < 30s | Index creation time |
+| Metric                              | Target  | Measurement                               |
+| :---------------------------------- | :------ | :---------------------------------------- |
+| Extension verification              | < 1s    | `SELECT FROM pg_extension` execution time |
+| Migration execution                 | < 5s    | FluentMigrator timing                     |
+| Document insert                     | < 10ms  | Stopwatch timing                          |
+| Chunk batch insert (100 chunks)     | < 500ms | Stopwatch timing                          |
+| Vector search (10K chunks, top-10)  | < 200ms | Query execution time                      |
+| Vector search (100K chunks, top-10) | < 500ms | Query execution time                      |
+| HNSW index build (10K vectors)      | < 30s   | Index creation time                       |
 
 ---
 
@@ -942,14 +946,14 @@ START: "How to search for similar chunks?"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Developer       | As a developer, I want PostgreSQL to have pgvector enabled automatically.           | Container starts with extension verified.             |
-| US-02 | Developer       | As a developer, I want database schema created via migration.                        | `dotnet ef database update` creates tables.           |
-| US-03 | Developer       | As a developer, I want to store documents with metadata.                             | `UpsertAsync` saves and retrieves document.           |
-| US-04 | Developer       | As a developer, I want to store chunks with embeddings.                              | `InsertBatchAsync` stores 1536-dim vectors.           |
-| US-05 | Developer       | As a developer, I want to search chunks by vector similarity.                        | `SearchSimilarAsync` returns ranked results.          |
-| US-06 | Developer       | As a developer, I want cascading delete when document is removed.                    | Deleting document removes all its chunks.             |
+| ID    | Role      | Story                                                                     | Acceptance Criteria                          |
+| :---- | :-------- | :------------------------------------------------------------------------ | :------------------------------------------- |
+| US-01 | Developer | As a developer, I want PostgreSQL to have pgvector enabled automatically. | Container starts with extension verified.    |
+| US-02 | Developer | As a developer, I want database schema created via migration.             | `dotnet ef database update` creates tables.  |
+| US-03 | Developer | As a developer, I want to store documents with metadata.                  | `UpsertAsync` saves and retrieves document.  |
+| US-04 | Developer | As a developer, I want to store chunks with embeddings.                   | `InsertBatchAsync` stores 1536-dim vectors.  |
+| US-05 | Developer | As a developer, I want to search chunks by vector similarity.             | `SearchSimilarAsync` returns ranked results. |
+| US-06 | Developer | As a developer, I want cascading delete when document is removed.         | Deleting document removes all its chunks.    |
 
 ---
 
@@ -1184,19 +1188,19 @@ public class ChunkRepositoryTests
 
 ## 15. Observability & Logging
 
-| Level   | Source              | Message Template                                                       |
-| :------ | :------------------ | :--------------------------------------------------------------------- |
-| Debug   | DocumentRepository  | `Fetching document by path: {FilePath}`                                |
-| Debug   | DocumentRepository  | `Upserting document: {FilePath}`                                       |
-| Info    | DocumentRepository  | `Document upserted: {DocumentId} at {FilePath}`                        |
-| Debug   | DocumentRepository  | `Deleting document: {DocumentId}`                                      |
-| Warning | DocumentRepository  | `Document not found for deletion: {DocumentId}`                        |
-| Debug   | ChunkRepository     | `Inserting {ChunkCount} chunks for document {DocumentId}`              |
-| Info    | ChunkRepository     | `Inserted {InsertedCount} chunks for document {DocumentId}`            |
-| Debug   | ChunkRepository     | `Searching similar chunks: TopK={TopK}, MinScore={MinScore}`           |
-| Info    | ChunkRepository     | `Vector search completed: {ResultCount} results in {ElapsedMs}ms`      |
-| Warning | ChunkRepository     | `Vector search slow: {ElapsedMs}ms > {ThresholdMs}ms`                  |
-| Error   | VectorTypeHandler   | `Failed to convert value to float[]: {ValueType}`                      |
+| Level   | Source             | Message Template                                                  |
+| :------ | :----------------- | :---------------------------------------------------------------- |
+| Debug   | DocumentRepository | `Fetching document by path: {FilePath}`                           |
+| Debug   | DocumentRepository | `Upserting document: {FilePath}`                                  |
+| Info    | DocumentRepository | `Document upserted: {DocumentId} at {FilePath}`                   |
+| Debug   | DocumentRepository | `Deleting document: {DocumentId}`                                 |
+| Warning | DocumentRepository | `Document not found for deletion: {DocumentId}`                   |
+| Debug   | ChunkRepository    | `Inserting {ChunkCount} chunks for document {DocumentId}`         |
+| Info    | ChunkRepository    | `Inserted {InsertedCount} chunks for document {DocumentId}`       |
+| Debug   | ChunkRepository    | `Searching similar chunks: TopK={TopK}, MinScore={MinScore}`      |
+| Info    | ChunkRepository    | `Vector search completed: {ResultCount} results in {ElapsedMs}ms` |
+| Warning | ChunkRepository    | `Vector search slow: {ElapsedMs}ms > {ThresholdMs}ms`             |
+| Error   | VectorTypeHandler  | `Failed to convert value to float[]: {ValueType}`                 |
 
 ---
 
@@ -1208,24 +1212,24 @@ public class ChunkRepositoryTests
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Infrastructure]** | Docker Compose starts PostgreSQL with pgvector extension enabled.           |
-| 2   | **[Infrastructure]** | Health check passes after container startup.                                 |
-| 3   | **[Migration]**     | `Migration_003_VectorSchema` creates documents table.                        |
-| 4   | **[Migration]**     | `Migration_003_VectorSchema` creates chunks table with VECTOR column.        |
-| 5   | **[Migration]**     | HNSW index created on chunks.embedding column.                               |
-| 6   | **[Migration]**     | Migration rollback (Down) drops tables cleanly.                              |
-| 7   | **[Repository]**    | `DocumentRepository.UpsertAsync` inserts new document.                       |
-| 8   | **[Repository]**    | `DocumentRepository.UpsertAsync` updates existing document.                  |
-| 9   | **[Repository]**    | `DocumentRepository.DeleteAsync` removes document and cascades to chunks.    |
-| 10  | **[Repository]**    | `ChunkRepository.InsertBatchAsync` stores chunks with embeddings.            |
-| 11  | **[Repository]**    | `ChunkRepository.SearchSimilarAsync` returns results ordered by score.       |
-| 12  | **[Repository]**    | Vector search respects minScore threshold.                                   |
-| 13  | **[Repository]**    | Vector search respects documentFilter parameter.                             |
-| 14  | **[Performance]**   | Vector search on 10K chunks completes in < 200ms.                            |
-| 15  | **[Type Handler]**  | float[] correctly maps to PostgreSQL VECTOR type.                            |
-| 16  | **[Type Handler]**  | PostgreSQL VECTOR correctly maps to float[].                                 |
+| #   | Category             | Criterion                                                                 |
+| :-- | :------------------- | :------------------------------------------------------------------------ |
+| 1   | **[Infrastructure]** | Docker Compose starts PostgreSQL with pgvector extension enabled.         |
+| 2   | **[Infrastructure]** | Health check passes after container startup.                              |
+| 3   | **[Migration]**      | `Migration_003_VectorSchema` creates documents table.                     |
+| 4   | **[Migration]**      | `Migration_003_VectorSchema` creates chunks table with VECTOR column.     |
+| 5   | **[Migration]**      | HNSW index created on chunks.embedding column.                            |
+| 6   | **[Migration]**      | Migration rollback (Down) drops tables cleanly.                           |
+| 7   | **[Repository]**     | `DocumentRepository.UpsertAsync` inserts new document.                    |
+| 8   | **[Repository]**     | `DocumentRepository.UpsertAsync` updates existing document.               |
+| 9   | **[Repository]**     | `DocumentRepository.DeleteAsync` removes document and cascades to chunks. |
+| 10  | **[Repository]**     | `ChunkRepository.InsertBatchAsync` stores chunks with embeddings.         |
+| 11  | **[Repository]**     | `ChunkRepository.SearchSimilarAsync` returns results ordered by score.    |
+| 12  | **[Repository]**     | Vector search respects minScore threshold.                                |
+| 13  | **[Repository]**     | Vector search respects documentFilter parameter.                          |
+| 14  | **[Performance]**    | Vector search on 10K chunks completes in < 200ms.                         |
+| 15  | **[Type Handler]**   | float[] correctly maps to PostgreSQL VECTOR type.                         |
+| 16  | **[Type Handler]**   | PostgreSQL VECTOR correctly maps to float[].                              |
 
 ---
 
@@ -1281,25 +1285,25 @@ docker exec -it lexichord-postgres psql -U lexichord -c "
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `docker-compose.yml` with pgvector image                       | [ ]    |
-| 2  | `init-pgvector.sql` initialization script                      | [ ]    |
-| 3  | `Migration_003_VectorSchema.cs` FluentMigrator migration       | [ ]    |
-| 4  | `IDocumentRepository` interface in Abstractions                | [ ]    |
-| 5  | `IChunkRepository` interface in Abstractions                   | [ ]    |
-| 6  | `Document` entity record                                       | [ ]    |
-| 7  | `Chunk` entity record                                          | [ ]    |
-| 8  | `ChunkSearchResult` record                                     | [ ]    |
-| 9  | `DocumentStatus` enum                                          | [ ]    |
-| 10 | `VectorTypeHandler` Dapper type handler                        | [ ]    |
-| 11 | `DocumentRepository` implementation                            | [ ]    |
-| 12 | `ChunkRepository` implementation                               | [ ]    |
-| 13 | Unit tests for VectorTypeHandler                               | [ ]    |
-| 14 | Unit tests for DocumentRepository                              | [ ]    |
-| 15 | Unit tests for ChunkRepository                                 | [ ]    |
-| 16 | Integration tests with PostgreSQL                              | [ ]    |
-| 17 | DI registration in RAGModule.cs                                | [ ]    |
+| #   | Deliverable                                              | Status |
+| :-- | :------------------------------------------------------- | :----- |
+| 1   | `docker-compose.yml` with pgvector image                 | [ ]    |
+| 2   | `init-pgvector.sql` initialization script                | [ ]    |
+| 3   | `Migration_003_VectorSchema.cs` FluentMigrator migration | [ ]    |
+| 4   | `IDocumentRepository` interface in Abstractions          | [ ]    |
+| 5   | `IChunkRepository` interface in Abstractions             | [ ]    |
+| 6   | `Document` entity record                                 | [ ]    |
+| 7   | `Chunk` entity record                                    | [ ]    |
+| 8   | `ChunkSearchResult` record                               | [ ]    |
+| 9   | `DocumentStatus` enum                                    | [ ]    |
+| 10  | `VectorTypeHandler` Dapper type handler                  | [ ]    |
+| 11  | `DocumentRepository` implementation                      | [ ]    |
+| 12  | `ChunkRepository` implementation                         | [ ]    |
+| 13  | Unit tests for VectorTypeHandler                         | [ ]    |
+| 14  | Unit tests for DocumentRepository                        | [ ]    |
+| 15  | Unit tests for ChunkRepository                           | [ ]    |
+| 16  | Integration tests with PostgreSQL                        | [ ]    |
+| 17  | DI registration in RAGModule.cs                          | [ ]    |
 
 ---
 
@@ -1575,13 +1579,13 @@ public class ChunkRepository(
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Multiple embedding dimensions   | v0.4.8      | Start with OpenAI's 1536; add flexibility later |
-| Full-text search integration    | v0.5.x      | Hybrid search combines vector and keyword       |
-| Partitioned chunks table        | v0.5.x      | Needed for very large corpora (1M+ chunks)      |
-| Read replicas for search        | v0.9.x      | Enterprise scaling requirement                  |
-| Alternative vector indexes      | v0.5.x      | IVFFlat for memory-constrained deployments      |
+| Feature                       | Deferred To | Reason                                          |
+| :---------------------------- | :---------- | :---------------------------------------------- |
+| Multiple embedding dimensions | v0.4.8      | Start with OpenAI's 1536; add flexibility later |
+| Full-text search integration  | v0.5.x      | Hybrid search combines vector and keyword       |
+| Partitioned chunks table      | v0.5.x      | Needed for very large corpora (1M+ chunks)      |
+| Read replicas for search      | v0.9.x      | Enterprise scaling requirement                  |
+| Alternative vector indexes    | v0.5.x      | IVFFlat for memory-constrained deployments      |
 
 ---
 

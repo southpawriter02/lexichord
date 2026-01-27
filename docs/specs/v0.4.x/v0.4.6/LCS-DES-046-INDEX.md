@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-046-INDEX                        |
-| **Version**      | v0.4.6                                   |
-| **Codename**     | The Reference Panel (Search UI)          |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                           |
+| :--------------- | :------------------------------ |
+| **Document ID**  | LCS-DES-046-INDEX               |
+| **Version**      | v0.4.6                          |
+| **Codename**     | The Reference Panel (Search UI) |
+| **Status**       | Draft                           |
+| **Last Updated** | 2026-01-27                      |
+| **Owner**        | Lead Architect                  |
 
 ---
 
@@ -21,12 +21,12 @@ This index provides navigation to all design specifications for **v0.4.6: The Re
 
 ## 2. Design Specifications
 
-| Document ID    | Title                      | Description                                      | Status |
-| :------------- | :------------------------- | :----------------------------------------------- | :----- |
-| [LCS-DES-046a](./LCS-DES-046a.md) | Reference Panel View | Main search panel UI | Draft |
-| [LCS-DES-046b](./LCS-DES-046b.md) | Search Result Item | Individual result display | Draft |
-| [LCS-DES-046c](./LCS-DES-046c.md) | Source Navigation | Click-to-open functionality | Draft |
-| [LCS-DES-046d](./LCS-DES-046d.md) | Search History | Recent queries management | Draft |
+| Document ID                       | Title                | Description                 | Status |
+| :-------------------------------- | :------------------- | :-------------------------- | :----- |
+| [LCS-DES-046a](./LCS-DES-046a.md) | Reference Panel View | Main search panel UI        | Draft  |
+| [LCS-DES-046b](./LCS-DES-046b.md) | Search Result Item   | Individual result display   | Draft  |
+| [LCS-DES-046c](./LCS-DES-046c.md) | Source Navigation    | Click-to-open functionality | Draft  |
+| [LCS-DES-046d](./LCS-DES-046d.md) | Search History       | Recent queries management   | Draft  |
 
 ---
 
@@ -150,7 +150,7 @@ v0.4.6a (Reference Panel View)
     │                                           │
     ├── v0.4.6d (Search History) ──────────────┘
     │       │
-    │       └── v0.0.3d (ConfigurationService)
+    │       └── v0.0.3d (IConfiguration)
     │
     ├── v0.4.5a (SearchService) ───────────────
     │
@@ -161,14 +161,14 @@ v0.4.6a (Reference Panel View)
 
 ## 6. Interface Dependencies
 
-| Interface | Source | Used By |
-| :-------- | :----- | :------ |
-| `ISemanticSearchService` | v0.4.5a | ReferenceViewModel |
-| `SearchLicenseGuard` | v0.4.5d | ReferenceViewModel |
-| `IRegionManager` | v0.1.1b | Module registration |
-| `IEditorService` | v0.1.3a | Navigation service |
-| `IMediator` | v0.0.7a | Events |
-| `IConfigurationService` | v0.0.3d | History persistence |
+| Interface                | Source  | Used By             |
+| :----------------------- | :------ | :------------------ |
+| `ISemanticSearchService` | v0.4.5a | ReferenceViewModel  |
+| `SearchLicenseGuard`     | v0.4.5d | ReferenceViewModel  |
+| `IRegionManager`         | v0.1.1b | Module registration |
+| `IEditorService`         | v0.1.3a | Navigation service  |
+| `IMediator`              | v0.0.7a | Events              |
+| `IConfiguration`         | v0.0.3d | History persistence |
 
 ---
 
@@ -176,59 +176,59 @@ v0.4.6a (Reference Panel View)
 
 ### 7.1 Interfaces
 
-| Interface | Methods | Purpose |
-| :-------- | :------ | :------ |
-| `IReferenceNavigationService` | `NavigateToHitAsync` | Result navigation |
-| `ISearchHistoryService` | `AddQuery`, `ClearHistory`, `SaveAsync` | Query history |
+| Interface                     | Methods                                 | Purpose           |
+| :---------------------------- | :-------------------------------------- | :---------------- |
+| `IReferenceNavigationService` | `NavigateToHitAsync`                    | Result navigation |
+| `ISearchHistoryService`       | `AddQuery`, `ClearHistory`, `SaveAsync` | Query history     |
 
 ### 7.2 ViewModels
 
-| ViewModel | Base | Purpose |
-| :-------- | :--- | :------ |
-| `ReferenceViewModel` | `ViewModelBase` | Panel state |
+| ViewModel                   | Base            | Purpose           |
+| :-------------------------- | :-------------- | :---------------- |
+| `ReferenceViewModel`        | `ViewModelBase` | Panel state       |
 | `SearchResultItemViewModel` | `ViewModelBase` | Result item state |
 
 ### 7.3 Events
 
-| Event | Properties | Purpose |
-| :---- | :--------- | :------ |
+| Event                     | Properties                  | Purpose              |
+| :------------------------ | :-------------------------- | :------------------- |
 | `ReferenceNavigatedEvent` | DocumentPath, Offset, Score | Navigation telemetry |
 
 ### 7.4 Views
 
-| View | Type | Purpose |
-| :--- | :--- | :------ |
-| `ReferenceView` | UserControl | Search panel |
-| `SearchResultItemView` | UserControl | Result item |
+| View                   | Type        | Purpose      |
+| :--------------------- | :---------- | :----------- |
+| `ReferenceView`        | UserControl | Search panel |
+| `SearchResultItemView` | UserControl | Result item  |
 
 ---
 
 ## 8. Testing Strategy
 
-| Sub-Part | Unit Tests | UI Tests |
-| :------- | :--------- | :------- |
-| v0.4.6a | ViewModel commands, state | Panel rendering |
-| v0.4.6b | ViewModel properties | Item rendering |
-| v0.4.6c | Navigation service | End-to-end navigation |
-| v0.4.6d | History CRUD, persistence | Dropdown behavior |
+| Sub-Part | Unit Tests                | UI Tests              |
+| :------- | :------------------------ | :-------------------- |
+| v0.4.6a  | ViewModel commands, state | Panel rendering       |
+| v0.4.6b  | ViewModel properties      | Item rendering        |
+| v0.4.6c  | Navigation service        | End-to-end navigation |
+| v0.4.6d  | History CRUD, persistence | Dropdown behavior     |
 
 ---
 
 ## 9. Related Documents
 
-| Document | Relationship |
-| :------- | :----------- |
-| [LCS-SBD-046](./LCS-SBD-046.md) | Scope Breakdown for v0.4.6 |
-| [LCS-SBD-045](../v0.4.5/LCS-SBD-045.md) | Predecessor (Searcher) |
-| [LCS-SBD-047](../v0.4.7/LCS-SBD-047.md) | Successor (Index Manager) |
-| [roadmap-v0.4.x](../roadmap-v0.4.x.md) | Version roadmap |
+| Document                                | Relationship               |
+| :-------------------------------------- | :------------------------- |
+| [LCS-SBD-046](./LCS-SBD-046.md)         | Scope Breakdown for v0.4.6 |
+| [LCS-SBD-045](../v0.4.5/LCS-SBD-045.md) | Predecessor (Searcher)     |
+| [LCS-SBD-047](../v0.4.7/LCS-SBD-047.md) | Successor (Index Manager)  |
+| [roadmap-v0.4.x](../roadmap-v0.4.x.md)  | Version roadmap            |
 
 ---
 
 ## 10. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---

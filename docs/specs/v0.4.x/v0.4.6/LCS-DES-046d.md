@@ -2,16 +2,16 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-046d                             |
-| **Version**      | v0.4.6d                                  |
-| **Title**        | Search History                           |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
-| **Module**       | `Lexichord.Modules.RAG`                  |
-| **License Tier** | WriterPro                                |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Document ID**  | LCS-DES-046d            |
+| **Version**      | v0.4.6d                 |
+| **Title**        | Search History          |
+| **Status**       | Draft                   |
+| **Last Updated** | 2026-01-27              |
+| **Owner**        | Lead Architect          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 ---
 
@@ -26,7 +26,7 @@ This specification defines `ISearchHistoryService` and `SearchHistoryService`, w
 - Define `ISearchHistoryService` interface for query history
 - Implement in-memory storage with configurable size limit
 - Deduplicate queries (most recent wins)
-- Support optional persistence via `IConfigurationService`
+- Support optional persistence via `IConfiguration`
 - Provide clear history action
 - Thread-safe operations
 
@@ -132,7 +132,7 @@ namespace Lexichord.Modules.RAG.Services;
 /// </summary>
 public sealed class SearchHistoryService : ISearchHistoryService, IDisposable
 {
-    private readonly IConfigurationService _configService;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<SearchHistoryService> _logger;
     private readonly List<string> _history = new();
     private readonly object _lock = new();
@@ -158,11 +158,11 @@ public sealed class SearchHistoryService : ISearchHistoryService, IDisposable
     }
 
     public SearchHistoryService(
-        IConfigurationService configService,
+        IConfiguration configuration,
         ILogger<SearchHistoryService> logger,
         int maxSize = DefaultMaxSize)
     {
-        _configService = configService;
+        _configuration = configuration;
         _logger = logger;
         _maxSize = Math.Max(1, maxSize);
     }
@@ -376,10 +376,10 @@ public sealed class SearchHistoryService : ISearchHistoryService, IDisposable
 // In RAGModule.cs
 services.AddSingleton<ISearchHistoryService>(sp =>
 {
-    var configService = sp.GetRequiredService<IConfigurationService>();
+    var configuration = sp.GetRequiredService<IConfiguration>();
     var logger = sp.GetRequiredService<ILogger<SearchHistoryService>>();
 
-    var service = new SearchHistoryService(configService, logger, maxSize: 10);
+    var service = new SearchHistoryService(configuration, logger, maxSize: 10);
 
     // Load history on startup
     _ = service.LoadAsync();
@@ -398,14 +398,14 @@ History is stored as a JSON array in user configuration:
 
 ```json
 {
-  "SearchHistory": "[\"most recent query\",\"older query\",\"oldest query\"]"
+    "SearchHistory": "[\"most recent query\",\"older query\",\"oldest query\"]"
 }
 ```
 
 ### 3.2 Configuration Key
 
-| Key | Type | Location |
-| :-- | :--- | :------- |
+| Key             | Type                | Location      |
+| :-------------- | :------------------ | :------------ |
 | `SearchHistory` | string (JSON array) | User settings |
 
 ---
@@ -464,12 +464,12 @@ History is stored as a JSON array in user configuration:
 [Trait("Feature", "v0.4.6d")]
 public class SearchHistoryServiceTests
 {
-    private readonly Mock<IConfigurationService> _configMock;
+    private readonly Mock<IConfiguration> _configMock;
     private readonly SearchHistoryService _sut;
 
     public SearchHistoryServiceTests()
     {
-        _configMock = new Mock<IConfigurationService>();
+        _configMock = new Mock<IConfiguration>();
         _sut = new SearchHistoryService(
             _configMock.Object,
             NullLogger<SearchHistoryService>.Instance,
@@ -721,55 +721,55 @@ public class SearchHistoryServiceTests
 
 ## 6. Logging
 
-| Level | Message | Context |
-| :---- | :------ | :------ |
-| Debug | "Added query to history: {Query}" | After add |
-| Debug | "Removed query from history: {Query}" | After remove |
-| Debug | "History not dirty, skipping save" | Save skipped |
-| Debug | "No saved history found" | Empty config |
-| Debug | "Saved {Count} queries to history" | After save |
-| Information | "Search history cleared" | After clear |
-| Information | "Loaded {Count} queries from history" | After load |
-| Warning | "Failed to parse search history" | Invalid JSON |
-| Warning | "Failed to save history on dispose" | Dispose error |
-| Error | "Failed to save search history" | Save exception |
-| Error | "Failed to load search history" | Load exception |
+| Level       | Message                               | Context        |
+| :---------- | :------------------------------------ | :------------- |
+| Debug       | "Added query to history: {Query}"     | After add      |
+| Debug       | "Removed query from history: {Query}" | After remove   |
+| Debug       | "History not dirty, skipping save"    | Save skipped   |
+| Debug       | "No saved history found"              | Empty config   |
+| Debug       | "Saved {Count} queries to history"    | After save     |
+| Information | "Search history cleared"              | After clear    |
+| Information | "Loaded {Count} queries from history" | After load     |
+| Warning     | "Failed to parse search history"      | Invalid JSON   |
+| Warning     | "Failed to save history on dispose"   | Dispose error  |
+| Error       | "Failed to save search history"       | Save exception |
+| Error       | "Failed to load search history"       | Load exception |
 
 ---
 
 ## 7. File Locations
 
-| File | Path |
-| :--- | :--- |
-| Interface | `src/Lexichord.Abstractions/Contracts/ISearchHistoryService.cs` |
-| Implementation | `src/Lexichord.Modules.RAG/Services/SearchHistoryService.cs` |
-| Event args | `src/Lexichord.Modules.RAG/Events/SearchHistoryChangedEventArgs.cs` |
-| Unit tests | `tests/Lexichord.Modules.RAG.Tests/Services/SearchHistoryServiceTests.cs` |
+| File           | Path                                                                      |
+| :------------- | :------------------------------------------------------------------------ |
+| Interface      | `src/Lexichord.Abstractions/Contracts/ISearchHistoryService.cs`           |
+| Implementation | `src/Lexichord.Modules.RAG/Services/SearchHistoryService.cs`              |
+| Event args     | `src/Lexichord.Modules.RAG/Events/SearchHistoryChangedEventArgs.cs`       |
+| Unit tests     | `tests/Lexichord.Modules.RAG.Tests/Services/SearchHistoryServiceTests.cs` |
 
 ---
 
 ## 8. Acceptance Criteria
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | AddQuery adds queries to front of list | [ ] |
-| 2 | AddQuery deduplicates (case-insensitive, moves to front) | [ ] |
-| 3 | AddQuery respects MaxHistorySize | [ ] |
-| 4 | AddQuery ignores empty/whitespace | [ ] |
-| 5 | RemoveQuery removes specific query | [ ] |
-| 6 | ClearHistory removes all queries | [ ] |
-| 7 | SaveAsync persists to IConfigurationService | [ ] |
-| 8 | LoadAsync restores from IConfigurationService | [ ] |
-| 9 | HistoryChanged event fires appropriately | [ ] |
-| 10 | Thread-safe for concurrent access | [ ] |
-| 11 | All unit tests pass | [ ] |
+| #   | Criterion                                                | Status |
+| :-- | :------------------------------------------------------- | :----- |
+| 1   | AddQuery adds queries to front of list                   | [ ]    |
+| 2   | AddQuery deduplicates (case-insensitive, moves to front) | [ ]    |
+| 3   | AddQuery respects MaxHistorySize                         | [ ]    |
+| 4   | AddQuery ignores empty/whitespace                        | [ ]    |
+| 5   | RemoveQuery removes specific query                       | [ ]    |
+| 6   | ClearHistory removes all queries                         | [ ]    |
+| 7   | SaveAsync persists to IConfiguration                     | [ ]    |
+| 8   | LoadAsync restores from IConfiguration                   | [ ]    |
+| 9   | HistoryChanged event fires appropriately                 | [ ]    |
+| 10  | Thread-safe for concurrent access                        | [ ]    |
+| 11  | All unit tests pass                                      | [ ]    |
 
 ---
 
 ## 9. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---

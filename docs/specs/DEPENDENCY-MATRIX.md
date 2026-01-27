@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-27 (v0.3.2 added)                                              |
+| **Last Updated** | 2026-01-27 (v0.4.8 added)                                              |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -157,63 +157,306 @@
 | :----------------------- | :---------- | :---------------------------- | :------------------------ |
 | `ITerminologyRepository` | v0.3.1b     | `GetFuzzyEnabledTermsAsync()` | Query fuzzy-enabled terms |
 
----
+### 1.6 v0.4.1 Vector Foundation Interfaces
+
+| Interface             | Defined In | Module       | Purpose                                    |
+| :-------------------- | :--------- | :----------- | :----------------------------------------- |
+| `IDocumentRepository` | v0.4.1c    | Abstractions | Document CRUD operations for RAG indexing  |
+| `IChunkRepository`    | v0.4.1c    | Abstractions | Chunk storage and vector similarity search |
+
+**New Records (v0.4.1):**
+
+| Record              | Defined In | Module       | Purpose                          |
+| :------------------ | :--------- | :----------- | :------------------------------- |
+| `Document`          | v0.4.1c    | Abstractions | Indexed document entity          |
+| `Chunk`             | v0.4.1c    | Abstractions | Text chunk with vector embedding |
+| `ChunkSearchResult` | v0.4.1c    | Abstractions | Vector search result with score  |
+
+**New Enums (v0.4.1):**
+
+| Enum             | Defined In | Module       | Purpose                               |
+| :--------------- | :--------- | :----------- | :------------------------------------ |
+| `DocumentStatus` | v0.4.1c    | Abstractions | Pending/Indexing/Indexed/Failed/Stale |
+
+**New Classes (v0.4.1):**
+
+| Class                | Defined In | Module      | Purpose                                      |
+| :------------------- | :--------- | :---------- | :------------------------------------------- |
+| `VectorTypeHandler`  | v0.4.1d    | Modules.RAG | Dapper type handler for float[] ↔ VECTOR     |
+| `DocumentRepository` | v0.4.1d    | Modules.RAG | Dapper implementation of IDocumentRepository |
+| `ChunkRepository`    | v0.4.1d    | Modules.RAG | Dapper implementation with vector search     |
+
+### 1.7 v0.4.2 File Ingestion Pipeline Interfaces
+
+| Interface                      | Defined In | Module       | Purpose                               |
+| :----------------------------- | :--------- | :----------- | :------------------------------------ |
+| `IIngestionService`            | v0.4.2a    | Abstractions | File ingestion operations             |
+| `IFileHashService`             | v0.4.2b    | Abstractions | SHA-256 hash computation & comparison |
+| `IIngestionQueue`              | v0.4.2d    | Abstractions | Queue management for ingestion        |
+| `IFileWatcherIngestionHandler` | v0.4.2c    | Modules.RAG  | File watcher event handling           |
+
+**New Records (v0.4.2):**
+
+| Record                       | Defined In | Module       | Purpose                          |
+| :--------------------------- | :--------- | :----------- | :------------------------------- |
+| `IngestionResult`            | v0.4.2a    | Abstractions | Ingestion operation result       |
+| `IngestionProgressEventArgs` | v0.4.2a    | Abstractions | Progress reporting event args    |
+| `IngestionOptions`           | v0.4.2a    | Abstractions | Ingestion configuration settings |
+| `FileMetadata`               | v0.4.2b    | Abstractions | File size and modification time  |
+| `FileMetadataWithHash`       | v0.4.2b    | Abstractions | Metadata with computed hash      |
+| `FileWatcherOptions`         | v0.4.2c    | Modules.RAG  | File watcher configuration       |
+| `IngestionQueueOptions`      | v0.4.2d    | Modules.RAG  | Queue configuration settings     |
+| `IngestionQueueEventArgs`    | v0.4.2d    | Abstractions | Queue item processed event args  |
+| `QueueStateChangedEventArgs` | v0.4.2d    | Abstractions | Queue state change event args    |
+| `QueueItem`                  | v0.4.2d    | Modules.RAG  | Internal queue item record       |
+
+**New Enums (v0.4.2):**
+
+| Enum                | Defined In | Module       | Purpose                                |
+| :------------------ | :--------- | :----------- | :------------------------------------- |
+| `IngestionPhase`    | v0.4.2a    | Abstractions | Scanning/Hashing/Reading/Chunking/etc. |
+| `FileChangeType`    | v0.4.2c    | Modules.RAG  | Created/Modified/Deleted/Renamed       |
+| `IngestionPriority` | v0.4.2d    | Abstractions | Low/Normal/High queue priority         |
+| `QueueStateChange`  | v0.4.2d    | Abstractions | ItemEnqueued/Dequeued/Started/Stopped  |
+
+**New Classes (v0.4.2):**
+
+| Class                         | Defined In | Module      | Purpose                                     |
+| :---------------------------- | :--------- | :---------- | :------------------------------------------ |
+| `FileHashService`             | v0.4.2b    | Modules.RAG | SHA-256 streaming hash implementation       |
+| `FileWatcherIngestionHandler` | v0.4.2c    | Modules.RAG | Debounced file watcher event handler        |
+| `IngestionQueue`              | v0.4.2d    | Modules.RAG | Channel-based priority queue implementation |
+| `IngestionBackgroundService`  | v0.4.2d    | Modules.RAG | HostedService for queue consumption         |
+
+### 1.8 v0.4.3 Chunking Strategies Interfaces
+
+| Interface           | Defined In | Module       | Purpose                     |
+| :------------------ | :--------- | :----------- | :-------------------------- |
+| `IChunkingStrategy` | v0.4.3a    | Abstractions | Chunking algorithm contract |
+
+**New Records (v0.4.3):**
+
+| Record            | Defined In | Module       | Purpose                               |
+| :---------------- | :--------- | :----------- | :------------------------------------ |
+| `TextChunk`       | v0.4.3a    | Abstractions | Chunk with content and position       |
+| `ChunkMetadata`   | v0.4.3a    | Abstractions | Chunk context (index, heading, level) |
+| `ChunkingOptions` | v0.4.3a    | Abstractions | Chunking configuration options        |
+
+**New Enums (v0.4.3):**
+
+| Enum           | Defined In | Module       | Purpose                                     |
+| :------------- | :--------- | :----------- | :------------------------------------------ |
+| `ChunkingMode` | v0.4.3a    | Abstractions | FixedSize/Paragraph/MarkdownHeader/Semantic |
+
+**New Classes (v0.4.3):**
+
+| Class                            | Defined In | Module       | Purpose                                      |
+| :------------------------------- | :--------- | :----------- | :------------------------------------------- |
+| `FixedSizeChunkingStrategy`      | v0.4.3b    | Modules.RAG  | Character-count based splitting with overlap |
+| `ParagraphChunkingStrategy`      | v0.4.3c    | Modules.RAG  | Paragraph boundary detection with merging    |
+| `MarkdownHeaderChunkingStrategy` | v0.4.3d    | Modules.RAG  | Hierarchical header-based chunking           |
+| `ChunkingStrategyFactory`        | v0.4.3     | Modules.RAG  | Factory for strategy selection               |
+| `ChunkingPresets`                | v0.4.3a    | Abstractions | Predefined chunking configurations           |
+
+### 1.9 v0.4.4 Embedding/Vector Generation Interfaces
+
+| Interface           | Defined In | Module       | Purpose                       |
+| :------------------ | :--------- | :----------- | :---------------------------- |
+| `IEmbeddingService` | v0.4.4a    | Abstractions | Embedding generation contract |
+| `ITokenCounter`     | v0.4.4c    | Abstractions | Token counting and truncation |
+
+**New Records (v0.4.4):**
+
+| Record             | Defined In | Module       | Purpose                               |
+| :----------------- | :--------- | :----------- | :------------------------------------ |
+| `EmbeddingOptions` | v0.4.4a    | Abstractions | Embedding configuration (model, dims) |
+| `EmbeddingResult`  | v0.4.4a    | Abstractions | Embedding operation result            |
+| `IndexingResult`   | v0.4.4d    | Modules.RAG  | Pipeline operation result             |
+
+**New Classes (v0.4.4):**
+
+| Class                      | Defined In | Module       | Purpose                                 |
+| :------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `OpenAIEmbeddingService`   | v0.4.4b    | Modules.RAG  | OpenAI API integration with retry logic |
+| `TiktokenTokenCounter`     | v0.4.4c    | Modules.RAG  | Token counting using ML.Tokenizers      |
+| `DocumentIndexingPipeline` | v0.4.4d    | Modules.RAG  | Orchestrates chunk→embed→store flow     |
+| `EmbeddingException`       | v0.4.4a    | Abstractions | Exception for embedding failures        |
+
+### 1.10 v0.4.5 Semantic Search Interfaces
+
+| Interface                | Defined In | Module       | Purpose                         |
+| :----------------------- | :--------- | :----------- | :------------------------------ |
+| `ISemanticSearchService` | v0.4.5a    | Abstractions | Semantic search contract        |
+| `IQueryPreprocessor`     | v0.4.5c    | Modules.RAG  | Query normalization and caching |
+
+**New Records (v0.4.5):**
+
+| Record          | Defined In | Module       | Purpose                               |
+| :-------------- | :--------- | :----------- | :------------------------------------ |
+| `SearchOptions` | v0.4.5a    | Abstractions | Search configuration (TopK, MinScore) |
+| `SearchResult`  | v0.4.5a    | Abstractions | Search result container               |
+| `SearchHit`     | v0.4.5a    | Abstractions | Individual search match               |
+
+**New Classes (v0.4.5):**
+
+| Class                         | Defined In | Module      | Purpose                           |
+| :---------------------------- | :--------- | :---------- | :-------------------------------- |
+| `PgVectorSearchService`       | v0.4.5b    | Modules.RAG | pgvector cosine similarity search |
+| `QueryPreprocessor`           | v0.4.5c    | Modules.RAG | Query normalization and caching   |
+| `SearchLicenseGuard`          | v0.4.5d    | Modules.RAG | License validation helper         |
+| `FeatureNotLicensedException` | v0.4.5d    | Modules.RAG | Exception for license enforcement |
+
+### 1.11 v0.4.6 Reference Panel Interfaces
+
+| Interface                     | Defined In | Module      | Purpose                     |
+| :---------------------------- | :--------- | :---------- | :-------------------------- |
+| `IReferenceNavigationService` | v0.4.6c    | Modules.RAG | Result navigation to source |
+| `ISearchHistoryService`       | v0.4.6d    | Modules.RAG | Query history management    |
+
+**New ViewModels (v0.4.6):**
+
+| ViewModel                   | Defined In | Module      | Purpose                |
+| :-------------------------- | :--------- | :---------- | :--------------------- |
+| `ReferenceViewModel`        | v0.4.6a    | Modules.RAG | Panel state management |
+| `SearchResultItemViewModel` | v0.4.6b    | Modules.RAG | Result item display    |
+
+**New Classes (v0.4.6):**
+
+| Class                        | Defined In | Module      | Purpose                        |
+| :--------------------------- | :--------- | :---------- | :----------------------------- |
+| `ReferenceNavigationService` | v0.4.6c    | Modules.RAG | Result-to-source navigation    |
+| `SearchHistoryService`       | v0.4.6d    | Modules.RAG | Query history with persistence |
+| `HighlightedTextBlock`       | v0.4.6b    | Modules.RAG | Text highlighting control      |
+
+### 1.12 v0.4.7 Index Manager Interfaces
+
+| Interface                 | Defined In | Module      | Purpose                    |
+| :------------------------ | :--------- | :---------- | :------------------------- |
+| `IIndexStatusService`     | v0.4.7a    | Modules.RAG | Index status aggregation   |
+| `IIndexManagementService` | v0.4.7b    | Modules.RAG | Manual indexing operations |
+
+**New ViewModels (v0.4.7):**
+
+| ViewModel                   | Defined In | Module      | Purpose                   |
+| :-------------------------- | :--------- | :---------- | :------------------------ |
+| `IndexStatusViewModel`      | v0.4.7a    | Modules.RAG | Document list state       |
+| `IndexedDocumentViewModel`  | v0.4.7a    | Modules.RAG | Individual document state |
+| `IndexingProgressViewModel` | v0.4.7c    | Modules.RAG | Progress state            |
+
+**New Records (v0.4.7):**
+
+| Record                 | Defined In | Module      | Purpose              |
+| :--------------------- | :--------- | :---------- | :------------------- |
+| `IndexedDocumentInfo`  | v0.4.7a    | Modules.RAG | Document status info |
+| `IndexStatistics`      | v0.4.7a    | Modules.RAG | Summary statistics   |
+| `IndexOperationResult` | v0.4.7b    | Modules.RAG | Operation result     |
+| `IndexingProgressInfo` | v0.4.7b    | Modules.RAG | Progress information |
+| `IndexingErrorInfo`    | v0.4.7d    | Modules.RAG | Error details        |
+
+**New Classes (v0.4.7):**
+
+| Class                      | Defined In | Module      | Purpose                        |
+| :------------------------- | :--------- | :---------- | :----------------------------- |
+| `IndexStatusService`       | v0.4.7a    | Modules.RAG | Index status implementation    |
+| `IndexManagementService`   | v0.4.7b    | Modules.RAG | Manual indexing implementation |
+| `IndexingErrorCategorizer` | v0.4.7d    | Modules.RAG | Error categorization helper    |
+
+### 1.13 v0.4.8 Hardening Interfaces
+
+| Interface         | Defined In | Module       | Purpose                  |
+| :---------------- | :--------- | :----------- | :----------------------- |
+| `IEmbeddingCache` | v0.4.8d    | Abstractions | Embedding cache contract |
+
+**New Classes (v0.4.8):**
+
+| Class                    | Defined In | Module      | Purpose                            |
+| :----------------------- | :--------- | :---------- | :--------------------------------- |
+| `SqliteEmbeddingCache`   | v0.4.8d    | Modules.RAG | SQLite-based embedding cache       |
+| `CachedEmbeddingService` | v0.4.8d    | Modules.RAG | Decorator adding cache to embedder |
+
+**New Records (v0.4.8):**
+
+| Record                     | Defined In | Module      | Purpose                     |
+| :------------------------- | :--------- | :---------- | :-------------------------- |
+| `EmbeddingCacheStatistics` | v0.4.8d    | Modules.RAG | Cache hit/miss metrics      |
+| `EmbeddingCacheOptions`    | v0.4.8d    | Modules.RAG | Cache configuration options |
 
 ## 2. MediatR Events Registry
 
-| Event                         | Defined In | Purpose                           |
-| :---------------------------- | :--------- | :-------------------------------- |
-| `ModuleInitializedEvent`      | v0.0.8     | Module loaded and ready           |
-| `SystemHealthChangedEvent`    | v0.0.8     | Health status change              |
-| `VaultStatusChangedEvent`     | v0.0.8     | Vault availability change         |
-| `SettingsChangedEvent`        | v0.0.7b    | Configuration value changed       |
-| `LayoutChangedEvent`          | v0.1.1c    | Layout state change               |
-| `ViewRegisteredEvent`         | v0.1.1b    | View added to region              |
-| `WorkspaceOpenedEvent`        | v0.1.2a    | Workspace folder opened           |
-| `WorkspaceClosedEvent`        | v0.1.2a    | Workspace folder closed           |
-| `FileCreatedEvent`            | v0.1.2d    | New file created                  |
-| `FileDeletedEvent`            | v0.1.2d    | File deleted                      |
-| `FileRenamedEvent`            | v0.1.2d    | File renamed                      |
-| `ExternalFileChangesEvent`    | v0.1.2b    | Batch external changes            |
-| `DocumentChangedEvent`        | v0.1.3a    | Document content modified         |
-| `DocumentSavedEvent`          | v0.1.4b    | Document saved                    |
-| `DocumentClosedEvent`         | v0.1.4c    | Document tab closed               |
-| `DocumentDirtyChangedEvent`   | v0.1.4a    | Dirty state changed               |
-| `CommandExecutedEvent`        | v0.1.5b    | Command invoked                   |
-| `ThemeChangedEvent`           | v0.1.6b    | Theme selection changed           |
-| `StyleSheetReloadedEvent`     | v0.2.1d    | Style rules reloaded              |
-| `StyleViolationDetectedEvent` | v0.2.1     | Style violation found in document |
-| `LexiconChangedEvent`         | v0.2.2d    | Terminology modified              |
-| `LintingCompletedEvent`       | v0.2.3d    | Linting analysis complete         |
-| `LintingStartedEvent`         | v0.2.3a    | Linting analysis started          |
+| Event                           | Defined In | Purpose                           |
+| :------------------------------ | :--------- | :-------------------------------- |
+| `ModuleInitializedEvent`        | v0.0.8     | Module loaded and ready           |
+| `SystemHealthChangedEvent`      | v0.0.8     | Health status change              |
+| `VaultStatusChangedEvent`       | v0.0.8     | Vault availability change         |
+| `SettingsChangedEvent`          | v0.0.7b    | Configuration value changed       |
+| `LayoutChangedEvent`            | v0.1.1c    | Layout state change               |
+| `ViewRegisteredEvent`           | v0.1.1b    | View added to region              |
+| `WorkspaceOpenedEvent`          | v0.1.2a    | Workspace folder opened           |
+| `WorkspaceClosedEvent`          | v0.1.2a    | Workspace folder closed           |
+| `FileCreatedEvent`              | v0.1.2d    | New file created                  |
+| `FileDeletedEvent`              | v0.1.2d    | File deleted                      |
+| `FileRenamedEvent`              | v0.1.2d    | File renamed                      |
+| `ExternalFileChangesEvent`      | v0.1.2b    | Batch external changes            |
+| `DocumentChangedEvent`          | v0.1.3a    | Document content modified         |
+| `DocumentSavedEvent`            | v0.1.4b    | Document saved                    |
+| `DocumentClosedEvent`           | v0.1.4c    | Document tab closed               |
+| `DocumentDirtyChangedEvent`     | v0.1.4a    | Dirty state changed               |
+| `CommandExecutedEvent`          | v0.1.5b    | Command invoked                   |
+| `ThemeChangedEvent`             | v0.1.6b    | Theme selection changed           |
+| `StyleSheetReloadedEvent`       | v0.2.1d    | Style rules reloaded              |
+| `StyleViolationDetectedEvent`   | v0.2.1     | Style violation found in document |
+| `LexiconChangedEvent`           | v0.2.2d    | Terminology modified              |
+| `LintingCompletedEvent`         | v0.2.3d    | Linting analysis complete         |
+| `LintingStartedEvent`           | v0.2.3a    | Linting analysis started          |
+| `FileIndexingRequestedEvent`    | v0.4.2c    | File change detected for indexing |
+| `DocumentIndexedEvent`          | v0.4.4d    | Document successfully indexed     |
+| `DocumentIndexingFailedEvent`   | v0.4.4d    | Document indexing failed          |
+| `SearchDeniedEvent`             | v0.4.5d    | Search blocked due to license     |
+| `SemanticSearchExecutedEvent`   | v0.4.5d    | Semantic search completed         |
+| `ReferenceNavigatedEvent`       | v0.4.6c    | Navigation from search result     |
+| `IndexOperationRequestedEvent`  | v0.4.7b    | Manual index operation requested  |
+| `IndexOperationCompletedEvent`  | v0.4.7b    | Index operation completed         |
+| `IndexingProgressUpdatedEvent`  | v0.4.7c    | Progress update during indexing   |
+| `DocumentRemovedFromIndexEvent` | v0.4.7b    | Document removed from index       |
 
 ---
 
 ## 3. NuGet Package Registry
 
-| Package                                    | Version | Introduced In | Purpose                            |
-| :----------------------------------------- | :------ | :------------ | :--------------------------------- |
-| `Serilog`                                  | 4.x     | v0.0.3b       | Structured logging                 |
-| `Serilog.Sinks.File`                       | 6.x     | v0.0.3b       | File sink                          |
-| `Serilog.Sinks.Console`                    | 6.x     | v0.0.3b       | Console sink                       |
-| `Microsoft.Extensions.DependencyInjection` | 9.0.x   | v0.0.3a       | DI container                       |
-| `Microsoft.Extensions.Configuration`       | 9.0.x   | v0.0.3d       | Configuration                      |
-| `Microsoft.Extensions.Caching.Memory`      | 9.0.x   | v0.2.2b       | In-memory caching                  |
-| `MediatR`                                  | 12.4.x  | v0.0.7a       | Event bus / CQRS                   |
-| `Npgsql`                                   | 9.0.x   | v0.0.5b       | PostgreSQL driver                  |
-| `Dapper`                                   | 2.1.x   | v0.0.5d       | Micro-ORM                          |
-| `FluentMigrator`                           | 6.2.x   | v0.0.5c       | Schema migrations                  |
-| `FluentValidation`                         | 11.9.x  | v0.0.7d       | Input validation                   |
-| `Polly`                                    | 8.5.x   | v0.0.5d       | Resilience policies                |
-| `Dock.Avalonia`                            | 11.x    | v0.1.1a       | Docking system                     |
-| `AvaloniaEdit`                             | 11.x    | v0.1.3a       | Text editor control                |
-| `Material.Icons.Avalonia`                  | 2.x     | v0.1.2c       | File icons                         |
-| `FuzzySharp`                               | 2.x     | v0.1.5b       | Fuzzy string matching              |
-| `YamlDotNet`                               | 16.x    | v0.2.1c       | YAML parsing                       |
-| `System.Reactive`                          | 6.x     | v0.2.3a       | Reactive extensions                |
-| `Velopack`                                 | 0.x     | v0.1.7a       | Auto-updater                       |
-| `Sentry`                                   | 4.x     | v0.1.7d       | Crash reporting                    |
-| `CsvHelper`                                | 31.x    | v0.3.2d       | CSV parsing for terminology import |
+| Package                                    | Version | Introduced In | Purpose                              |
+| :----------------------------------------- | :------ | :------------ | :----------------------------------- |
+| `Serilog`                                  | 4.x     | v0.0.3b       | Structured logging                   |
+| `Serilog.Sinks.File`                       | 6.x     | v0.0.3b       | File sink                            |
+| `Serilog.Sinks.Console`                    | 6.x     | v0.0.3b       | Console sink                         |
+| `Microsoft.Extensions.DependencyInjection` | 9.0.x   | v0.0.3a       | DI container                         |
+| `Microsoft.Extensions.Configuration`       | 9.0.x   | v0.0.3d       | Configuration                        |
+| `Microsoft.Extensions.Caching.Memory`      | 9.0.x   | v0.2.2b       | In-memory caching                    |
+| `MediatR`                                  | 12.4.x  | v0.0.7a       | Event bus / CQRS                     |
+| `Npgsql`                                   | 9.0.x   | v0.0.5b       | PostgreSQL driver                    |
+| `Dapper`                                   | 2.1.x   | v0.0.5d       | Micro-ORM                            |
+| `FluentMigrator`                           | 6.2.x   | v0.0.5c       | Schema migrations                    |
+| `FluentValidation`                         | 11.9.x  | v0.0.7d       | Input validation                     |
+| `Polly`                                    | 8.5.x   | v0.0.5d       | Resilience policies                  |
+| `Dock.Avalonia`                            | 11.x    | v0.1.1a       | Docking system                       |
+| `AvaloniaEdit`                             | 11.x    | v0.1.3a       | Text editor control                  |
+| `Material.Icons.Avalonia`                  | 2.x     | v0.1.2c       | File icons                           |
+| `FuzzySharp`                               | 2.x     | v0.1.5b       | Fuzzy string matching                |
+| `YamlDotNet`                               | 16.x    | v0.2.1c       | YAML parsing                         |
+| `System.Reactive`                          | 6.x     | v0.2.3a       | Reactive extensions                  |
+| `Velopack`                                 | 0.x     | v0.1.7a       | Auto-updater                         |
+| `Sentry`                                   | 4.x     | v0.1.7d       | Crash reporting                      |
+| `CsvHelper`                                | 31.x    | v0.3.2d       | CSV parsing for terminology import   |
+| `Npgsql.Pgvector`                          | 0.2.x   | v0.4.1d       | pgvector type mapping for Dapper     |
+| `System.Threading.Channels`                | 9.0.x   | v0.4.2d       | Bounded ingestion queue              |
+| `System.IO.Hashing`                        | 9.0.x   | v0.4.2b       | SHA-256 hash computation             |
+| `Microsoft.ML.Tokenizers`                  | 0.22.x  | v0.4.4c       | Tiktoken tokenizer for OpenAI        |
+| `Polly.Extensions.Http`                    | 3.x     | v0.4.4b       | HTTP retry policy extensions         |
+| `Microsoft.Data.Sqlite`                    | 9.x     | v0.4.8d       | SQLite cache storage                 |
+| `BenchmarkDotNet`                          | 0.14.x  | v0.4.8c       | Performance benchmarks               |
+| `Testcontainers.PostgreSql`                | 3.x     | v0.4.8b       | Integration test containers          |
+| `coverlet.collector`                       | 6.x     | v0.4.8a       | Code coverage reporting              |
+| `RichardSzalay.MockHttp`                   | 7.x     | v0.4.8a       | HTTP mocking for unit tests          |
+| `Respawn`                                  | 6.x     | v0.4.8b       | Database reset for integration tests |
 
 ---
 
@@ -423,3 +666,124 @@ graph TB
 - [x] IFileService (v0.1.4b)
 - [x] FluentValidation NuGet (v0.0.7d)
 - [x] System.Reactive NuGet (v0.2.3a)
+
+### v0.0.x/v0.0.5 Prerequisites for v0.4.1
+
+- [x] IDbConnectionFactory (v0.0.5b)
+- [x] FluentMigrator (v0.0.5c)
+- [x] Polly (v0.0.5d)
+- [x] IConfiguration (v0.0.3d) — Microsoft.Extensions.Configuration
+- [x] ILogger<T> (v0.0.3b) — Microsoft.Extensions.Logging via Serilog
+
+### v0.4.1 Prerequisites for v0.4.2+
+
+- [ ] pgvector extension enabled (v0.4.1a)
+- [ ] documents and chunks tables (v0.4.1b)
+- [ ] HNSW index on chunks.embedding (v0.4.1b)
+- [ ] IDocumentRepository (v0.4.1c)
+- [ ] IChunkRepository (v0.4.1c)
+- [ ] Document, Chunk, ChunkSearchResult records (v0.4.1c)
+- [ ] DocumentStatus enum (v0.4.1c)
+- [ ] VectorTypeHandler registered (v0.4.1d)
+- [ ] DocumentRepository and ChunkRepository (v0.4.1d)
+- [ ] Npgsql.Pgvector NuGet (v0.4.1d)
+
+### v0.4.2 Prerequisites for v0.4.3+
+
+- [ ] IIngestionService (v0.4.2a)
+- [ ] IngestionResult, IngestionProgressEventArgs, IngestionOptions records (v0.4.2a)
+- [ ] IngestionPhase enum (v0.4.2a)
+- [ ] IFileHashService (v0.4.2b)
+- [ ] FileMetadata, FileMetadataWithHash records (v0.4.2b)
+- [ ] FileHashService implementation (v0.4.2b)
+- [ ] FileIndexingRequestedEvent (v0.4.2c)
+- [ ] FileChangeType enum (v0.4.2c)
+- [ ] IFileWatcherIngestionHandler (v0.4.2c)
+- [ ] IIngestionQueue (v0.4.2d)
+- [ ] IngestionPriority, QueueStateChange enums (v0.4.2d)
+- [ ] IngestionQueue implementation (v0.4.2d)
+- [ ] IngestionBackgroundService (v0.4.2d)
+- [ ] System.Threading.Channels NuGet (v0.4.2d)
+- [ ] System.IO.Hashing NuGet (v0.4.2b)
+
+### v0.4.3 Prerequisites for v0.4.4+
+
+- [ ] IChunkingStrategy (v0.4.3a)
+- [ ] ChunkingMode enum (v0.4.3a)
+- [ ] TextChunk, ChunkMetadata, ChunkingOptions records (v0.4.3a)
+- [ ] ChunkingPresets static class (v0.4.3a)
+- [ ] FixedSizeChunkingStrategy (v0.4.3b)
+- [ ] ParagraphChunkingStrategy (v0.4.3c)
+- [ ] MarkdownHeaderChunkingStrategy (v0.4.3d)
+- [ ] ChunkingStrategyFactory (v0.4.3)
+- [ ] Markdig NuGet for Markdown parsing (v0.1.3b)
+
+### v0.4.4 Prerequisites for v0.4.5+
+
+- [ ] IEmbeddingService (v0.4.4a)
+- [ ] EmbeddingOptions, EmbeddingResult records (v0.4.4a)
+- [ ] EmbeddingException class (v0.4.4a)
+- [ ] OpenAIEmbeddingService implementation (v0.4.4b)
+- [ ] ISecureVault integration for API key (v0.0.6a)
+- [ ] Polly retry policies for rate limiting (v0.4.4b)
+- [ ] ITokenCounter (v0.4.4c)
+- [ ] TiktokenTokenCounter implementation (v0.4.4c)
+- [ ] DocumentIndexingPipeline (v0.4.4d)
+- [ ] IndexingResult record (v0.4.4d)
+- [ ] DocumentIndexedEvent, DocumentIndexingFailedEvent (v0.4.4d)
+- [ ] Microsoft.ML.Tokenizers NuGet (v0.4.4c)
+- [ ] Polly.Extensions.Http NuGet (v0.4.4b)
+
+### v0.4.5 Prerequisites for v0.4.6+
+
+- [ ] ISemanticSearchService (v0.4.5a)
+- [ ] SearchOptions, SearchResult, SearchHit records (v0.4.5a)
+- [ ] PgVectorSearchService implementation (v0.4.5b)
+- [ ] IQueryPreprocessor (v0.4.5c)
+- [ ] QueryPreprocessor implementation (v0.4.5c)
+- [ ] FeatureNotLicensedException exception (v0.4.5d)
+- [ ] SearchLicenseGuard helper class (v0.4.5d)
+- [ ] SearchDeniedEvent, SemanticSearchExecutedEvent (v0.4.5d)
+
+### v0.4.6 Prerequisites for v0.4.7+
+
+- [ ] ReferenceView and ReferenceViewModel (v0.4.6a)
+- [ ] SearchResultItemView and SearchResultItemViewModel (v0.4.6b)
+- [ ] HighlightedTextBlock control (v0.4.6b)
+- [ ] IReferenceNavigationService (v0.4.6c)
+- [ ] ReferenceNavigationService implementation (v0.4.6c)
+- [ ] ReferenceNavigatedEvent (v0.4.6c)
+- [ ] ISearchHistoryService (v0.4.6d)
+- [ ] SearchHistoryService implementation (v0.4.6d)
+
+### v0.4.7 Prerequisites for v0.4.8+
+
+- [ ] IIndexStatusService (v0.4.7a)
+- [ ] IndexStatusService implementation (v0.4.7a)
+- [ ] IndexStatusViewModel and IndexedDocumentViewModel (v0.4.7a)
+- [ ] IndexedDocumentInfo, IndexStatistics records (v0.4.7a)
+- [ ] IndexingStatus enum (v0.4.7a)
+- [ ] IIndexManagementService (v0.4.7b)
+- [ ] IndexManagementService implementation (v0.4.7b)
+- [ ] IndexOperationResult, IndexingProgressInfo records (v0.4.7b)
+- [ ] Index operation MediatR events (v0.4.7b)
+- [ ] IndexingProgressViewModel and View (v0.4.7c)
+- [ ] IndexingProgressUpdatedEvent (v0.4.7c)
+- [ ] IndexingErrorInfo record (v0.4.7d)
+- [ ] IndexingErrorCategorizer helper (v0.4.7d)
+- [ ] Database migration for error_message column (v0.4.7d)
+
+### v0.4.8 Prerequisites for v0.4.9+
+
+- [ ] Unit test suite for RAG module (v0.4.8a)
+- [ ] Code coverage ≥ 80% (v0.4.8a)
+- [ ] Integration test project with Testcontainers (v0.4.8b)
+- [ ] PostgreSQL fixture with pgvector (v0.4.8b)
+- [ ] Performance benchmark project (v0.4.8c)
+- [ ] Baseline metrics documented (v0.4.8c)
+- [ ] IEmbeddingCache interface (v0.4.8d)
+- [ ] SqliteEmbeddingCache implementation (v0.4.8d)
+- [ ] CachedEmbeddingService decorator (v0.4.8d)
+- [ ] EmbeddingCacheStatistics record (v0.4.8d)
+- [ ] EmbeddingCacheOptions configuration (v0.4.8d)
+- [ ] LRU eviction policy (v0.4.8d)

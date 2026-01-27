@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-046                              |
-| **Version**      | v0.4.6                                   |
-| **Codename**     | The Reference Panel (Search UI)          |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                               |
+| :--------------- | :------------------------------------------------------------------ |
+| **Document ID**  | LCS-SBD-046                                                         |
+| **Version**      | v0.4.6                                                              |
+| **Codename**     | The Reference Panel (Search UI)                                     |
+| **Status**       | Draft                                                               |
+| **Last Updated** | 2026-01-27                                                          |
+| **Owner**        | Lead Architect                                                      |
 | **Depends On**   | v0.4.5 (Searcher), v0.1.1b (RegionManager), v0.1.3a (EditorService) |
 
 ---
@@ -53,17 +53,17 @@ The Reference Panel is visible to all users, but search functionality requires *
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.4.6                                  |
-| :------------------------- | :------------- | :----------------------------------------------- |
-| `ISemanticSearchService`   | v0.4.5a        | Execute search queries                           |
-| `SearchOptions`            | v0.4.5a        | Configure search parameters                      |
-| `SearchResult`             | v0.4.5a        | Process search results                           |
-| `SearchHit`                | v0.4.5a        | Display individual results                       |
-| `SearchLicenseGuard`       | v0.4.5d        | Check license before search                      |
-| `IRegionManager`           | v0.1.1b        | Register panel in Right region                   |
-| `IEditorService`           | v0.1.3a        | Open documents from results                      |
-| `IMediator`                | v0.0.7a        | Publish navigation events                        |
-| `IConfigurationService`    | v0.0.3d        | Persist search history                           |
+| Component                | Source Version | Usage in v0.4.6                |
+| :----------------------- | :------------- | :----------------------------- |
+| `ISemanticSearchService` | v0.4.5a        | Execute search queries         |
+| `SearchOptions`          | v0.4.5a        | Configure search parameters    |
+| `SearchResult`           | v0.4.5a        | Process search results         |
+| `SearchHit`              | v0.4.5a        | Display individual results     |
+| `SearchLicenseGuard`     | v0.4.5d        | Check license before search    |
+| `IRegionManager`         | v0.1.1b        | Register panel in Right region |
+| `IEditorService`         | v0.1.3a        | Open documents from results    |
+| `IMediator`              | v0.0.7a        | Publish navigation events      |
+| `IConfiguration`         | v0.0.3d        | App configuration access       |
 
 ---
 
@@ -71,12 +71,12 @@ The Reference Panel is visible to all users, but search functionality requires *
 
 ### 3.1 v0.4.6a: Reference Panel View
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-046a                                  |
-| **Title**        | Reference Panel View                      |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core (visible), WriterPro (functional)    |
+| Field            | Value                                  |
+| :--------------- | :------------------------------------- |
+| **Sub-Part ID**  | RAG-046a                               |
+| **Title**        | Reference Panel View                   |
+| **Module**       | `Lexichord.Modules.RAG`                |
+| **License Tier** | Core (visible), WriterPro (functional) |
 
 **Goal:** Create `ReferenceView.axaml` with search input, results list, and loading indicator.
 
@@ -163,12 +163,12 @@ public partial class ReferenceViewModel : ViewModelBase
 
 ### 3.2 v0.4.6b: Search Result Item
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-046b                                  |
-| **Title**        | Search Result Item                        |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-046b                |
+| **Title**        | Search Result Item      |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Create `SearchResultItemView` UserControl for displaying individual search results.
 
@@ -246,12 +246,12 @@ public partial class SearchResultItemViewModel : ViewModelBase
 
 ### 3.3 v0.4.6c: Source Navigation
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-046c                                  |
-| **Title**        | Source Navigation                         |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-046c                |
+| **Title**        | Source Navigation       |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Implement click-to-open functionality that navigates to the source document and highlights the text span.
 
@@ -336,12 +336,12 @@ sequenceDiagram
 
 ### 3.4 v0.4.6d: Search History
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-046d                                  |
-| **Title**        | Search History                            |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-046d                |
+| **Title**        | Search History          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Store recent queries for quick re-execution via dropdown.
 
@@ -425,7 +425,7 @@ public interface ISearchHistoryService
 public sealed class SearchHistoryService : ISearchHistoryService
 {
     private readonly List<string> _queries = new();
-    private readonly IConfigurationService _config;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<SearchHistoryService> _logger;
 
     public int MaxHistorySize { get; } = 10;
@@ -466,40 +466,40 @@ public sealed class SearchHistoryService : ISearchHistoryService
 
 **Dependencies:**
 
-- v0.0.3d: `IConfigurationService` for persistence
+- v0.0.3d: `IConfiguration` for settings access
 
 ---
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.4.6a  | Create ReferenceView.axaml layout                         | 2          |
-| 2  | v0.4.6a  | Create ReferenceViewModel                                 | 2          |
-| 3  | v0.4.6a  | Implement search command                                  | 1.5        |
-| 4  | v0.4.6a  | Add loading indicator                                     | 0.5        |
-| 5  | v0.4.6a  | Add empty state and error handling                        | 1          |
-| 6  | v0.4.6a  | Register in ShellRegion.Right                             | 0.5        |
-| 7  | v0.4.6a  | Unit tests for ViewModel                                  | 1.5        |
-| 8  | v0.4.6b  | Create SearchResultItemView.axaml                         | 1.5        |
-| 9  | v0.4.6b  | Create SearchResultItemViewModel                          | 1          |
-| 10 | v0.4.6b  | Implement preview truncation                              | 0.5        |
-| 11 | v0.4.6b  | Implement query term highlighting                         | 2          |
-| 12 | v0.4.6b  | Style score badge                                         | 0.5        |
-| 13 | v0.4.6b  | Unit tests for ViewModel                                  | 1          |
-| 14 | v0.4.6c  | Create IReferenceNavigationService                        | 0.5        |
-| 15 | v0.4.6c  | Implement ReferenceNavigationService                      | 2          |
-| 16 | v0.4.6c  | Integrate with IEditorService                             | 1.5        |
-| 17 | v0.4.6c  | Create ReferenceNavigatedEvent                            | 0.5        |
-| 18 | v0.4.6c  | Unit tests for navigation                                 | 1.5        |
-| 19 | v0.4.6d  | Create ISearchHistoryService                              | 0.5        |
-| 20 | v0.4.6d  | Implement SearchHistoryService                            | 1.5        |
-| 21 | v0.4.6d  | Add history dropdown to UI                                | 1          |
-| 22 | v0.4.6d  | Implement persistence                                     | 1          |
-| 23 | v0.4.6d  | Unit tests for history                                    | 1          |
-| 24 | All      | Integration tests                                         | 2          |
-| 25 | All      | DI registration in RAGModule.cs                           | 0.5        |
-| **Total** |   |                                                           | **28 hours** |
+| #         | Sub-Part | Task                                 | Est. Hours   |
+| :-------- | :------- | :----------------------------------- | :----------- |
+| 1         | v0.4.6a  | Create ReferenceView.axaml layout    | 2            |
+| 2         | v0.4.6a  | Create ReferenceViewModel            | 2            |
+| 3         | v0.4.6a  | Implement search command             | 1.5          |
+| 4         | v0.4.6a  | Add loading indicator                | 0.5          |
+| 5         | v0.4.6a  | Add empty state and error handling   | 1            |
+| 6         | v0.4.6a  | Register in ShellRegion.Right        | 0.5          |
+| 7         | v0.4.6a  | Unit tests for ViewModel             | 1.5          |
+| 8         | v0.4.6b  | Create SearchResultItemView.axaml    | 1.5          |
+| 9         | v0.4.6b  | Create SearchResultItemViewModel     | 1            |
+| 10        | v0.4.6b  | Implement preview truncation         | 0.5          |
+| 11        | v0.4.6b  | Implement query term highlighting    | 2            |
+| 12        | v0.4.6b  | Style score badge                    | 0.5          |
+| 13        | v0.4.6b  | Unit tests for ViewModel             | 1            |
+| 14        | v0.4.6c  | Create IReferenceNavigationService   | 0.5          |
+| 15        | v0.4.6c  | Implement ReferenceNavigationService | 2            |
+| 16        | v0.4.6c  | Integrate with IEditorService        | 1.5          |
+| 17        | v0.4.6c  | Create ReferenceNavigatedEvent       | 0.5          |
+| 18        | v0.4.6c  | Unit tests for navigation            | 1.5          |
+| 19        | v0.4.6d  | Create ISearchHistoryService         | 0.5          |
+| 20        | v0.4.6d  | Implement SearchHistoryService       | 1.5          |
+| 21        | v0.4.6d  | Add history dropdown to UI           | 1            |
+| 22        | v0.4.6d  | Implement persistence                | 1            |
+| 23        | v0.4.6d  | Unit tests for history               | 1            |
+| 24        | All      | Integration tests                    | 2            |
+| 25        | All      | DI registration in RAGModule.cs      | 0.5          |
+| **Total** |          |                                      | **28 hours** |
 
 ---
 
@@ -507,34 +507,34 @@ public sealed class SearchHistoryService : ISearchHistoryService
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `ISemanticSearchService`   | v0.4.5a        | Execute searches                     |
-| `SearchLicenseGuard`       | v0.4.5d        | License validation                   |
-| `IRegionManager`           | v0.1.1b        | Panel registration                   |
-| `IEditorService`           | v0.1.3a        | Document navigation                  |
-| `IMediator`                | v0.0.7a        | Event publishing                     |
-| `IConfigurationService`    | v0.0.3d        | History persistence                  |
+| Interface                | Source Version | Purpose             |
+| :----------------------- | :------------- | :------------------ |
+| `ISemanticSearchService` | v0.4.5a        | Execute searches    |
+| `SearchLicenseGuard`     | v0.4.5d        | License validation  |
+| `IRegionManager`         | v0.1.1b        | Panel registration  |
+| `IEditorService`         | v0.1.3a        | Document navigation |
+| `IMediator`              | v0.0.7a        | Event publishing    |
+| `IConfiguration`         | v0.0.3d        | Settings access     |
 
 ### 5.2 New Interfaces (defined in v0.4.6)
 
-| Interface                       | Defined In | Module        | Purpose                 |
-| :------------------------------ | :--------- | :------------ | :---------------------- |
-| `IReferenceNavigationService`   | v0.4.6c    | Modules.RAG   | Result navigation       |
-| `ISearchHistoryService`         | v0.4.6d    | Modules.RAG   | Query history           |
+| Interface                     | Defined In | Module      | Purpose           |
+| :---------------------------- | :--------- | :---------- | :---------------- |
+| `IReferenceNavigationService` | v0.4.6c    | Modules.RAG | Result navigation |
+| `ISearchHistoryService`       | v0.4.6d    | Modules.RAG | Query history     |
 
 ### 5.3 New Records/DTOs (defined in v0.4.6)
 
-| Record                        | Defined In | Purpose                                |
-| :---------------------------- | :--------- | :------------------------------------- |
-| `ReferenceNavigatedEvent`     | v0.4.6c    | Navigation telemetry                   |
+| Record                    | Defined In | Purpose              |
+| :------------------------ | :--------- | :------------------- |
+| `ReferenceNavigatedEvent` | v0.4.6c    | Navigation telemetry |
 
 ### 5.4 New ViewModels (defined in v0.4.6)
 
-| ViewModel                     | Defined In | Purpose                                |
-| :---------------------------- | :--------- | :------------------------------------- |
-| `ReferenceViewModel`          | v0.4.6a    | Panel state management                 |
-| `SearchResultItemViewModel`   | v0.4.6b    | Result item display                    |
+| ViewModel                   | Defined In | Purpose                |
+| :-------------------------- | :--------- | :--------------------- |
+| `ReferenceViewModel`        | v0.4.6a    | Panel state management |
+| `SearchResultItemViewModel` | v0.4.6b    | Result item display    |
 
 ---
 
@@ -641,25 +641,25 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Large result lists cause UI lag | Medium | Medium | Virtualized ItemsControl |
-| Document not found for navigation | Low | Low | Graceful error message |
-| Search takes too long | Medium | Medium | Loading indicator, cancellation |
-| History file corruption | Low | Low | JSON validation, fallback to empty |
-| Memory leak in result items | Medium | Low | Proper disposal pattern |
+| Risk                              | Impact | Probability | Mitigation                         |
+| :-------------------------------- | :----- | :---------- | :--------------------------------- |
+| Large result lists cause UI lag   | Medium | Medium      | Virtualized ItemsControl           |
+| Document not found for navigation | Low    | Low         | Graceful error message             |
+| Search takes too long             | Medium | Medium      | Loading indicator, cancellation    |
+| History file corruption           | Low    | Low         | JSON validation, fallback to empty |
+| Memory leak in result items       | Medium | Low         | Proper disposal pattern            |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Panel render time | < 100ms | Stopwatch timing |
-| Result item render | < 20ms each | Stopwatch timing |
-| Navigation time | < 500ms | User action to highlight |
-| History load time | < 50ms | Startup timing |
-| Search to results | < 1s | End-to-end timing |
+| Metric             | Target      | Measurement              |
+| :----------------- | :---------- | :----------------------- |
+| Panel render time  | < 100ms     | Stopwatch timing         |
+| Result item render | < 20ms each | Stopwatch timing         |
+| Navigation time    | < 500ms     | User action to highlight |
+| History load time  | < 50ms      | Startup timing           |
+| Search to results  | < 1s        | End-to-end timing        |
 
 ---
 
@@ -725,14 +725,14 @@ START: "User double-clicks result"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer          | As a writer, I want to search my documents by meaning.                              | Can enter query and see results.                      |
-| US-02 | Writer          | As a writer, I want to see relevance scores.                                        | Results show percentage scores.                       |
-| US-03 | Writer          | As a writer, I want to open results in editor.                                      | Double-click opens document at location.              |
-| US-04 | Writer          | As a writer, I want to re-run previous searches.                                    | Dropdown shows recent queries.                        |
-| US-05 | Writer          | As a writer, I want to see loading feedback.                                        | Spinner shows during search.                          |
-| US-06 | Free User       | As a free user, I want to know about the search feature.                            | Panel visible with upgrade prompt.                    |
+| ID    | Role      | Story                                                    | Acceptance Criteria                      |
+| :---- | :-------- | :------------------------------------------------------- | :--------------------------------------- |
+| US-01 | Writer    | As a writer, I want to search my documents by meaning.   | Can enter query and see results.         |
+| US-02 | Writer    | As a writer, I want to see relevance scores.             | Results show percentage scores.          |
+| US-03 | Writer    | As a writer, I want to open results in editor.           | Double-click opens document at location. |
+| US-04 | Writer    | As a writer, I want to re-run previous searches.         | Dropdown shows recent queries.           |
+| US-05 | Writer    | As a writer, I want to see loading feedback.             | Spinner shows during search.             |
+| US-06 | Free User | As a free user, I want to know about the search feature. | Panel visible with upgrade prompt.       |
 
 ---
 
@@ -847,16 +847,16 @@ public class ReferenceViewModelTests
 
 ## 15. Observability & Logging
 
-| Level   | Source                         | Message Template                                                       |
-| :------ | :----------------------------- | :--------------------------------------------------------------------- |
-| Debug   | ReferenceViewModel             | `Search started: '{Query}'`                                            |
-| Info    | ReferenceViewModel             | `Search completed: {ResultCount} results in {Duration}ms`              |
-| Warning | ReferenceViewModel             | `Search returned no results for: '{Query}'`                            |
-| Error   | ReferenceViewModel             | `Search failed: {Error}`                                               |
-| Debug   | ReferenceNavigationService     | `Navigating to {DocumentPath} at offset {Offset}`                      |
-| Info    | ReferenceNavigationService     | `Navigated to result in {DocumentPath}`                                |
-| Debug   | SearchHistoryService           | `Added query to history: '{Query}'`                                    |
-| Debug   | SearchHistoryService           | `Loaded {Count} queries from history`                                  |
+| Level   | Source                     | Message Template                                          |
+| :------ | :------------------------- | :-------------------------------------------------------- |
+| Debug   | ReferenceViewModel         | `Search started: '{Query}'`                               |
+| Info    | ReferenceViewModel         | `Search completed: {ResultCount} results in {Duration}ms` |
+| Warning | ReferenceViewModel         | `Search returned no results for: '{Query}'`               |
+| Error   | ReferenceViewModel         | `Search failed: {Error}`                                  |
+| Debug   | ReferenceNavigationService | `Navigating to {DocumentPath} at offset {Offset}`         |
+| Info    | ReferenceNavigationService | `Navigated to result in {DocumentPath}`                   |
+| Debug   | SearchHistoryService       | `Added query to history: '{Query}'`                       |
+| Debug   | SearchHistoryService       | `Loaded {Count} queries from history`                     |
 
 ---
 
@@ -895,15 +895,15 @@ public class ReferenceViewModelTests
 
 ### 16.2 Component Styling
 
-| Component | Theme Resource | Notes |
-| :-------- | :------------- | :---- |
-| Panel background | `Brush.Surface.Secondary` | Matches shell regions |
-| Search input | `LexTextBox` theme | Standard input styling |
-| Result item | `Brush.Surface.Tertiary` | Subtle card background |
-| Result hover | `Brush.Surface.Hover` | Interactive feedback |
-| Score badge | `Brush.Accent.Primary` | Green gradient based on score |
-| Preview text | `Brush.Text.Secondary` | Dimmer than title |
-| Highlight | `Brush.Accent.Yellow` | Bold for query terms |
+| Component        | Theme Resource            | Notes                         |
+| :--------------- | :------------------------ | :---------------------------- |
+| Panel background | `Brush.Surface.Secondary` | Matches shell regions         |
+| Search input     | `LexTextBox` theme        | Standard input styling        |
+| Result item      | `Brush.Surface.Tertiary`  | Subtle card background        |
+| Result hover     | `Brush.Surface.Hover`     | Interactive feedback          |
+| Score badge      | `Brush.Accent.Primary`    | Green gradient based on score |
+| Preview text     | `Brush.Text.Secondary`    | Dimmer than title             |
+| Highlight        | `Brush.Accent.Yellow`     | Bold for query terms          |
 
 ### 16.3 Accessibility
 
@@ -917,21 +917,21 @@ public class ReferenceViewModelTests
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[UI]**            | Reference panel appears in Right region.                                     |
-| 2   | **[UI]**            | Search input has placeholder text.                                           |
-| 3   | **[UI]**            | Loading spinner shows during search.                                         |
-| 4   | **[Search]**        | Enter key triggers search.                                                   |
-| 5   | **[Search]**        | Results display with preview and score.                                      |
-| 6   | **[Search]**        | Results sorted by score descending.                                          |
-| 7   | **[Navigation]**    | Double-click opens source document.                                          |
-| 8   | **[Navigation]**    | Editor scrolls to chunk location.                                            |
-| 9   | **[Navigation]**    | Text span is highlighted.                                                    |
-| 10  | **[History]**       | Recent queries appear in dropdown.                                           |
-| 11  | **[History]**       | Clicking history item populates search box.                                  |
-| 12  | **[License]**       | Unlicensed users see upgrade prompt.                                         |
-| 13  | **[A11y]**          | Panel is keyboard navigable.                                                 |
+| #   | Category         | Criterion                                   |
+| :-- | :--------------- | :------------------------------------------ |
+| 1   | **[UI]**         | Reference panel appears in Right region.    |
+| 2   | **[UI]**         | Search input has placeholder text.          |
+| 3   | **[UI]**         | Loading spinner shows during search.        |
+| 4   | **[Search]**     | Enter key triggers search.                  |
+| 5   | **[Search]**     | Results display with preview and score.     |
+| 6   | **[Search]**     | Results sorted by score descending.         |
+| 7   | **[Navigation]** | Double-click opens source document.         |
+| 8   | **[Navigation]** | Editor scrolls to chunk location.           |
+| 9   | **[Navigation]** | Text span is highlighted.                   |
+| 10  | **[History]**    | Recent queries appear in dropdown.          |
+| 11  | **[History]**    | Clicking history item populates search box. |
+| 12  | **[License]**    | Unlicensed users see upgrade prompt.        |
+| 13  | **[A11y]**       | Panel is keyboard navigable.                |
 
 ---
 
@@ -965,36 +965,36 @@ dotnet test --filter "Category=UI&FullyQualifiedName~Reference"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `ReferenceView.axaml` layout                                   | [ ]    |
-| 2  | `ReferenceViewModel` implementation                            | [ ]    |
-| 3  | `SearchResultItemView.axaml` layout                            | [ ]    |
-| 4  | `SearchResultItemViewModel` implementation                     | [ ]    |
-| 5  | Query term highlighting in preview                             | [ ]    |
-| 6  | `IReferenceNavigationService` interface                        | [ ]    |
-| 7  | `ReferenceNavigationService` implementation                    | [ ]    |
-| 8  | `ReferenceNavigatedEvent` notification                         | [ ]    |
-| 9  | `ISearchHistoryService` interface                              | [ ]    |
-| 10 | `SearchHistoryService` implementation                          | [ ]    |
-| 11 | History dropdown UI                                            | [ ]    |
-| 12 | History persistence                                            | [ ]    |
-| 13 | Unit tests for ViewModels                                      | [ ]    |
-| 14 | Unit tests for services                                        | [ ]    |
-| 15 | Integration tests                                              | [ ]    |
-| 16 | DI registration                                                | [ ]    |
+| #   | Deliverable                                 | Status |
+| :-- | :------------------------------------------ | :----- |
+| 1   | `ReferenceView.axaml` layout                | [ ]    |
+| 2   | `ReferenceViewModel` implementation         | [ ]    |
+| 3   | `SearchResultItemView.axaml` layout         | [ ]    |
+| 4   | `SearchResultItemViewModel` implementation  | [ ]    |
+| 5   | Query term highlighting in preview          | [ ]    |
+| 6   | `IReferenceNavigationService` interface     | [ ]    |
+| 7   | `ReferenceNavigationService` implementation | [ ]    |
+| 8   | `ReferenceNavigatedEvent` notification      | [ ]    |
+| 9   | `ISearchHistoryService` interface           | [ ]    |
+| 10  | `SearchHistoryService` implementation       | [ ]    |
+| 11  | History dropdown UI                         | [ ]    |
+| 12  | History persistence                         | [ ]    |
+| 13  | Unit tests for ViewModels                   | [ ]    |
+| 14  | Unit tests for services                     | [ ]    |
+| 15  | Integration tests                           | [ ]    |
+| 16  | DI registration                             | [ ]    |
 
 ---
 
 ## 20. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Drag result to editor           | v0.5.x      | Complex drag-drop implementation                |
-| Result pinning/favorites        | v0.5.x      | Requires persistence model                      |
-| Search filters (date, type)     | v0.5.x      | Requires metadata indexing                      |
-| Export search results           | v0.5.x      | Requires export framework                       |
-| Keyboard shortcuts (Cmd+K)      | v0.5.x      | Requires keybinding integration                 |
+| Feature                     | Deferred To | Reason                           |
+| :-------------------------- | :---------- | :------------------------------- |
+| Drag result to editor       | v0.5.x      | Complex drag-drop implementation |
+| Result pinning/favorites    | v0.5.x      | Requires persistence model       |
+| Search filters (date, type) | v0.5.x      | Requires metadata indexing       |
+| Export search results       | v0.5.x      | Requires export framework        |
+| Keyboard shortcuts (Cmd+K)  | v0.5.x      | Requires keybinding integration  |
 
 ---
 

@@ -2,18 +2,18 @@
 
 ## Document Control
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-041-INDEX |
-| **Feature ID** | RAG-041 |
-| **Feature Name** | The Vector Foundation (pgvector Setup) |
-| **Target Version** | v0.4.1 |
-| **Module Scope** | Lexichord.Modules.RAG |
-| **Swimlane** | Memory |
-| **License Tier** | Core |
-| **Feature Gate Key** | `FeatureFlags.RAG.VectorStorage` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-27 |
+| Field                | Value                                  |
+| :------------------- | :------------------------------------- |
+| **Document ID**      | LCS-DES-041-INDEX                      |
+| **Feature ID**       | RAG-041                                |
+| **Feature Name**     | The Vector Foundation (pgvector Setup) |
+| **Target Version**   | v0.4.1                                 |
+| **Module Scope**     | Lexichord.Modules.RAG                  |
+| **Swimlane**         | Memory                                 |
+| **License Tier**     | Core                                   |
+| **Feature Gate Key** | `FeatureFlags.RAG.VectorStorage`       |
+| **Status**           | Draft                                  |
+| **Last Updated**     | 2026-01-27                             |
 
 ---
 
@@ -36,13 +36,13 @@ Implement PostgreSQL vector storage using pgvector:
 
 ### 1.3 Business Value
 
-| Value | Description |
-| :--- | :--- |
-| **Semantic Search Foundation** | Enable "find similar passages" features |
-| **RAG Infrastructure** | Provide storage for AI-augmented writing |
-| **Scalable Architecture** | HNSW indexing supports thousands of documents |
-| **Industry Standard** | PostgreSQL + pgvector is proven and cost-effective |
-| **Foundation** | Enables v0.4.2-v0.4.6 RAG features |
+| Value                          | Description                                        |
+| :----------------------------- | :------------------------------------------------- |
+| **Semantic Search Foundation** | Enable "find similar passages" features            |
+| **RAG Infrastructure**         | Provide storage for AI-augmented writing           |
+| **Scalable Architecture**      | HNSW indexing supports thousands of documents      |
+| **Industry Standard**          | PostgreSQL + pgvector is proven and cost-effective |
+| **Foundation**                 | Enables v0.4.2-v0.4.6 RAG features                 |
 
 ---
 
@@ -52,20 +52,20 @@ Implement PostgreSQL vector storage using pgvector:
 
 The detailed scope breakdown for v0.4.1, including all sub-parts, implementation checklists, user stories, and acceptance criteria:
 
-| Document | Description |
-| :--- | :--- |
+| Document                            | Description                             |
+| :---------------------------------- | :-------------------------------------- |
 | **[LCS-SBD-041](./LCS-SBD-041.md)** | Scope Breakdown — The Vector Foundation |
 
 ### 2.2 Sub-Part Design Specifications
 
 Each sub-part has its own detailed design specification following the LDS-01 template:
 
-| Sub-Part | Document | Title | Description |
-| :--- | :--- | :--- | :--- |
-| v0.4.1a | **[LCS-DES-041a](./LCS-DES-041a.md)** | pgvector Extension | Docker configuration with pgvector |
-| v0.4.1b | **[LCS-DES-041b](./LCS-DES-041b.md)** | Schema Migration | FluentMigrator tables and indexes |
-| v0.4.1c | **[LCS-DES-041c](./LCS-DES-041c.md)** | Repository Abstractions | IDocumentRepository, IChunkRepository |
-| v0.4.1d | **[LCS-DES-041d](./LCS-DES-041d.md)** | Dapper Implementation | Repository implementations with pgvector |
+| Sub-Part | Document                              | Title                   | Description                              |
+| :------- | :------------------------------------ | :---------------------- | :--------------------------------------- |
+| v0.4.1a  | **[LCS-DES-041a](./LCS-DES-041a.md)** | pgvector Extension      | Docker configuration with pgvector       |
+| v0.4.1b  | **[LCS-DES-041b](./LCS-DES-041b.md)** | Schema Migration        | FluentMigrator tables and indexes        |
+| v0.4.1c  | **[LCS-DES-041c](./LCS-DES-041c.md)** | Repository Abstractions | IDocumentRepository, IChunkRepository    |
+| v0.4.1d  | **[LCS-DES-041d](./LCS-DES-041d.md)** | Dapper Implementation   | Repository implementations with pgvector |
 
 ---
 
@@ -147,30 +147,30 @@ sequenceDiagram
 
 ### 4.1 Upstream Dependencies (Required)
 
-| Interface | Source Version | Purpose |
-| :--- | :--- | :--- |
-| `IDbConnectionFactory` | v0.0.5b | PostgreSQL connection creation |
-| `FluentMigrator` | v0.0.5c | Schema migration execution |
-| `Polly` | v0.0.5d | Retry policies for database operations |
-| `IConfigurationService` | v0.0.3d | Connection string configuration |
+| Interface              | Source Version | Purpose                                                              |
+| :--------------------- | :------------- | :------------------------------------------------------------------- |
+| `IDbConnectionFactory` | v0.0.5b        | PostgreSQL connection creation                                       |
+| `FluentMigrator`       | v0.0.5c        | Schema migration execution                                           |
+| `Polly`                | v0.0.5d        | Retry policies for database operations                               |
+| `IConfiguration`       | v0.0.3d        | Connection string configuration (Microsoft.Extensions.Configuration) |
 
 ### 4.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `Npgsql` | 9.0.x | PostgreSQL driver |
-| `Npgsql.Pgvector` | 0.2.x | pgvector type mapping |
-| `Dapper` | 2.1.x | Micro-ORM |
-| `FluentMigrator` | 6.2.x | Schema migrations |
+| Package           | Version | Purpose               |
+| :---------------- | :------ | :-------------------- |
+| `Npgsql`          | 9.0.x   | PostgreSQL driver     |
+| `Npgsql.Pgvector` | 0.2.x   | pgvector type mapping |
+| `Dapper`          | 2.1.x   | Micro-ORM             |
+| `FluentMigrator`  | 6.2.x   | Schema migrations     |
 
 ### 4.3 Downstream Consumers (Future)
 
-| Version | Feature | Consumes |
-| :--- | :--- | :--- |
-| v0.4.2 | File Ingestion Pipeline | `IDocumentRepository` for file tracking |
-| v0.4.3 | Chunking Strategies | `IChunkRepository` for chunk storage |
-| v0.4.4 | Vector Generation | `IChunkRepository.UpdateEmbeddingAsync` |
-| v0.4.5 | Semantic Search | `IChunkRepository.SearchSimilarAsync` |
+| Version | Feature                 | Consumes                                |
+| :------ | :---------------------- | :-------------------------------------- |
+| v0.4.2  | File Ingestion Pipeline | `IDocumentRepository` for file tracking |
+| v0.4.3  | Chunking Strategies     | `IChunkRepository` for chunk storage    |
+| v0.4.4  | Vector Generation       | `IChunkRepository.UpdateEmbeddingAsync` |
+| v0.4.5  | Semantic Search         | `IChunkRepository.SearchSimilarAsync`   |
 
 ---
 
@@ -180,12 +180,12 @@ The Vector Foundation is **Core** infrastructure using a **No Gate** strategy.
 
 ### 5.1 Behavior by License Tier
 
-| Tier | Database Access | Repository Methods | Notes |
-| :--- | :--- | :--- | :--- |
-| Core | Full | All CRUD operations | Schema is available |
-| Writer Pro | Full | All + Search | Search gated at v0.4.5 |
-| Teams | Full | All + Search | Same as Writer Pro |
-| Enterprise | Full | All + Search | Same as Writer Pro |
+| Tier       | Database Access | Repository Methods  | Notes                  |
+| :--------- | :-------------- | :------------------ | :--------------------- |
+| Core       | Full            | All CRUD operations | Schema is available    |
+| Writer Pro | Full            | All + Search        | Search gated at v0.4.5 |
+| Teams      | Full            | All + Search        | Same as Writer Pro     |
+| Enterprise | Full            | All + Search        | Same as Writer Pro     |
 
 ### 5.2 Gating Location
 
@@ -244,30 +244,30 @@ WITH (m = 16, ef_construction = 64);
 
 ## 7. Key Interfaces Summary
 
-| Interface | Defined In | Purpose |
-| :--- | :--- | :--- |
-| `IDocumentRepository` | v0.4.1c | Document CRUD operations |
-| `IChunkRepository` | v0.4.1c | Chunk storage and vector search |
+| Interface             | Defined In | Purpose                         |
+| :-------------------- | :--------- | :------------------------------ |
+| `IDocumentRepository` | v0.4.1c    | Document CRUD operations        |
+| `IChunkRepository`    | v0.4.1c    | Chunk storage and vector search |
 
-| Record/DTO | Defined In | Purpose |
-| :--- | :--- | :--- |
-| `Document` | v0.4.1c | Indexed document entity |
-| `Chunk` | v0.4.1c | Text chunk with embedding |
-| `ChunkSearchResult` | v0.4.1c | Search result with score |
-| `DocumentStatus` | v0.4.1c | Indexing status enum |
+| Record/DTO          | Defined In | Purpose                   |
+| :------------------ | :--------- | :------------------------ |
+| `Document`          | v0.4.1c    | Indexed document entity   |
+| `Chunk`             | v0.4.1c    | Text chunk with embedding |
+| `ChunkSearchResult` | v0.4.1c    | Search result with score  |
+| `DocumentStatus`    | v0.4.1c    | Indexing status enum      |
 
 ---
 
 ## 8. Implementation Checklist Summary
 
-| Sub-Part | Tasks | Est. Hours |
-| :--- | :--- | :--- |
-| v0.4.1a | Docker pgvector setup | 3.5 |
-| v0.4.1b | Schema migration | 5 |
-| v0.4.1c | Repository abstractions | 4 |
-| v0.4.1d | Dapper implementation | 13 |
-| Integration | Testing and registration | 1.5 |
-| **Total** | | **27 hours** |
+| Sub-Part    | Tasks                    | Est. Hours   |
+| :---------- | :----------------------- | :----------- |
+| v0.4.1a     | Docker pgvector setup    | 3.5          |
+| v0.4.1b     | Schema migration         | 5            |
+| v0.4.1c     | Repository abstractions  | 4            |
+| v0.4.1d     | Dapper implementation    | 13           |
+| Integration | Testing and registration | 1.5          |
+| **Total**   |                          | **27 hours** |
 
 See [LCS-SBD-041](./LCS-SBD-041.md) Section 4 for the detailed task breakdown.
 
@@ -275,14 +275,14 @@ See [LCS-SBD-041](./LCS-SBD-041.md) Section 4 for the detailed task breakdown.
 
 ## 9. Success Criteria Summary
 
-| Category | Criterion | Target |
-| :--- | :--- | :--- |
+| Category           | Criterion                  | Target                        |
+| :----------------- | :------------------------- | :---------------------------- |
 | **Infrastructure** | pgvector extension enabled | Container passes health check |
-| **Migration** | Schema created | Tables and indexes exist |
-| **Performance** | Document insert | < 10ms |
-| **Performance** | Chunk batch insert (100) | < 500ms |
-| **Performance** | Vector search (10K chunks) | < 200ms |
-| **Accuracy** | Vector type mapping | float[] ↔ VECTOR works |
+| **Migration**      | Schema created             | Tables and indexes exist      |
+| **Performance**    | Document insert            | < 10ms                        |
+| **Performance**    | Chunk batch insert (100)   | < 500ms                       |
+| **Performance**    | Vector search (10K chunks) | < 200ms                       |
+| **Accuracy**       | Vector type mapping        | float[] ↔ VECTOR works        |
 
 See [LCS-SBD-041](./LCS-SBD-041.md) Section 9 for full success metrics.
 
@@ -290,12 +290,12 @@ See [LCS-SBD-041](./LCS-SBD-041.md) Section 9 for full success metrics.
 
 ## 10. Test Coverage Summary
 
-| Sub-Part | Unit Tests | Integration Tests |
-| :--- | :--- | :--- |
-| v0.4.1a | Extension verification | Container health check |
-| v0.4.1b | Migration up/down | Schema existence |
-| v0.4.1c | Interface contracts | - |
-| v0.4.1d | Type handler, CRUD | Full PostgreSQL tests |
+| Sub-Part | Unit Tests             | Integration Tests      |
+| :------- | :--------------------- | :--------------------- |
+| v0.4.1a  | Extension verification | Container health check |
+| v0.4.1b  | Migration up/down      | Schema existence       |
+| v0.4.1c  | Interface contracts    | -                      |
+| v0.4.1d  | Type handler, CRUD     | Full PostgreSQL tests  |
 
 See individual design specs for detailed test scenarios.
 
@@ -303,19 +303,19 @@ See individual design specs for detailed test scenarios.
 
 ## 11. What This Enables
 
-| Version | Feature | Uses From v0.4.1 |
-| :--- | :--- | :--- |
-| v0.4.2 | File Ingestion Pipeline | `IDocumentRepository` for tracking files |
-| v0.4.3 | Chunking Strategies | `IChunkRepository` for storing chunks |
-| v0.4.4 | Vector Generation | `Chunk.Embedding` column for vectors |
-| v0.4.5 | Semantic Search | `SearchSimilarAsync` with HNSW index |
-| v0.4.6 | Reference Panel | Search results display |
-| v0.4.7 | Index Manager | Document status management |
+| Version | Feature                 | Uses From v0.4.1                         |
+| :------ | :---------------------- | :--------------------------------------- |
+| v0.4.2  | File Ingestion Pipeline | `IDocumentRepository` for tracking files |
+| v0.4.3  | Chunking Strategies     | `IChunkRepository` for storing chunks    |
+| v0.4.4  | Vector Generation       | `Chunk.Embedding` column for vectors     |
+| v0.4.5  | Semantic Search         | `SearchSimilarAsync` with HNSW index     |
+| v0.4.6  | Reference Panel         | Search results display                   |
+| v0.4.7  | Index Manager           | Document status management               |
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-27 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-27 | Lead Architect | Initial draft |

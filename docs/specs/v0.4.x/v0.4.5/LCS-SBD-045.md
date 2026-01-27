@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-045                              |
-| **Version**      | v0.4.5                                   |
-| **Codename**     | The Searcher (Semantic Query)            |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                            |
+| :--------------- | :--------------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-045                                                      |
+| **Version**      | v0.4.5                                                           |
+| **Codename**     | The Searcher (Semantic Query)                                    |
+| **Status**       | Draft                                                            |
+| **Last Updated** | 2026-01-27                                                       |
+| **Owner**        | Lead Architect                                                   |
 | **Depends On**   | v0.4.4 (Embedder), v0.4.1 (Vector Foundation), v0.0.4c (License) |
 
 ---
@@ -53,16 +53,16 @@ Semantic search is a **Writer Pro** feature. Core tier users attempting to searc
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.4.5                                  |
-| :------------------------- | :------------- | :----------------------------------------------- |
-| `IEmbeddingService`        | v0.4.4a        | Embed query text for similarity comparison       |
-| `IChunkRepository`         | v0.4.1c        | Query indexed chunks                             |
-| `IDocumentRepository`      | v0.4.1c        | Retrieve source document metadata                |
-| `IDbConnectionFactory`     | v0.0.5b        | Database access for vector queries               |
-| `IMediator`                | v0.0.7a        | Publish search events                            |
-| `ILicenseContext`          | v0.0.4c        | Check WriterPro tier                             |
-| `IConfigurationService`    | v0.0.3d        | Search configuration                             |
-| `Serilog`                  | v0.0.3b        | Structured logging                               |
+| Component              | Source Version | Usage in v0.4.5                            |
+| :--------------------- | :------------- | :----------------------------------------- |
+| `IEmbeddingService`    | v0.4.4a        | Embed query text for similarity comparison |
+| `IChunkRepository`     | v0.4.1c        | Query indexed chunks                       |
+| `IDocumentRepository`  | v0.4.1c        | Retrieve source document metadata          |
+| `IDbConnectionFactory` | v0.0.5b        | Database access for vector queries         |
+| `IMediator`            | v0.0.7a        | Publish search events                      |
+| `ILicenseContext`      | v0.0.4c        | Check WriterPro tier                       |
+| `IConfiguration`       | v0.0.3d        | Search configuration                       |
+| `ILogger<T>`           | v0.0.3b        | Structured logging                         |
 
 ---
 
@@ -70,12 +70,12 @@ Semantic search is a **Writer Pro** feature. Core tier users attempting to searc
 
 ### 3.1 v0.4.5a: Search Abstractions
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-045a                                  |
-| **Title**        | Search Abstractions                       |
-| **Module**       | `Lexichord.Abstractions`                  |
-| **License Tier** | Core (interface only)                     |
+| Field            | Value                    |
+| :--------------- | :----------------------- |
+| **Sub-Part ID**  | RAG-045a                 |
+| **Title**        | Search Abstractions      |
+| **Module**       | `Lexichord.Abstractions` |
+| **License Tier** | Core (interface only)    |
 
 **Goal:** Define `ISemanticSearchService` interface and supporting types for semantic search operations.
 
@@ -180,12 +180,12 @@ public record SearchHit
 
 ### 3.2 v0.4.5b: Vector Search Query
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-045b                                  |
-| **Title**        | Vector Search Query                       |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-045b                |
+| **Title**        | Vector Search Query     |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Implement `PgVectorSearchService` using cosine similarity search via pgvector.
 
@@ -378,12 +378,12 @@ LIMIT @top_k;
 
 ### 3.3 v0.4.5c: Query Preprocessing
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-045c                                  |
-| **Title**        | Query Preprocessing                       |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-045c                |
+| **Title**        | Query Preprocessing     |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Implement `QueryPreprocessor` for input normalization, abbreviation expansion, and query embedding caching.
 
@@ -537,10 +537,10 @@ public sealed class QueryPreprocessor : IQueryPreprocessor
 
 **Abbreviation Expansion Example:**
 
-| Input | Output |
-| :---- | :----- |
+| Input                    | Output                                                       |
+| :----------------------- | :----------------------------------------------------------- |
 | "How does the API work?" | "How does the API (Application Programming Interface) work?" |
-| "UI/UX best practices" | "UI (User Interface)/UX (User Experience) best practices" |
+| "UI/UX best practices"   | "UI (User Interface)/UX (User Experience) best practices"    |
 
 **Dependencies:**
 
@@ -550,12 +550,12 @@ public sealed class QueryPreprocessor : IQueryPreprocessor
 
 ### 3.4 v0.4.5d: License Gating
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-045d                                  |
-| **Title**        | License Gating                            |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-045d                |
+| **Title**        | License Gating          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Wrap semantic search in license validation with appropriate user feedback.
 
@@ -671,13 +671,13 @@ public record SemanticSearchExecutedEvent : INotification
 
 **License Behavior by Tier:**
 
-| Tier | Search Behavior |
-| :--- | :-------------- |
-| Core | Blocked with upgrade prompt |
-| Writer | Blocked with upgrade prompt |
-| WriterPro | Full access |
-| Teams | Full access |
-| Enterprise | Full access |
+| Tier       | Search Behavior             |
+| :--------- | :-------------------------- |
+| Core       | Blocked with upgrade prompt |
+| Writer     | Blocked with upgrade prompt |
+| WriterPro  | Full access                 |
+| Teams      | Full access                 |
+| Enterprise | Full access                 |
 
 **Dependencies:**
 
@@ -688,31 +688,31 @@ public record SemanticSearchExecutedEvent : INotification
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.4.5a  | Create ISemanticSearchService interface                   | 1          |
-| 2  | v0.4.5a  | Create SearchOptions record                               | 0.5        |
-| 3  | v0.4.5a  | Create SearchResult record                                | 0.5        |
-| 4  | v0.4.5a  | Create SearchHit record                                   | 0.5        |
-| 5  | v0.4.5a  | Unit tests for record validation                          | 1          |
-| 6  | v0.4.5b  | Implement PgVectorSearchService                           | 3          |
-| 7  | v0.4.5b  | Implement cosine similarity SQL query                     | 1.5        |
-| 8  | v0.4.5b  | Implement document filtering                              | 1          |
-| 9  | v0.4.5b  | Implement score threshold filtering                       | 0.5        |
-| 10 | v0.4.5b  | Integration tests with pgvector                           | 2          |
-| 11 | v0.4.5c  | Create IQueryPreprocessor interface                       | 0.5        |
-| 12 | v0.4.5c  | Implement QueryPreprocessor                               | 2          |
-| 13 | v0.4.5c  | Implement abbreviation expansion                          | 1          |
-| 14 | v0.4.5c  | Implement query embedding cache                           | 1.5        |
-| 15 | v0.4.5c  | Unit tests for preprocessing                              | 1.5        |
-| 16 | v0.4.5d  | Create FeatureNotLicensedException                        | 0.5        |
-| 17 | v0.4.5d  | Implement SearchLicenseGuard                              | 1          |
-| 18 | v0.4.5d  | Create SearchDeniedEvent                                  | 0.5        |
-| 19 | v0.4.5d  | Create SemanticSearchExecutedEvent                        | 0.5        |
-| 20 | v0.4.5d  | Unit tests for license enforcement                        | 1.5        |
-| 21 | All      | Integration tests for full search flow                    | 2.5        |
-| 22 | All      | DI registration in RAGModule.cs                           | 1          |
-| **Total** |   |                                                           | **25 hours** |
+| #         | Sub-Part | Task                                    | Est. Hours   |
+| :-------- | :------- | :-------------------------------------- | :----------- |
+| 1         | v0.4.5a  | Create ISemanticSearchService interface | 1            |
+| 2         | v0.4.5a  | Create SearchOptions record             | 0.5          |
+| 3         | v0.4.5a  | Create SearchResult record              | 0.5          |
+| 4         | v0.4.5a  | Create SearchHit record                 | 0.5          |
+| 5         | v0.4.5a  | Unit tests for record validation        | 1            |
+| 6         | v0.4.5b  | Implement PgVectorSearchService         | 3            |
+| 7         | v0.4.5b  | Implement cosine similarity SQL query   | 1.5          |
+| 8         | v0.4.5b  | Implement document filtering            | 1            |
+| 9         | v0.4.5b  | Implement score threshold filtering     | 0.5          |
+| 10        | v0.4.5b  | Integration tests with pgvector         | 2            |
+| 11        | v0.4.5c  | Create IQueryPreprocessor interface     | 0.5          |
+| 12        | v0.4.5c  | Implement QueryPreprocessor             | 2            |
+| 13        | v0.4.5c  | Implement abbreviation expansion        | 1            |
+| 14        | v0.4.5c  | Implement query embedding cache         | 1.5          |
+| 15        | v0.4.5c  | Unit tests for preprocessing            | 1.5          |
+| 16        | v0.4.5d  | Create FeatureNotLicensedException      | 0.5          |
+| 17        | v0.4.5d  | Implement SearchLicenseGuard            | 1            |
+| 18        | v0.4.5d  | Create SearchDeniedEvent                | 0.5          |
+| 19        | v0.4.5d  | Create SemanticSearchExecutedEvent      | 0.5          |
+| 20        | v0.4.5d  | Unit tests for license enforcement      | 1.5          |
+| 21        | All      | Integration tests for full search flow  | 2.5          |
+| 22        | All      | DI registration in RAGModule.cs         | 1            |
+| **Total** |          |                                         | **25 hours** |
 
 ---
 
@@ -720,40 +720,40 @@ public record SemanticSearchExecutedEvent : INotification
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `IEmbeddingService`        | v0.4.4a        | Query embedding generation           |
-| `IDocumentRepository`      | v0.4.1c        | Document metadata retrieval          |
-| `IChunkRepository`         | v0.4.1c        | Chunk query (via raw SQL)            |
-| `IDbConnectionFactory`     | v0.0.5b        | Database connection                  |
-| `IMediator`                | v0.0.7a        | Event publishing                     |
-| `ILicenseContext`          | v0.0.4c        | License tier checking                |
-| `IMemoryCache`             | v0.2.2b        | Query embedding cache                |
+| Interface              | Source Version | Purpose                     |
+| :--------------------- | :------------- | :-------------------------- |
+| `IEmbeddingService`    | v0.4.4a        | Query embedding generation  |
+| `IDocumentRepository`  | v0.4.1c        | Document metadata retrieval |
+| `IChunkRepository`     | v0.4.1c        | Chunk query (via raw SQL)   |
+| `IDbConnectionFactory` | v0.0.5b        | Database connection         |
+| `IMediator`            | v0.0.7a        | Event publishing            |
+| `ILicenseContext`      | v0.0.4c        | License tier checking       |
+| `IMemoryCache`         | v0.2.2b        | Query embedding cache       |
 
 ### 5.2 New Interfaces (defined in v0.4.5)
 
-| Interface                   | Defined In | Module        | Purpose                 |
-| :-------------------------- | :--------- | :------------ | :---------------------- |
-| `ISemanticSearchService`    | v0.4.5a    | Abstractions  | Semantic search         |
-| `IQueryPreprocessor`        | v0.4.5c    | Modules.RAG   | Query preprocessing     |
+| Interface                | Defined In | Module       | Purpose             |
+| :----------------------- | :--------- | :----------- | :------------------ |
+| `ISemanticSearchService` | v0.4.5a    | Abstractions | Semantic search     |
+| `IQueryPreprocessor`     | v0.4.5c    | Modules.RAG  | Query preprocessing |
 
 ### 5.3 New Records/DTOs (defined in v0.4.5)
 
-| Record                        | Defined In | Purpose                                |
-| :---------------------------- | :--------- | :------------------------------------- |
-| `SearchOptions`               | v0.4.5a    | Search configuration                   |
-| `SearchResult`                | v0.4.5a    | Result container                       |
-| `SearchHit`                   | v0.4.5a    | Individual match result                |
-| `SearchDeniedEvent`           | v0.4.5d    | License denial notification            |
-| `SemanticSearchExecutedEvent` | v0.4.5d    | Search execution telemetry             |
+| Record                        | Defined In | Purpose                     |
+| :---------------------------- | :--------- | :-------------------------- |
+| `SearchOptions`               | v0.4.5a    | Search configuration        |
+| `SearchResult`                | v0.4.5a    | Result container            |
+| `SearchHit`                   | v0.4.5a    | Individual match result     |
+| `SearchDeniedEvent`           | v0.4.5d    | License denial notification |
+| `SemanticSearchExecutedEvent` | v0.4.5d    | Search execution telemetry  |
 
 ### 5.4 NuGet Packages
 
-| Package                        | Version | Purpose                    | New/Existing |
-| :----------------------------- | :------ | :------------------------- | :----------- |
-| `Microsoft.Extensions.Caching.Memory` | 9.0.x | Query caching | Existing |
-| `Npgsql` | 9.0.x | PostgreSQL driver | Existing |
-| `Dapper` | 2.1.x | SQL query execution | Existing |
+| Package                               | Version | Purpose             | New/Existing |
+| :------------------------------------ | :------ | :------------------ | :----------- |
+| `Microsoft.Extensions.Caching.Memory` | 9.0.x   | Query caching       | Existing     |
+| `Npgsql`                              | 9.0.x   | PostgreSQL driver   | Existing     |
+| `Dapper`                              | 2.1.x   | SQL query execution | Existing     |
 
 ---
 
@@ -856,26 +856,26 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Slow vector search on large corpus | High | Medium | HNSW index, limit TopK |
-| Query embedding API latency | Medium | Medium | Query embedding cache |
-| Cache memory usage | Low | Low | 5-minute TTL, bounded cache |
-| Low-quality search results | Medium | Medium | Configurable MinScore threshold |
-| License bypass attempts | High | Low | Server-side tier check |
-| SQL injection in query | High | Low | Parameterized queries only |
+| Risk                               | Impact | Probability | Mitigation                      |
+| :--------------------------------- | :----- | :---------- | :------------------------------ |
+| Slow vector search on large corpus | High   | Medium      | HNSW index, limit TopK          |
+| Query embedding API latency        | Medium | Medium      | Query embedding cache           |
+| Cache memory usage                 | Low    | Low         | 5-minute TTL, bounded cache     |
+| Low-quality search results         | Medium | Medium      | Configurable MinScore threshold |
+| License bypass attempts            | High   | Low         | Server-side tier check          |
+| SQL injection in query             | High   | Low         | Parameterized queries only      |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Search latency (10K chunks) | < 200ms | Stopwatch timing |
-| Cache hit rate | > 50% | Cache statistics |
+| Metric                          | Target          | Measurement       |
+| :------------------------------ | :-------------- | :---------------- |
+| Search latency (10K chunks)     | < 200ms         | Stopwatch timing  |
+| Cache hit rate                  | > 50%           | Cache statistics  |
 | Result relevance (MinScore 0.7) | > 80% precision | Manual evaluation |
-| License check latency | < 5ms | Stopwatch timing |
-| Query preprocessing | < 10ms | Stopwatch timing |
+| License check latency           | < 5ms           | Stopwatch timing  |
+| Query preprocessing             | < 10ms          | Stopwatch timing  |
 
 ---
 
@@ -936,14 +936,14 @@ START: "Interpret similarity score"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer          | As a writer, I want to search my documents by meaning.                              | Natural language query returns relevant chunks.       |
-| US-02 | Writer          | As a writer, I want to see relevance scores for results.                            | Results display percentage match score.               |
-| US-03 | Writer          | As a writer, I want to filter search to a specific document.                        | DocumentFilter limits results to one document.        |
-| US-04 | Developer       | As a developer, I want query embeddings cached.                                     | Repeated queries use cached embeddings.               |
-| US-05 | Developer       | As a developer, I want search events for telemetry.                                 | SemanticSearchExecutedEvent published.                |
-| US-06 | Free User       | As a free user, I want to know how to unlock search.                                | Upgrade prompt explains WriterPro benefits.           |
+| ID    | Role      | Story                                                        | Acceptance Criteria                             |
+| :---- | :-------- | :----------------------------------------------------------- | :---------------------------------------------- |
+| US-01 | Writer    | As a writer, I want to search my documents by meaning.       | Natural language query returns relevant chunks. |
+| US-02 | Writer    | As a writer, I want to see relevance scores for results.     | Results display percentage match score.         |
+| US-03 | Writer    | As a writer, I want to filter search to a specific document. | DocumentFilter limits results to one document.  |
+| US-04 | Developer | As a developer, I want query embeddings cached.              | Repeated queries use cached embeddings.         |
+| US-05 | Developer | As a developer, I want search events for telemetry.          | SemanticSearchExecutedEvent published.          |
+| US-06 | Free User | As a free user, I want to know how to unlock search.         | Upgrade prompt explains WriterPro benefits.     |
 
 ---
 
@@ -1115,15 +1115,15 @@ public class QueryPreprocessorTests
 
 ## 15. Observability & Logging
 
-| Level   | Source                         | Message Template                                                       |
-| :------ | :----------------------------- | :--------------------------------------------------------------------- |
-| Debug   | QueryPreprocessor              | `Preprocessed query: '{Original}' -> '{Processed}'`                    |
-| Debug   | QueryPreprocessor              | `Cached query embedding for: '{Query}'`                                |
-| Debug   | QueryPreprocessor              | `Query embedding cache hit for: '{Query}'`                             |
-| Debug   | PgVectorSearchService          | `Executing vector search: TopK={TopK}, MinScore={MinScore}`            |
-| Info    | PgVectorSearchService          | `Search completed: {HitCount} hits for '{Query}' in {Duration}ms`      |
-| Warning | PgVectorSearchService          | `Search returned no results for: '{Query}'`                            |
-| Debug   | SearchLicenseGuard             | `Search blocked: current tier {Tier}, required {Required}`             |
+| Level   | Source                | Message Template                                                  |
+| :------ | :-------------------- | :---------------------------------------------------------------- |
+| Debug   | QueryPreprocessor     | `Preprocessed query: '{Original}' -> '{Processed}'`               |
+| Debug   | QueryPreprocessor     | `Cached query embedding for: '{Query}'`                           |
+| Debug   | QueryPreprocessor     | `Query embedding cache hit for: '{Query}'`                        |
+| Debug   | PgVectorSearchService | `Executing vector search: TopK={TopK}, MinScore={MinScore}`       |
+| Info    | PgVectorSearchService | `Search completed: {HitCount} hits for '{Query}' in {Duration}ms` |
+| Warning | PgVectorSearchService | `Search returned no results for: '{Query}'`                       |
+| Debug   | SearchLicenseGuard    | `Search blocked: current tier {Tier}, required {Required}`        |
 
 ---
 
@@ -1135,22 +1135,22 @@ public class QueryPreprocessorTests
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Search]**        | Natural language query returns semantically related chunks.                  |
-| 2   | **[Search]**        | Results sorted by descending similarity score.                               |
-| 3   | **[Search]**        | TopK parameter limits result count.                                          |
-| 4   | **[Search]**        | MinScore parameter filters low-relevance results.                            |
-| 5   | **[Search]**        | DocumentFilter limits results to specific document.                          |
-| 6   | **[Preprocessing]** | Query whitespace trimmed and collapsed.                                      |
-| 7   | **[Preprocessing]** | Abbreviations expanded when option enabled.                                  |
-| 8   | **[Caching]**       | Repeated queries use cached embeddings.                                      |
-| 9   | **[Caching]**       | Cache entries expire after 5 minutes.                                        |
-| 10  | **[License]**       | Core tier users receive FeatureNotLicensedException.                         |
-| 11  | **[License]**       | WriterPro tier users can execute search.                                     |
-| 12  | **[Events]**        | SemanticSearchExecutedEvent published on success.                            |
-| 13  | **[Events]**        | SearchDeniedEvent published on license denial.                               |
-| 14  | **[Performance]**   | Search latency < 200ms for 10K chunks.                                       |
+| #   | Category            | Criterion                                                   |
+| :-- | :------------------ | :---------------------------------------------------------- |
+| 1   | **[Search]**        | Natural language query returns semantically related chunks. |
+| 2   | **[Search]**        | Results sorted by descending similarity score.              |
+| 3   | **[Search]**        | TopK parameter limits result count.                         |
+| 4   | **[Search]**        | MinScore parameter filters low-relevance results.           |
+| 5   | **[Search]**        | DocumentFilter limits results to specific document.         |
+| 6   | **[Preprocessing]** | Query whitespace trimmed and collapsed.                     |
+| 7   | **[Preprocessing]** | Abbreviations expanded when option enabled.                 |
+| 8   | **[Caching]**       | Repeated queries use cached embeddings.                     |
+| 9   | **[Caching]**       | Cache entries expire after 5 minutes.                       |
+| 10  | **[License]**       | Core tier users receive FeatureNotLicensedException.        |
+| 11  | **[License]**       | WriterPro tier users can execute search.                    |
+| 12  | **[Events]**        | SemanticSearchExecutedEvent published on success.           |
+| 13  | **[Events]**        | SearchDeniedEvent published on license denial.              |
+| 14  | **[Performance]**   | Search latency < 200ms for 10K chunks.                      |
 
 ---
 
@@ -1188,38 +1188,38 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Search"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `ISemanticSearchService` interface                             | [ ]    |
-| 2  | `SearchOptions` record                                         | [ ]    |
-| 3  | `SearchResult` record                                          | [ ]    |
-| 4  | `SearchHit` record                                             | [ ]    |
-| 5  | `PgVectorSearchService` implementation                         | [ ]    |
-| 6  | `IQueryPreprocessor` interface                                 | [ ]    |
-| 7  | `QueryPreprocessor` implementation                             | [ ]    |
-| 8  | Query embedding cache                                          | [ ]    |
-| 9  | `FeatureNotLicensedException` exception                        | [ ]    |
-| 10 | `SearchLicenseGuard` helper                                    | [ ]    |
-| 11 | `SearchDeniedEvent` notification                               | [ ]    |
-| 12 | `SemanticSearchExecutedEvent` notification                     | [ ]    |
-| 13 | Unit tests for search service                                  | [ ]    |
-| 14 | Unit tests for preprocessor                                    | [ ]    |
-| 15 | Unit tests for license guard                                   | [ ]    |
-| 16 | Integration tests for full search flow                         | [ ]    |
-| 17 | DI registration in RAGModule.cs                                | [ ]    |
+| #   | Deliverable                                | Status |
+| :-- | :----------------------------------------- | :----- |
+| 1   | `ISemanticSearchService` interface         | [ ]    |
+| 2   | `SearchOptions` record                     | [ ]    |
+| 3   | `SearchResult` record                      | [ ]    |
+| 4   | `SearchHit` record                         | [ ]    |
+| 5   | `PgVectorSearchService` implementation     | [ ]    |
+| 6   | `IQueryPreprocessor` interface             | [ ]    |
+| 7   | `QueryPreprocessor` implementation         | [ ]    |
+| 8   | Query embedding cache                      | [ ]    |
+| 9   | `FeatureNotLicensedException` exception    | [ ]    |
+| 10  | `SearchLicenseGuard` helper                | [ ]    |
+| 11  | `SearchDeniedEvent` notification           | [ ]    |
+| 12  | `SemanticSearchExecutedEvent` notification | [ ]    |
+| 13  | Unit tests for search service              | [ ]    |
+| 14  | Unit tests for preprocessor                | [ ]    |
+| 15  | Unit tests for license guard               | [ ]    |
+| 16  | Integration tests for full search flow     | [ ]    |
+| 17  | DI registration in RAGModule.cs            | [ ]    |
 
 ---
 
 ## 20. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Search UI                       | v0.4.6      | Separate UI specification                       |
-| Faceted search                  | v0.5.x      | Requires additional metadata indexing           |
-| Multi-document search           | v0.5.x      | Need workspace-level search                     |
-| Saved searches                  | v0.5.x      | User preference feature                         |
-| Search history persistence      | v0.4.6      | UI-layer feature                                |
-| Hybrid keyword + semantic       | v0.6.x      | Advanced search feature                         |
+| Feature                    | Deferred To | Reason                                |
+| :------------------------- | :---------- | :------------------------------------ |
+| Search UI                  | v0.4.6      | Separate UI specification             |
+| Faceted search             | v0.5.x      | Requires additional metadata indexing |
+| Multi-document search      | v0.5.x      | Need workspace-level search           |
+| Saved searches             | v0.5.x      | User preference feature               |
+| Search history persistence | v0.4.6      | UI-layer feature                      |
+| Hybrid keyword + semantic  | v0.6.x      | Advanced search feature               |
 
 ---
 

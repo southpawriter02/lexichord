@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-044                              |
-| **Version**      | v0.4.4                                   |
-| **Codename**     | The Embedder (Vector Generation)         |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                                |
+| :--------------- | :------------------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-044                                                          |
+| **Version**      | v0.4.4                                                               |
+| **Codename**     | The Embedder (Vector Generation)                                     |
+| **Status**       | Draft                                                                |
+| **Last Updated** | 2026-01-27                                                           |
+| **Owner**        | Lead Architect                                                       |
 | **Depends On**   | v0.4.3 (Chunking), v0.4.1 (Vector Foundation), v0.0.6a (SecureVault) |
 
 ---
@@ -49,17 +49,17 @@ Embedding generation requires external API access and is gated at **Writer Pro**
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.4.4                                  |
-| :------------------------- | :------------- | :----------------------------------------------- |
-| `IChunkingStrategy`        | v0.4.3a        | Chunk documents before embedding                 |
-| `TextChunk`                | v0.4.3a        | Input to embedding service                       |
-| `IChunkRepository`         | v0.4.1c        | Store embedded chunks                            |
-| `IDocumentRepository`      | v0.4.1c        | Update document status                           |
-| `ISecureVault`             | v0.0.6a        | Retrieve OpenAI API key                          |
-| `IMediator`                | v0.0.7a        | Publish indexing events                          |
-| `Polly`                    | v0.0.5d        | Retry policies for API calls                     |
-| `IConfigurationService`    | v0.0.3d        | Embedding configuration                          |
-| `Serilog`                  | v0.0.3b        | Structured logging                               |
+| Component             | Source Version | Usage in v0.4.4                  |
+| :-------------------- | :------------- | :------------------------------- |
+| `IChunkingStrategy`   | v0.4.3a        | Chunk documents before embedding |
+| `TextChunk`           | v0.4.3a        | Input to embedding service       |
+| `IChunkRepository`    | v0.4.1c        | Store embedded chunks            |
+| `IDocumentRepository` | v0.4.1c        | Update document status           |
+| `ISecureVault`        | v0.0.6a        | Retrieve OpenAI API key          |
+| `IMediator`           | v0.0.7a        | Publish indexing events          |
+| `Polly`               | v0.0.5d        | Retry policies for API calls     |
+| `IConfiguration`      | v0.0.3d        | Embedding configuration          |
+| `ILogger<T>`          | v0.0.3b        | Structured logging               |
 
 ---
 
@@ -67,12 +67,12 @@ Embedding generation requires external API access and is gated at **Writer Pro**
 
 ### 3.1 v0.4.4a: Embedding Abstractions
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-044a                                  |
-| **Title**        | Embedding Abstractions                    |
-| **Module**       | `Lexichord.Abstractions`                  |
-| **License Tier** | Core (interface only)                     |
+| Field            | Value                    |
+| :--------------- | :----------------------- |
+| **Sub-Part ID**  | RAG-044a                 |
+| **Title**        | Embedding Abstractions   |
+| **Module**       | `Lexichord.Abstractions` |
+| **License Tier** | Core (interface only)    |
 
 **Goal:** Define `IEmbeddingService` interface and supporting types for vector generation.
 
@@ -188,12 +188,12 @@ public record EmbeddingResult
 
 ### 3.2 v0.4.4b: OpenAI Connector
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-044b                                  |
-| **Title**        | OpenAI Connector                          |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-044b                |
+| **Title**        | OpenAI Connector        |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Implement `OpenAIEmbeddingService` using `text-embedding-3-small` model with secure key management and retry logic.
 
@@ -341,11 +341,11 @@ internal record OpenAIUsage(
 
 **Polly Retry Policy:**
 
-| Attempt | Delay | Condition |
-| :------ | :---- | :-------- |
-| 1 | 2s | 429 Too Many Requests |
-| 2 | 4s | 5xx Server Error |
-| 3 | 8s | Network Failure |
+| Attempt | Delay | Condition             |
+| :------ | :---- | :-------------------- |
+| 1       | 2s    | 429 Too Many Requests |
+| 2       | 4s    | 5xx Server Error      |
+| 3       | 8s    | Network Failure       |
 
 **Dependencies:**
 
@@ -356,12 +356,12 @@ internal record OpenAIUsage(
 
 ### 3.3 v0.4.4c: Token Counting
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-044c                                  |
-| **Title**        | Token Counting                            |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-044c                |
+| **Title**        | Token Counting          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 **Goal:** Implement `ITokenCounter` to validate chunk sizes and truncate oversized text before embedding.
 
@@ -464,11 +464,11 @@ public sealed class TiktokenTokenCounter : ITokenCounter
 
 **Token Limits:**
 
-| Model | Max Tokens | Encoding |
-| :---- | :--------- | :------- |
-| text-embedding-3-small | 8191 | cl100k_base |
-| text-embedding-3-large | 8191 | cl100k_base |
-| text-embedding-ada-002 | 8191 | cl100k_base |
+| Model                  | Max Tokens | Encoding    |
+| :--------------------- | :--------- | :---------- |
+| text-embedding-3-small | 8191       | cl100k_base |
+| text-embedding-3-large | 8191       | cl100k_base |
+| text-embedding-ada-002 | 8191       | cl100k_base |
 
 **Dependencies:**
 
@@ -478,12 +478,12 @@ public sealed class TiktokenTokenCounter : ITokenCounter
 
 ### 3.4 v0.4.4d: Embedding Pipeline
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-044d                                  |
-| **Title**        | Embedding Pipeline                        |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | WriterPro                                 |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-044d                |
+| **Title**        | Embedding Pipeline      |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 **Goal:** Wire chunking and embedding into `DocumentIndexingPipeline` that orchestrates the full indexing flow.
 
@@ -770,29 +770,29 @@ sequenceDiagram
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.4.4a  | Create IEmbeddingService interface                        | 1          |
-| 2  | v0.4.4a  | Create EmbeddingOptions record                            | 0.5        |
-| 3  | v0.4.4a  | Create EmbeddingResult record                             | 0.5        |
-| 4  | v0.4.4a  | Unit tests for interface contracts                        | 1          |
-| 5  | v0.4.4b  | Implement OpenAIEmbeddingService                          | 3          |
-| 6  | v0.4.4b  | Integrate with ISecureVault                               | 1          |
-| 7  | v0.4.4b  | Implement Polly retry policy                              | 1.5        |
-| 8  | v0.4.4b  | Implement batch request support                           | 1.5        |
-| 9  | v0.4.4b  | Unit tests with mocked HTTP                               | 2          |
-| 10 | v0.4.4c  | Create ITokenCounter interface                            | 0.5        |
-| 11 | v0.4.4c  | Implement TiktokenTokenCounter                            | 2          |
-| 12 | v0.4.4c  | Implement text truncation                                 | 1          |
-| 13 | v0.4.4c  | Unit tests for token counting                             | 1.5        |
-| 14 | v0.4.4d  | Implement DocumentIndexingPipeline                        | 3          |
-| 15 | v0.4.4d  | Implement batch embedding                                 | 1.5        |
-| 16 | v0.4.4d  | Create DocumentIndexedEvent                               | 0.5        |
-| 17 | v0.4.4d  | Create DocumentIndexingFailedEvent                        | 0.5        |
-| 18 | v0.4.4d  | Implement license gating                                  | 1          |
-| 19 | v0.4.4d  | Integration tests for pipeline                            | 2.5        |
-| 20 | All      | DI registration in RAGModule.cs                           | 1          |
-| **Total** |   |                                                           | **27 hours** |
+| #         | Sub-Part | Task                               | Est. Hours   |
+| :-------- | :------- | :--------------------------------- | :----------- |
+| 1         | v0.4.4a  | Create IEmbeddingService interface | 1            |
+| 2         | v0.4.4a  | Create EmbeddingOptions record     | 0.5          |
+| 3         | v0.4.4a  | Create EmbeddingResult record      | 0.5          |
+| 4         | v0.4.4a  | Unit tests for interface contracts | 1            |
+| 5         | v0.4.4b  | Implement OpenAIEmbeddingService   | 3            |
+| 6         | v0.4.4b  | Integrate with ISecureVault        | 1            |
+| 7         | v0.4.4b  | Implement Polly retry policy       | 1.5          |
+| 8         | v0.4.4b  | Implement batch request support    | 1.5          |
+| 9         | v0.4.4b  | Unit tests with mocked HTTP        | 2            |
+| 10        | v0.4.4c  | Create ITokenCounter interface     | 0.5          |
+| 11        | v0.4.4c  | Implement TiktokenTokenCounter     | 2            |
+| 12        | v0.4.4c  | Implement text truncation          | 1            |
+| 13        | v0.4.4c  | Unit tests for token counting      | 1.5          |
+| 14        | v0.4.4d  | Implement DocumentIndexingPipeline | 3            |
+| 15        | v0.4.4d  | Implement batch embedding          | 1.5          |
+| 16        | v0.4.4d  | Create DocumentIndexedEvent        | 0.5          |
+| 17        | v0.4.4d  | Create DocumentIndexingFailedEvent | 0.5          |
+| 18        | v0.4.4d  | Implement license gating           | 1            |
+| 19        | v0.4.4d  | Integration tests for pipeline     | 2.5          |
+| 20        | All      | DI registration in RAGModule.cs    | 1            |
+| **Total** |          |                                    | **27 hours** |
 
 ---
 
@@ -800,39 +800,39 @@ sequenceDiagram
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `IChunkingStrategy`        | v0.4.3a        | Document chunking                    |
-| `IDocumentRepository`      | v0.4.1c        | Document storage                     |
-| `IChunkRepository`         | v0.4.1c        | Chunk storage with vectors           |
-| `ISecureVault`             | v0.0.6a        | API key management                   |
-| `IMediator`                | v0.0.7a        | Event publishing                     |
-| `ILicenseContext`          | v0.0.4c        | License tier checking                |
+| Interface             | Source Version | Purpose                    |
+| :-------------------- | :------------- | :------------------------- |
+| `IChunkingStrategy`   | v0.4.3a        | Document chunking          |
+| `IDocumentRepository` | v0.4.1c        | Document storage           |
+| `IChunkRepository`    | v0.4.1c        | Chunk storage with vectors |
+| `ISecureVault`        | v0.0.6a        | API key management         |
+| `IMediator`           | v0.0.7a        | Event publishing           |
+| `ILicenseContext`     | v0.0.4c        | License tier checking      |
 
 ### 5.2 New Interfaces (defined in v0.4.4)
 
-| Interface                   | Defined In | Module        | Purpose                 |
-| :-------------------------- | :--------- | :------------ | :---------------------- |
-| `IEmbeddingService`         | v0.4.4a    | Abstractions  | Embedding generation    |
-| `ITokenCounter`             | v0.4.4c    | Abstractions  | Token counting          |
+| Interface           | Defined In | Module       | Purpose              |
+| :------------------ | :--------- | :----------- | :------------------- |
+| `IEmbeddingService` | v0.4.4a    | Abstractions | Embedding generation |
+| `ITokenCounter`     | v0.4.4c    | Abstractions | Token counting       |
 
 ### 5.3 New Records/DTOs (defined in v0.4.4)
 
-| Record                        | Defined In | Purpose                                |
-| :---------------------------- | :--------- | :------------------------------------- |
-| `EmbeddingOptions`            | v0.4.4a    | Embedding configuration                |
-| `EmbeddingResult`             | v0.4.4a    | Embedding operation result             |
-| `IndexingResult`              | v0.4.4d    | Pipeline operation result              |
-| `DocumentIndexedEvent`        | v0.4.4d    | Success notification                   |
-| `DocumentIndexingFailedEvent` | v0.4.4d    | Failure notification                   |
+| Record                        | Defined In | Purpose                    |
+| :---------------------------- | :--------- | :------------------------- |
+| `EmbeddingOptions`            | v0.4.4a    | Embedding configuration    |
+| `EmbeddingResult`             | v0.4.4a    | Embedding operation result |
+| `IndexingResult`              | v0.4.4d    | Pipeline operation result  |
+| `DocumentIndexedEvent`        | v0.4.4d    | Success notification       |
+| `DocumentIndexingFailedEvent` | v0.4.4d    | Failure notification       |
 
 ### 5.4 NuGet Packages
 
-| Package                        | Version | Purpose                    | New/Existing |
-| :----------------------------- | :------ | :------------------------- | :----------- |
-| `Microsoft.ML.Tokenizers`      | 0.22.x  | Token counting             | New          |
-| `Polly`                        | 8.x     | Retry policies             | Existing     |
-| `Polly.Extensions.Http`        | 3.x     | HTTP policy extensions     | New          |
+| Package                   | Version | Purpose                | New/Existing |
+| :------------------------ | :------ | :--------------------- | :----------- |
+| `Microsoft.ML.Tokenizers` | 0.22.x  | Token counting         | New          |
+| `Polly`                   | 8.x     | Retry policies         | Existing     |
+| `Polly.Extensions.Http`   | 3.x     | HTTP policy extensions | New          |
 
 ---
 
@@ -934,27 +934,27 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| OpenAI API rate limits | Medium | High | Polly retry with exponential backoff |
-| API key exposure | High | Low | Store in ISecureVault, never log |
-| Large batch failures | Medium | Medium | Partial success handling, retry failed batches |
-| Token count miscalculation | Low | Low | Use official tiktoken tokenizer |
-| High API costs | Medium | Medium | Batch requests, cache embeddings (v0.4.8) |
-| Network timeouts | Medium | Medium | Configurable timeout, retry policy |
+| Risk                       | Impact | Probability | Mitigation                                     |
+| :------------------------- | :----- | :---------- | :--------------------------------------------- |
+| OpenAI API rate limits     | Medium | High        | Polly retry with exponential backoff           |
+| API key exposure           | High   | Low         | Store in ISecureVault, never log               |
+| Large batch failures       | Medium | Medium      | Partial success handling, retry failed batches |
+| Token count miscalculation | Low    | Low         | Use official tiktoken tokenizer                |
+| High API costs             | Medium | Medium      | Batch requests, cache embeddings (v0.4.8)      |
+| Network timeouts           | Medium | Medium      | Configurable timeout, retry policy             |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Embedding latency (single) | < 500ms | API response time |
-| Embedding latency (batch 100) | < 5s | API response time |
-| Token counting (1000 chars) | < 10ms | Stopwatch timing |
-| Pipeline throughput | > 5 docs/min | End-to-end timing |
-| API error rate | < 1% | Error count / total |
-| Retry success rate | > 95% | Retried requests that succeed |
+| Metric                        | Target       | Measurement                   |
+| :---------------------------- | :----------- | :---------------------------- |
+| Embedding latency (single)    | < 500ms      | API response time             |
+| Embedding latency (batch 100) | < 5s         | API response time             |
+| Token counting (1000 chars)   | < 10ms       | Stopwatch timing              |
+| Pipeline throughput           | > 5 docs/min | End-to-end timing             |
+| API error rate                | < 1%         | Error count / total           |
+| Retry success rate            | > 95%        | Retried requests that succeed |
 
 ---
 
@@ -1023,14 +1023,14 @@ START: "API request failed"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer          | As a writer, I want my documents converted to searchable vectors.                   | Documents embedded and stored.                        |
-| US-02 | Writer          | As a writer, I want large documents handled gracefully.                             | Oversized chunks truncated, indexed.                  |
-| US-03 | Developer       | As a developer, I want embedding errors handled with retries.                       | 429 errors retried automatically.                     |
-| US-04 | Developer       | As a developer, I want to monitor embedding progress.                               | Progress events published via MediatR.                |
-| US-05 | Developer       | As a developer, I want batch embedding for efficiency.                              | Multiple chunks embedded in one API call.             |
-| US-06 | Admin           | As an admin, I want API keys stored securely.                                       | Keys in ISecureVault, never logged.                   |
+| ID    | Role      | Story                                                             | Acceptance Criteria                       |
+| :---- | :-------- | :---------------------------------------------------------------- | :---------------------------------------- |
+| US-01 | Writer    | As a writer, I want my documents converted to searchable vectors. | Documents embedded and stored.            |
+| US-02 | Writer    | As a writer, I want large documents handled gracefully.           | Oversized chunks truncated, indexed.      |
+| US-03 | Developer | As a developer, I want embedding errors handled with retries.     | 429 errors retried automatically.         |
+| US-04 | Developer | As a developer, I want to monitor embedding progress.             | Progress events published via MediatR.    |
+| US-05 | Developer | As a developer, I want batch embedding for efficiency.            | Multiple chunks embedded in one API call. |
+| US-06 | Admin     | As an admin, I want API keys stored securely.                     | Keys in ISecureVault, never logged.       |
 
 ---
 
@@ -1164,18 +1164,18 @@ public class TiktokenTokenCounterTests
 
 ## 14. Observability & Logging
 
-| Level   | Source                         | Message Template                                                       |
-| :------ | :----------------------------- | :--------------------------------------------------------------------- |
-| Debug   | OpenAIEmbeddingService         | `Embedded {Count} texts in {LatencyMs}ms`                              |
-| Debug   | OpenAIEmbeddingService         | `Embedding batch {BatchIndex}/{TotalBatches}`                          |
-| Warning | OpenAIEmbeddingService         | `Retry {Attempt}/{MaxRetries} after {Delay}s due to {Reason}`          |
-| Error   | OpenAIEmbeddingService         | `Embedding failed: {ErrorMessage}`                                     |
-| Warning | TiktokenTokenCounter           | `Text truncated from {OriginalTokens} to {MaxTokens} tokens`           |
-| Info    | DocumentIndexingPipeline       | `Indexing document: {FilePath}`                                        |
-| Debug   | DocumentIndexingPipeline       | `Created {ChunkCount} chunks`                                          |
-| Debug   | DocumentIndexingPipeline       | `Embedded batch {Current}/{Total}`                                     |
-| Info    | DocumentIndexingPipeline       | `Indexed {FilePath}: {ChunkCount} chunks in {Duration}ms`              |
-| Error   | DocumentIndexingPipeline       | `Failed to index document: {FilePath}`                                 |
+| Level   | Source                   | Message Template                                              |
+| :------ | :----------------------- | :------------------------------------------------------------ |
+| Debug   | OpenAIEmbeddingService   | `Embedded {Count} texts in {LatencyMs}ms`                     |
+| Debug   | OpenAIEmbeddingService   | `Embedding batch {BatchIndex}/{TotalBatches}`                 |
+| Warning | OpenAIEmbeddingService   | `Retry {Attempt}/{MaxRetries} after {Delay}s due to {Reason}` |
+| Error   | OpenAIEmbeddingService   | `Embedding failed: {ErrorMessage}`                            |
+| Warning | TiktokenTokenCounter     | `Text truncated from {OriginalTokens} to {MaxTokens} tokens`  |
+| Info    | DocumentIndexingPipeline | `Indexing document: {FilePath}`                               |
+| Debug   | DocumentIndexingPipeline | `Created {ChunkCount} chunks`                                 |
+| Debug   | DocumentIndexingPipeline | `Embedded batch {Current}/{Total}`                            |
+| Info    | DocumentIndexingPipeline | `Indexed {FilePath}: {ChunkCount} chunks in {Duration}ms`     |
+| Error   | DocumentIndexingPipeline | `Failed to index document: {FilePath}`                        |
 
 ---
 
@@ -1187,22 +1187,22 @@ public class TiktokenTokenCounterTests
 
 ## 16. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Embedding]**     | Single text embeds to 1536-dimensional vector.                               |
-| 2   | **[Embedding]**     | Batch of 100 texts embeds in single API call.                                |
-| 3   | **[Embedding]**     | API key retrieved from ISecureVault.                                         |
-| 4   | **[Embedding]**     | 429 errors trigger retry with backoff.                                       |
-| 5   | **[Embedding]**     | 5xx errors trigger retry.                                                    |
-| 6   | **[Tokens]**        | Token count accurate for OpenAI models.                                      |
-| 7   | **[Tokens]**        | Oversized text truncated to MaxTokens.                                       |
-| 8   | **[Tokens]**        | Truncation logged as warning.                                                |
-| 9   | **[Pipeline]**      | Document chunks stored with embeddings.                                      |
-| 10  | **[Pipeline]**      | DocumentIndexedEvent published on success.                                   |
-| 11  | **[Pipeline]**      | DocumentIndexingFailedEvent published on failure.                            |
-| 12  | **[Pipeline]**      | License check enforced for WriterPro.                                        |
-| 13  | **[Performance]**   | Single embedding < 500ms.                                                    |
-| 14  | **[Performance]**   | Batch of 100 < 5s.                                                           |
+| #   | Category          | Criterion                                         |
+| :-- | :---------------- | :------------------------------------------------ |
+| 1   | **[Embedding]**   | Single text embeds to 1536-dimensional vector.    |
+| 2   | **[Embedding]**   | Batch of 100 texts embeds in single API call.     |
+| 3   | **[Embedding]**   | API key retrieved from ISecureVault.              |
+| 4   | **[Embedding]**   | 429 errors trigger retry with backoff.            |
+| 5   | **[Embedding]**   | 5xx errors trigger retry.                         |
+| 6   | **[Tokens]**      | Token count accurate for OpenAI models.           |
+| 7   | **[Tokens]**      | Oversized text truncated to MaxTokens.            |
+| 8   | **[Tokens]**      | Truncation logged as warning.                     |
+| 9   | **[Pipeline]**    | Document chunks stored with embeddings.           |
+| 10  | **[Pipeline]**    | DocumentIndexedEvent published on success.        |
+| 11  | **[Pipeline]**    | DocumentIndexingFailedEvent published on failure. |
+| 12  | **[Pipeline]**    | License check enforced for WriterPro.             |
+| 13  | **[Performance]** | Single embedding < 500ms.                         |
+| 14  | **[Performance]** | Batch of 100 < 5s.                                |
 
 ---
 
@@ -1240,36 +1240,36 @@ OPENAI_API_KEY=sk-... dotnet test --filter "Category=Integration&FullyQualifiedN
 
 ## 18. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `IEmbeddingService` interface                                  | [ ]    |
-| 2  | `EmbeddingOptions` record                                      | [ ]    |
-| 3  | `EmbeddingResult` record                                       | [ ]    |
-| 4  | `OpenAIEmbeddingService` implementation                        | [ ]    |
-| 5  | Polly retry policy integration                                 | [ ]    |
-| 6  | `ITokenCounter` interface                                      | [ ]    |
-| 7  | `TiktokenTokenCounter` implementation                          | [ ]    |
-| 8  | `DocumentIndexingPipeline` implementation                      | [ ]    |
-| 9  | `DocumentIndexedEvent` notification                            | [ ]    |
-| 10 | `DocumentIndexingFailedEvent` notification                     | [ ]    |
-| 11 | `IndexingResult` record                                        | [ ]    |
-| 12 | Unit tests for EmbeddingService                                | [ ]    |
-| 13 | Unit tests for TokenCounter                                    | [ ]    |
-| 14 | Integration tests for pipeline                                 | [ ]    |
-| 15 | License gating for WriterPro                                   | [ ]    |
-| 16 | DI registration in RAGModule.cs                                | [ ]    |
+| #   | Deliverable                                | Status |
+| :-- | :----------------------------------------- | :----- |
+| 1   | `IEmbeddingService` interface              | [ ]    |
+| 2   | `EmbeddingOptions` record                  | [ ]    |
+| 3   | `EmbeddingResult` record                   | [ ]    |
+| 4   | `OpenAIEmbeddingService` implementation    | [ ]    |
+| 5   | Polly retry policy integration             | [ ]    |
+| 6   | `ITokenCounter` interface                  | [ ]    |
+| 7   | `TiktokenTokenCounter` implementation      | [ ]    |
+| 8   | `DocumentIndexingPipeline` implementation  | [ ]    |
+| 9   | `DocumentIndexedEvent` notification        | [ ]    |
+| 10  | `DocumentIndexingFailedEvent` notification | [ ]    |
+| 11  | `IndexingResult` record                    | [ ]    |
+| 12  | Unit tests for EmbeddingService            | [ ]    |
+| 13  | Unit tests for TokenCounter                | [ ]    |
+| 14  | Integration tests for pipeline             | [ ]    |
+| 15  | License gating for WriterPro               | [ ]    |
+| 16  | DI registration in RAGModule.cs            | [ ]    |
 
 ---
 
 ## 19. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Embedding cache                 | v0.4.8      | Performance optimization                        |
-| Alternative embedding providers | v0.9.x      | Enterprise feature                              |
-| Custom embedding models         | v0.9.x      | Enterprise feature                              |
-| Local embedding models          | v0.6.x      | Requires ML runtime                             |
-| Dimension reduction (PCA)       | v0.5.x      | Advanced feature                                |
+| Feature                         | Deferred To | Reason                   |
+| :------------------------------ | :---------- | :----------------------- |
+| Embedding cache                 | v0.4.8      | Performance optimization |
+| Alternative embedding providers | v0.9.x      | Enterprise feature       |
+| Custom embedding models         | v0.9.x      | Enterprise feature       |
+| Local embedding models          | v0.6.x      | Requires ML runtime      |
+| Dimension reduction (PCA)       | v0.5.x      | Advanced feature         |
 
 ---
 

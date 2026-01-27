@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-043                              |
-| **Version**      | v0.4.3                                   |
-| **Codename**     | The Splitter (Chunking Strategies)       |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                      |
+| :--------------- | :----------------------------------------- |
+| **Document ID**  | LCS-SBD-043                                |
+| **Version**      | v0.4.3                                     |
+| **Codename**     | The Splitter (Chunking Strategies)         |
+| **Status**       | Draft                                      |
+| **Last Updated** | 2026-01-27                                 |
+| **Owner**        | Lead Architect                             |
 | **Depends On**   | v0.4.2 (File Ingestion), v0.1.3b (Markdig) |
 
 ---
@@ -49,14 +49,14 @@ Chunking is **Core** functionality. All license tiers can chunk documents. The s
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.4.3                                  |
-| :------------------------- | :------------- | :----------------------------------------------- |
-| `IIngestionService`        | v0.4.2a        | Triggers chunking after file ingestion           |
-| `Document`                 | v0.4.1c        | Document entity containing content               |
-| `IConfigurationService`    | v0.0.3d        | Chunking configuration settings                  |
-| `Markdig`                  | v0.1.3b        | Markdown parsing for header chunking             |
-| `IMediator`                | v0.0.7a        | Publish chunking events                          |
-| `Serilog`                  | v0.0.3b        | Structured logging                               |
+| Component           | Source Version | Usage in v0.4.3                        |
+| :------------------ | :------------- | :------------------------------------- |
+| `IIngestionService` | v0.4.2a        | Triggers chunking after file ingestion |
+| `Document`          | v0.4.1c        | Document entity containing content     |
+| `IConfiguration`    | v0.0.3d        | Chunking configuration settings        |
+| `Markdig`           | v0.1.3b        | Markdown parsing for header chunking   |
+| `IMediator`         | v0.0.7a        | Publish chunking events                |
+| `ILogger<T>`        | v0.0.3b        | Structured logging                     |
 
 ---
 
@@ -64,12 +64,12 @@ Chunking is **Core** functionality. All license tiers can chunk documents. The s
 
 ### 3.1 v0.4.3a: Chunking Abstractions
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-043a                                  |
-| **Title**        | Chunking Abstractions                     |
-| **Module**       | `Lexichord.Abstractions`                  |
-| **License Tier** | Core                                      |
+| Field            | Value                    |
+| :--------------- | :----------------------- |
+| **Sub-Part ID**  | RAG-043a                 |
+| **Title**        | Chunking Abstractions    |
+| **Module**       | `Lexichord.Abstractions` |
+| **License Tier** | Core                     |
 
 **Goal:** Define `IChunkingStrategy` interface, `ChunkingMode` enum, and supporting types for pluggable chunking algorithms.
 
@@ -186,12 +186,12 @@ public record ChunkingOptions
 
 ### 3.2 v0.4.3b: Fixed-Size Chunker
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-043b                                  |
-| **Title**        | Fixed-Size Chunker                        |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-043b                |
+| **Title**        | Fixed-Size Chunker      |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 **Goal:** Implement `FixedSizeChunkingStrategy` that splits text by character count with configurable overlap and word boundary respect.
 
@@ -247,11 +247,11 @@ FIXED_SIZE_SPLIT(content, options):
 
 **Configuration:**
 
-| Setting                | Default | Description                              |
-| :--------------------- | :------ | :--------------------------------------- |
-| `TargetSize`           | 1000    | Target chunk size in characters          |
-| `Overlap`              | 100     | Overlap between chunks                   |
-| `RespectWordBoundaries` | true   | Don't split mid-word                     |
+| Setting                 | Default | Description                     |
+| :---------------------- | :------ | :------------------------------ |
+| `TargetSize`            | 1000    | Target chunk size in characters |
+| `Overlap`               | 100     | Overlap between chunks          |
+| `RespectWordBoundaries` | true    | Don't split mid-word            |
 
 **Dependencies:**
 
@@ -261,12 +261,12 @@ FIXED_SIZE_SPLIT(content, options):
 
 ### 3.3 v0.4.3c: Paragraph Chunker
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-043c                                  |
-| **Title**        | Paragraph Chunker                         |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-043c                |
+| **Title**        | Paragraph Chunker       |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 **Goal:** Implement `ParagraphChunkingStrategy` that splits on paragraph boundaries, merges short paragraphs, and splits long ones.
 
@@ -324,12 +324,12 @@ PARAGRAPH_SPLIT(content, options):
 
 **Merging Rules:**
 
-| Scenario                     | Action                          |
-| :--------------------------- | :------------------------------ |
-| Paragraph < MinSize          | Merge with next paragraph       |
-| Buffer + Paragraph ≤ Target  | Continue merging                |
-| Buffer + Paragraph > Target  | Flush buffer, start new         |
-| Paragraph > MaxSize          | Split using FixedSizeStrategy   |
+| Scenario                    | Action                        |
+| :-------------------------- | :---------------------------- |
+| Paragraph < MinSize         | Merge with next paragraph     |
+| Buffer + Paragraph ≤ Target | Continue merging              |
+| Buffer + Paragraph > Target | Flush buffer, start new       |
+| Paragraph > MaxSize         | Split using FixedSizeStrategy |
 
 **Dependencies:**
 
@@ -340,12 +340,12 @@ PARAGRAPH_SPLIT(content, options):
 
 ### 3.4 v0.4.3d: Markdown Header Chunker
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-043d                                  |
-| **Title**        | Markdown Header Chunker                   |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-043d                |
+| **Title**        | Markdown Header Chunker |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 **Goal:** Implement `MarkdownHeaderChunkingStrategy` that creates hierarchical chunks based on Markdown header structure.
 
@@ -445,19 +445,25 @@ MARKDOWN_HEADER_SPLIT(content, headings, options):
 
 ```markdown
 # Introduction
+
 This is intro text.
 
 ## Background
+
 Some background info.
 
 ## Methods
+
 ### Data Collection
+
 Collection details.
 
 ### Analysis
+
 Analysis details.
 
 # Results
+
 Final results.
 ```
 
@@ -482,32 +488,32 @@ Produces chunks:
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.4.3a  | Create ChunkingMode enum                                  | 0.5        |
-| 2  | v0.4.3a  | Create IChunkingStrategy interface                        | 0.5        |
-| 3  | v0.4.3a  | Create TextChunk record                                   | 0.5        |
-| 4  | v0.4.3a  | Create ChunkMetadata record                               | 0.5        |
-| 5  | v0.4.3a  | Create ChunkingOptions record                             | 0.5        |
-| 6  | v0.4.3a  | Unit tests for records and validation                     | 1          |
-| 7  | v0.4.3b  | Implement FixedSizeChunkingStrategy core logic            | 2          |
-| 8  | v0.4.3b  | Implement word boundary detection                         | 1.5        |
-| 9  | v0.4.3b  | Implement overlap calculation                             | 1          |
-| 10 | v0.4.3b  | Optimize for large text performance                       | 1          |
-| 11 | v0.4.3b  | Unit tests for fixed-size chunking                        | 2          |
-| 12 | v0.4.3c  | Implement ParagraphChunkingStrategy core logic            | 2          |
-| 13 | v0.4.3c  | Implement paragraph merging                               | 1          |
-| 14 | v0.4.3c  | Implement long paragraph splitting                        | 1          |
-| 15 | v0.4.3c  | Unit tests for paragraph chunking                         | 2          |
-| 16 | v0.4.3d  | Implement MarkdownHeaderChunkingStrategy core             | 2.5        |
-| 17 | v0.4.3d  | Implement hierarchical boundary detection                 | 1.5        |
-| 18 | v0.4.3d  | Implement header metadata extraction                      | 1          |
-| 19 | v0.4.3d  | Implement fallback for non-Markdown                       | 0.5        |
-| 20 | v0.4.3d  | Unit tests for Markdown chunking                          | 2          |
-| 21 | All      | Create ChunkingStrategyFactory                            | 1          |
-| 22 | All      | Integration tests for all strategies                      | 2          |
-| 23 | All      | DI registration in RAGModule.cs                           | 0.5        |
-| **Total** |   |                                                           | **27 hours** |
+| #         | Sub-Part | Task                                           | Est. Hours   |
+| :-------- | :------- | :--------------------------------------------- | :----------- |
+| 1         | v0.4.3a  | Create ChunkingMode enum                       | 0.5          |
+| 2         | v0.4.3a  | Create IChunkingStrategy interface             | 0.5          |
+| 3         | v0.4.3a  | Create TextChunk record                        | 0.5          |
+| 4         | v0.4.3a  | Create ChunkMetadata record                    | 0.5          |
+| 5         | v0.4.3a  | Create ChunkingOptions record                  | 0.5          |
+| 6         | v0.4.3a  | Unit tests for records and validation          | 1            |
+| 7         | v0.4.3b  | Implement FixedSizeChunkingStrategy core logic | 2            |
+| 8         | v0.4.3b  | Implement word boundary detection              | 1.5          |
+| 9         | v0.4.3b  | Implement overlap calculation                  | 1            |
+| 10        | v0.4.3b  | Optimize for large text performance            | 1            |
+| 11        | v0.4.3b  | Unit tests for fixed-size chunking             | 2            |
+| 12        | v0.4.3c  | Implement ParagraphChunkingStrategy core logic | 2            |
+| 13        | v0.4.3c  | Implement paragraph merging                    | 1            |
+| 14        | v0.4.3c  | Implement long paragraph splitting             | 1            |
+| 15        | v0.4.3c  | Unit tests for paragraph chunking              | 2            |
+| 16        | v0.4.3d  | Implement MarkdownHeaderChunkingStrategy core  | 2.5          |
+| 17        | v0.4.3d  | Implement hierarchical boundary detection      | 1.5          |
+| 18        | v0.4.3d  | Implement header metadata extraction           | 1            |
+| 19        | v0.4.3d  | Implement fallback for non-Markdown            | 0.5          |
+| 20        | v0.4.3d  | Unit tests for Markdown chunking               | 2            |
+| 21        | All      | Create ChunkingStrategyFactory                 | 1            |
+| 22        | All      | Integration tests for all strategies           | 2            |
+| 23        | All      | DI registration in RAGModule.cs                | 0.5          |
+| **Total** |          |                                                | **27 hours** |
 
 ---
 
@@ -515,40 +521,40 @@ Produces chunks:
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `IConfigurationService`    | v0.0.3d        | Chunking configuration               |
-| `IMediator`                | v0.0.7a        | Event publishing                     |
-| `MarkdownPipeline`         | v0.1.3b        | Markdig Markdown parsing             |
+| Interface          | Source Version | Purpose                  |
+| :----------------- | :------------- | :----------------------- |
+| `IConfiguration`   | v0.0.3d        | Chunking configuration   |
+| `IMediator`        | v0.0.7a        | Event publishing         |
+| `MarkdownPipeline` | v0.1.3b        | Markdig Markdown parsing |
 
 ### 5.2 New Interfaces (defined in v0.4.3)
 
-| Interface                   | Defined In | Module        | Purpose                 |
-| :-------------------------- | :--------- | :------------ | :---------------------- |
-| `IChunkingStrategy`         | v0.4.3a    | Abstractions  | Chunking algorithm contract |
+| Interface           | Defined In | Module       | Purpose                     |
+| :------------------ | :--------- | :----------- | :-------------------------- |
+| `IChunkingStrategy` | v0.4.3a    | Abstractions | Chunking algorithm contract |
 
 ### 5.3 New Records/DTOs (defined in v0.4.3)
 
-| Record                        | Defined In | Purpose                                |
-| :---------------------------- | :--------- | :------------------------------------- |
-| `TextChunk`                   | v0.4.3a    | Chunk with content and position        |
-| `ChunkMetadata`               | v0.4.3a    | Chunk context (index, heading, level)  |
-| `ChunkingOptions`             | v0.4.3a    | Configuration options                  |
+| Record            | Defined In | Purpose                               |
+| :---------------- | :--------- | :------------------------------------ |
+| `TextChunk`       | v0.4.3a    | Chunk with content and position       |
+| `ChunkMetadata`   | v0.4.3a    | Chunk context (index, heading, level) |
+| `ChunkingOptions` | v0.4.3a    | Configuration options                 |
 
 ### 5.4 New Implementations (defined in v0.4.3)
 
-| Class                           | Defined In | Purpose                              |
-| :------------------------------ | :--------- | :----------------------------------- |
-| `FixedSizeChunkingStrategy`     | v0.4.3b    | Character-count based splitting      |
-| `ParagraphChunkingStrategy`     | v0.4.3c    | Paragraph-boundary splitting         |
-| `MarkdownHeaderChunkingStrategy`| v0.4.3d    | Header-hierarchy splitting           |
-| `ChunkingStrategyFactory`       | v0.4.3     | Factory for strategy selection       |
+| Class                            | Defined In | Purpose                         |
+| :------------------------------- | :--------- | :------------------------------ |
+| `FixedSizeChunkingStrategy`      | v0.4.3b    | Character-count based splitting |
+| `ParagraphChunkingStrategy`      | v0.4.3c    | Paragraph-boundary splitting    |
+| `MarkdownHeaderChunkingStrategy` | v0.4.3d    | Header-hierarchy splitting      |
+| `ChunkingStrategyFactory`        | v0.4.3     | Factory for strategy selection  |
 
 ### 5.5 NuGet Packages
 
-| Package                        | Version | Purpose                    | New/Existing |
-| :----------------------------- | :------ | :------------------------- | :----------- |
-| `Markdig`                      | 0.37.x  | Markdown parsing           | Existing     |
+| Package   | Version | Purpose          | New/Existing |
+| :-------- | :------ | :--------------- | :----------- |
+| `Markdig` | 0.37.x  | Markdown parsing | Existing     |
 
 ---
 
@@ -644,27 +650,27 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| Very large documents causing memory pressure | Medium | Low | Stream-based processing for >10MB files |
-| Markdown parsing failures | Medium | Low | Fallback to paragraph chunking |
-| Inconsistent chunk sizes | Low | Medium | Min/max bounds with merging/splitting |
-| Word boundary detection edge cases | Low | Medium | Comprehensive test suite for Unicode |
-| Performance degradation with deep nesting | Low | Low | Flatten headers beyond level 4 |
-| Empty chunks from sparse headers | Low | Medium | Filter empty chunks, merge with siblings |
+| Risk                                         | Impact | Probability | Mitigation                               |
+| :------------------------------------------- | :----- | :---------- | :--------------------------------------- |
+| Very large documents causing memory pressure | Medium | Low         | Stream-based processing for >10MB files  |
+| Markdown parsing failures                    | Medium | Low         | Fallback to paragraph chunking           |
+| Inconsistent chunk sizes                     | Low    | Medium      | Min/max bounds with merging/splitting    |
+| Word boundary detection edge cases           | Low    | Medium      | Comprehensive test suite for Unicode     |
+| Performance degradation with deep nesting    | Low    | Low         | Flatten headers beyond level 4           |
+| Empty chunks from sparse headers             | Low    | Medium      | Filter empty chunks, merge with siblings |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| Chunking speed (1MB document) | < 100ms | Stopwatch timing |
-| Average chunk size variance | < 20% of target | Standard deviation |
-| Word boundary violations | 0% | Unit test coverage |
-| Markdown header detection | > 99% | Test against corpus |
-| Memory usage (10MB document) | < 50MB peak | Memory profiler |
-| Empty chunk rate | < 5% | Filter/merge effectiveness |
+| Metric                        | Target          | Measurement                |
+| :---------------------------- | :-------------- | :------------------------- |
+| Chunking speed (1MB document) | < 100ms         | Stopwatch timing           |
+| Average chunk size variance   | < 20% of target | Standard deviation         |
+| Word boundary violations      | 0%              | Unit test coverage         |
+| Markdown header detection     | > 99%           | Test against corpus        |
+| Memory usage (10MB document)  | < 50MB peak     | Memory profiler            |
+| Empty chunk rate              | < 5%            | Filter/merge effectiveness |
 
 ---
 
@@ -724,14 +730,14 @@ START: "How to handle this chunk's size?"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer          | As a writer, I want my documents split into meaningful chunks.                      | Documents chunked by paragraphs.                      |
-| US-02 | Writer          | As a writer, I want Markdown structure preserved in chunking.                       | Headers create chunk boundaries.                      |
-| US-03 | Writer          | As a writer, I want chunks to not split mid-sentence.                               | Word boundaries respected.                            |
-| US-04 | Developer       | As a developer, I want configurable chunk sizes.                                    | TargetSize, Overlap configurable.                     |
-| US-05 | Developer       | As a developer, I want to select chunking strategy per document.                    | ChunkingMode enum for selection.                      |
-| US-06 | Developer       | As a developer, I want chunk metadata for context.                                  | Index, Heading, Level in metadata.                    |
+| ID    | Role      | Story                                                            | Acceptance Criteria                |
+| :---- | :-------- | :--------------------------------------------------------------- | :--------------------------------- |
+| US-01 | Writer    | As a writer, I want my documents split into meaningful chunks.   | Documents chunked by paragraphs.   |
+| US-02 | Writer    | As a writer, I want Markdown structure preserved in chunking.    | Headers create chunk boundaries.   |
+| US-03 | Writer    | As a writer, I want chunks to not split mid-sentence.            | Word boundaries respected.         |
+| US-04 | Developer | As a developer, I want configurable chunk sizes.                 | TargetSize, Overlap configurable.  |
+| US-05 | Developer | As a developer, I want to select chunking strategy per document. | ChunkingMode enum for selection.   |
+| US-06 | Developer | As a developer, I want chunk metadata for context.               | Index, Heading, Level in metadata. |
 
 ---
 
@@ -1080,19 +1086,19 @@ public class MarkdownHeaderChunkingStrategyTests
 
 ## 15. Observability & Logging
 
-| Level   | Source                         | Message Template                                                       |
-| :------ | :----------------------------- | :--------------------------------------------------------------------- |
-| Debug   | ChunkingStrategyFactory        | `Selected chunking strategy: {Mode}`                                   |
-| Debug   | FixedSizeChunkingStrategy      | `Splitting {ContentLength} chars with target {TargetSize}`             |
-| Debug   | FixedSizeChunkingStrategy      | `Created {ChunkCount} chunks with {Overlap} char overlap`              |
-| Debug   | ParagraphChunkingStrategy      | `Found {ParagraphCount} paragraphs`                                    |
-| Debug   | ParagraphChunkingStrategy      | `Merged {MergeCount} short paragraphs`                                 |
-| Debug   | ParagraphChunkingStrategy      | `Split {SplitCount} long paragraphs`                                   |
-| Debug   | MarkdownHeaderChunkingStrategy | `Found {HeaderCount} headers in document`                              |
-| Debug   | MarkdownHeaderChunkingStrategy | `Created chunk for header: {Heading} (level {Level})`                  |
-| Info    | MarkdownHeaderChunkingStrategy | `No headers found, falling back to paragraph chunking`                 |
-| Warning | FixedSizeChunkingStrategy      | `Chunk exceeds MaxSize after word boundary adjustment: {Size}`         |
-| Info    | All                            | `Chunking complete: {ChunkCount} chunks from {ContentLength} chars`    |
+| Level   | Source                         | Message Template                                                    |
+| :------ | :----------------------------- | :------------------------------------------------------------------ |
+| Debug   | ChunkingStrategyFactory        | `Selected chunking strategy: {Mode}`                                |
+| Debug   | FixedSizeChunkingStrategy      | `Splitting {ContentLength} chars with target {TargetSize}`          |
+| Debug   | FixedSizeChunkingStrategy      | `Created {ChunkCount} chunks with {Overlap} char overlap`           |
+| Debug   | ParagraphChunkingStrategy      | `Found {ParagraphCount} paragraphs`                                 |
+| Debug   | ParagraphChunkingStrategy      | `Merged {MergeCount} short paragraphs`                              |
+| Debug   | ParagraphChunkingStrategy      | `Split {SplitCount} long paragraphs`                                |
+| Debug   | MarkdownHeaderChunkingStrategy | `Found {HeaderCount} headers in document`                           |
+| Debug   | MarkdownHeaderChunkingStrategy | `Created chunk for header: {Heading} (level {Level})`               |
+| Info    | MarkdownHeaderChunkingStrategy | `No headers found, falling back to paragraph chunking`              |
+| Warning | FixedSizeChunkingStrategy      | `Chunk exceeds MaxSize after word boundary adjustment: {Size}`      |
+| Info    | All                            | `Chunking complete: {ChunkCount} chunks from {ContentLength} chars` |
 
 ---
 
@@ -1104,24 +1110,24 @@ public class MarkdownHeaderChunkingStrategyTests
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[FixedSize]**     | Chunks created at target size (±10%).                                        |
-| 2   | **[FixedSize]**     | Overlap applied between consecutive chunks.                                  |
-| 3   | **[FixedSize]**     | Word boundaries respected (no mid-word splits).                              |
-| 4   | **[Paragraph]**     | Splits occur on `\n\n` boundaries.                                           |
-| 5   | **[Paragraph]**     | Short paragraphs (<MinSize) merged with adjacent.                            |
-| 6   | **[Paragraph]**     | Long paragraphs (>MaxSize) split using fixed-size.                           |
-| 7   | **[Markdown]**      | Headers create chunk boundaries.                                             |
-| 8   | **[Markdown]**      | Header text preserved in metadata.                                           |
-| 9   | **[Markdown]**      | Header level (1-6) recorded in metadata.                                     |
-| 10  | **[Markdown]**      | Hierarchical boundaries respected.                                           |
-| 11  | **[Markdown]**      | Falls back gracefully for non-Markdown.                                      |
-| 12  | **[Metadata]**      | All chunks have sequential Index.                                            |
-| 13  | **[Metadata]**      | StartOffset and EndOffset accurate.                                          |
-| 14  | **[Metadata]**      | TotalChunks set correctly.                                                   |
-| 15  | **[Performance]**   | 1MB document chunked in < 100ms.                                             |
-| 16  | **[Performance]**   | Memory usage < 50MB for 10MB document.                                       |
+| #   | Category          | Criterion                                          |
+| :-- | :---------------- | :------------------------------------------------- |
+| 1   | **[FixedSize]**   | Chunks created at target size (±10%).              |
+| 2   | **[FixedSize]**   | Overlap applied between consecutive chunks.        |
+| 3   | **[FixedSize]**   | Word boundaries respected (no mid-word splits).    |
+| 4   | **[Paragraph]**   | Splits occur on `\n\n` boundaries.                 |
+| 5   | **[Paragraph]**   | Short paragraphs (<MinSize) merged with adjacent.  |
+| 6   | **[Paragraph]**   | Long paragraphs (>MaxSize) split using fixed-size. |
+| 7   | **[Markdown]**    | Headers create chunk boundaries.                   |
+| 8   | **[Markdown]**    | Header text preserved in metadata.                 |
+| 9   | **[Markdown]**    | Header level (1-6) recorded in metadata.           |
+| 10  | **[Markdown]**    | Hierarchical boundaries respected.                 |
+| 11  | **[Markdown]**    | Falls back gracefully for non-Markdown.            |
+| 12  | **[Metadata]**    | All chunks have sequential Index.                  |
+| 13  | **[Metadata]**    | StartOffset and EndOffset accurate.                |
+| 14  | **[Metadata]**    | TotalChunks set correctly.                         |
+| 15  | **[Performance]** | 1MB document chunked in < 100ms.                   |
+| 16  | **[Performance]** | Memory usage < 50MB for 10MB document.             |
 
 ---
 
@@ -1163,22 +1169,22 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Chunking"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `ChunkingMode` enum                                            | [ ]    |
-| 2  | `IChunkingStrategy` interface                                  | [ ]    |
-| 3  | `TextChunk` record                                             | [ ]    |
-| 4  | `ChunkMetadata` record                                         | [ ]    |
-| 5  | `ChunkingOptions` record                                       | [ ]    |
-| 6  | `FixedSizeChunkingStrategy` implementation                     | [ ]    |
-| 7  | `ParagraphChunkingStrategy` implementation                     | [ ]    |
-| 8  | `MarkdownHeaderChunkingStrategy` implementation                | [ ]    |
-| 9  | `ChunkingStrategyFactory` implementation                       | [ ]    |
-| 10 | Unit tests for FixedSizeChunkingStrategy                       | [ ]    |
-| 11 | Unit tests for ParagraphChunkingStrategy                       | [ ]    |
-| 12 | Unit tests for MarkdownHeaderChunkingStrategy                  | [ ]    |
-| 13 | Integration tests for chunking pipeline                        | [ ]    |
-| 14 | DI registration in RAGModule.cs                                | [ ]    |
+| #   | Deliverable                                     | Status |
+| :-- | :---------------------------------------------- | :----- |
+| 1   | `ChunkingMode` enum                             | [ ]    |
+| 2   | `IChunkingStrategy` interface                   | [ ]    |
+| 3   | `TextChunk` record                              | [ ]    |
+| 4   | `ChunkMetadata` record                          | [ ]    |
+| 5   | `ChunkingOptions` record                        | [ ]    |
+| 6   | `FixedSizeChunkingStrategy` implementation      | [ ]    |
+| 7   | `ParagraphChunkingStrategy` implementation      | [ ]    |
+| 8   | `MarkdownHeaderChunkingStrategy` implementation | [ ]    |
+| 9   | `ChunkingStrategyFactory` implementation        | [ ]    |
+| 10  | Unit tests for FixedSizeChunkingStrategy        | [ ]    |
+| 11  | Unit tests for ParagraphChunkingStrategy        | [ ]    |
+| 12  | Unit tests for MarkdownHeaderChunkingStrategy   | [ ]    |
+| 13  | Integration tests for chunking pipeline         | [ ]    |
+| 14  | DI registration in RAGModule.cs                 | [ ]    |
 
 ---
 
@@ -1483,13 +1489,13 @@ public sealed class ChunkingStrategyFactory
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Semantic chunking (NLP-based)   | v0.6.x      | Requires embedding model integration            |
-| Sentence-level chunking         | v0.5.x      | Needs sentence tokenizer                        |
-| Code-aware chunking             | v0.5.x      | Requires language-specific parsers              |
-| Streaming chunking for large files | v0.4.8   | Performance optimization                        |
-| Custom chunking rules           | v0.4.7      | UI for configuration                            |
+| Feature                            | Deferred To | Reason                               |
+| :--------------------------------- | :---------- | :----------------------------------- |
+| Semantic chunking (NLP-based)      | v0.6.x      | Requires embedding model integration |
+| Sentence-level chunking            | v0.5.x      | Needs sentence tokenizer             |
+| Code-aware chunking                | v0.5.x      | Requires language-specific parsers   |
+| Streaming chunking for large files | v0.4.8      | Performance optimization             |
+| Custom chunking rules              | v0.4.7      | UI for configuration                 |
 
 ---
 

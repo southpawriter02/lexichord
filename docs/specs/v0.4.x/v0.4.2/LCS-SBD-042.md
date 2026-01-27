@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-042                              |
-| **Version**      | v0.4.2                                   |
-| **Codename**     | The Watcher (File Ingestion Pipeline)    |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                                          |
+| :--------------- | :------------------------------------------------------------- |
+| **Document ID**  | LCS-SBD-042                                                    |
+| **Version**      | v0.4.2                                                         |
+| **Codename**     | The Watcher (File Ingestion Pipeline)                          |
+| **Status**       | Draft                                                          |
+| **Last Updated** | 2026-01-27                                                     |
+| **Owner**        | Lead Architect                                                 |
 | **Depends On**   | v0.4.1 (Vector Foundation), v0.1.2b (IRobustFileSystemWatcher) |
 
 ---
@@ -49,16 +49,16 @@ File watching and change detection is **Core** functionality. All license tiers 
 
 ## 2. Dependencies on Prior Versions
 
-| Component                  | Source Version | Usage in v0.4.2                                  |
-| :------------------------- | :------------- | :----------------------------------------------- |
-| `IDocumentRepository`      | v0.4.1c        | Store document metadata and status               |
-| `Document`                 | v0.4.1c        | Document entity for tracking indexed files       |
-| `DocumentStatus`           | v0.4.1c        | Indexing pipeline states                         |
-| `IRobustFileSystemWatcher` | v0.1.2b        | File system change notifications                 |
-| `IWorkspaceService`        | v0.1.2a        | Get current workspace root path                  |
-| `IMediator`                | v0.0.7a        | Publish ingestion events                         |
-| `IConfigurationService`    | v0.0.3d        | Ingestion configuration settings                 |
-| `Serilog`                  | v0.0.3b        | Structured logging                               |
+| Component                  | Source Version | Usage in v0.4.2                            |
+| :------------------------- | :------------- | :----------------------------------------- |
+| `IDocumentRepository`      | v0.4.1c        | Store document metadata and status         |
+| `Document`                 | v0.4.1c        | Document entity for tracking indexed files |
+| `DocumentStatus`           | v0.4.1c        | Indexing pipeline states                   |
+| `IRobustFileSystemWatcher` | v0.1.2b        | File system change notifications           |
+| `IWorkspaceService`        | v0.1.2a        | Get current workspace root path            |
+| `IMediator`                | v0.0.7a        | Publish ingestion events                   |
+| `IConfiguration`           | v0.0.3d        | Ingestion configuration settings           |
+| `ILogger<T>`               | v0.0.3b        | Structured logging                         |
 
 ---
 
@@ -66,12 +66,12 @@ File watching and change detection is **Core** functionality. All license tiers 
 
 ### 3.1 v0.4.2a: Ingestion Service Interface
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-042a                                  |
-| **Title**        | Ingestion Service Interface               |
-| **Module**       | `Lexichord.Abstractions`                  |
-| **License Tier** | Core                                      |
+| Field            | Value                       |
+| :--------------- | :-------------------------- |
+| **Sub-Part ID**  | RAG-042a                    |
+| **Title**        | Ingestion Service Interface |
+| **Module**       | `Lexichord.Abstractions`    |
+| **License Tier** | Core                        |
 
 **Goal:** Define `IIngestionService` interface in Abstractions for file and directory ingestion operations.
 
@@ -204,12 +204,12 @@ public enum IngestionPhase
 
 ### 3.2 v0.4.2b: Hash-Based Change Detection
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-042b                                  |
-| **Title**        | Hash-Based Change Detection               |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                       |
+| :--------------- | :-------------------------- |
+| **Sub-Part ID**  | RAG-042b                    |
+| **Title**        | Hash-Based Change Detection |
+| **Module**       | `Lexichord.Modules.RAG`     |
+| **License Tier** | Core                        |
 
 **Goal:** Implement `FileHashService` using SHA-256 to detect file modifications and skip unchanged files.
 
@@ -314,12 +314,12 @@ DETECT_CHANGE(filePath, storedDocument):
 
 ### 3.3 v0.4.2c: File Watcher Integration
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-042c                                  |
-| **Title**        | File Watcher Integration                  |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                    |
+| :--------------- | :----------------------- |
+| **Sub-Part ID**  | RAG-042c                 |
+| **Title**        | File Watcher Integration |
+| **Module**       | `Lexichord.Modules.RAG`  |
+| **License Tier** | Core                     |
 
 **Goal:** Extend `IRobustFileSystemWatcher` integration to publish `FileIndexingRequestedEvent` when supported files are created or modified.
 
@@ -369,15 +369,15 @@ public enum FileChangeType
 
 **Supported File Extensions:**
 
-| Extension | Description        | Enabled by Default |
-| :-------- | :----------------- | :----------------- |
-| `.md`     | Markdown           | Yes                |
-| `.txt`    | Plain text         | Yes                |
-| `.json`   | JSON               | Yes                |
-| `.yaml`   | YAML               | Yes                |
-| `.yml`    | YAML (alternate)   | Yes                |
-| `.rst`    | reStructuredText   | No                 |
-| `.adoc`   | AsciiDoc           | No                 |
+| Extension | Description      | Enabled by Default |
+| :-------- | :--------------- | :----------------- |
+| `.md`     | Markdown         | Yes                |
+| `.txt`    | Plain text       | Yes                |
+| `.json`   | JSON             | Yes                |
+| `.yaml`   | YAML             | Yes                |
+| `.yml`    | YAML (alternate) | Yes                |
+| `.rst`    | reStructuredText | No                 |
+| `.adoc`   | AsciiDoc         | No                 |
 
 **Dependencies:**
 
@@ -388,12 +388,12 @@ public enum FileChangeType
 
 ### 3.4 v0.4.2d: Ingestion Queue
 
-| Field            | Value                                     |
-| :--------------- | :---------------------------------------- |
-| **Sub-Part ID**  | RAG-042d                                  |
-| **Title**        | Ingestion Queue                           |
-| **Module**       | `Lexichord.Modules.RAG`                   |
-| **License Tier** | Core                                      |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Sub-Part ID**  | RAG-042d                |
+| **Title**        | Ingestion Queue         |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 **Goal:** Implement `IngestionQueue` using `System.Threading.Channels` for sequential file processing with throttling.
 
@@ -463,12 +463,12 @@ public enum IngestionPriority
 
 **Configuration Options:**
 
-| Setting                  | Default | Description                              |
-| :----------------------- | :------ | :--------------------------------------- |
-| `MaxConcurrentIngestions` | 2       | Maximum parallel ingestion operations    |
-| `ThrottleDelayMs`        | 500     | Delay between batch requests (API rate limiting) |
-| `MaxQueueSize`           | 1000    | Maximum items in queue                   |
-| `ProcessingTimeoutMs`    | 60000   | Timeout per file processing              |
+| Setting                   | Default | Description                                      |
+| :------------------------ | :------ | :----------------------------------------------- |
+| `MaxConcurrentIngestions` | 2       | Maximum parallel ingestion operations            |
+| `ThrottleDelayMs`         | 500     | Delay between batch requests (API rate limiting) |
+| `MaxQueueSize`            | 1000    | Maximum items in queue                           |
+| `ProcessingTimeoutMs`     | 60000   | Timeout per file processing                      |
 
 **Queue Flow Diagram:**
 
@@ -511,33 +511,33 @@ sequenceDiagram
 
 ## 4. Implementation Checklist
 
-| #  | Sub-Part | Task                                                      | Est. Hours |
-| :- | :------- | :-------------------------------------------------------- | :--------- |
-| 1  | v0.4.2a  | Create IIngestionService interface                        | 1          |
-| 2  | v0.4.2a  | Create IngestionResult record                             | 0.5        |
-| 3  | v0.4.2a  | Create IngestionProgressEventArgs                         | 0.5        |
-| 4  | v0.4.2a  | Create IngestionPhase enum                                | 0.5        |
-| 5  | v0.4.2a  | Unit tests for interface contracts                        | 1          |
-| 6  | v0.4.2b  | Create IFileHashService interface                         | 0.5        |
-| 7  | v0.4.2b  | Implement FileHashService with SHA-256                    | 2          |
-| 8  | v0.4.2b  | Implement quick metadata pre-check                        | 1          |
-| 9  | v0.4.2b  | Implement HasChangedAsync with full logic                 | 1.5        |
-| 10 | v0.4.2b  | Unit tests for hash service                               | 1.5        |
-| 11 | v0.4.2c  | Create FileIndexingRequestedEvent                         | 0.5        |
-| 12 | v0.4.2c  | Create FileWatcherIngestionHandler                        | 2          |
-| 13 | v0.4.2c  | Implement file extension filtering                        | 1          |
-| 14 | v0.4.2c  | Implement debouncing for rapid changes                    | 1.5        |
-| 15 | v0.4.2c  | Integration tests for event publishing                    | 1.5        |
-| 16 | v0.4.2d  | Create IIngestionQueue interface                          | 0.5        |
-| 17 | v0.4.2d  | Implement IngestionQueue with Channels                    | 2.5        |
-| 18 | v0.4.2d  | Implement IngestionBackgroundService                      | 2.5        |
-| 19 | v0.4.2d  | Implement priority queue logic                            | 1          |
-| 20 | v0.4.2d  | Implement graceful shutdown                               | 1          |
-| 21 | v0.4.2d  | Unit tests for queue behavior                             | 2          |
-| 22 | All      | Implement IngestionService orchestration                  | 3          |
-| 23 | All      | Integration tests for full pipeline                       | 2          |
-| 24 | All      | DI registration in RAGModule.cs                           | 0.5        |
-| **Total** |   |                                                           | **31 hours** |
+| #         | Sub-Part | Task                                      | Est. Hours   |
+| :-------- | :------- | :---------------------------------------- | :----------- |
+| 1         | v0.4.2a  | Create IIngestionService interface        | 1            |
+| 2         | v0.4.2a  | Create IngestionResult record             | 0.5          |
+| 3         | v0.4.2a  | Create IngestionProgressEventArgs         | 0.5          |
+| 4         | v0.4.2a  | Create IngestionPhase enum                | 0.5          |
+| 5         | v0.4.2a  | Unit tests for interface contracts        | 1            |
+| 6         | v0.4.2b  | Create IFileHashService interface         | 0.5          |
+| 7         | v0.4.2b  | Implement FileHashService with SHA-256    | 2            |
+| 8         | v0.4.2b  | Implement quick metadata pre-check        | 1            |
+| 9         | v0.4.2b  | Implement HasChangedAsync with full logic | 1.5          |
+| 10        | v0.4.2b  | Unit tests for hash service               | 1.5          |
+| 11        | v0.4.2c  | Create FileIndexingRequestedEvent         | 0.5          |
+| 12        | v0.4.2c  | Create FileWatcherIngestionHandler        | 2            |
+| 13        | v0.4.2c  | Implement file extension filtering        | 1            |
+| 14        | v0.4.2c  | Implement debouncing for rapid changes    | 1.5          |
+| 15        | v0.4.2c  | Integration tests for event publishing    | 1.5          |
+| 16        | v0.4.2d  | Create IIngestionQueue interface          | 0.5          |
+| 17        | v0.4.2d  | Implement IngestionQueue with Channels    | 2.5          |
+| 18        | v0.4.2d  | Implement IngestionBackgroundService      | 2.5          |
+| 19        | v0.4.2d  | Implement priority queue logic            | 1            |
+| 20        | v0.4.2d  | Implement graceful shutdown               | 1            |
+| 21        | v0.4.2d  | Unit tests for queue behavior             | 2            |
+| 22        | All      | Implement IngestionService orchestration  | 3            |
+| 23        | All      | Integration tests for full pipeline       | 2            |
+| 24        | All      | DI registration in RAGModule.cs           | 0.5          |
+| **Total** |          |                                           | **31 hours** |
 
 ---
 
@@ -545,39 +545,39 @@ sequenceDiagram
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface                  | Source Version | Purpose                              |
-| :------------------------- | :------------- | :----------------------------------- |
-| `IDocumentRepository`      | v0.4.1c        | Document storage and retrieval       |
-| `IRobustFileSystemWatcher` | v0.1.2b        | File system event notifications      |
-| `IWorkspaceService`        | v0.1.2a        | Workspace root path                  |
-| `IMediator`                | v0.0.7a        | Event publishing                     |
-| `IConfigurationService`    | v0.0.3d        | Configuration settings               |
+| Interface                  | Source Version | Purpose                         |
+| :------------------------- | :------------- | :------------------------------ |
+| `IDocumentRepository`      | v0.4.1c        | Document storage and retrieval  |
+| `IRobustFileSystemWatcher` | v0.1.2b        | File system event notifications |
+| `IWorkspaceService`        | v0.1.2a        | Workspace root path             |
+| `IMediator`                | v0.0.7a        | Event publishing                |
+| `IConfiguration`           | v0.0.3d        | Configuration settings          |
 
 ### 5.2 New Interfaces (defined in v0.4.2)
 
-| Interface                   | Defined In | Module        | Purpose                 |
-| :-------------------------- | :--------- | :------------ | :---------------------- |
-| `IIngestionService`         | v0.4.2a    | Abstractions  | File ingestion operations |
-| `IFileHashService`          | v0.4.2b    | Abstractions  | Hash computation and comparison |
-| `IIngestionQueue`           | v0.4.2d    | Abstractions  | Queue management        |
+| Interface           | Defined In | Module       | Purpose                         |
+| :------------------ | :--------- | :----------- | :------------------------------ |
+| `IIngestionService` | v0.4.2a    | Abstractions | File ingestion operations       |
+| `IFileHashService`  | v0.4.2b    | Abstractions | Hash computation and comparison |
+| `IIngestionQueue`   | v0.4.2d    | Abstractions | Queue management                |
 
 ### 5.3 New Records/DTOs (defined in v0.4.2)
 
-| Record                        | Defined In | Purpose                                |
-| :---------------------------- | :--------- | :------------------------------------- |
-| `IngestionResult`             | v0.4.2a    | Ingestion operation result             |
-| `IngestionProgressEventArgs`  | v0.4.2a    | Progress reporting                     |
-| `FileMetadata`                | v0.4.2b    | File size and modification time        |
-| `FileIndexingRequestedEvent`  | v0.4.2c    | File change notification               |
-| `IngestionQueueEventArgs`     | v0.4.2d    | Queue processing events                |
+| Record                       | Defined In | Purpose                         |
+| :--------------------------- | :--------- | :------------------------------ |
+| `IngestionResult`            | v0.4.2a    | Ingestion operation result      |
+| `IngestionProgressEventArgs` | v0.4.2a    | Progress reporting              |
+| `FileMetadata`               | v0.4.2b    | File size and modification time |
+| `FileIndexingRequestedEvent` | v0.4.2c    | File change notification        |
+| `IngestionQueueEventArgs`    | v0.4.2d    | Queue processing events         |
 
 ### 5.4 NuGet Packages
 
-| Package                        | Version | Purpose                    | New/Existing |
-| :----------------------------- | :------ | :------------------------- | :----------- |
-| `System.Threading.Channels`    | 9.0.x   | Bounded ingestion queue    | New          |
-| `System.IO.Hashing`            | 9.0.x   | SHA-256 computation        | New          |
-| `MediatR`                      | 12.x    | Event publishing           | Existing     |
+| Package                     | Version | Purpose                 | New/Existing |
+| :-------------------------- | :------ | :---------------------- | :----------- |
+| `System.Threading.Channels` | 9.0.x   | Bounded ingestion queue | New          |
+| `System.IO.Hashing`         | 9.0.x   | SHA-256 computation     | New          |
+| `MediatR`                   | 12.x    | Event publishing        | Existing     |
 
 ---
 
@@ -672,27 +672,27 @@ sequenceDiagram
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-| :--- | :----- | :---------- | :--------- |
-| High file change frequency overwhelming queue | Medium | Medium | Debouncing + bounded queue with backpressure |
-| Large files blocking processing | High | Low | Streaming hash computation + timeout |
-| File locked during hashing | Medium | Medium | Retry with exponential backoff |
-| Queue items lost on crash | Medium | Low | Persist queue to disk before processing |
-| Race condition with rapid file changes | Low | Medium | Use file version check before processing |
-| Memory pressure with many pending items | Medium | Low | Bounded queue with configurable limit |
+| Risk                                          | Impact | Probability | Mitigation                                   |
+| :-------------------------------------------- | :----- | :---------- | :------------------------------------------- |
+| High file change frequency overwhelming queue | Medium | Medium      | Debouncing + bounded queue with backpressure |
+| Large files blocking processing               | High   | Low         | Streaming hash computation + timeout         |
+| File locked during hashing                    | Medium | Medium      | Retry with exponential backoff               |
+| Queue items lost on crash                     | Medium | Low         | Persist queue to disk before processing      |
+| Race condition with rapid file changes        | Low    | Medium      | Use file version check before processing     |
+| Memory pressure with many pending items       | Medium | Low         | Bounded queue with configurable limit        |
 
 ---
 
 ## 9. Success Metrics
 
-| Metric | Target | Measurement |
-| :----- | :----- | :---------- |
-| File change detection latency | < 1s | Time from save to event |
-| Hash computation (1MB file) | < 50ms | Stopwatch timing |
-| Queue enqueue operation | < 1ms | Channel write time |
-| Debounce effectiveness | 90% reduction | Duplicate event count |
-| Background service startup | < 100ms | Service initialization |
-| Graceful shutdown | < 5s | Pending item completion |
+| Metric                        | Target        | Measurement             |
+| :---------------------------- | :------------ | :---------------------- |
+| File change detection latency | < 1s          | Time from save to event |
+| Hash computation (1MB file)   | < 50ms        | Stopwatch timing        |
+| Queue enqueue operation       | < 1ms         | Channel write time      |
+| Debounce effectiveness        | 90% reduction | Duplicate event count   |
+| Background service startup    | < 100ms       | Service initialization  |
+| Graceful shutdown             | < 5s          | Pending item completion |
 
 ---
 
@@ -765,14 +765,14 @@ START: "Has file changed since last index?"
 
 ## 12. User Stories
 
-| ID    | Role            | Story                                                                               | Acceptance Criteria                                   |
-| :---- | :-------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------- |
-| US-01 | Writer          | As a writer, I want my files automatically detected for indexing.                   | New .md files trigger indexing.                       |
-| US-02 | Writer          | As a writer, I want modified files to be re-indexed automatically.                  | Saving a file triggers re-indexing.                   |
-| US-03 | Writer          | As a writer, I want unchanged files to be skipped for efficiency.                   | Saving without changes doesn't re-index.              |
-| US-04 | Developer       | As a developer, I want to monitor ingestion queue status.                           | Queue depth and processing state visible.             |
-| US-05 | Developer       | As a developer, I want to configure ingestion throttling.                           | MaxConcurrent and ThrottleDelay configurable.         |
-| US-06 | Developer       | As a developer, I want ingestion to not block the UI.                               | All processing happens in background.                 |
+| ID    | Role      | Story                                                              | Acceptance Criteria                           |
+| :---- | :-------- | :----------------------------------------------------------------- | :-------------------------------------------- |
+| US-01 | Writer    | As a writer, I want my files automatically detected for indexing.  | New .md files trigger indexing.               |
+| US-02 | Writer    | As a writer, I want modified files to be re-indexed automatically. | Saving a file triggers re-indexing.           |
+| US-03 | Writer    | As a writer, I want unchanged files to be skipped for efficiency.  | Saving without changes doesn't re-index.      |
+| US-04 | Developer | As a developer, I want to monitor ingestion queue status.          | Queue depth and processing state visible.     |
+| US-05 | Developer | As a developer, I want to configure ingestion throttling.          | MaxConcurrent and ThrottleDelay configurable. |
+| US-06 | Developer | As a developer, I want ingestion to not block the UI.              | All processing happens in background.         |
 
 ---
 
@@ -1028,22 +1028,22 @@ public class IngestionQueueTests
 
 ## 15. Observability & Logging
 
-| Level   | Source                    | Message Template                                                       |
-| :------ | :------------------------ | :--------------------------------------------------------------------- |
-| Debug   | FileWatcherHandler        | `File change detected: {FilePath} ({ChangeType})`                      |
-| Debug   | FileWatcherHandler        | `Skipping unsupported extension: {Extension}`                          |
-| Debug   | FileHashService           | `Computing hash for: {FilePath} ({FileSize} bytes)`                    |
-| Debug   | FileHashService           | `Hash computed in {ElapsedMs}ms: {Hash}`                               |
-| Info    | FileHashService           | `File change detected: {FilePath} (hash mismatch)`                     |
-| Debug   | FileHashService           | `File unchanged: {FilePath} (hash match)`                              |
-| Info    | IngestionQueue            | `Enqueued for ingestion: {FilePath} (Priority: {Priority})`            |
-| Debug   | IngestionQueue            | `Queue depth: {Count}`                                                 |
-| Warning | IngestionQueue            | `Queue full, dropping: {FilePath}`                                     |
-| Info    | IngestionBackgroundService | `Processing: {FilePath}`                                              |
-| Info    | IngestionBackgroundService | `Ingestion completed: {FilePath} in {ElapsedMs}ms`                    |
-| Warning | IngestionBackgroundService | `Ingestion failed: {FilePath} - {ErrorMessage}`                       |
-| Info    | IngestionBackgroundService | `Background service started`                                          |
-| Info    | IngestionBackgroundService | `Background service stopping, {PendingCount} items pending`           |
+| Level   | Source                     | Message Template                                            |
+| :------ | :------------------------- | :---------------------------------------------------------- |
+| Debug   | FileWatcherHandler         | `File change detected: {FilePath} ({ChangeType})`           |
+| Debug   | FileWatcherHandler         | `Skipping unsupported extension: {Extension}`               |
+| Debug   | FileHashService            | `Computing hash for: {FilePath} ({FileSize} bytes)`         |
+| Debug   | FileHashService            | `Hash computed in {ElapsedMs}ms: {Hash}`                    |
+| Info    | FileHashService            | `File change detected: {FilePath} (hash mismatch)`          |
+| Debug   | FileHashService            | `File unchanged: {FilePath} (hash match)`                   |
+| Info    | IngestionQueue             | `Enqueued for ingestion: {FilePath} (Priority: {Priority})` |
+| Debug   | IngestionQueue             | `Queue depth: {Count}`                                      |
+| Warning | IngestionQueue             | `Queue full, dropping: {FilePath}`                          |
+| Info    | IngestionBackgroundService | `Processing: {FilePath}`                                    |
+| Info    | IngestionBackgroundService | `Ingestion completed: {FilePath} in {ElapsedMs}ms`          |
+| Warning | IngestionBackgroundService | `Ingestion failed: {FilePath} - {ErrorMessage}`             |
+| Info    | IngestionBackgroundService | `Background service started`                                |
+| Info    | IngestionBackgroundService | `Background service stopping, {PendingCount} items pending` |
 
 ---
 
@@ -1055,26 +1055,26 @@ public class IngestionQueueTests
 
 ## 17. Acceptance Criteria (QA)
 
-| #   | Category            | Criterion                                                                    |
-| :-- | :------------------ | :--------------------------------------------------------------------------- |
-| 1   | **[Detection]**     | File watcher detects new .md file creation.                                  |
-| 2   | **[Detection]**     | File watcher detects .md file modification.                                  |
-| 3   | **[Detection]**     | File watcher ignores unsupported extensions (.exe, .dll).                    |
-| 4   | **[Detection]**     | File watcher ignores .git directory.                                         |
-| 5   | **[Hashing]**       | SHA-256 hash computed correctly for files.                                   |
-| 6   | **[Hashing]**       | Same content produces same hash across files.                                |
-| 7   | **[Hashing]**       | Different content produces different hash.                                   |
-| 8   | **[Change]**        | Unchanged file (same hash) is skipped.                                       |
-| 9   | **[Change]**        | Changed file (different hash) is re-indexed.                                 |
-| 10  | **[Change]**        | File size pre-check detects obvious changes.                                 |
-| 11  | **[Queue]**         | Files enqueued without blocking.                                             |
-| 12  | **[Queue]**         | Duplicate paths are not re-enqueued.                                         |
-| 13  | **[Queue]**         | High priority items processed before normal.                                 |
-| 14  | **[Processing]**    | Background service processes queue items.                                    |
-| 15  | **[Processing]**    | Throttle delay applied between items.                                        |
-| 16  | **[Processing]**    | Graceful shutdown completes pending items.                                   |
-| 17  | **[Performance]**   | Hash computation < 50ms for 1MB file.                                        |
-| 18  | **[Performance]**   | File detection latency < 1s.                                                 |
+| #   | Category          | Criterion                                                 |
+| :-- | :---------------- | :-------------------------------------------------------- |
+| 1   | **[Detection]**   | File watcher detects new .md file creation.               |
+| 2   | **[Detection]**   | File watcher detects .md file modification.               |
+| 3   | **[Detection]**   | File watcher ignores unsupported extensions (.exe, .dll). |
+| 4   | **[Detection]**   | File watcher ignores .git directory.                      |
+| 5   | **[Hashing]**     | SHA-256 hash computed correctly for files.                |
+| 6   | **[Hashing]**     | Same content produces same hash across files.             |
+| 7   | **[Hashing]**     | Different content produces different hash.                |
+| 8   | **[Change]**      | Unchanged file (same hash) is skipped.                    |
+| 9   | **[Change]**      | Changed file (different hash) is re-indexed.              |
+| 10  | **[Change]**      | File size pre-check detects obvious changes.              |
+| 11  | **[Queue]**       | Files enqueued without blocking.                          |
+| 12  | **[Queue]**       | Duplicate paths are not re-enqueued.                      |
+| 13  | **[Queue]**       | High priority items processed before normal.              |
+| 14  | **[Processing]**  | Background service processes queue items.                 |
+| 15  | **[Processing]**  | Throttle delay applied between items.                     |
+| 16  | **[Processing]**  | Graceful shutdown completes pending items.                |
+| 17  | **[Performance]** | Hash computation < 50ms for 1MB file.                     |
+| 18  | **[Performance]** | File detection latency < 1s.                              |
 
 ---
 
@@ -1114,24 +1114,24 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~RAG"
 
 ## 19. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `IIngestionService` interface                                  | [ ]    |
-| 2  | `IngestionResult` record                                       | [ ]    |
-| 3  | `IngestionProgressEventArgs` class                             | [ ]    |
-| 4  | `IFileHashService` interface                                   | [ ]    |
-| 5  | `FileHashService` implementation                               | [ ]    |
-| 6  | `FileMetadata` record                                          | [ ]    |
-| 7  | `FileIndexingRequestedEvent` notification                      | [ ]    |
-| 8  | `FileWatcherIngestionHandler` event handler                    | [ ]    |
-| 9  | `IIngestionQueue` interface                                    | [ ]    |
-| 10 | `IngestionQueue` implementation                                | [ ]    |
-| 11 | `IngestionBackgroundService` hosted service                    | [ ]    |
-| 12 | `IngestionService` orchestration implementation                | [ ]    |
-| 13 | Unit tests for FileHashService                                 | [ ]    |
-| 14 | Unit tests for IngestionQueue                                  | [ ]    |
-| 15 | Integration tests for file watcher                             | [ ]    |
-| 16 | DI registration in RAGModule.cs                                | [ ]    |
+| #   | Deliverable                                     | Status |
+| :-- | :---------------------------------------------- | :----- |
+| 1   | `IIngestionService` interface                   | [ ]    |
+| 2   | `IngestionResult` record                        | [ ]    |
+| 3   | `IngestionProgressEventArgs` class              | [ ]    |
+| 4   | `IFileHashService` interface                    | [ ]    |
+| 5   | `FileHashService` implementation                | [ ]    |
+| 6   | `FileMetadata` record                           | [ ]    |
+| 7   | `FileIndexingRequestedEvent` notification       | [ ]    |
+| 8   | `FileWatcherIngestionHandler` event handler     | [ ]    |
+| 9   | `IIngestionQueue` interface                     | [ ]    |
+| 10  | `IngestionQueue` implementation                 | [ ]    |
+| 11  | `IngestionBackgroundService` hosted service     | [ ]    |
+| 12  | `IngestionService` orchestration implementation | [ ]    |
+| 13  | Unit tests for FileHashService                  | [ ]    |
+| 14  | Unit tests for IngestionQueue                   | [ ]    |
+| 15  | Integration tests for file watcher              | [ ]    |
+| 16  | DI registration in RAGModule.cs                 | [ ]    |
 
 ---
 
@@ -1355,13 +1355,13 @@ public record IngestionQueueItem
 
 ## 21. Deferred Features
 
-| Feature                         | Deferred To | Reason                                          |
-| :------------------------------ | :---------- | :---------------------------------------------- |
-| Queue persistence to disk       | v0.4.8      | Nice-to-have for crash recovery                 |
-| Distributed queue (Redis)       | v0.9.x      | Enterprise multi-instance support               |
-| Custom file extension config    | v0.4.7      | UI for configuration                            |
-| Directory exclusion patterns    | v0.4.7      | UI for configuration                            |
-| Real-time queue progress UI     | v0.4.7      | Index Manager feature                           |
+| Feature                      | Deferred To | Reason                            |
+| :--------------------------- | :---------- | :-------------------------------- |
+| Queue persistence to disk    | v0.4.8      | Nice-to-have for crash recovery   |
+| Distributed queue (Redis)    | v0.9.x      | Enterprise multi-instance support |
+| Custom file extension config | v0.4.7      | UI for configuration              |
+| Directory exclusion patterns | v0.4.7      | UI for configuration              |
+| Real-time queue progress UI  | v0.4.7      | Index Manager feature             |
 
 ---
 
