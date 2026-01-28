@@ -150,21 +150,21 @@ If this foundation is flawed, Module loading (v0.0.4) will fail to register serv
 
 ## 3. Implementation Checklist (for Developer)
 
-| Step     | Description                                                                 | Status |
-| :------- | :-------------------------------------------------------------------------- | :----- |
-| **0.3a** | `Microsoft.Extensions.DependencyInjection` package installed.               | [ ]    |
-| **0.3a** | `HostServices.ConfigureServices()` registers all existing services.         | [ ]    |
-| **0.3a** | `App.axaml.cs` builds `IServiceProvider` on startup.                        | [ ]    |
-| **0.3b** | Serilog packages installed (Core, Console, File, Enrichers).                | [ ]    |
-| **0.3b** | Bootstrap logger wraps application startup.                                 | [ ]    |
-| **0.3b** | Rolling log files created in `{AppData}/Lexichord/Logs/`.                   | [ ]    |
-| **0.3b** | `ILogger<T>` injected into `ThemeManager` and `WindowStateService`.         | [ ]    |
-| **0.3c** | Global exception handlers registered for AppDomain and TaskScheduler.       | [ ]    |
-| **0.3c** | `CrashReportWindow.axaml` displays exception details.                       | [ ]    |
-| **0.3c** | Crash reports saved to `{AppData}/Lexichord/CrashReports/`.                 | [ ]    |
-| **0.3d** | `appsettings.json` created with Lexichord and Serilog sections.             | [ ]    |
-| **0.3d** | Configuration loads from JSON, Environment Variables, and CLI.              | [ ]    |
-| **0.3d** | `--debug-mode` CLI argument enables verbose logging.                        | [ ]    |
+| Step     | Description                                                           | Status |
+| :------- | :-------------------------------------------------------------------- | :----- |
+| **0.3a** | `Microsoft.Extensions.DependencyInjection` package installed.         | [x]    |
+| **0.3a** | `HostServices.ConfigureServices()` registers all existing services.   | [x]    |
+| **0.3a** | `App.axaml.cs` builds `IServiceProvider` on startup.                  | [x]    |
+| **0.3b** | Serilog packages installed (Core, Console, File, Enrichers).          | [ ]    |
+| **0.3b** | Bootstrap logger wraps application startup.                           | [ ]    |
+| **0.3b** | Rolling log files created in `{AppData}/Lexichord/Logs/`.             | [ ]    |
+| **0.3b** | `ILogger<T>` injected into `ThemeManager` and `WindowStateService`.   | [ ]    |
+| **0.3c** | Global exception handlers registered for AppDomain and TaskScheduler. | [ ]    |
+| **0.3c** | `CrashReportWindow.axaml` displays exception details.                 | [ ]    |
+| **0.3c** | Crash reports saved to `{AppData}/Lexichord/CrashReports/`.           | [ ]    |
+| **0.3d** | `appsettings.json` created with Lexichord and Serilog sections.       | [ ]    |
+| **0.3d** | Configuration loads from JSON, Environment Variables, and CLI.        | [ ]    |
+| **0.3d** | `--debug-mode` CLI argument enables verbose logging.                  | [ ]    |
 
 ## 4. Risks & Mitigations
 
