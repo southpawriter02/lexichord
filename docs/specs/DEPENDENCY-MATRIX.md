@@ -330,6 +330,19 @@
 | `SearchHistoryService`       | v0.4.6d    | Modules.RAG | Query history with persistence |
 | `HighlightedTextBlock`       | v0.4.6b    | Modules.RAG | Text highlighting control      |
 
+**New Enums (v0.4.6):**
+
+| Enum                      | Defined In | Module       | Purpose                             |
+| :------------------------ | :--------- | :----------- | :---------------------------------- |
+| `HighlightStyle`          | v0.4.6c    | Abstractions | Text highlight styles in editor     |
+| `SearchHistoryChangeType` | v0.4.6d    | Modules.RAG  | Type of history change (Added, etc) |
+
+**New Event Args (v0.4.6):**
+
+| Record/Class                    | Defined In | Module      | Purpose                        |
+| :------------------------------ | :--------- | :---------- | :----------------------------- |
+| `SearchHistoryChangedEventArgs` | v0.4.6d    | Modules.RAG | Event args for history changes |
+
 ### 1.12 v0.4.7 Index Manager Interfaces
 
 | Interface                 | Defined In | Module      | Purpose                    |
@@ -499,6 +512,7 @@
 | v0.3.7  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
 | v0.4.3  | `Markdig` from v0.1.3b                | `Markdig` is **NEW** in **v0.4.3d** (NuGet package introduced for MarkdownHeaderChunkingStrategy)                        |
 | v0.4.5  | `FeatureNotLicensedException` v0.4.5d | Forward dependency: Exception is **MOVED** to **v0.4.4d** (first used in DocumentIndexingPipeline)                       |
+| v0.4.6  | `DocumentInfo` in test code           | Ghost type: Use **`Document`** (v0.4.1c) - no `DocumentInfo` type exists                                                 |
 
 ### 4.2 Missing Definitions (Addressed)
 
@@ -759,8 +773,11 @@ graph TB
 - [ ] IReferenceNavigationService (v0.4.6c)
 - [ ] ReferenceNavigationService implementation (v0.4.6c)
 - [ ] ReferenceNavigatedEvent (v0.4.6c)
+- [ ] HighlightStyle enum (v0.4.6c)
 - [ ] ISearchHistoryService (v0.4.6d)
 - [ ] SearchHistoryService implementation (v0.4.6d)
+- [ ] SearchHistoryChangeType enum (v0.4.6d)
+- [ ] SearchHistoryChangedEventArgs (v0.4.6d)
 
 ### v0.4.7 Prerequisites for v0.4.8+
 

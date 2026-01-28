@@ -2,16 +2,16 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-046b                             |
-| **Version**      | v0.4.6b                                  |
-| **Title**        | Search Result Item                       |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
-| **Module**       | `Lexichord.Modules.RAG`                  |
-| **License Tier** | WriterPro                                |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Document ID**  | LCS-DES-046b            |
+| **Version**      | v0.4.6b                 |
+| **Title**        | Search Result Item      |
+| **Status**       | Draft                   |
+| **Last Updated** | 2026-01-27              |
+| **Owner**        | Lead Architect          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 ---
 
@@ -423,21 +423,21 @@ public class HighlightedTextBlock : TextBlock
 
 ### 3.2 Score Badge Colors
 
-| Score Range | Color | Meaning |
-| :---------- | :---- | :------ |
-| ≥ 90% | Green (#22c55e) | High relevance |
-| 80-89% | Yellow (#eab308) | Medium relevance |
-| 70-79% | Orange (#f97316) | Low relevance |
-| < 70% | Gray (#6b7280) | Minimal relevance |
+| Score Range | Color            | Meaning           |
+| :---------- | :--------------- | :---------------- |
+| ≥ 90%       | Green (#22c55e)  | High relevance    |
+| 80-89%      | Yellow (#eab308) | Medium relevance  |
+| 70-79%      | Orange (#f97316) | Low relevance     |
+| < 70%       | Gray (#6b7280)   | Minimal relevance |
 
 ### 3.3 Typography
 
-| Element | Size | Weight | Color |
-| :------ | :--- | :----- | :---- |
-| Document name | 14px | SemiBold | Primary |
-| Score badge | 11px | Medium | On badge |
-| Section | 12px | Normal | Secondary |
-| Preview | 13px | Normal | Secondary |
+| Element          | Size | Weight   | Color             |
+| :--------------- | :--- | :------- | :---------------- |
+| Document name    | 14px | SemiBold | Primary           |
+| Score badge      | 11px | Medium   | On badge          |
+| Section          | 12px | Normal   | Secondary         |
+| Preview          | 13px | Normal   | Secondary         |
 | Highlighted term | 13px | SemiBold | Yellow background |
 
 ---
@@ -588,9 +588,9 @@ public class SearchResultItemViewModelTests
         };
     }
 
-    private static DocumentInfo CreateDocument(string name = "Doc.md")
+    private static Document CreateDocument(string name = "Doc.md")
     {
-        return new DocumentInfo
+        return new Document
         {
             Id = Guid.NewGuid(),
             Name = name,
@@ -604,36 +604,36 @@ public class SearchResultItemViewModelTests
 
 ## 5. File Locations
 
-| File | Path |
-| :--- | :--- |
-| View | `src/Lexichord.Modules.RAG/Views/SearchResultItemView.axaml` |
-| View code-behind | `src/Lexichord.Modules.RAG/Views/SearchResultItemView.axaml.cs` |
-| ViewModel | `src/Lexichord.Modules.RAG/ViewModels/SearchResultItemViewModel.cs` |
-| HighlightedTextBlock | `src/Lexichord.Modules.RAG/Controls/HighlightedTextBlock.cs` |
-| Unit tests | `tests/Lexichord.Modules.RAG.Tests/ViewModels/SearchResultItemViewModelTests.cs` |
+| File                 | Path                                                                             |
+| :------------------- | :------------------------------------------------------------------------------- |
+| View                 | `src/Lexichord.Modules.RAG/Views/SearchResultItemView.axaml`                     |
+| View code-behind     | `src/Lexichord.Modules.RAG/Views/SearchResultItemView.axaml.cs`                  |
+| ViewModel            | `src/Lexichord.Modules.RAG/ViewModels/SearchResultItemViewModel.cs`              |
+| HighlightedTextBlock | `src/Lexichord.Modules.RAG/Controls/HighlightedTextBlock.cs`                     |
+| Unit tests           | `tests/Lexichord.Modules.RAG.Tests/ViewModels/SearchResultItemViewModelTests.cs` |
 
 ---
 
 ## 6. Acceptance Criteria
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | Document name displays with icon | [ ] |
-| 2 | Score badge shows percentage with correct color | [ ] |
-| 3 | Section heading displays when available | [ ] |
-| 4 | Content preview truncates long text | [ ] |
-| 5 | Query terms are highlighted in preview | [ ] |
-| 6 | Double-click triggers navigation | [ ] |
-| 7 | Hover state provides visual feedback | [ ] |
-| 8 | Tooltip shows full document path | [ ] |
-| 9 | All unit tests pass | [ ] |
+| #   | Criterion                                       | Status |
+| :-- | :---------------------------------------------- | :----- |
+| 1   | Document name displays with icon                | [ ]    |
+| 2   | Score badge shows percentage with correct color | [ ]    |
+| 3   | Section heading displays when available         | [ ]    |
+| 4   | Content preview truncates long text             | [ ]    |
+| 5   | Query terms are highlighted in preview          | [ ]    |
+| 6   | Double-click triggers navigation                | [ ]    |
+| 7   | Hover state provides visual feedback            | [ ]    |
+| 8   | Tooltip shows full document path                | [ ]    |
+| 9   | All unit tests pass                             | [ ]    |
 
 ---
 
 ## 7. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---

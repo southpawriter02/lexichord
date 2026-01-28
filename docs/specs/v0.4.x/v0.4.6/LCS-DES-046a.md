@@ -2,16 +2,16 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-046a                             |
-| **Version**      | v0.4.6a                                  |
-| **Title**        | Reference Panel View                     |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
-| **Module**       | `Lexichord.Modules.RAG`                  |
-| **License Tier** | WriterPro                                |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Document ID**  | LCS-DES-046a            |
+| **Version**      | v0.4.6a                 |
+| **Title**        | Reference Panel View    |
+| **Status**       | Draft                   |
+| **Last Updated** | 2026-01-27              |
+| **Owner**        | Lead Architect          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 ---
 
@@ -431,14 +431,14 @@ public class RAGModule : IModule
 
 ### 3.1 Keyboard Navigation
 
-| Key | Action |
-| :-- | :----- |
-| `Enter` | Execute search |
-| `Escape` | Clear search input |
-| `↓` | Move to first result / next result |
-| `↑` | Move to previous result |
-| `Enter` (on result) | Navigate to source |
-| `Tab` | Move between controls |
+| Key                 | Action                             |
+| :------------------ | :--------------------------------- |
+| `Enter`             | Execute search                     |
+| `Escape`            | Clear search input                 |
+| `↓`                 | Move to first result / next result |
+| `↑`                 | Move to previous result            |
+| `Enter` (on result) | Navigate to source                 |
+| `Tab`               | Move between controls              |
 
 ### 3.2 Screen Reader Support
 
@@ -651,7 +651,7 @@ public class ReferenceViewModelTests
                 Content = "Sample content for testing",
                 Metadata = new ChunkMetadata { Index = 0, StartOffset = 0, EndOffset = 25 }
             },
-            Document = new DocumentInfo { Id = Guid.NewGuid(), Name = "TestDoc.md", Path = "/test/doc.md" }
+            Document = new Document { Id = Guid.NewGuid(), Name = "TestDoc.md", Path = "/test/doc.md" }
         };
     }
 }
@@ -698,56 +698,56 @@ partial void OnSearchQueryChanged(string value)
 
 ## 6. Logging
 
-| Level | Message | Context |
-| :---- | :------ | :------ |
-| Debug | "Executing search for query: {Query}" | Before search |
-| Information | "Search completed: {Count} results in {Duration}ms" | After search |
-| Warning | "Search blocked by license" | License check failed |
-| Error | "Search failed for query: {Query}" | Exception thrown |
+| Level       | Message                                             | Context              |
+| :---------- | :-------------------------------------------------- | :------------------- |
+| Debug       | "Executing search for query: {Query}"               | Before search        |
+| Information | "Search completed: {Count} results in {Duration}ms" | After search         |
+| Warning     | "Search blocked by license"                         | License check failed |
+| Error       | "Search failed for query: {Query}"                  | Exception thrown     |
 
 ---
 
 ## 7. File Locations
 
-| File | Path |
-| :--- | :--- |
-| View | `src/Lexichord.Modules.RAG/Views/ReferenceView.axaml` |
-| View code-behind | `src/Lexichord.Modules.RAG/Views/ReferenceView.axaml.cs` |
-| ViewModel | `src/Lexichord.Modules.RAG/ViewModels/ReferenceViewModel.cs` |
-| Unit tests | `tests/Lexichord.Modules.RAG.Tests/ViewModels/ReferenceViewModelTests.cs` |
+| File             | Path                                                                      |
+| :--------------- | :------------------------------------------------------------------------ |
+| View             | `src/Lexichord.Modules.RAG/Views/ReferenceView.axaml`                     |
+| View code-behind | `src/Lexichord.Modules.RAG/Views/ReferenceView.axaml.cs`                  |
+| ViewModel        | `src/Lexichord.Modules.RAG/ViewModels/ReferenceViewModel.cs`              |
+| Unit tests       | `tests/Lexichord.Modules.RAG.Tests/ViewModels/ReferenceViewModelTests.cs` |
 
 ---
 
 ## 8. Dependencies
 
-| Dependency | Version | Purpose |
-| :--------- | :------ | :------ |
-| `CommunityToolkit.Mvvm` | 8.x | MVVM infrastructure |
-| `Avalonia.Controls` | 11.x | UI controls |
+| Dependency              | Version | Purpose             |
+| :---------------------- | :------ | :------------------ |
+| `CommunityToolkit.Mvvm` | 8.x     | MVVM infrastructure |
+| `Avalonia.Controls`     | 11.x    | UI controls         |
 
 ---
 
 ## 9. Acceptance Criteria
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | Search input accepts text and executes on Enter | [ ] |
-| 2 | Search button triggers search command | [ ] |
-| 3 | Loading indicator shows during search | [ ] |
-| 4 | Results display in virtualized list | [ ] |
-| 5 | No results message shows when empty | [ ] |
-| 6 | Error messages display appropriately | [ ] |
-| 7 | License warning shows for unlicensed users | [ ] |
-| 8 | History dropdown shows recent queries | [ ] |
-| 9 | Status bar shows result count and duration | [ ] |
-| 10 | All unit tests pass | [ ] |
+| #   | Criterion                                       | Status |
+| :-- | :---------------------------------------------- | :----- |
+| 1   | Search input accepts text and executes on Enter | [ ]    |
+| 2   | Search button triggers search command           | [ ]    |
+| 3   | Loading indicator shows during search           | [ ]    |
+| 4   | Results display in virtualized list             | [ ]    |
+| 5   | No results message shows when empty             | [ ]    |
+| 6   | Error messages display appropriately            | [ ]    |
+| 7   | License warning shows for unlicensed users      | [ ]    |
+| 8   | History dropdown shows recent queries           | [ ]    |
+| 9   | Status bar shows result count and duration      | [ ]    |
+| 10  | All unit tests pass                             | [ ]    |
 
 ---
 
 ## 10. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---

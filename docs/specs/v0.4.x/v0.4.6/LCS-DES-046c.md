@@ -2,16 +2,16 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-046c                             |
-| **Version**      | v0.4.6c                                  |
-| **Title**        | Source Navigation                        |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
-| **Module**       | `Lexichord.Modules.RAG`                  |
-| **License Tier** | WriterPro                                |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Document ID**  | LCS-DES-046c            |
+| **Version**      | v0.4.6c                 |
+| **Title**        | Source Navigation       |
+| **Status**       | Draft                   |
+| **Last Updated** | 2026-01-27              |
+| **Owner**        | Lead Architect          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | WriterPro               |
 
 ---
 
@@ -564,7 +564,7 @@ public class ReferenceNavigationServiceTests
         {
             Score = score,
             Chunk = CreateChunk(startOffset, endOffset),
-            Document = new DocumentInfo
+            Document = new Document
             {
                 Id = Guid.NewGuid(),
                 Name = Path.GetFileName(path),
@@ -593,64 +593,64 @@ public class ReferenceNavigationServiceTests
 
 ## 5. Error Handling
 
-| Scenario | Behavior |
-| :------- | :------- |
-| Null hit | Return false, log warning |
+| Scenario              | Behavior                  |
+| :-------------------- | :------------------------ |
+| Null hit              | Return false, log warning |
 | Missing document path | Return false, log warning |
-| Document open fails | Return false, log warning |
-| File not found | Return false, log warning |
-| Invalid offset | Clamp to 0, proceed |
-| Editor service error | Return false, log error |
+| Document open fails   | Return false, log warning |
+| File not found        | Return false, log warning |
+| Invalid offset        | Clamp to 0, proceed       |
+| Editor service error  | Return false, log error   |
 
 ---
 
 ## 6. Logging
 
-| Level | Message | Context |
-| :---- | :------ | :------ |
-| Debug | "Navigating to hit: Document={Document}, Offset={Offset}" | Before navigation |
-| Debug | "Opening document: {Path}" | When opening closed doc |
-| Information | "Navigation successful: {Path}:{Offset}" | After success |
-| Warning | "NavigateToHitAsync called with null hit" | Null input |
-| Warning | "SearchHit has no document path" | Missing path |
-| Warning | "Failed to open document: {Path}" | Open failed |
-| Warning | "Document not found: {Path}" | FileNotFoundException |
-| Error | "Navigation failed: {Path}:{Offset}" | Unexpected exception |
+| Level       | Message                                                   | Context                 |
+| :---------- | :-------------------------------------------------------- | :---------------------- |
+| Debug       | "Navigating to hit: Document={Document}, Offset={Offset}" | Before navigation       |
+| Debug       | "Opening document: {Path}"                                | When opening closed doc |
+| Information | "Navigation successful: {Path}:{Offset}"                  | After success           |
+| Warning     | "NavigateToHitAsync called with null hit"                 | Null input              |
+| Warning     | "SearchHit has no document path"                          | Missing path            |
+| Warning     | "Failed to open document: {Path}"                         | Open failed             |
+| Warning     | "Document not found: {Path}"                              | FileNotFoundException   |
+| Error       | "Navigation failed: {Path}:{Offset}"                      | Unexpected exception    |
 
 ---
 
 ## 7. File Locations
 
-| File | Path |
-| :--- | :--- |
-| Interface | `src/Lexichord.Abstractions/Contracts/IReferenceNavigationService.cs` |
-| Implementation | `src/Lexichord.Modules.RAG/Services/ReferenceNavigationService.cs` |
-| Event | `src/Lexichord.Modules.RAG/Events/ReferenceNavigatedEvent.cs` |
-| HighlightStyle | `src/Lexichord.Abstractions/Contracts/HighlightStyle.cs` |
-| Unit tests | `tests/Lexichord.Modules.RAG.Tests/Services/ReferenceNavigationServiceTests.cs` |
+| File           | Path                                                                            |
+| :------------- | :------------------------------------------------------------------------------ |
+| Interface      | `src/Lexichord.Abstractions/Contracts/IReferenceNavigationService.cs`           |
+| Implementation | `src/Lexichord.Modules.RAG/Services/ReferenceNavigationService.cs`              |
+| Event          | `src/Lexichord.Modules.RAG/Events/ReferenceNavigatedEvent.cs`                   |
+| HighlightStyle | `src/Lexichord.Abstractions/Contracts/HighlightStyle.cs`                        |
+| Unit tests     | `tests/Lexichord.Modules.RAG.Tests/Services/ReferenceNavigationServiceTests.cs` |
 
 ---
 
 ## 8. Acceptance Criteria
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | NavigateToHitAsync opens closed documents | [ ] |
-| 2 | NavigateToHitAsync activates document tab | [ ] |
-| 3 | NavigateToHitAsync scrolls to correct offset | [ ] |
-| 4 | NavigateToHitAsync highlights text span | [ ] |
-| 5 | NavigateToHitAsync publishes telemetry event | [ ] |
-| 6 | NavigateToOffsetAsync works with cursor-only (length=0) | [ ] |
-| 7 | Handles missing/invalid paths gracefully | [ ] |
-| 8 | Handles file not found gracefully | [ ] |
-| 9 | All unit tests pass | [ ] |
+| #   | Criterion                                               | Status |
+| :-- | :------------------------------------------------------ | :----- |
+| 1   | NavigateToHitAsync opens closed documents               | [ ]    |
+| 2   | NavigateToHitAsync activates document tab               | [ ]    |
+| 3   | NavigateToHitAsync scrolls to correct offset            | [ ]    |
+| 4   | NavigateToHitAsync highlights text span                 | [ ]    |
+| 5   | NavigateToHitAsync publishes telemetry event            | [ ]    |
+| 6   | NavigateToOffsetAsync works with cursor-only (length=0) | [ ]    |
+| 7   | Handles missing/invalid paths gracefully                | [ ]    |
+| 8   | Handles file not found gracefully                       | [ ]    |
+| 9   | All unit tests pass                                     | [ ]    |
 
 ---
 
 ## 9. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---
