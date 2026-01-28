@@ -6,6 +6,26 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.3] - 2026-01-28 (In Progress)
+
+### The Nervous System (Logging & DI)
+
+This release establishes the runtime infrastructure that enables the application to "think" and report errors. This transforms the Avalonia shell into a properly instrumented, dependency-injectable application.
+
+#### What's New
+
+- **Dependency Injection Container** — Microsoft.Extensions.DependencyInjection is now the sole IoC container. All services are resolved from the DI container instead of manual instantiation.
+
+#### Why This Matters
+
+This work enables:
+
+1. **Testability** — Services can now be mocked and isolated for unit testing.
+2. **Module Foundation** — Module registration (v0.0.4) will build on this DI container.
+3. **Flexibility** — Services can be swapped or decorated without modifying consuming code.
+
+---
+
 ## [v0.0.2] - 2026-01-28 (In Progress)
 
 ### The Host Shell & UI Foundation
@@ -64,6 +84,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                       | Summary                                                 |
 | :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
+| v0.0.3  | 2026-01-28 | The Nervous System             | Dependency Injection, Logging, Crash Handling, Config   |
 | v0.0.2  | 2026-01-28 | The Host Shell & UI Foundation | Avalonia bootstrap, window stub, theme infrastructure   |
 | v0.0.1  | 2026-01-28 | The Architecture Skeleton      | Modular Monolith foundation, test infrastructure, CI/CD |
 
@@ -72,6 +93,12 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.3 Sub-Parts
+
+| Document                        | Sub-Part | Title                     |
+| :------------------------------ | :------- | :------------------------ |
+| [LCS-CL-003a](./LCS-CL-003a.md) | v0.0.3a  | Dependency Injection Root |
 
 ### v0.0.2 Sub-Parts
 

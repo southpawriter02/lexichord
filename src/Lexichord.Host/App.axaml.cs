@@ -1,77 +1,117 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Lexichord.Abstractions.Contracts;
-using Lexichord.Host.Services;
 using Lexichord.Host.Views;
 
 namespace Lexichord.Host;
 
 /// <summary>
-/// The main Avalonia application class for Lexichord.
+/// The main Avalonia application class with DI integration.
 /// </summary>
 /// <remarks>
-/// LOGIC: This class manages the application lifecycle. The key responsibilities are:
-/// 1. Load XAML resources in Initialize()
-/// 2. Create services (ThemeManager, WindowStateService) in OnFrameworkInitializationCompleted()
-/// 3. Create the MainWindow and wire up services
+/// LOGIC: The application class owns the DI container lifetime.
+/// Services are built during OnFrameworkInitializationCompleted and
+/// disposed when the application shuts down.
 /// </remarks>
 public partial class App : Application
 {
-    /// <summary>
-    /// Gets the ThemeManager instance for the application.
-    /// </summary>
-    public IThemeManager? ThemeManager { get; private set; }
+    private ServiceProvider? _serviceProvider;
 
     /// <summary>
-    /// Gets the WindowStateService instance for the application.
-    /// </summary>
-    public IWindowStateService? WindowStateService { get; private set; }
-
-    /// <summary>
-    /// Initializes the application and loads XAML resources.
+    /// Gets the application-wide service provider.
     /// </summary>
     /// <remarks>
-    /// LOGIC: This is called early in startup, before the UI is shown.
-    /// AvaloniaXamlLoader.Load(this) processes App.axaml and merges
-    /// all ResourceDictionaries (themes, styles, etc.) into the application.
+    /// LOGIC: This static accessor enables service resolution in components
+    /// that cannot receive services via constructor injection (e.g., XAML-instantiated Views).
+    /// Prefer constructor injection where possible.
     /// </remarks>
+    public static IServiceProvider Services =>
+        ((App)Current!).GetServices();
+
+    private IServiceProvider GetServices() =>
+        _serviceProvider ?? throw new InvalidOperationException(
+            "Services not initialized. Ensure OnFrameworkInitializationCompleted has been called.");
+
+    /// <inheritdoc/>
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
-    /// <summary>
-    /// Called when the Avalonia framework has completed initialization.
-    /// </summary>
+    /// <inheritdoc/>
     /// <remarks>
-    /// LOGIC: At this point, all resources are loaded and the platform
-    /// subsystems are ready. We create services and the MainWindow here.
-    ///
-    /// For desktop applications, ApplicationLifetime is always
-    /// IClassicDesktopStyleApplicationLifetime, which manages the main window
-    /// and application exit behavior.
+    /// LOGIC: This is called after the framework is fully initialized.
+    /// We build the DI container here because:
+    /// 1. Avalonia is ready to create windows
+    /// 2. We can inject the Application instance if needed
+    /// 3. Command-line arguments are available via ApplicationLifetime
     /// </remarks>
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // LOGIC: Create services
-            ThemeManager = new ThemeManager(this);
-            WindowStateService = new WindowStateService(desktop.MainWindow?.Screens);
+            // Build DI container
+            var services = new ServiceCollection();
 
-            // LOGIC: Create the main window
-            var mainWindow = new MainWindow
-            {
-                ThemeManager = ThemeManager,
-                WindowStateService = WindowStateService
-            };
-            desktop.MainWindow = mainWindow;
+            // LOGIC: For now, use empty configuration. v0.0.3d will add proper config.
+            var configuration = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(configuration);
 
-            // LOGIC: Wire up the StatusBar with the ThemeManager
-            mainWindow.StatusBar.Initialize(ThemeManager);
+            // LOGIC: Register Application instance for services that need it (e.g., ThemeManager)
+            services.AddSingleton<Application>(this);
+
+            // Register all Host services
+            services.ConfigureServices(configuration);
+
+            // Build the service provider
+            _serviceProvider = services.BuildServiceProvider();
+
+            // Create main window with injected services
+            desktop.MainWindow = CreateMainWindow();
+
+            // Apply persisted settings
+            ApplyPersistedSettings();
+
+            // Register shutdown handler to dispose services
+            desktop.ShutdownRequested += OnShutdownRequested;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private MainWindow CreateMainWindow()
+    {
+        // LOGIC: Resolve services and inject into MainWindow
+        // This demonstrates the transition from direct instantiation to DI
+        var themeManager = _serviceProvider!.GetRequiredService<IThemeManager>();
+        var windowStateService = _serviceProvider.GetRequiredService<IWindowStateService>();
+
+        return new MainWindow
+        {
+            ThemeManager = themeManager,
+            WindowStateService = windowStateService
+        };
+    }
+
+    private void ApplyPersistedSettings()
+    {
+        var windowStateService = _serviceProvider!.GetRequiredService<IWindowStateService>();
+        var themeManager = _serviceProvider.GetRequiredService<IThemeManager>();
+
+        var savedState = windowStateService.LoadAsync().GetAwaiter().GetResult();
+        if (savedState is not null)
+        {
+            themeManager.SetTheme(savedState.Theme);
+        }
+    }
+
+    private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
+    {
+        // LOGIC: Dispose the service provider to release resources
+        // This ensures proper cleanup of singleton services
+        _serviceProvider?.Dispose();
     }
 }

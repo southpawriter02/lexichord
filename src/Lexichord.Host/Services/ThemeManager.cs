@@ -25,7 +25,7 @@ public sealed class ThemeManager : IThemeManager
     /// <summary>
     /// Initializes a new instance of the ThemeManager.
     /// </summary>
-    /// <param name="application">The Avalonia application instance.</param>
+    /// <param name="application">The Avalonia application instance (injected via DI).</param>
     public ThemeManager(Application application)
     {
         _application = application ?? throw new ArgumentNullException(nameof(application));
