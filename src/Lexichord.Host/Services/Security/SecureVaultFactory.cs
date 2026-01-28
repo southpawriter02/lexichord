@@ -50,10 +50,15 @@ public sealed class SecureVaultFactory : ISecureVaultFactory
             return new WindowsSecureVault(_vaultPath, logger);
         }
 
-        // LOGIC: v0.0.6c will add Unix support
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        {
+            var logger = _loggerFactory?.CreateLogger<UnixSecureVault>();
+            return new UnixSecureVault(_vaultPath, logger);
+        }
+
         throw new PlatformNotSupportedException(
-            $"SecureVault is not yet supported on {Environment.OSVersion.Platform}. " +
-            "Windows support only in v0.0.6b. Unix support coming in v0.0.6c.");
+            $"SecureVault is not supported on {Environment.OSVersion.Platform}. " +
+            "Supported platforms: Windows, Linux, macOS.");
     }
 
     /// <inheritdoc/>
@@ -64,6 +69,16 @@ public sealed class SecureVaultFactory : ISecureVaultFactory
             if (OperatingSystem.IsWindows())
             {
                 return "WindowsSecureVault (DPAPI)";
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                return "UnixSecureVault (libsecret/AES-256)";
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                return "UnixSecureVault (AES-256)";
             }
 
             return "Unsupported Platform";

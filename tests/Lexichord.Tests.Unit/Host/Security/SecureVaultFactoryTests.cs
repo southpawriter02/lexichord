@@ -34,19 +34,32 @@ public class SecureVaultFactoryTests
     }
 
     [SkippableFact]
-    public void CreateVault_OnNonWindows_ThrowsPlatformNotSupportedException()
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("macos")]
+    public void CreateVault_OnUnix_ReturnsUnixSecureVault()
     {
-        Skip.If(OperatingSystem.IsWindows(), "Test only runs on non-Windows platforms");
+        Skip.IfNot(OperatingSystem.IsLinux() || OperatingSystem.IsMacOS(),
+            "Test only runs on Linux/macOS");
 
         // Arrange
         var factory = new SecureVaultFactory();
 
         // Act
-        Action act = () => factory.CreateVault();
+        var vault = factory.CreateVault();
 
         // Assert
-        act.Should().Throw<PlatformNotSupportedException>()
-            .WithMessage("*not yet supported*");
+        vault.Should().NotBeNull();
+        vault.Should().BeOfType<UnixSecureVault>();
+
+        // Cleanup
+        (vault as IDisposable)?.Dispose();
+
+        // Clean up vault directory created by test
+        var testPath = factory.VaultStoragePath;
+        if (Directory.Exists(testPath))
+        {
+            Directory.Delete(testPath, recursive: true);
+        }
     }
 
     #endregion
@@ -69,9 +82,9 @@ public class SecureVaultFactoryTests
     }
 
     [SkippableFact]
-    public void VaultImplementationName_OnNonWindows_ReturnsUnsupported()
+    public void VaultImplementationName_OnLinux_ReturnsUnixLibsecretAes()
     {
-        Skip.If(OperatingSystem.IsWindows(), "Test only runs on non-Windows platforms");
+        Skip.IfNot(OperatingSystem.IsLinux(), "Test only runs on Linux");
 
         // Arrange
         var factory = new SecureVaultFactory();
@@ -80,7 +93,22 @@ public class SecureVaultFactoryTests
         var name = factory.VaultImplementationName;
 
         // Assert
-        name.Should().Be("Unsupported Platform");
+        name.Should().Be("UnixSecureVault (libsecret/AES-256)");
+    }
+
+    [SkippableFact]
+    public void VaultImplementationName_OnMacOS_ReturnsUnixAes()
+    {
+        Skip.IfNot(OperatingSystem.IsMacOS(), "Test only runs on macOS");
+
+        // Arrange
+        var factory = new SecureVaultFactory();
+
+        // Act
+        var name = factory.VaultImplementationName;
+
+        // Assert
+        name.Should().Be("UnixSecureVault (AES-256)");
     }
 
     #endregion
