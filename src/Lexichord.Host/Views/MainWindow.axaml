@@ -48,7 +48,7 @@
              System status, theme toggle, version info
              Height: Auto (sized to content, typically 28px)
              ═══════════════════════════════════════════════════════════════════ -->
-        <shell:StatusBar Grid.Row="2" />
+        <shell:StatusBar Grid.Row="2" x:Name="MainStatusBar" />
 
     </Grid>
 

@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Lexichord.Abstractions.Contracts;
+using Lexichord.Host.Views.Shell;
 
 namespace Lexichord.Host.Views;
 
@@ -6,15 +8,8 @@ namespace Lexichord.Host.Views;
 /// The main application window for Lexichord.
 /// </summary>
 /// <remarks>
-/// LOGIC: This is a minimal stub for v0.0.2a. The window:
-/// - Displays centered welcome text
-/// - Uses theme resources (TextPrimaryBrush)
-/// - Has minimum dimensions enforced
-///
-/// Future versions will add:
-/// - v0.0.2b: Podium Layout (TopBar, NavRail, ContentHost, StatusBar)
-/// - v0.0.2c: Theme toggle button
-/// - v0.0.2d: Window state persistence
+/// LOGIC: The MainWindow hosts the Podium Layout shell components.
+/// It provides access to the StatusBar for theme manager initialization.
 /// </remarks>
 public partial class MainWindow : Window
 {
@@ -25,4 +20,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
+
+    /// <summary>
+    /// Gets the StatusBar component for service initialization.
+    /// </summary>
+    public StatusBar StatusBar => MainStatusBar;
 }

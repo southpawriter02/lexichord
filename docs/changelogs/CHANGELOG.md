@@ -18,6 +18,8 @@ This release introduces the visual foundation of Lexichord — the Avalonia-base
 
 - **Podium Layout Shell** — The main window now features a structured layout with a top bar, navigation rail, content host, and status bar — the "Podium" where all future writing tools will perform.
 
+- **Runtime Theme Switching** — Users can toggle between Dark and Light themes via the StatusBar button, with the application detecting and respecting OS preferences on first launch.
+
 #### Why This Matters
 
 This work establishes:
@@ -71,10 +73,11 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.2 Sub-Parts
 
-| Document                        | Sub-Part | Title              |
-| :------------------------------ | :------- | :----------------- |
-| [LCS-CL-002a](./LCS-CL-002a.md) | v0.0.2a  | Avalonia Bootstrap |
-| [LCS-CL-002b](./LCS-CL-002b.md) | v0.0.2b  | Podium Layout      |
+| Document                        | Sub-Part | Title                   |
+| :------------------------------ | :------- | :---------------------- |
+| [LCS-CL-002a](./LCS-CL-002a.md) | v0.0.2a  | Avalonia Bootstrap      |
+| [LCS-CL-002b](./LCS-CL-002b.md) | v0.0.2b  | Podium Layout           |
+| [LCS-CL-002c](./LCS-CL-002c.md) | v0.0.2c  | Runtime Theme Switching |
 
 ### v0.0.1 Sub-Parts
 

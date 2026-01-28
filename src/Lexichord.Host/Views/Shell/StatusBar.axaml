@@ -58,11 +58,12 @@
                            Foreground="{DynamicResource TextTertiaryBrush}"
                            VerticalAlignment="Center" />
 
-                <!-- Theme toggle placeholder (implemented in v0.0.2c) -->
+                <!-- Theme toggle button -->
                 <Button Classes="status-icon"
                         ToolTip.Tip="Toggle Theme"
-                        x:Name="ThemeToggleButton">
-                    <TextBlock Text="🌙" FontSize="14" />
+                        x:Name="ThemeToggleButton"
+                        Click="OnThemeToggleClick">
+                    <TextBlock x:Name="ThemeIcon" Text="🌙" FontSize="14" />
                 </Button>
 
             </StackPanel>

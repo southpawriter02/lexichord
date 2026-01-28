@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Lexichord.Abstractions.Contracts;
+using Lexichord.Host.Services;
 using Lexichord.Host.Views;
 
 namespace Lexichord.Host;
@@ -11,12 +13,16 @@ namespace Lexichord.Host;
 /// <remarks>
 /// LOGIC: This class manages the application lifecycle. The key responsibilities are:
 /// 1. Load XAML resources in Initialize()
-/// 2. Create the MainWindow in OnFrameworkInitializationCompleted()
-///
-/// Future versions will add service initialization here (DI, logging, etc.).
+/// 2. Create services (ThemeManager) in OnFrameworkInitializationCompleted()
+/// 3. Create the MainWindow and wire up services
 /// </remarks>
 public partial class App : Application
 {
+    /// <summary>
+    /// Gets the ThemeManager instance for the application.
+    /// </summary>
+    public IThemeManager? ThemeManager { get; private set; }
+
     /// <summary>
     /// Initializes the application and loads XAML resources.
     /// </summary>
@@ -35,7 +41,7 @@ public partial class App : Application
     /// </summary>
     /// <remarks>
     /// LOGIC: At this point, all resources are loaded and the platform
-    /// subsystems are ready. We create and assign the MainWindow here.
+    /// subsystems are ready. We create services and the MainWindow here.
     ///
     /// For desktop applications, ApplicationLifetime is always
     /// IClassicDesktopStyleApplicationLifetime, which manages the main window
@@ -45,9 +51,15 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // LOGIC: Create the main window and assign it to the desktop lifetime.
-            // The application will exit when this window is closed.
-            desktop.MainWindow = new MainWindow();
+            // LOGIC: Create the ThemeManager for runtime theme switching.
+            ThemeManager = new ThemeManager(this);
+
+            // LOGIC: Create the main window.
+            var mainWindow = new MainWindow();
+            desktop.MainWindow = mainWindow;
+
+            // LOGIC: Wire up the StatusBar with the ThemeManager.
+            mainWindow.StatusBar.Initialize(ThemeManager);
         }
 
         base.OnFrameworkInitializationCompleted();
