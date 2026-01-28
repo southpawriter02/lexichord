@@ -20,7 +20,7 @@ This release establishes the module architecture that enables Lexichord's "modul
 
 - **Module Loader (`IModuleLoader`)** — Discovers and loads modules from `./Modules/` at startup with two-phase loading (service registration before DI build, initialization after).
 
-- **License Stubs** — Placeholder types (`LicenseTier`, `ILicenseContext`, `RequiresLicenseAttribute`) for v0.0.4c license gating.
+- **License Gate (Skeleton)** — Establishes license tier gating with `LicenseTier`, `ILicenseContext`, and `RequiresLicenseAttribute`. Stub implementation returns Core tier; v1.x will provide real validation.
 
 #### Why This Matters
 

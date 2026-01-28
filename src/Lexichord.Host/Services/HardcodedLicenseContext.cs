@@ -1,29 +1,83 @@
 using Lexichord.Abstractions.Contracts;
 
+using Microsoft.Extensions.Logging;
+
 namespace Lexichord.Host.Services;
 
 /// <summary>
-/// Hardcoded license context for development and Core users.
+/// Stub implementation of ILicenseContext that returns Core tier.
 /// </summary>
 /// <remarks>
-/// LOGIC: This stub implementation always returns Core tier.
-/// In v0.0.4c, this will be replaced with:
-/// - File-based license validation
-/// - Server-based license validation
-/// - Feature-specific overrides
+/// LOGIC: This is a placeholder implementation for v0.0.4.
+/// It provides the API surface without real license validation.
 ///
-/// For now, all modules marked as Core tier will load.
-/// Higher tier modules will be skipped.
+/// Purpose:
+/// - Allows development and testing without license files
+/// - Establishes the API contract for v1.x implementation
+/// - Demonstrates the license check flow in ModuleLoader
+///
+/// Future v1.x Implementation Will:
+/// - Read encrypted license files
+/// - Validate signatures
+/// - Check expiration dates
+/// - Contact licensing server for activation
+/// - Support BYOK (Bring Your Own Key) with token counting
+///
+/// Security Note:
+/// - This stub provides NO actual security
+/// - Users can trivially bypass by modifying code or removing attributes
+/// - Real security requires server-side validation and obfuscation
 /// </remarks>
 public sealed class HardcodedLicenseContext : ILicenseContext
 {
-    /// <inheritdoc/>
-    public LicenseTier GetCurrentTier() => LicenseTier.Core;
+    private readonly ILogger<HardcodedLicenseContext>? _logger;
+
+    /// <summary>
+    /// Creates a new HardcodedLicenseContext.
+    /// </summary>
+    /// <param name="logger">Optional logger for license check events.</param>
+    public HardcodedLicenseContext(ILogger<HardcodedLicenseContext>? logger = null)
+    {
+        _logger = logger;
+        _logger?.LogInformation(
+            "Using hardcoded license context (development mode). Tier: {Tier}",
+            LicenseTier.Core);
+    }
 
     /// <inheritdoc/>
     /// <remarks>
-    /// LOGIC: All features enabled in development mode.
-    /// v0.0.4c will implement proper feature gating.
+    /// LOGIC: Stub always returns Core tier.
+    /// To test higher tiers during development, modify this return value.
     /// </remarks>
-    public bool IsFeatureEnabled(string featureCode) => true;
+    public LicenseTier GetCurrentTier()
+    {
+        _logger?.LogDebug("License tier check: returning {Tier}", LicenseTier.Core);
+        return LicenseTier.Core;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Stub returns true for all features.
+    /// This allows testing any feature without feature gating.
+    /// </remarks>
+    public bool IsFeatureEnabled(string featureCode)
+    {
+        _logger?.LogDebug(
+            "Feature check for {FeatureCode}: returning enabled (stub)",
+            featureCode);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Stub returns null (perpetual license).
+    /// No expiration warnings in development mode.
+    /// </remarks>
+    public DateTime? GetExpirationDate() => null;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Returns development indicator for UI display.
+    /// </remarks>
+    public string? GetLicenseeName() => "Development License";
 }

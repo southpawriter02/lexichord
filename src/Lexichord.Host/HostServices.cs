@@ -118,6 +118,12 @@ public static class HostServices
         services.AddSingleton<IWindowStateService, WindowStateService>();
         services.AddSingleton<ICrashReportService, CrashReportService>();
 
+        // LOGIC: Register license context as singleton
+        // License state is application-wide and should not change per-request
+        // v0.0.4c: Stub implementation returning Core tier
+        // v1.x: Will be replaced with real license validation
+        services.AddSingleton<ILicenseContext, HardcodedLicenseContext>();
+
         // LOGIC: Register service locator for XAML-instantiated components
         // Marked as obsolete to discourage direct usage
         #pragma warning disable CS0618 // Intentionally using obsolete interface
