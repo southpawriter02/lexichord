@@ -376,6 +376,23 @@
 | `IndexManagementService`   | v0.4.7b    | Modules.RAG | Manual indexing implementation |
 | `IndexingErrorCategorizer` | v0.4.7d    | Modules.RAG | Error categorization helper    |
 
+**New Enums (v0.4.7):**
+
+| Enum                    | Defined In | Module      | Purpose                          |
+| :---------------------- | :--------- | :---------- | :------------------------------- |
+| `IndexingStatus`        | v0.4.7a    | Modules.RAG | Document indexing status         |
+| `IndexOperationType`    | v0.4.7b    | Modules.RAG | Type of index operation          |
+| `IndexingErrorCategory` | v0.4.7d    | Modules.RAG | Error categorization for display |
+
+**New Events (v0.4.7):**
+
+| Event                           | Defined In | Module      | Purpose                    |
+| :------------------------------ | :--------- | :---------- | :------------------------- |
+| `IndexOperationRequestedEvent`  | v0.4.7b    | Modules.RAG | Index operation requested  |
+| `IndexOperationCompletedEvent`  | v0.4.7b    | Modules.RAG | Index operation completed  |
+| `IndexingProgressUpdatedEvent`  | v0.4.7c    | Modules.RAG | Progress update during ops |
+| `DocumentRemovedFromIndexEvent` | v0.4.7b    | Modules.RAG | Document removed from idx  |
+
 ### 1.13 v0.4.8 Hardening Interfaces
 
 | Interface         | Defined In | Module       | Purpose                  |
@@ -513,6 +530,7 @@
 | v0.4.3  | `Markdig` from v0.1.3b                | `Markdig` is **NEW** in **v0.4.3d** (NuGet package introduced for MarkdownHeaderChunkingStrategy)                        |
 | v0.4.5  | `FeatureNotLicensedException` v0.4.5d | Forward dependency: Exception is **MOVED** to **v0.4.4d** (first used in DocumentIndexingPipeline)                       |
 | v0.4.6  | `DocumentInfo` in test code           | Ghost type: Use **`Document`** (v0.4.1c) - no `DocumentInfo` type exists                                                 |
+| v0.4.7d | `TokenLimitExceededException`         | Forward dependency: Exception first defined in **v0.6.1** - handle as `Exception` with message pattern                   |
 
 ### 4.2 Missing Definitions (Addressed)
 
@@ -794,6 +812,8 @@ graph TB
 - [ ] IndexingProgressUpdatedEvent (v0.4.7c)
 - [ ] IndexingErrorInfo record (v0.4.7d)
 - [ ] IndexingErrorCategorizer helper (v0.4.7d)
+- [ ] IndexingErrorCategory enum (v0.4.7d)
+- [ ] IndexOperationType enum (v0.4.7b)
 - [ ] Database migration for error_message column (v0.4.7d)
 
 ### v0.4.8 Prerequisites for v0.4.9+
