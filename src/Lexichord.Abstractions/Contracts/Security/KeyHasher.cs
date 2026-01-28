@@ -15,7 +15,7 @@ namespace Lexichord.Abstractions.Contracts.Security;
 ///   <item>Path length limits on Windows</item>
 /// </list>
 /// </remarks>
-internal static class KeyHasher
+public static class KeyHasher
 {
     /// <summary>
     /// Computes a filesystem-safe file name for a secret key.

@@ -16,6 +16,8 @@ This release establishes the secure secrets management infrastructure that prote
 
 - **ISecureVault Interface** — Platform-agnostic contract for secure secret storage with CRUD operations, metadata access, and streaming key listing.
 
+- **WindowsSecureVault (DPAPI)** — Windows-specific implementation using Data Protection API with user-scoped encryption, per-installation entropy, and secure file-based storage.
+
 #### Why This Matters
 
 This work enables:
@@ -175,9 +177,10 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.6 Sub-Parts
 
-| Document                        | Sub-Part | Title                  |
-| :------------------------------ | :------- | :--------------------- |
-| [LCS-CL-006a](./LCS-CL-006a.md) | v0.0.6a  | ISecureVault Interface |
+| Document                        | Sub-Part | Title                      |
+| :------------------------------ | :------- | :------------------------- |
+| [LCS-CL-006a](./LCS-CL-006a.md) | v0.0.6a  | ISecureVault Interface     |
+| [LCS-CL-006b](./LCS-CL-006b.md) | v0.0.6b  | WindowsSecureVault (DPAPI) |
 
 ### v0.0.5 Sub-Parts
 

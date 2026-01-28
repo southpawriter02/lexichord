@@ -14,7 +14,7 @@ namespace Lexichord.Abstractions.Contracts.Security;
 ///   <item>Colon (:) allowed for namespacing</item>
 /// </list>
 /// </remarks>
-internal static class KeyValidator
+public static class KeyValidator
 {
     /// <summary>
     /// Maximum allowed key length in characters.

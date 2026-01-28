@@ -34,6 +34,12 @@
 
     <!-- v0.0.4a: Module Contract Testing -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+
+    <!-- v0.0.6b: Platform-conditional tests -->
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
+
+    <!-- v0.0.6b: Async LINQ support -->
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>

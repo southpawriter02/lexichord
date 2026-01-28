@@ -43,6 +43,9 @@
 
     <!-- Development Tools (Debug builds only) -->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+
+    <!-- v0.0.6b: Windows DPAPI Support -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
