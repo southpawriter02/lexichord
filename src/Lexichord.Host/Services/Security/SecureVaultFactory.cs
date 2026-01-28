@@ -32,13 +32,34 @@ public sealed class SecureVaultFactory : ISecureVaultFactory
     private readonly string _vaultPath;
 
     /// <summary>
-    /// Initializes a new instance of the SecureVaultFactory.
+    /// Initializes a new instance of the SecureVaultFactory with default vault path.
     /// </summary>
     /// <param name="loggerFactory">Optional logger factory for creating vault loggers.</param>
     public SecureVaultFactory(ILoggerFactory? loggerFactory = null)
+        : this(loggerFactory, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the SecureVaultFactory with a custom vault path.
+    /// </summary>
+    /// <param name="vaultPath">
+    /// Custom vault path override. If null or empty, uses platform-standard location.
+    /// This overload is primarily intended for testing with isolated vault directories.
+    /// </param>
+    /// <param name="loggerFactory">Optional logger factory for creating vault loggers.</param>
+    public SecureVaultFactory(string? vaultPath, ILoggerFactory? loggerFactory = null)
+        : this(loggerFactory, vaultPath)
+    {
+    }
+
+    /// <summary>
+    /// Internal constructor that supports all parameter combinations.
+    /// </summary>
+    private SecureVaultFactory(ILoggerFactory? loggerFactory, string? vaultPath)
     {
         _loggerFactory = loggerFactory;
-        _vaultPath = GetDefaultVaultPath();
+        _vaultPath = string.IsNullOrEmpty(vaultPath) ? GetDefaultVaultPath() : vaultPath;
     }
 
     /// <inheritdoc/>

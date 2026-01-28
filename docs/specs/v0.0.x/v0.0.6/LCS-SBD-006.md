@@ -134,21 +134,21 @@ If this foundation is flawed, modules requiring API keys (LLM integrations, clou
 
 ## 3. Implementation Checklist (for Developer)
 
-| Step     | Description                                                                   | Status |
-| :------- | :---------------------------------------------------------------------------- | :----- |
-| **0.6a** | `ISecureVault` interface defined in Abstractions.                             | [ ]    |
-| **0.6a** | `SecureVaultException` and derived exceptions created.                        | [ ]    |
-| **0.6a** | `SecretMetadata` record defined.                                              | [ ]    |
-| **0.6a** | `ISecureVaultFactory` interface defined.                                      | [ ]    |
-| **0.6b** | `WindowsSecureVault` implementation using DPAPI.                              | [ ]    |
-| **0.6b** | Entropy file generated on first use.                                          | [ ]    |
-| **0.6b** | Secrets stored as encrypted files in `%APPDATA%/Lexichord/vault/`.            | [ ]    |
-| **0.6c** | `UnixSecureVault` with libsecret detection.                                   | [ ]    |
-| **0.6c** | AES-256 fallback implementation for headless environments.                    | [ ]    |
-| **0.6c** | Machine key derivation implemented securely.                                  | [ ]    |
-| **0.6d** | Integration test: store-restart-retrieve passes.                              | [ ]    |
-| **0.6d** | Integration test: full CRUD lifecycle passes.                                 | [ ]    |
-| **0.6d** | CI pipeline runs vault tests on Windows and Linux.                            | [ ]    |
+| Step     | Description                                                        | Status |
+| :------- | :----------------------------------------------------------------- | :----- |
+| **0.6a** | `ISecureVault` interface defined in Abstractions.                  | [ ]    |
+| **0.6a** | `SecureVaultException` and derived exceptions created.             | [ ]    |
+| **0.6a** | `SecretMetadata` record defined.                                   | [ ]    |
+| **0.6a** | `ISecureVaultFactory` interface defined.                           | [ ]    |
+| **0.6b** | `WindowsSecureVault` implementation using DPAPI.                   | [ ]    |
+| **0.6b** | Entropy file generated on first use.                               | [ ]    |
+| **0.6b** | Secrets stored as encrypted files in `%APPDATA%/Lexichord/vault/`. | [ ]    |
+| **0.6c** | `UnixSecureVault` with libsecret detection.                        | [ ]    |
+| **0.6c** | AES-256 fallback implementation for headless environments.         | [ ]    |
+| **0.6c** | Machine key derivation implemented securely.                       | [ ]    |
+| **0.6d** | Integration test: store-restart-retrieve passes.                   | [x]    |
+| **0.6d** | Integration test: full CRUD lifecycle passes.                      | [x]    |
+| **0.6d** | CI pipeline runs vault tests on Windows and Linux.                 | [x]    |
 
 ## 4. Risks & Mitigations
 

@@ -1,0 +1,81 @@
+# ===========================================================================
+# v0.0.6d: Vault Integration Tests Workflow
+# ===========================================================================
+name: Vault Integration Tests
+
+on:
+  push:
+    paths:
+      - 'src/Lexichord.Host/Services/Security/**'
+      - 'src/Lexichord.Abstractions/Contracts/Security/**'
+      - 'tests/Lexichord.Tests.Integration/Security/**'
+  pull_request:
+    paths:
+      - 'src/Lexichord.Host/Services/Security/**'
+      - 'src/Lexichord.Abstractions/Contracts/Security/**'
+      - 'tests/Lexichord.Tests.Integration/Security/**'
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run Vault Integration Tests
+        run: |
+          dotnet test tests/Lexichord.Tests.Integration `
+            --filter "Category=Integration&Component=SecureVault" `
+            --configuration Release `
+            --no-build `
+            --logger "trx;LogFileName=vault-windows.trx" `
+            --results-directory TestResults
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vault-test-results-windows
+          path: TestResults/*.trx
+
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run Vault Integration Tests
+        run: |
+          dotnet test tests/Lexichord.Tests.Integration \
+            --filter "Category=Integration&Component=SecureVault" \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=vault-linux.trx" \
+            --results-directory TestResults
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vault-test-results-linux
+          path: TestResults/*.trx

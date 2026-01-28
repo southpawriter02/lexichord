@@ -18,6 +18,10 @@ This release establishes the secure secrets management infrastructure that prote
 
 - **WindowsSecureVault (DPAPI)** — Windows-specific implementation using Data Protection API with user-scoped encryption, per-installation entropy, and secure file-based storage.
 
+- **UnixSecureVault (libsecret/AES-256)** — Linux and macOS implementation with libsecret integration and robust AES-256-GCM file-based encryption fallback.
+
+- **Integration Testing** — Comprehensive test suite verifying secrets survive restarts, CRUD lifecycle, metadata accuracy, and platform factory selection.
+
 #### Why This Matters
 
 This work enables:
@@ -177,10 +181,12 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.6 Sub-Parts
 
-| Document                        | Sub-Part | Title                      |
-| :------------------------------ | :------- | :------------------------- |
-| [LCS-CL-006a](./LCS-CL-006a.md) | v0.0.6a  | ISecureVault Interface     |
-| [LCS-CL-006b](./LCS-CL-006b.md) | v0.0.6b  | WindowsSecureVault (DPAPI) |
+| Document                        | Sub-Part | Title                               |
+| :------------------------------ | :------- | :---------------------------------- |
+| [LCS-CL-006a](./LCS-CL-006a.md) | v0.0.6a  | ISecureVault Interface              |
+| [LCS-CL-006b](./LCS-CL-006b.md) | v0.0.6b  | WindowsSecureVault (DPAPI)          |
+| [LCS-CL-006c](./LCS-CL-006c.md) | v0.0.6c  | UnixSecureVault (libsecret/AES-256) |
+| [LCS-CL-006d](./LCS-CL-006d.md) | v0.0.6d  | Integration Testing                 |
 
 ### v0.0.5 Sub-Parts
 
