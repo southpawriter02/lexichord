@@ -75,7 +75,7 @@ graph TB
     end
 
     subgraph "Dependencies"
-        TR[ITermRepository<br/>v0.2.2a]
+        TR[ITerminologyRepository<br/>v0.2.2b]
         LC[ILicenseContext<br/>v0.0.4c]
         MC[IMemoryCache]
         LOG[ILogger<T><br/>v0.0.3b]
@@ -385,7 +385,7 @@ namespace Lexichord.Modules.RAG.Services;
 /// </summary>
 public class QueryExpander : IQueryExpander
 {
-    private readonly ITermRepository _termRepository;
+    private readonly ITerminologyRepository _termRepository;
     private readonly ILicenseContext _licenseContext;
     private readonly IMemoryCache _cache;
     private readonly ILogger<QueryExpander> _logger;
@@ -393,7 +393,7 @@ public class QueryExpander : IQueryExpander
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(30);
 
     public QueryExpander(
-        ITermRepository termRepository,
+        ITerminologyRepository termRepository,
         ILicenseContext licenseContext,
         IMemoryCache cache,
         ILogger<QueryExpander> logger)
@@ -659,9 +659,9 @@ internal static class Stemmer
 
 ## 6. Data Persistence
 
-This sub-part uses the terminology database from v0.2.2a for synonym lookup. No new persistence is introduced.
+This sub-part uses the terminology database from v0.2.2b for synonym lookup. No new persistence is introduced.
 
-### 6.1 Terminology Database Schema (Reference from v0.2.2a)
+### 6.1 Terminology Database Schema (Reference from v0.2.2b)
 
 ```sql
 CREATE TABLE style_terms (
@@ -678,11 +678,11 @@ CREATE INDEX idx_style_terms_name ON style_terms (LOWER(name));
 CREATE INDEX idx_style_terms_synonyms ON style_terms USING GIN (synonyms);
 ```
 
-### 6.2 ITermRepository Extension
+### 6.2 ITerminologyRepository Extension
 
 ```csharp
 // Extension method needed for v0.5.4b
-public interface ITermRepository
+public interface ITerminologyRepository
 {
     // Existing methods...
 
@@ -840,7 +840,7 @@ if (!_licenseContext.HasFeature(FeatureFlags.RAG.RelevanceTuner))
 [Trait("Feature", "v0.5.4b")]
 public class QueryExpanderTests
 {
-    private readonly Mock<ITermRepository> _termRepoMock;
+    private readonly Mock<ITerminologyRepository> _termRepoMock;
     private readonly Mock<ILicenseContext> _licenseMock;
     private readonly Mock<IMemoryCache> _cacheMock;
     private readonly IQueryExpander _sut;
@@ -1072,7 +1072,7 @@ public class SearchOrchestrator
 | 6   | `QueryExpander` implementation               | [ ]    |
 | 7   | `Stemmer` for algorithmic variants           | [ ]    |
 | 8   | Expansion cache with IMemoryCache            | [ ]    |
-| 9   | `ITermRepository.GetSynonymsAsync` extension | [ ]    |
+| 9   | `ITerminologyRepository.GetSynonymsAsync` extension | [ ]    |
 | 10  | DI registration in RAGModule.cs              | [ ]    |
 | 11  | Unit tests with 90%+ coverage                | [ ]    |
 | 12  | Search result UI with expansion indicator    | [ ]    |

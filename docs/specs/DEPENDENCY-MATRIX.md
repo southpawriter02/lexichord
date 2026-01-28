@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-27 (v0.4.8 added)                                              |
+| **Last Updated** | 2026-01-28 (v0.5.7 added)                                              |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -413,6 +413,236 @@
 | `EmbeddingCacheStatistics` | v0.4.8d    | Modules.RAG | Cache hit/miss metrics      |
 | `EmbeddingCacheOptions`    | v0.4.8d    | Modules.RAG | Cache configuration options |
 
+### 1.14 v0.5.1 Hybrid Engine Interfaces
+
+| Interface              | Defined In | Module       | Purpose                             |
+| :--------------------- | :--------- | :----------- | :---------------------------------- |
+| `IBM25SearchService`   | v0.5.1b    | Abstractions | BM25 full-text keyword search       |
+| `IHybridSearchService` | v0.5.1c    | Abstractions | Combined RRF search (BM25+Semantic) |
+
+**New Classes (v0.5.1):**
+
+| Class                 | Defined In | Module      | Purpose                          |
+| :-------------------- | :--------- | :---------- | :------------------------------- |
+| `BM25SearchService`   | v0.5.1b    | Modules.RAG | PostgreSQL full-text search impl |
+| `HybridSearchService` | v0.5.1c    | Modules.RAG | RRF fusion algorithm impl        |
+
+**New Records (v0.5.1):**
+
+| Record                | Defined In | Module      | Purpose                      |
+| :-------------------- | :--------- | :---------- | :--------------------------- |
+| `BM25Hit`             | v0.5.1b    | Modules.RAG | BM25 search result with rank |
+| `HybridSearchOptions` | v0.5.1c    | Modules.RAG | RRF weights and k constant   |
+
+**New Enums (v0.5.1):**
+
+| Enum         | Defined In | Module       | Purpose                              |
+| :----------- | :--------- | :----------- | :----------------------------------- |
+| `SearchMode` | v0.5.1d    | Abstractions | Semantic/Keyword/Hybrid search modes |
+
+### 1.15 v0.5.2 Citation Engine Interfaces
+
+| Interface                   | Defined In | Module       | Purpose                      |
+| :-------------------------- | :--------- | :----------- | :--------------------------- |
+| `ICitationService`          | v0.5.2a    | Abstractions | Citation creation/formatting |
+| `ICitationFormatter`        | v0.5.2b    | Abstractions | Style-specific formatting    |
+| `ICitationValidator`        | v0.5.2c    | Abstractions | Freshness validation         |
+| `ICitationClipboardService` | v0.5.2d    | Abstractions | Clipboard operations         |
+
+**New Classes (v0.5.2):**
+
+| Class                       | Defined In | Module      | Purpose                       |
+| :-------------------------- | :--------- | :---------- | :---------------------------- |
+| `CitationService`           | v0.5.2a    | Modules.RAG | Citation creation logic       |
+| `CitationValidator`         | v0.5.2c    | Modules.RAG | File freshness validation     |
+| `CitationClipboardService`  | v0.5.2d    | Modules.RAG | Clipboard copy operations     |
+| `InlineCitationFormatter`   | v0.5.2b    | Modules.RAG | [doc.md, §Heading] format     |
+| `FootnoteCitationFormatter` | v0.5.2b    | Modules.RAG | [^id]: path:line format       |
+| `MarkdownCitationFormatter` | v0.5.2b    | Modules.RAG | [Title](file://path#L) format |
+| `CitationFormatterRegistry` | v0.5.2b    | Modules.RAG | Formatter lookup and prefs    |
+
+**New Records (v0.5.2):**
+
+| Record                     | Defined In | Module       | Purpose                 |
+| :------------------------- | :--------- | :----------- | :---------------------- |
+| `Citation`                 | v0.5.2a    | Abstractions | Source attribution data |
+| `CitationValidationResult` | v0.5.2c    | Abstractions | Validation outcome      |
+
+**New Enums (v0.5.2):**
+
+| Enum                       | Defined In | Module       | Purpose                   |
+| :------------------------- | :--------- | :----------- | :------------------------ |
+| `CitationStyle`            | v0.5.2a    | Abstractions | Inline/Footnote/Markdown  |
+| `CitationValidationStatus` | v0.5.2c    | Abstractions | Valid/Stale/Missing/Error |
+
+### 1.16 v0.5.3 Context Window Interfaces
+
+| Interface                  | Defined In | Module       | Purpose                     |
+| :------------------------- | :--------- | :----------- | :-------------------------- |
+| `IContextExpansionService` | v0.5.3a    | Abstractions | Expand chunks with context  |
+| `IHeadingHierarchyService` | v0.5.3c    | Abstractions | Resolve heading breadcrumbs |
+
+**New Classes (v0.5.3):**
+
+| Class                     | Defined In | Module      | Purpose                    |
+| :------------------------ | :--------- | :---------- | :------------------------- |
+| `ContextExpansionService` | v0.5.3a    | Modules.RAG | Context aggregation logic  |
+| `HeadingHierarchyService` | v0.5.3c    | Modules.RAG | Breadcrumb resolution      |
+| `ContextPreviewViewModel` | v0.5.3d    | Modules.RAG | Expansion state management |
+
+**New Records (v0.5.3):**
+
+| Record           | Defined In | Module       | Purpose                        |
+| :--------------- | :--------- | :----------- | :----------------------------- |
+| `ContextOptions` | v0.5.3a    | Abstractions | Expansion configuration        |
+| `ExpandedChunk`  | v0.5.3a    | Abstractions | Chunk with surrounding context |
+| `HeadingNode`    | v0.5.3c    | Abstractions | Heading hierarchy tree node    |
+
+### 1.17 v0.5.4 Relevance Tuner Interfaces
+
+| Interface                 | Defined In | Module       | Purpose                        |
+| :------------------------ | :--------- | :----------- | :----------------------------- |
+| `IQueryAnalyzer`          | v0.5.4a    | Abstractions | Query structure/intent parsing |
+| `IQueryExpander`          | v0.5.4b    | Abstractions | Synonym-based expansion        |
+| `IQuerySuggestionService` | v0.5.4c    | Abstractions | Autocomplete suggestions       |
+| `IQueryHistoryService`    | v0.5.4d    | Abstractions | Search pattern tracking        |
+
+**New Classes (v0.5.4):**
+
+| Class                    | Defined In | Module      | Purpose                        |
+| :----------------------- | :--------- | :---------- | :----------------------------- |
+| `QueryAnalyzer`          | v0.5.4a    | Modules.RAG | Keyword/entity/intent analysis |
+| `QueryExpander`          | v0.5.4b    | Modules.RAG | Terminology-based expansion    |
+| `QuerySuggestionService` | v0.5.4c    | Modules.RAG | N-gram based suggestions       |
+| `QueryHistoryService`    | v0.5.4d    | Modules.RAG | Query recording and analytics  |
+| `SuggestionPopup`        | v0.5.4c    | Modules.RAG | Autocomplete UI component      |
+
+**New Records (v0.5.4):**
+
+| Record              | Defined In | Module       | Purpose                    |
+| :------------------ | :--------- | :----------- | :------------------------- |
+| `QueryAnalysis`     | v0.5.4a    | Abstractions | Analysis results container |
+| `QueryEntity`       | v0.5.4a    | Abstractions | Recognized entity in query |
+| `ExpandedQuery`     | v0.5.4b    | Abstractions | Query with added synonyms  |
+| `Synonym`           | v0.5.4b    | Abstractions | Synonym term with weight   |
+| `ExpansionOptions`  | v0.5.4b    | Abstractions | Expansion configuration    |
+| `QuerySuggestion`   | v0.5.4c    | Abstractions | Autocomplete suggestion    |
+| `QueryHistoryEntry` | v0.5.4d    | Abstractions | Recorded query entry       |
+| `ZeroResultQuery`   | v0.5.4d    | Abstractions | Content gap identification |
+
+**New Enums (v0.5.4):**
+
+| Enum               | Defined In | Module       | Purpose                      |
+| :----------------- | :--------- | :----------- | :--------------------------- |
+| `QueryIntent`      | v0.5.4a    | Abstractions | Factual/Procedural/etc.      |
+| `EntityType`       | v0.5.4a    | Abstractions | Code/FilePath/Domain/etc.    |
+| `SynonymSource`    | v0.5.4b    | Abstractions | Terminology/Algorithmic/etc. |
+| `SuggestionSource` | v0.5.4c    | Abstractions | QueryHistory/Heading/Ngram   |
+
+### 1.18 v0.5.5 Filter System Interfaces
+
+| Interface              | Defined In | Module       | Purpose                      |
+| :--------------------- | :--------- | :----------- | :--------------------------- |
+| `IFilterQueryBuilder`  | v0.5.5c    | Abstractions | SQL filter clause generation |
+| `IFilterPresetService` | v0.5.5d    | Abstractions | Saved preset management      |
+| `IFilterValidator`     | v0.5.5a    | Abstractions | Filter criteria validation   |
+
+**New Classes (v0.5.5):**
+
+| Class                        | Defined In | Module      | Purpose                    |
+| :--------------------------- | :--------- | :---------- | :------------------------- |
+| `FilterQueryBuilder`         | v0.5.5c    | Modules.RAG | SQL WHERE clause builder   |
+| `FilterPresetService`        | v0.5.5d    | Modules.RAG | Preset persistence service |
+| `SearchFilterPanel`          | v0.5.5b    | Modules.RAG | Filter panel UI view       |
+| `SearchFilterPanelViewModel` | v0.5.5b    | Modules.RAG | Filter state management    |
+
+**New Records (v0.5.5):**
+
+| Record              | Defined In | Module       | Purpose                   |
+| :------------------ | :--------- | :----------- | :------------------------ |
+| `SearchFilter`      | v0.5.5a    | Abstractions | Filter criteria container |
+| `DateRange`         | v0.5.5a    | Abstractions | Temporal filter bounds    |
+| `FilterPreset`      | v0.5.5a    | Abstractions | Saved configuration       |
+| `FilterQueryResult` | v0.5.5c    | Abstractions | SQL clauses + parameters  |
+
+**New Enums (v0.5.5):**
+
+| Enum              | Defined In | Module      | Purpose                    |
+| :---------------- | :--------- | :---------- | :------------------------- |
+| `DateRangeOption` | v0.5.5b    | Modules.RAG | AnyTime/LastDay/Custom/etc |
+
+### 1.19 v0.5.6 Answer Preview Interfaces
+
+| Interface                   | Defined In | Module       | Purpose                     |
+| :-------------------------- | :--------- | :----------- | :-------------------------- |
+| `ISnippetService`           | v0.5.6a    | Abstractions | Snippet extraction          |
+| `IHighlightRenderer`        | v0.5.6b    | Modules.RAG  | Platform-agnostic rendering |
+| `ISentenceBoundaryDetector` | v0.5.6c    | Abstractions | Sentence boundary detection |
+
+**New Classes (v0.5.6):**
+
+| Class                       | Defined In | Module      | Purpose                     |
+| :-------------------------- | :--------- | :---------- | :-------------------------- |
+| `SnippetService`            | v0.5.6a    | Modules.RAG | Snippet extraction logic    |
+| `HighlightedSnippetControl` | v0.5.6b    | Modules.RAG | Snippet display UI control  |
+| `SentenceBoundaryDetector`  | v0.5.6c    | Modules.RAG | Sentence boundary detection |
+| `MultiSnippetViewModel`     | v0.5.6d    | Modules.RAG | Expandable snippet state    |
+
+**New Records (v0.5.6):**
+
+| Record             | Defined In | Module       | Purpose                   |
+| :----------------- | :--------- | :----------- | :------------------------ |
+| `Snippet`          | v0.5.6a    | Abstractions | Extracted snippet content |
+| `HighlightSpan`    | v0.5.6a    | Abstractions | Match position and type   |
+| `SnippetOptions`   | v0.5.6a    | Abstractions | Extraction configuration  |
+| `HighlightTheme`   | v0.5.6b    | Modules.RAG  | Highlight colors          |
+| `SentenceBoundary` | v0.5.6c    | Abstractions | Sentence position         |
+
+**New Enums (v0.5.6):**
+
+| Enum            | Defined In | Module       | Purpose                         |
+| :-------------- | :--------- | :----------- | :------------------------------ |
+| `HighlightType` | v0.5.6a    | Abstractions | QueryMatch/FuzzyMatch/KeyPhrase |
+
+### 1.20 v0.5.7 Reference Dock Interfaces
+
+| Interface                | Defined In | Module      | Purpose                       |
+| :----------------------- | :--------- | :---------- | :---------------------------- |
+| `IResultGroupingService` | v0.5.7b    | Modules.RAG | Group results by document     |
+| `ISearchActionsService`  | v0.5.7d    | Modules.RAG | Copy/export/open bulk actions |
+
+**New Classes (v0.5.7):**
+
+| Class                    | Defined In | Module      | Purpose                  |
+| :----------------------- | :--------- | :---------- | :----------------------- |
+| `ResultGroupingService`  | v0.5.7b    | Modules.RAG | Document grouping logic  |
+| `SearchActionsService`   | v0.5.7d    | Modules.RAG | Export and copy actions  |
+| `PreviewPaneView`        | v0.5.7c    | Modules.RAG | Preview panel UI         |
+| `PreviewPaneViewModel`   | v0.5.7c    | Modules.RAG | Preview state management |
+| `GroupedResultsView`     | v0.5.7b    | Modules.RAG | Grouped list UI          |
+| `FilterChipPanel`        | v0.5.7a    | Modules.RAG | Active filter display    |
+| `SearchModeToggleButton` | v0.5.7a    | Modules.RAG | Mode selection control   |
+
+**New Records (v0.5.7):**
+
+| Record                  | Defined In | Module      | Purpose                   |
+| :---------------------- | :--------- | :---------- | :------------------------ |
+| `FilterChip`            | v0.5.7a    | Modules.RAG | Active filter display     |
+| `GroupedSearchResults`  | v0.5.7b    | Modules.RAG | Grouped result container  |
+| `DocumentResultGroup`   | v0.5.7b    | Modules.RAG | Single document's results |
+| `ResultGroupingOptions` | v0.5.7b    | Modules.RAG | Grouping configuration    |
+| `ExportOptions`         | v0.5.7d    | Modules.RAG | Export configuration      |
+| `ExportResult`          | v0.5.7d    | Modules.RAG | Export operation result   |
+
+**New Enums (v0.5.7):**
+
+| Enum             | Defined In | Module      | Purpose                   |
+| :--------------- | :--------- | :---------- | :------------------------ |
+| `FilterChipType` | v0.5.7a    | Modules.RAG | Path/Extension/DateRange  |
+| `ResultSortMode` | v0.5.7b    | Modules.RAG | Relevance/Path/MatchCount |
+| `CopyFormat`     | v0.5.7d    | Modules.RAG | Markdown/PlainText        |
+| `ExportFormat`   | v0.5.7d    | Modules.RAG | JSON/CSV/Markdown         |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -450,6 +680,14 @@
 | `IndexOperationCompletedEvent`  | v0.4.7b    | Index operation completed         |
 | `IndexingProgressUpdatedEvent`  | v0.4.7c    | Progress update during indexing   |
 | `DocumentRemovedFromIndexEvent` | v0.4.7b    | Document removed from index       |
+| `HybridSearchExecutedEvent`     | v0.5.1c    | Hybrid search completed           |
+| `CitationCreatedEvent`          | v0.5.2a    | Citation created from search hit  |
+| `CitationValidationFailedEvent` | v0.5.2c    | Stale/missing citation detected   |
+| `ContextExpandedEvent`          | v0.5.3a    | Context expansion completed       |
+| `ContextExpansionDeniedEvent`   | v0.5.3a    | Expansion blocked due to license  |
+| `QueryAnalyticsEvent`           | v0.5.4d    | Query execution telemetry         |
+| `FilterAppliedEvent`            | v0.5.5d    | Search filter configuration set   |
+| `SearchResultsExportedEvent`    | v0.5.7d    | Search results exported to file   |
 
 ---
 
@@ -830,3 +1068,149 @@ graph TB
 - [ ] EmbeddingCacheStatistics record (v0.4.8d)
 - [ ] EmbeddingCacheOptions configuration (v0.4.8d)
 - [ ] LRU eviction policy (v0.4.8d)
+
+### v0.5.1 Prerequisites for v0.5.2+
+
+- [ ] Migration_004_FullTextSearch with content_tsvector (v0.5.1a)
+- [ ] GIN index on content_tsvector (v0.5.1a)
+- [ ] IBM25SearchService interface (v0.5.1b)
+- [ ] BM25SearchService implementation (v0.5.1b)
+- [ ] BM25Hit record (v0.5.1b)
+- [ ] IHybridSearchService interface (v0.5.1c)
+- [ ] HybridSearchService with RRF algorithm (v0.5.1c)
+- [ ] HybridSearchOptions record (v0.5.1c)
+- [ ] HybridSearchExecutedEvent (v0.5.1c)
+- [ ] SearchMode enum (v0.5.1d)
+- [ ] Search mode toggle UI (v0.5.1d)
+- [ ] License gating for Hybrid mode (v0.5.1d)
+
+### v0.5.2 Prerequisites for v0.5.3+
+
+- [ ] Citation record with provenance fields (v0.5.2a)
+- [ ] CitationStyle enum (v0.5.2a)
+- [ ] ICitationService interface (v0.5.2a)
+- [ ] CitationService implementation (v0.5.2a)
+- [ ] Line number calculation from offset (v0.5.2a)
+- [ ] CitationCreatedEvent (v0.5.2a)
+- [ ] ICitationFormatter interface (v0.5.2b)
+- [ ] InlineCitationFormatter (v0.5.2b)
+- [ ] FootnoteCitationFormatter (v0.5.2b)
+- [ ] MarkdownCitationFormatter (v0.5.2b)
+- [ ] CitationFormatterRegistry (v0.5.2b)
+- [ ] CitationValidationStatus enum (v0.5.2c)
+- [ ] ICitationValidator interface (v0.5.2c)
+- [ ] CitationValidator with file checks (v0.5.2c)
+- [ ] CitationValidationResult record (v0.5.2c)
+- [ ] CitationValidationFailedEvent (v0.5.2c)
+- [ ] ICitationClipboardService interface (v0.5.2d)
+- [ ] CitationClipboardService implementation (v0.5.2d)
+- [ ] Context menu integration (v0.5.2d)
+
+### v0.5.3 Prerequisites for v0.5.4+
+
+- [ ] IContextExpansionService interface (v0.5.3a)
+- [ ] ContextExpansionService implementation (v0.5.3a)
+- [ ] ContextOptions record (v0.5.3a)
+- [ ] ExpandedChunk record (v0.5.3a)
+- [ ] ContextExpandedEvent (v0.5.3a)
+- [ ] ContextExpansionDeniedEvent (v0.5.3a)
+- [ ] GetSiblingsAsync extension to IChunkRepository (v0.5.3b)
+- [ ] Sibling cache with LRU eviction (v0.5.3b)
+- [ ] IHeadingHierarchyService interface (v0.5.3c)
+- [ ] HeadingHierarchyService implementation (v0.5.3c)
+- [ ] HeadingNode record (v0.5.3c)
+- [ ] Breadcrumb resolution logic (v0.5.3c)
+- [ ] ContextPreviewViewModel (v0.5.3d)
+- [ ] SearchResultItemView expander UI (v0.5.3d)
+- [ ] Context preview animations (v0.5.3d)
+- [ ] License gating for context window (v0.5.3d)
+
+### v0.5.4 Prerequisites for v0.5.5+
+
+- [ ] IQueryAnalyzer interface (v0.5.4a)
+- [ ] QueryAnalyzer implementation (v0.5.4a)
+- [ ] QueryAnalysis record (v0.5.4a)
+- [ ] QueryEntity record (v0.5.4a)
+- [ ] QueryIntent enum (v0.5.4a)
+- [ ] EntityType enum (v0.5.4a)
+- [ ] IQueryExpander interface (v0.5.4b)
+- [ ] QueryExpander implementation (v0.5.4b)
+- [ ] ExpandedQuery record (v0.5.4b)
+- [ ] Synonym record (v0.5.4b)
+- [ ] ExpansionOptions record (v0.5.4b)
+- [ ] SynonymSource enum (v0.5.4b)
+- [ ] IQuerySuggestionService interface (v0.5.4c)
+- [ ] QuerySuggestionService implementation (v0.5.4c)
+- [ ] QuerySuggestion record (v0.5.4c)
+- [ ] SuggestionSource enum (v0.5.4c)
+- [ ] SuggestionPopup UI component (v0.5.4c)
+- [ ] query_suggestions table migration (v0.5.4c)
+- [ ] IQueryHistoryService interface (v0.5.4d)
+- [ ] QueryHistoryService implementation (v0.5.4d)
+- [ ] QueryHistoryEntry record (v0.5.4d)
+- [ ] ZeroResultQuery record (v0.5.4d)
+- [ ] QueryAnalyticsEvent (v0.5.4d)
+- [ ] query_history table migration (v0.5.4d)
+
+### v0.5.5 Prerequisites for v0.5.6+
+
+- [ ] SearchFilter record (v0.5.5a)
+- [ ] DateRange record with factory methods (v0.5.5a)
+- [ ] FilterPreset record (v0.5.5a)
+- [ ] IFilterValidator interface (v0.5.5a)
+- [ ] SearchFilterPanel UI component (v0.5.5b)
+- [ ] SearchFilterPanelViewModel (v0.5.5b)
+- [ ] DateRangeOption enum (v0.5.5b)
+- [ ] IFilterQueryBuilder interface (v0.5.5c)
+- [ ] FilterQueryBuilder implementation (v0.5.5c)
+- [ ] FilterQueryResult record (v0.5.5c)
+- [ ] Glob-to-SQL pattern conversion (v0.5.5c)
+- [ ] IFilterPresetService interface (v0.5.5d)
+- [ ] FilterPresetService implementation (v0.5.5d)
+- [ ] FilterAppliedEvent (v0.5.5d)
+- [ ] License gating for date filter (v0.5.5d)
+- [ ] License gating for saved presets (v0.5.5d)
+
+### v0.5.6 Prerequisites for v0.5.7+
+
+- [ ] ISnippetService interface (v0.5.6a)
+- [ ] SnippetService implementation (v0.5.6a)
+- [ ] Snippet record (v0.5.6a)
+- [ ] HighlightSpan record (v0.5.6a)
+- [ ] SnippetOptions record (v0.5.6a)
+- [ ] HighlightType enum (v0.5.6a)
+- [ ] IHighlightRenderer interface (v0.5.6b)
+- [ ] HighlightedSnippetControl UI (v0.5.6b)
+- [ ] HighlightTheme record (v0.5.6b)
+- [ ] ISentenceBoundaryDetector interface (v0.5.6c)
+- [ ] SentenceBoundaryDetector implementation (v0.5.6c)
+- [ ] SentenceBoundary record (v0.5.6c)
+- [ ] Match density scoring algorithm (v0.5.6c)
+- [ ] MultiSnippetViewModel (v0.5.6d)
+- [ ] Region clustering algorithm (v0.5.6d)
+- [ ] Snippet deduplication logic (v0.5.6d)
+
+### v0.5.7 Prerequisites for v0.5.8+
+
+- [ ] ReferenceView redesign (v0.5.7a)
+- [ ] SearchModeToggleButton control (v0.5.7a)
+- [ ] FilterChipPanel control (v0.5.7a)
+- [ ] FilterChip record (v0.5.7a)
+- [ ] FilterChipType enum (v0.5.7a)
+- [ ] Keyboard navigation in ReferenceViewModel (v0.5.7a)
+- [ ] IResultGroupingService interface (v0.5.7b)
+- [ ] ResultGroupingService implementation (v0.5.7b)
+- [ ] GroupedSearchResults record (v0.5.7b)
+- [ ] DocumentResultGroup record (v0.5.7b)
+- [ ] ResultGroupingOptions record (v0.5.7b)
+- [ ] ResultSortMode enum (v0.5.7b)
+- [ ] GroupedResultsView UI (v0.5.7b)
+- [ ] PreviewPaneView (v0.5.7c)
+- [ ] PreviewPaneViewModel (v0.5.7c)
+- [ ] ISearchActionsService interface (v0.5.7d)
+- [ ] SearchActionsService implementation (v0.5.7d)
+- [ ] ExportOptions record (v0.5.7d)
+- [ ] ExportResult record (v0.5.7d)
+- [ ] CopyFormat enum (v0.5.7d)
+- [ ] ExportFormat enum (v0.5.7d)
+- [ ] SearchResultsExportedEvent (v0.5.7d)

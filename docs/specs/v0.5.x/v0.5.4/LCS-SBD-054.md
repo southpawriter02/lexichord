@@ -66,7 +66,7 @@ The Relevance Tuner features are gated at the **Writer Pro** tier using a **Soft
 | `ISemanticSearchService` | v0.4.5a               | Base search to enhance           |
 | `IHybridSearchService`   | v0.5.1c               | Combined search execution        |
 | `IChunkRepository`       | v0.4.1c               | Content analysis for suggestions |
-| `ITermRepository`        | v0.2.2a               | Domain synonym database          |
+| `ITerminologyRepository` | v0.2.2b               | Domain synonym database          |
 | `ISettingsService`       | v0.1.6a               | User preference storage          |
 | `ILicenseContext`        | v0.0.4c               | License tier checking            |
 | `IMediator`              | v0.0.7a               | Event publishing                 |
@@ -204,7 +204,7 @@ public enum QueryIntent
 
 **Dependencies:**
 
-- `ITermRepository` (v0.2.2a) for domain term recognition
+- `ITerminologyRepository` (v0.2.2b) for domain term recognition
 - Stop-word list (English, technical terms)
 
 ---
@@ -311,7 +311,7 @@ public record ExpansionOptions(
 
 **Dependencies:**
 
-- `ITermRepository` (v0.2.2a) for synonym lookup
+- `ITerminologyRepository` (v0.2.2b) for synonym lookup
 - `QueryAnalysis` (v0.5.4a) for keywords to expand
 
 ---
@@ -453,7 +453,7 @@ CREATE INDEX idx_suggestions_frequency ON query_suggestions (frequency DESC);
 **Dependencies:**
 
 - Document indexing pipeline (v0.4.3) for n-gram extraction
-- `ITermRepository` (v0.2.2a) for domain terms
+- `ITerminologyRepository` (v0.2.2b) for domain terms
 
 ---
 
@@ -682,13 +682,13 @@ CREATE INDEX idx_query_history_hash ON query_history (query_hash);
 
 ## 5. Dependency Matrix
 
-| Component                | Depends On                                      |
-| :----------------------- | :---------------------------------------------- |
-| `QueryAnalyzer`          | `ITermRepository` (v0.2.2a)                     |
-| `QueryExpander`          | `QueryAnalysis`, `ITermRepository` (v0.2.2a)    |
-| `QuerySuggestionService` | `IChunkRepository` (v0.4.1c), indexing pipeline |
-| `QueryHistoryService`    | `QueryAnalysis`, `ISettingsService` (v0.1.6a)   |
-| `SuggestionPopup`        | `IQuerySuggestionService`, `ViewModelBase`      |
+| Component                | Depends On                                          |
+| :----------------------- | :-------------------------------------------------- |
+| `QueryAnalyzer`          | `ITerminologyRepository` (v0.2.2b)                  |
+| `QueryExpander`          | `QueryAnalysis`, `ITerminologyRepository` (v0.2.2b) |
+| `QuerySuggestionService` | `IChunkRepository` (v0.4.1c), indexing pipeline     |
+| `QueryHistoryService`    | `QueryAnalysis`, `ISettingsService` (v0.1.6a)       |
+| `SuggestionPopup`        | `IQuerySuggestionService`, `ViewModelBase`          |
 
 ---
 
@@ -718,7 +718,7 @@ graph TB
     end
 
     subgraph "Dependencies"
-        TR[ITermRepository<br/>v0.2.2a]
+        TR[ITerminologyRepository<br/>v0.2.2b]
         HSS[IHybridSearchService<br/>v0.5.1c]
         SS[ISettingsService<br/>v0.1.6a]
     end
@@ -1204,7 +1204,7 @@ The following features are explicitly **out of scope** for v0.5.4:
 ### Dependencies
 
 - Requires v0.5.1 (Hybrid Engine) for search execution
-- Uses ITermRepository from v0.2.2 for synonyms
+- Uses ITerminologyRepository from v0.2.2 for synonyms
 ```
 
 ---

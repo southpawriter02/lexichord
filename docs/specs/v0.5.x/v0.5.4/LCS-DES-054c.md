@@ -75,7 +75,7 @@ graph TB
 
     subgraph "Dependencies"
         DB[PostgreSQL<br/>query_suggestions]
-        TR[ITermRepository<br/>v0.2.2a]
+        TR[ITerminologyRepository<br/>v0.2.2b]
         LC[ILicenseContext<br/>v0.0.4c]
         LOG[ILogger<T><br/>v0.0.3b]
         MC[IMemoryCache]
@@ -360,7 +360,7 @@ namespace Lexichord.Modules.RAG.Services;
 public class QuerySuggestionService : IQuerySuggestionService
 {
     private readonly IDbConnection _connection;
-    private readonly ITermRepository _termRepository;
+    private readonly ITerminologyRepository _termRepository;
     private readonly ILicenseContext _licenseContext;
     private readonly IMemoryCache _cache;
     private readonly ILogger<QuerySuggestionService> _logger;
@@ -370,7 +370,7 @@ public class QuerySuggestionService : IQuerySuggestionService
 
     public QuerySuggestionService(
         IDbConnection connection,
-        ITermRepository termRepository,
+        ITerminologyRepository termRepository,
         ILicenseContext licenseContext,
         IMemoryCache cache,
         ILogger<QuerySuggestionService> logger)
@@ -1014,7 +1014,7 @@ if (!_licenseContext.HasFeature(FeatureFlags.RAG.RelevanceTuner))
 public class QuerySuggestionServiceTests
 {
     private readonly Mock<IDbConnection> _dbMock;
-    private readonly Mock<ITermRepository> _termRepoMock;
+    private readonly Mock<ITerminologyRepository> _termRepoMock;
     private readonly Mock<ILicenseContext> _licenseMock;
     private readonly IQuerySuggestionService _sut;
 

@@ -74,7 +74,7 @@ graph TB
     end
 
     subgraph "Dependencies"
-        TR[ITermRepository<br/>v0.2.2a]
+        TR[ITerminologyRepository<br/>v0.2.2b]
         LOG[ILogger<T><br/>v0.0.3b]
     end
 
@@ -265,7 +265,7 @@ public enum EntityType
 
     /// <summary>
     /// Domain-specific term from terminology database.
-    /// Source: ITermRepository lookup
+    /// Source: ITerminologyRepository lookup
     /// Examples: OAuth, dependency injection, singleton
     /// </summary>
     DomainTerm,
@@ -416,7 +416,7 @@ internal static class IntentDetector
 /// </summary>
 internal class EntityRecognizer
 {
-    private readonly ITermRepository _termRepository;
+    private readonly ITerminologyRepository _termRepository;
 
     // Code identifier pattern: PascalCase, camelCase, snake_case, or contains special chars
     private static readonly Regex CodeIdentifierPattern = new(

@@ -149,15 +149,15 @@ sequenceDiagram
 
 ### 4.1 Upstream Dependencies (Required)
 
-| Interface              | Source Version        | Purpose                       |
-| :--------------------- | :-------------------- | :---------------------------- |
-| `IHybridSearchService` | v0.5.1c               | Combined search execution     |
-| `ITermRepository`      | v0.2.2a               | Domain synonyms               |
-| `IChunkRepository`     | v0.4.1c               | Content for n-gram extraction |
-| `ISettingsService`     | v0.1.6a               | User preferences              |
-| `ILicenseContext`      | v0.0.4c               | License tier checking         |
-| `IMediator`            | v0.0.7a               | Event publishing              |
-| `ViewModelBase`        | CommunityToolkit.Mvvm | Observable ViewModel base     |
+| Interface                | Source Version        | Purpose                       |
+| :----------------------- | :-------------------- | :---------------------------- |
+| `IHybridSearchService`   | v0.5.1c               | Combined search execution     |
+| `ITerminologyRepository` | v0.2.2b               | Domain synonyms               |
+| `IChunkRepository`       | v0.4.1c               | Content for n-gram extraction |
+| `ISettingsService`       | v0.1.6a               | User preferences              |
+| `ILicenseContext`        | v0.0.4c               | License tier checking         |
+| `IMediator`              | v0.0.7a               | Event publishing              |
+| `ViewModelBase`          | CommunityToolkit.Mvvm | Observable ViewModel base     |
 
 ### 4.2 Downstream Consumers (Future)
 
