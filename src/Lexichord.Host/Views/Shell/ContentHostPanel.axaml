@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Lexichord.Host.Views.Shell.ContentHostPanel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    CONTENT HOST PANEL
+    The primary content area where module views are displayed.
+
+    LOGIC: Uses SurfaceBaseBrush (deepest layer) to create visual depth.
+    The ContentControl named "ModuleViewHost" is the injection point for
+    module views loaded via the ModuleLoader (v0.0.4+).
+
+    For now, displays a welcome message centered in the panel.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Border Background="{DynamicResource SurfaceBaseBrush}">
+
+        <!-- Module View Host: Content is injected here by the ModuleLoader -->
+        <ContentControl x:Name="ModuleViewHost">
+
+            <!-- Default content (shown when no module view is loaded) -->
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="16">
+
+                <!-- Welcome icon -->
+                <TextBlock Text="🎼"
+                           FontSize="64"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextTertiaryBrush}" />
+
+                <!-- Welcome message -->
+                <TextBlock Text="Welcome to Lexichord"
+                           FontSize="{StaticResource FontSize2XL}"
+                           FontWeight="Light"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <!-- Subtitle -->
+                <TextBlock Text="The Agentic Orchestration Platform for Writers"
+                           FontSize="{StaticResource FontSizeMD}"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+
+                <!-- Getting started hint -->
+                <TextBlock Text="Select a section from the navigation rail to begin"
+                           FontSize="{StaticResource FontSizeSM}"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           Margin="0,24,0,0" />
+
+            </StackPanel>
+
+        </ContentControl>
+
+    </Border>
+
+</UserControl>

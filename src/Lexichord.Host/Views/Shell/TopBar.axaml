@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Lexichord.Host.Views.Shell.TopBar">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    TOP BAR
+    Application title bar with branding and optional controls.
+
+    LOGIC: Uses SurfaceElevatedBrush for visual separation from content area.
+    Border at bottom provides subtle divider line.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Border Background="{DynamicResource SurfaceElevatedBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="16,0">
+
+        <Grid ColumnDefinitions="Auto,*,Auto" Height="48">
+
+            <!-- Left: Application Title -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Spacing="12">
+
+                <!-- Logo placeholder (future: actual icon) -->
+                <TextBlock Text="🎼"
+                           FontSize="20"
+                           VerticalAlignment="Center" />
+
+                <!-- Application Name -->
+                <TextBlock Text="Lexichord"
+                           FontSize="{StaticResource FontSizeLG}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           VerticalAlignment="Center" />
+
+                <!-- Tagline (subtle) -->
+                <TextBlock Text="— The Orchestrator"
+                           FontSize="{StaticResource FontSizeMD}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Center: Spacer (future: document tabs) -->
+            <Border Grid.Column="1" />
+
+            <!-- Right: Window controls placeholder -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+                <!-- Future: Search, notifications, user menu -->
+            </StackPanel>
+
+        </Grid>
+    </Border>
+
+</UserControl>

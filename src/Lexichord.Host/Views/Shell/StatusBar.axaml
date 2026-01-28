@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Lexichord.Host.Views.Shell.StatusBar">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    STATUS BAR
+    Bottom bar displaying system status, version, and quick actions.
+
+    LOGIC: Three columns:
+    - Left: Status message (e.g., "Ready", "Saving...", "Analyzing...")
+    - Center: Notifications/progress (future)
+    - Right: Version info, theme toggle (v0.0.2c)
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Border Background="{DynamicResource SurfaceElevatedBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="12,0">
+
+        <Grid ColumnDefinitions="*,Auto,Auto" Height="28">
+
+            <!-- Left: Status message -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+
+                <!-- Status indicator dot -->
+                <Ellipse Width="8" Height="8"
+                         Fill="{DynamicResource StatusSuccessBrush}" />
+
+                <!-- Status text -->
+                <TextBlock Text="Ready"
+                           FontSize="{StaticResource FontSizeSM}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" />
+
+            </StackPanel>
+
+            <!-- Center: Spacer (future: notifications) -->
+            <Border Grid.Column="1" />
+
+            <!-- Right: Version and controls -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Spacing="16">
+
+                <!-- Separator -->
+                <Border Width="1" Height="16"
+                        Background="{DynamicResource BorderSubtleBrush}" />
+
+                <!-- Version -->
+                <TextBlock Text="v0.0.2"
+                           FontSize="{StaticResource FontSizeXS}"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           VerticalAlignment="Center" />
+
+                <!-- Theme toggle placeholder (implemented in v0.0.2c) -->
+                <Button Classes="status-icon"
+                        ToolTip.Tip="Toggle Theme"
+                        x:Name="ThemeToggleButton">
+                    <TextBlock Text="🌙" FontSize="14" />
+                </Button>
+
+            </StackPanel>
+
+        </Grid>
+    </Border>
+
+    <UserControl.Styles>
+        <!-- Status bar icon button style -->
+        <Style Selector="Button.status-icon">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <Style Selector="Button.status-icon:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+</UserControl>

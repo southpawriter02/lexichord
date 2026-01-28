@@ -16,6 +16,8 @@ This release introduces the visual foundation of Lexichord — the Avalonia-base
 
 - **Avalonia UI Framework Bootstrapped** — The application now launches as a proper desktop window instead of a console application. This establishes the foundation for all future UI work.
 
+- **Podium Layout Shell** — The main window now features a structured layout with a top bar, navigation rail, content host, and status bar — the "Podium" where all future writing tools will perform.
+
 #### Why This Matters
 
 This work establishes:
@@ -72,6 +74,7 @@ Each major version has detailed technical changelogs organized by sub-part:
 | Document                        | Sub-Part | Title              |
 | :------------------------------ | :------- | :----------------- |
 | [LCS-CL-002a](./LCS-CL-002a.md) | v0.0.2a  | Avalonia Bootstrap |
+| [LCS-CL-002b](./LCS-CL-002b.md) | v0.0.2b  | Podium Layout      |
 
 ### v0.0.1 Sub-Parts
 

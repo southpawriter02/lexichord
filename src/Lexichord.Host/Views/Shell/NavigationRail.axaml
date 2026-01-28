@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Lexichord.Host.Views.Shell.NavigationRail">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    NAVIGATION RAIL
+    Vertical icon rail for section switching.
+
+    LOGIC: Fixed width of 60px matches the Grid column definition.
+    Icons use placeholder text until proper SVG icons are added.
+    Hover states use AccentMutedBrush for subtle feedback.
+
+    Future: Icons will be bound to an ItemsControl with INavigationItem models.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Border Background="{DynamicResource SurfaceElevatedBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="0,0,1,0"
+            Width="60">
+
+        <DockPanel>
+
+            <!-- Top: Primary navigation items -->
+            <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="8,12">
+
+                <!-- Documents Section -->
+                <Button Classes="nav-icon" ToolTip.Tip="Documents">
+                    <TextBlock Text="📄" FontSize="20" />
+                </Button>
+
+                <!-- Style/Governance Section -->
+                <Button Classes="nav-icon" ToolTip.Tip="Style Guide">
+                    <TextBlock Text="🎵" FontSize="20" />
+                </Button>
+
+                <!-- Memory/RAG Section -->
+                <Button Classes="nav-icon" ToolTip.Tip="Memory">
+                    <TextBlock Text="🧠" FontSize="20" />
+                </Button>
+
+                <!-- Agents Section -->
+                <Button Classes="nav-icon" ToolTip.Tip="Agents">
+                    <TextBlock Text="🤖" FontSize="20" />
+                </Button>
+
+            </StackPanel>
+
+            <!-- Bottom: Secondary items (settings, etc.) -->
+            <StackPanel DockPanel.Dock="Bottom" Spacing="4" Margin="8,12">
+
+                <!-- Settings -->
+                <Button Classes="nav-icon" ToolTip.Tip="Settings">
+                    <TextBlock Text="⚙️" FontSize="20" />
+                </Button>
+
+            </StackPanel>
+
+            <!-- Center: Spacer -->
+            <Border />
+
+        </DockPanel>
+    </Border>
+
+    <UserControl.Styles>
+        <!-- Nav icon button style -->
+        <Style Selector="Button.nav-icon">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
+        <Style Selector="Button.nav-icon:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+
+        <Style Selector="Button.nav-icon:pressed">
+            <Setter Property="Background" Value="{DynamicResource AccentGlowBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+</UserControl>

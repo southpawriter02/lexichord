@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="using:Lexichord.Host.Views.Shell"
         x:Class="Lexichord.Host.Views.MainWindow"
         Title="Lexichord — The Orchestrator"
         Width="1400"
@@ -10,19 +11,45 @@
 
     <!--
     ═══════════════════════════════════════════════════════════════════════════
-    LEXICHORD MAIN WINDOW (v0.0.2a Stub)
-    This is a minimal window to prove the Avalonia lifecycle is working.
-    The full Podium Layout will be implemented in v0.0.2b.
+    PODIUM LAYOUT
+    The main shell grid divides the window into three rows:
+    - Row 0: TopBar (title, menu, window controls)
+    - Row 1: Content Area (NavigationRail + ContentHost)
+    - Row 2: StatusBar (status messages, theme toggle, version)
     ═══════════════════════════════════════════════════════════════════════════
     -->
 
-    <Grid>
-        <TextBlock Text="Welcome to Lexichord"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="32"
-                   FontWeight="Light"
-                   Foreground="{DynamicResource TextPrimaryBrush}" />
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             ROW 0: TOP BAR
+             Application title and optional menu/controls
+             Height: Auto (sized to content, typically 48px)
+             ═══════════════════════════════════════════════════════════════════ -->
+        <shell:TopBar Grid.Row="0" />
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             ROW 1: CONTENT AREA
+             Contains NavigationRail (left) and ContentHost (center)
+             Height: * (fills remaining space)
+             ═══════════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1" ColumnDefinitions="60,*">
+
+            <!-- Navigation Rail: Section switching icons -->
+            <shell:NavigationRail Grid.Column="0" />
+
+            <!-- Content Host: Module views inject here -->
+            <shell:ContentHostPanel Grid.Column="1" x:Name="ContentHost" />
+
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             ROW 2: STATUS BAR
+             System status, theme toggle, version info
+             Height: Auto (sized to content, typically 28px)
+             ═══════════════════════════════════════════════════════════════════ -->
+        <shell:StatusBar Grid.Row="2" />
+
     </Grid>
 
 </Window>
