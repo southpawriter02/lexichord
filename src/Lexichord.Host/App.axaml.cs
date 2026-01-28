@@ -13,7 +13,7 @@ namespace Lexichord.Host;
 /// <remarks>
 /// LOGIC: This class manages the application lifecycle. The key responsibilities are:
 /// 1. Load XAML resources in Initialize()
-/// 2. Create services (ThemeManager) in OnFrameworkInitializationCompleted()
+/// 2. Create services (ThemeManager, WindowStateService) in OnFrameworkInitializationCompleted()
 /// 3. Create the MainWindow and wire up services
 /// </remarks>
 public partial class App : Application
@@ -22,6 +22,11 @@ public partial class App : Application
     /// Gets the ThemeManager instance for the application.
     /// </summary>
     public IThemeManager? ThemeManager { get; private set; }
+
+    /// <summary>
+    /// Gets the WindowStateService instance for the application.
+    /// </summary>
+    public IWindowStateService? WindowStateService { get; private set; }
 
     /// <summary>
     /// Initializes the application and loads XAML resources.
@@ -51,14 +56,19 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // LOGIC: Create the ThemeManager for runtime theme switching.
+            // LOGIC: Create services
             ThemeManager = new ThemeManager(this);
+            WindowStateService = new WindowStateService(desktop.MainWindow?.Screens);
 
-            // LOGIC: Create the main window.
-            var mainWindow = new MainWindow();
+            // LOGIC: Create the main window
+            var mainWindow = new MainWindow
+            {
+                ThemeManager = ThemeManager,
+                WindowStateService = WindowStateService
+            };
             desktop.MainWindow = mainWindow;
 
-            // LOGIC: Wire up the StatusBar with the ThemeManager.
+            // LOGIC: Wire up the StatusBar with the ThemeManager
             mainWindow.StatusBar.Initialize(ThemeManager);
         }
 

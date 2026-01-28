@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Views.Shell;
@@ -8,21 +9,123 @@ namespace Lexichord.Host.Views;
 /// The main application window for Lexichord.
 /// </summary>
 /// <remarks>
-/// LOGIC: The MainWindow hosts the Podium Layout shell components.
-/// It provides access to the StatusBar for theme manager initialization.
+/// LOGIC: The MainWindow hosts the Podium Layout shell components
+/// and manages window state persistence (position, size, maximized state).
 /// </remarks>
 public partial class MainWindow : Window
 {
+    private IWindowStateService? _windowStateService;
+    private IThemeManager? _themeManager;
+
     /// <summary>
     /// Initializes a new instance of the MainWindow class.
     /// </summary>
     public MainWindow()
     {
         InitializeComponent();
+
+        // LOGIC: Subscribe to Closing event to save state
+        Closing += OnWindowClosing;
     }
 
     /// <summary>
     /// Gets the StatusBar component for service initialization.
     /// </summary>
     public StatusBar StatusBar => MainStatusBar;
+
+    /// <summary>
+    /// Gets or sets the theme manager.
+    /// </summary>
+    public IThemeManager? ThemeManager
+    {
+        get => _themeManager;
+        set => _themeManager = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the window state service.
+    /// </summary>
+    public IWindowStateService? WindowStateService
+    {
+        get => _windowStateService;
+        set
+        {
+            _windowStateService = value;
+            if (value is not null)
+            {
+                _ = RestoreWindowStateAsync();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Restores window state from persisted storage.
+    /// </summary>
+    private async Task RestoreWindowStateAsync()
+    {
+        if (_windowStateService is null)
+            return;
+
+        var state = await _windowStateService.LoadAsync();
+
+        if (state is null)
+        {
+            // LOGIC: First launch or corrupted file—use defaults
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            return;
+        }
+
+        // LOGIC: Validate position before applying
+        if (_windowStateService.IsPositionValid(state))
+        {
+            Position = new PixelPoint((int)state.X, (int)state.Y);
+            Width = Math.Max(state.Width, MinWidth);
+            Height = Math.Max(state.Height, MinHeight);
+            WindowStartupLocation = WindowStartupLocation.Manual;
+        }
+        else
+        {
+            // LOGIC: Saved position is off-screen, center instead
+            Width = Math.Max(state.Width, MinWidth);
+            Height = Math.Max(state.Height, MinHeight);
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        // LOGIC: Restore maximized state after size/position
+        if (state.IsMaximized)
+        {
+            WindowState = WindowState.Maximized;
+        }
+
+        // LOGIC: Restore theme preference
+        _themeManager?.SetTheme(state.Theme);
+    }
+
+    /// <summary>
+    /// Saves window state when the window is closing.
+    /// </summary>
+    private async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (_windowStateService is null)
+            return;
+
+        // LOGIC: Capture current state
+        // Store current position and size (before maximizing, we don't have RestoreBounds in Avalonia 11)
+        // When maximized, Width/Height reflect maximized size, but Position is still original
+        var isMaximized = WindowState == WindowState.Maximized;
+
+        // LOGIC: For maximized windows, we save the screen-appropriate defaults
+        // since Avalonia 11 doesn't expose RestoreBounds. This means maximized
+        // windows will restore to their last known pre-maximized size on next launch.
+        var state = new WindowStateRecord(
+            X: Position.X,
+            Y: Position.Y,
+            Width: isMaximized ? 1400 : Width,  // Default size for maximized
+            Height: isMaximized ? 900 : Height, // Default size for maximized
+            IsMaximized: isMaximized,
+            Theme: _themeManager?.CurrentTheme ?? ThemeMode.System
+        );
+
+        await _windowStateService.SaveAsync(state);
+    }
 }

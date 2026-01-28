@@ -20,6 +20,8 @@ This release introduces the visual foundation of Lexichord — the Avalonia-base
 
 - **Runtime Theme Switching** — Users can toggle between Dark and Light themes via the StatusBar button, with the application detecting and respecting OS preferences on first launch.
 
+- **Window State Persistence** — Window position, size, maximized state, and theme preference are now remembered between sessions.
+
 #### Why This Matters
 
 This work establishes:
@@ -73,11 +75,12 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.2 Sub-Parts
 
-| Document                        | Sub-Part | Title                   |
-| :------------------------------ | :------- | :---------------------- |
-| [LCS-CL-002a](./LCS-CL-002a.md) | v0.0.2a  | Avalonia Bootstrap      |
-| [LCS-CL-002b](./LCS-CL-002b.md) | v0.0.2b  | Podium Layout           |
-| [LCS-CL-002c](./LCS-CL-002c.md) | v0.0.2c  | Runtime Theme Switching |
+| Document                        | Sub-Part | Title                    |
+| :------------------------------ | :------- | :----------------------- |
+| [LCS-CL-002a](./LCS-CL-002a.md) | v0.0.2a  | Avalonia Bootstrap       |
+| [LCS-CL-002b](./LCS-CL-002b.md) | v0.0.2b  | Podium Layout            |
+| [LCS-CL-002c](./LCS-CL-002c.md) | v0.0.2c  | Runtime Theme Switching  |
+| [LCS-CL-002d](./LCS-CL-002d.md) | v0.0.2d  | Window State Persistence |
 
 ### v0.0.1 Sub-Parts
 
