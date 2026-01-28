@@ -6,6 +6,26 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.6] - 2026-01-28 (In Progress)
+
+### The Vault (Secure Secrets Storage)
+
+This release establishes the secure secrets management infrastructure that protects sensitive credentials. Lexichord can now store API keys, connection strings, and OAuth tokens using OS-native encryption.
+
+#### What's New
+
+- **ISecureVault Interface** — Platform-agnostic contract for secure secret storage with CRUD operations, metadata access, and streaming key listing.
+
+#### Why This Matters
+
+This work enables:
+
+1. **Security** — Credentials encrypted at rest using platform-native APIs.
+2. **Cross-Platform** — Windows DPAPI, Linux/macOS libsecret support.
+3. **Foundation** — Enables secure LLM API key storage (v0.3.x+).
+
+---
+
 ## [v0.0.5] - 2026-01-28 (In Progress)
 
 ### The Memory (Data Layer)
@@ -140,6 +160,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                       | Summary                                                 |
 | :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
+| v0.0.6  | 2026-01-28 | The Vault (Secure Storage)     | Secure secrets interface, metadata, exception hierarchy |
 | v0.0.5  | 2026-01-28 | The Memory (Data Layer)        | Docker orchestration, database connector, migrations    |
 | v0.0.4  | 2026-01-28 | The Module Protocol            | Module contract, metadata, loader, license gating       |
 | v0.0.3  | 2026-01-28 | The Nervous System             | Dependency Injection, Logging, Crash Handling, Config   |
@@ -151,6 +172,12 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.6 Sub-Parts
+
+| Document                        | Sub-Part | Title                  |
+| :------------------------------ | :------- | :--------------------- |
+| [LCS-CL-006a](./LCS-CL-006a.md) | v0.0.6a  | ISecureVault Interface |
 
 ### v0.0.5 Sub-Parts
 

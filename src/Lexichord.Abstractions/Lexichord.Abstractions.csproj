@@ -17,4 +17,10 @@
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
   </ItemGroup>
 
+  <!-- Allow unit tests to access internal types -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Lexichord.Tests.Unit" />
+  </ItemGroup>
+
 </Project>
+

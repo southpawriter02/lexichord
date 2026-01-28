@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-28 (v0.0.5d added)                                             |
+| **Last Updated** | 2026-01-28 (v0.0.6a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -14,34 +14,39 @@
 
 ### 1.1 v0.0.x Foundational Interfaces
 
-| Interface                   | Defined In | Module                             | Purpose                                                      |
-| :-------------------------- | :--------- | :--------------------------------- | :----------------------------------------------------------- |
-| `IModule`                   | v0.0.4a    | Abstractions                       | Module contract for dynamic loading                          |
-| `ModuleInfo`                | v0.0.4a    | Abstractions                       | Module metadata record                                       |
-| `IModuleLoader`             | v0.0.4b    | Host                               | Module discovery and loading                                 |
-| `ILicenseContext`           | v0.0.4c    | Abstractions                       | Read-only license tier access                                |
-| `LicenseTier`               | v0.0.4c    | Abstractions                       | Core/WriterPro/Teams/Enterprise enum                         |
-| `RequiresLicenseAttribute`  | v0.0.4c    | Abstractions                       | License gating attribute                                     |
-| `IDbConnectionFactory`      | v0.0.5b    | Abstractions                       | Database connection creation                                 |
-| `IGenericRepository<T,TId>` | v0.0.5d    | Abstractions                       | Base repository pattern                                      |
-| `IUserRepository`           | v0.0.5d    | Abstractions                       | User entity repository                                       |
-| `ISystemSettingsRepository` | v0.0.5d    | Abstractions                       | Key-value settings repository                                |
-| `IUnitOfWork`               | v0.0.5d    | Abstractions                       | Transaction management                                       |
-| `EntityBase`                | v0.0.5d    | Abstractions                       | Base entity with audit fields                                |
-| `User`                      | v0.0.5d    | Abstractions                       | User entity record                                           |
-| `SystemSetting`             | v0.0.5d    | Abstractions                       | SystemSetting entity record                                  |
-| `PagedResult<T>`            | v0.0.5d    | Abstractions                       | Pagination result record                                     |
-| `ISecureVault`              | v0.0.6a    | Abstractions                       | Secure secrets storage                                       |
-| `VaultStatus`               | v0.0.6a    | Abstractions                       | Ready/Empty/Error/Unavailable enum                           |
-| `IMediator`                 | v0.0.7a    | MediatR (NuGet)                    | Event bus / CQRS mediator                                    |
-| `INotification`             | v0.0.7a    | MediatR (NuGet)                    | Domain event marker                                          |
-| `DomainEventBase`           | v0.0.7b    | Abstractions                       | Base class for domain events                                 |
-| `IShellRegionView`          | v0.0.8a    | Abstractions                       | Shell region contribution                                    |
-| `ShellRegion`               | v0.0.8a    | Abstractions                       | Top/Left/Center/Right/Bottom enum                            |
-| `IConfiguration`            | v0.0.3d    | Microsoft.Extensions.Configuration | Configuration access (Microsoft interface, registered in DI) |
-| `ILogger<T>`                | v0.0.3b    | Microsoft.Extensions.Logging       | Structured logging (Serilog integration)                     |
-| `IThemeManager`             | v0.0.2c    | Host                               | Theme switching (Light/Dark/System)                          |
-| `IWindowStateService`       | v0.0.2c    | Host                               | Window position/size persistence                             |
+| Interface                    | Defined In | Module                             | Purpose                                                      |
+| :--------------------------- | :--------- | :--------------------------------- | :----------------------------------------------------------- |
+| `IModule`                    | v0.0.4a    | Abstractions                       | Module contract for dynamic loading                          |
+| `ModuleInfo`                 | v0.0.4a    | Abstractions                       | Module metadata record                                       |
+| `IModuleLoader`              | v0.0.4b    | Host                               | Module discovery and loading                                 |
+| `ILicenseContext`            | v0.0.4c    | Abstractions                       | Read-only license tier access                                |
+| `LicenseTier`                | v0.0.4c    | Abstractions                       | Core/WriterPro/Teams/Enterprise enum                         |
+| `RequiresLicenseAttribute`   | v0.0.4c    | Abstractions                       | License gating attribute                                     |
+| `IDbConnectionFactory`       | v0.0.5b    | Abstractions                       | Database connection creation                                 |
+| `IGenericRepository<T,TId>`  | v0.0.5d    | Abstractions                       | Base repository pattern                                      |
+| `IUserRepository`            | v0.0.5d    | Abstractions                       | User entity repository                                       |
+| `ISystemSettingsRepository`  | v0.0.5d    | Abstractions                       | Key-value settings repository                                |
+| `IUnitOfWork`                | v0.0.5d    | Abstractions                       | Transaction management                                       |
+| `EntityBase`                 | v0.0.5d    | Abstractions                       | Base entity with audit fields                                |
+| `User`                       | v0.0.5d    | Abstractions                       | User entity record                                           |
+| `SystemSetting`              | v0.0.5d    | Abstractions                       | SystemSetting entity record                                  |
+| `PagedResult<T>`             | v0.0.5d    | Abstractions                       | Pagination result record                                     |
+| `ISecureVault`               | v0.0.6a    | Abstractions                       | Secure secrets storage contract                              |
+| `ISecureVaultFactory`        | v0.0.6a    | Abstractions                       | Platform-specific vault creation                             |
+| `SecretMetadata`             | v0.0.6a    | Abstractions                       | Secret metadata record (timestamps, age, usage)              |
+| `SecureVaultException`       | v0.0.6a    | Abstractions                       | Base exception for vault operations                          |
+| `SecretNotFoundException`    | v0.0.6a    | Abstractions                       | Key does not exist in vault                                  |
+| `SecretDecryptionException`  | v0.0.6a    | Abstractions                       | Decryption failed (corrupted/key mismatch)                   |
+| `VaultAccessDeniedException` | v0.0.6a    | Abstractions                       | Permission denied to vault storage                           |
+| `IMediator`                  | v0.0.7a    | MediatR (NuGet)                    | Event bus / CQRS mediator                                    |
+| `INotification`              | v0.0.7a    | MediatR (NuGet)                    | Domain event marker                                          |
+| `DomainEventBase`            | v0.0.7b    | Abstractions                       | Base class for domain events                                 |
+| `IShellRegionView`           | v0.0.8a    | Abstractions                       | Shell region contribution                                    |
+| `ShellRegion`                | v0.0.8a    | Abstractions                       | Top/Left/Center/Right/Bottom enum                            |
+| `IConfiguration`             | v0.0.3d    | Microsoft.Extensions.Configuration | Configuration access (Microsoft interface, registered in DI) |
+| `ILogger<T>`                 | v0.0.3b    | Microsoft.Extensions.Logging       | Structured logging (Serilog integration)                     |
+| `IThemeManager`              | v0.0.2c    | Host                               | Theme switching (Light/Dark/System)                          |
+| `IWindowStateService`        | v0.0.2c    | Host                               | Window position/size persistence                             |
 
 ### 1.2 v0.1.x Workspace Interfaces
 
