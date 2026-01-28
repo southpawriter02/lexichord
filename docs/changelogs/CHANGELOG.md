@@ -18,7 +18,7 @@ This release establishes the persistent data layer that gives Lexichord its "mem
 
 - **Database Connector** — Npgsql-based connectivity with connection pooling and Polly resilience patterns (retry with exponential backoff, circuit breaker).
 
-- **FluentMigrator Runner** — (Coming in v0.0.5c) Database schema versioning with reversible migrations.
+- **FluentMigrator Runner** — Database schema versioning with CLI commands (`--migrate`, `--migrate:down`, `--migrate:list`) and the initial `Migration_001_InitSystem` creating Users and SystemSettings tables.
 
 - **Repository Base** — (Coming in v0.0.5d) Generic repository pattern with Dapper for type-safe CRUD operations.
 
@@ -154,10 +154,11 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.5 Sub-Parts
 
-| Document                        | Sub-Part | Title                |
-| :------------------------------ | :------- | :------------------- |
-| [LCS-CL-005a](./LCS-CL-005a.md) | v0.0.5a  | Docker Orchestration |
-| [LCS-CL-005b](./LCS-CL-005b.md) | v0.0.5b  | Database Connector   |
+| Document                        | Sub-Part | Title                 |
+| :------------------------------ | :------- | :-------------------- |
+| [LCS-CL-005a](./LCS-CL-005a.md) | v0.0.5a  | Docker Orchestration  |
+| [LCS-CL-005b](./LCS-CL-005b.md) | v0.0.5b  | Database Connector    |
+| [LCS-CL-005c](./LCS-CL-005c.md) | v0.0.5c  | FluentMigrator Runner |
 
 ### v0.0.4 Sub-Parts
 

@@ -12,6 +12,11 @@
     <!-- Resilience (v0.0.5b) -->
     <PackageReference Include="Polly" Version="8.5.0" />
 
+    <!-- FluentMigrator (v0.0.5c) -->
+    <PackageReference Include="FluentMigrator" Version="6.2.0" />
+    <PackageReference Include="FluentMigrator.Runner" Version="6.2.0" />
+    <PackageReference Include="FluentMigrator.Runner.Postgres" Version="6.2.0" />
+
     <!-- Configuration & DI -->
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
