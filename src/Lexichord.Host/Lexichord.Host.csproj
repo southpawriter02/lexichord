@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- ALLOWED: Reference to Abstractions (Tier 0) -->
     <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+
+    <!-- DO NOT ADD: References to any project inside src/Lexichord.Modules/ -->
+    <!-- Modules are loaded via Reflection at runtime, never compile-time. -->
   </ItemGroup>
 
   <ItemGroup>

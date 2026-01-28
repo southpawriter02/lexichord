@@ -1,3 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <!--
+    CONSTRAINT: This project MUST NOT reference any other internal project.
+    It defines shared interfaces, enums, and attributes only.
+    All external dependencies SHOULD be minimal (standard system libraries).
+  -->
 </Project>
