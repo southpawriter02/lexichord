@@ -18,6 +18,8 @@ This release establishes MediatR-based in-process messaging that enables loose c
 
 - **Shared Domain Events** — DomainEventBase, ContentCreatedEvent, and SettingsChangedEvent enable modules to publish and subscribe to state changes without direct dependencies.
 
+- **Logging Pipeline Behavior** — Automatic request/response logging with timing, slow request warnings, sensitive data redaction (`[SensitiveData]`, `[NoLog]`), and configurable thresholds.
+
 #### Why This Matters
 
 This work enables:
@@ -204,10 +206,11 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.7 Sub-Parts
 
-| Document                        | Sub-Part | Title                |
-| :------------------------------ | :------- | :------------------- |
-| [LCS-CL-007a](./LCS-CL-007a.md) | v0.0.7a  | MediatR Bootstrap    |
-| [LCS-CL-007b](./LCS-CL-007b.md) | v0.0.7b  | Shared Domain Events |
+| Document                        | Sub-Part | Title                     |
+| :------------------------------ | :------- | :------------------------ |
+| [LCS-CL-007a](./LCS-CL-007a.md) | v0.0.7a  | MediatR Bootstrap         |
+| [LCS-CL-007b](./LCS-CL-007b.md) | v0.0.7b  | Shared Domain Events      |
+| [LCS-CL-007c](./LCS-CL-007c.md) | v0.0.7c  | Logging Pipeline Behavior |
 
 ### v0.0.6 Sub-Parts
 

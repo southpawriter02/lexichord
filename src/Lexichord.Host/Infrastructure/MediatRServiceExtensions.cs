@@ -1,5 +1,8 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Lexichord.Host.Infrastructure.Behaviors;
+using Lexichord.Host.Infrastructure.Options;
 
 namespace Lexichord.Host.Infrastructure;
 
@@ -38,6 +41,10 @@ public static class MediatRServiceExtensions
         this IServiceCollection services,
         params Assembly[] moduleAssemblies)
     {
+        // Configure logging behavior options from configuration
+        services.AddOptions<LoggingBehaviorOptions>()
+            .BindConfiguration(LoggingBehaviorOptions.SectionName);
+
         // LOGIC: Collect all assemblies to scan for handlers
         var assembliesToScan = new List<Assembly>
         {
@@ -54,12 +61,10 @@ public static class MediatRServiceExtensions
             // Scan assemblies for handlers
             configuration.RegisterServicesFromAssemblies(assembliesToScan.ToArray());
 
-            // LOGIC: Pipeline behaviors will be added in v0.0.7c and v0.0.7d
-            // Order of AddBehavior calls determines execution order:
-            // - First added = outermost (executes first on request, last on response)
-            // - Last added = innermost (executes last on request, first on response)
+            // LOGIC: Pipeline behaviors execute in registration order
+            // LoggingBehavior is FIRST (outermost) to capture total duration
+            configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-            // v0.0.7c: configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             // v0.0.7d: configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
 
