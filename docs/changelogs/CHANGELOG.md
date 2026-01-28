@@ -16,7 +16,7 @@ This release establishes the persistent data layer that gives Lexichord its "mem
 
 - **Docker Orchestration** — A reproducible PostgreSQL 16 development environment via Docker Compose with health checks, data persistence, and optional pgAdmin administration UI.
 
-- **Database Connector** — (Coming in v0.0.5b) Npgsql-based connectivity with connection pooling and Polly resilience patterns.
+- **Database Connector** — Npgsql-based connectivity with connection pooling and Polly resilience patterns (retry with exponential backoff, circuit breaker).
 
 - **FluentMigrator Runner** — (Coming in v0.0.5c) Database schema versioning with reversible migrations.
 
@@ -157,6 +157,7 @@ Each major version has detailed technical changelogs organized by sub-part:
 | Document                        | Sub-Part | Title                |
 | :------------------------------ | :------- | :------------------- |
 | [LCS-CL-005a](./LCS-CL-005a.md) | v0.0.5a  | Docker Orchestration |
+| [LCS-CL-005b](./LCS-CL-005b.md) | v0.0.5b  | Database Connector   |
 
 ### v0.0.4 Sub-Parts
 

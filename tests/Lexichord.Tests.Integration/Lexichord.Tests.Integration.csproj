@@ -35,6 +35,8 @@
     <!-- Project References (Production Code) -->
     <ProjectReference Include="..\..\src\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Lexichord.Host\Lexichord.Host.csproj" />
+    <!-- v0.0.5b: Database Connector -->
+    <ProjectReference Include="..\..\src\Lexichord.Infrastructure\Lexichord.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

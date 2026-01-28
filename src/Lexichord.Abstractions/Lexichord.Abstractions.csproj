@@ -9,6 +9,9 @@
     <!-- v0.0.4a: Module Contract Dependencies -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+
+    <!-- v0.0.5b: Database Connector (required for IDbConnectionFactory interface) -->
+    <PackageReference Include="Npgsql" Version="9.0.2" />
   </ItemGroup>
 
 </Project>

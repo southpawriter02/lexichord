@@ -49,9 +49,13 @@
     <!-- ALLOWED: Reference to Abstractions (Tier 0) -->
     <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
 
+    <!-- v0.0.5b: Database Connector -->
+    <ProjectReference Include="..\Lexichord.Infrastructure\Lexichord.Infrastructure.csproj" />
+
     <!-- DO NOT ADD: References to any project inside src/Lexichord.Modules/ -->
     <!-- Modules are loaded via Reflection at runtime, never compile-time. -->
   </ItemGroup>
+
 
   <ItemGroup>
     <!-- Exclude Controls directory (future UI components, not yet implemented) -->
