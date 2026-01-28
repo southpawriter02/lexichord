@@ -91,7 +91,7 @@
         <!-- Focus state -->
         <Style Selector="^:focus /template/ Border#PART_Border">
             <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
-            <Setter Property="BoxShadow" Value="0 0 0 3px #40FF6B2C" />
+            <Setter Property="BoxShadow" Value="0 0 0 3 #40FF6B2C" />
         </Style>
 
         <!-- Disabled state -->
@@ -107,7 +107,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource StatusErrorBrush}" />
         </Style>
         <Style Selector="^.error:focus /template/ Border#PART_Border">
-            <Setter Property="BoxShadow" Value="0 0 0 3px #40EF4444" />
+            <Setter Property="BoxShadow" Value="0 0 0 3 #40EF4444" />
         </Style>
     </ControlTheme>
 

@@ -71,7 +71,7 @@
 
     <!-- Focus visible (keyboard navigation) -->
     <Style Selector="^:focus-visible /template/ Border#PART_Border">
-      <Setter Property="BoxShadow" Value="0 0 0 3px #40FF6B2C" />
+      <Setter Property="BoxShadow" Value="0 0 0 3 #40FF6B2C" />
     </Style>
   </ControlTheme>
 
@@ -126,7 +126,7 @@
     </Style>
 
     <Style Selector="^:focus-visible /template/ Border#PART_Border">
-      <Setter Property="BoxShadow" Value="0 0 0 3px #40FF6B2C" />
+      <Setter Property="BoxShadow" Value="0 0 0 3 #40FF6B2C" />
     </Style>
   </ControlTheme>
 
@@ -213,17 +213,8 @@
       </Transitions>
     </Setter>
 
-    <!-- Default icon color -->
-    <Style Selector="^ PathIcon">
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-    </Style>
-
     <Style Selector="^:pointerover /template/ Border#PART_Border">
       <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
-    </Style>
-
-    <Style Selector="^:pointerover PathIcon">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
     <Style Selector="^:pressed /template/ Border#PART_Border">
@@ -292,7 +283,7 @@
     </Style>
 
     <Style Selector="^:focus-visible /template/ Border#PART_Border">
-      <Setter Property="BoxShadow" Value="0 0 0 3px #40F87171" />
+      <Setter Property="BoxShadow" Value="0 0 0 3 #40F87171" />
     </Style>
   </ControlTheme>
 
