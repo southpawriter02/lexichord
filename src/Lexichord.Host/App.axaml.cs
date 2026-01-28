@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Extensions;
+using Lexichord.Host.Services;
 using Lexichord.Host.Views;
 
 namespace Lexichord.Host;
@@ -73,9 +74,21 @@ public partial class App : Application
             // Register all Host services (includes Serilog ILogger<T> registration)
             services.ConfigureServices(configuration);
 
+            // LOGIC (v0.0.4b): Discover and load modules BEFORE building the provider
+            // Modules register their services during DiscoverAndLoadAsync
+            var moduleLoader = CreateModuleLoader();
+            moduleLoader.DiscoverAndLoadAsync(services).GetAwaiter().GetResult();
+
+            // Register the module loader itself so modules can access it
+            services.AddSingleton<IModuleLoader>(moduleLoader);
+
             // Build the service provider
             _serviceProvider = services.BuildServiceProvider();
             Log.Debug("DI container built with {ServiceCount} registrations", services.Count);
+
+            // LOGIC (v0.0.4b): Initialize modules AFTER DI container is built
+            // This allows modules to resolve services from the container
+            moduleLoader.InitializeModulesAsync(_serviceProvider).GetAwaiter().GetResult();
 
             // Create main window with injected services
             desktop.MainWindow = CreateMainWindow();
@@ -92,6 +105,27 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Creates a ModuleLoader with early-stage logging.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.0.4b): ModuleLoader needs to run before the DI container is built
+    /// because modules register their services. We create a temporary logger
+    /// using Serilog's static Log.Logger (already configured at this point).
+    /// </remarks>
+    private static ModuleLoader CreateModuleLoader()
+    {
+        // LOGIC: Use Serilog's ILogger adapter for early-stage logging
+        var loggerFactory = new Serilog.Extensions.Logging.SerilogLoggerFactory(Log.Logger);
+        var logger = loggerFactory.CreateLogger<ModuleLoader>();
+
+        // LOGIC (v0.0.4b): Use hardcoded license context (Core tier)
+        // v0.0.4c will implement proper license validation
+        var licenseContext = new HardcodedLicenseContext();
+
+        return new ModuleLoader(logger, licenseContext);
     }
 
     /// <summary>

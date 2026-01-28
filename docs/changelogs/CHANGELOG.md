@@ -18,6 +18,10 @@ This release establishes the module architecture that enables Lexichord's "modul
 
 - **Module Metadata (`ModuleInfo`)** — Immutable record containing module identity, version, author, and optional dependencies.
 
+- **Module Loader (`IModuleLoader`)** — Discovers and loads modules from `./Modules/` at startup with two-phase loading (service registration before DI build, initialization after).
+
+- **License Stubs** — Placeholder types (`LicenseTier`, `ILicenseContext`, `RequiresLicenseAttribute`) for v0.0.4c license gating.
+
 #### Why This Matters
 
 This work enables:
