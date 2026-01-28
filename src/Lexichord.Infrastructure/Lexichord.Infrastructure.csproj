@@ -12,6 +12,10 @@
     <!-- Resilience (v0.0.5b) -->
     <PackageReference Include="Polly" Version="8.5.0" />
 
+    <!-- Dapper ORM (v0.0.5d) -->
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
+
     <!-- FluentMigrator (v0.0.5c) -->
     <PackageReference Include="FluentMigrator" Version="6.2.0" />
     <PackageReference Include="FluentMigrator.Runner" Version="6.2.0" />

@@ -12,6 +12,9 @@
 
     <!-- v0.0.5b: Database Connector (required for IDbConnectionFactory interface) -->
     <PackageReference Include="Npgsql" Version="9.0.2" />
+
+    <!-- v0.0.5d: Dapper.Contrib (required for entity attribute decorations) -->
+    <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
   </ItemGroup>
 
 </Project>

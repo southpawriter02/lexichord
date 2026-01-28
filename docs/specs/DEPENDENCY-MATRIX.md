@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-28 (v0.5.8 added)                                              |
+| **Last Updated** | 2026-01-28 (v0.0.5d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -24,6 +24,13 @@
 | `RequiresLicenseAttribute`  | v0.0.4c    | Abstractions                       | License gating attribute                                     |
 | `IDbConnectionFactory`      | v0.0.5b    | Abstractions                       | Database connection creation                                 |
 | `IGenericRepository<T,TId>` | v0.0.5d    | Abstractions                       | Base repository pattern                                      |
+| `IUserRepository`           | v0.0.5d    | Abstractions                       | User entity repository                                       |
+| `ISystemSettingsRepository` | v0.0.5d    | Abstractions                       | Key-value settings repository                                |
+| `IUnitOfWork`               | v0.0.5d    | Abstractions                       | Transaction management                                       |
+| `EntityBase`                | v0.0.5d    | Abstractions                       | Base entity with audit fields                                |
+| `User`                      | v0.0.5d    | Abstractions                       | User entity record                                           |
+| `SystemSetting`             | v0.0.5d    | Abstractions                       | SystemSetting entity record                                  |
+| `PagedResult<T>`            | v0.0.5d    | Abstractions                       | Pagination result record                                     |
 | `ISecureVault`              | v0.0.6a    | Abstractions                       | Secure secrets storage                                       |
 | `VaultStatus`               | v0.0.6a    | Abstractions                       | Ready/Empty/Error/Unavailable enum                           |
 | `IMediator`                 | v0.0.7a    | MediatR (NuGet)                    | Event bus / CQRS mediator                                    |
@@ -739,6 +746,7 @@
 | `MediatR`                                  | 12.4.x  | v0.0.7a       | Event bus / CQRS                     |
 | `Npgsql`                                   | 9.0.x   | v0.0.5b       | PostgreSQL driver                    |
 | `Dapper`                                   | 2.1.x   | v0.0.5d       | Micro-ORM                            |
+| `Dapper.Contrib`                           | 2.0.x   | v0.0.5d       | Dapper entity mapping extensions     |
 | `FluentMigrator`                           | 6.2.x   | v0.0.5c       | Schema migrations                    |
 | `FluentValidation`                         | 11.9.x  | v0.0.7d       | Input validation                     |
 | `Polly`                                    | 8.5.x   | v0.0.5d       | Resilience policies                  |

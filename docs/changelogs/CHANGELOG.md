@@ -20,7 +20,7 @@ This release establishes the persistent data layer that gives Lexichord its "mem
 
 - **FluentMigrator Runner** — Database schema versioning with CLI commands (`--migrate`, `--migrate:down`, `--migrate:list`) and the initial `Migration_001_InitSystem` creating Users and SystemSettings tables.
 
-- **Repository Base** — (Coming in v0.0.5d) Generic repository pattern with Dapper for type-safe CRUD operations.
+- **Repository Base** — Generic repository pattern with Dapper for type-safe CRUD operations, including entity-specific repositories for Users and SystemSettings plus Unit of Work for transactions.
 
 #### Why This Matters
 
@@ -159,6 +159,7 @@ Each major version has detailed technical changelogs organized by sub-part:
 | [LCS-CL-005a](./LCS-CL-005a.md) | v0.0.5a  | Docker Orchestration  |
 | [LCS-CL-005b](./LCS-CL-005b.md) | v0.0.5b  | Database Connector    |
 | [LCS-CL-005c](./LCS-CL-005c.md) | v0.0.5c  | FluentMigrator Runner |
+| [LCS-CL-005d](./LCS-CL-005d.md) | v0.0.5d  | Repository Base       |
 
 ### v0.0.4 Sub-Parts
 
