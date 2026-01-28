@@ -1,0 +1,93 @@
+# =============================================================================
+# Lexichord Continuous Integration Pipeline
+# =============================================================================
+# Purpose: Validate code quality on every push and pull request.
+# Triggers: Push to main, Pull requests targeting main.
+# Runner: Ubuntu Latest (Linux)
+# =============================================================================
+
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+# Cancel in-progress runs when a new commit is pushed to the same branch/PR
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+env:
+    DOTNET_VERSION: "9.0.x"
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+    build-and-test:
+        name: Build & Test
+        runs-on: ubuntu-latest
+
+        steps:
+            # =========================================================================
+            # Step 1: Checkout Repository
+            # =========================================================================
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Full history for accurate versioning
+
+            # =========================================================================
+            # Step 2: Setup .NET SDK
+            # =========================================================================
+            - name: Setup .NET ${{ env.DOTNET_VERSION }}
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            # =========================================================================
+            # Step 3: Cache NuGet Packages
+            # =========================================================================
+            # LOGIC: Caching reduces restore time from ~30s to ~5s on subsequent runs.
+            - name: Cache NuGet Packages
+              uses: actions/cache@v4
+              with:
+                  path: ~/.nuget/packages
+                  key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nuget-
+
+            # =========================================================================
+            # Step 4: Restore Dependencies
+            # =========================================================================
+            - name: Restore Dependencies
+              run: dotnet restore
+
+            # =========================================================================
+            # Step 5: Build Solution
+            # =========================================================================
+            - name: Build Solution
+              run: dotnet build --no-restore --configuration Release
+
+            # =========================================================================
+            # Step 6: Run Unit Tests
+            # =========================================================================
+            # LOGIC: We filter out Integration tests because they require Docker,
+            # which is not available on standard GitHub-hosted runners.
+            # Integration tests should be run locally before pushing.
+            - name: Run Unit Tests
+              run: dotnet test --no-build --configuration Release --filter Category!=Integration --verbosity normal
+
+            # =========================================================================
+            # Step 7: Upload Test Results (Optional, for future PR comments)
+            # =========================================================================
+            - name: Upload Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-results
+                  path: "**/TestResults/**"
+                  retention-days: 7

@@ -9,6 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Abstractions", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Host", "src\Lexichord.Host\Lexichord.Host.csproj", "{88A09C6F-5287-44E9-8E72-9392D0773012}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5EB8835E-5D64-4528-8733-24550C1B1D74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Tests.Unit", "tests\Lexichord.Tests.Unit\Lexichord.Tests.Unit.csproj", "{89E4D343-E642-4DDC-8CCA-1EAEF505BCFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Tests.Integration", "tests\Lexichord.Tests.Integration\Lexichord.Tests.Integration.csproj", "{BB179C66-62D6-4346-9803-E04ED45FB124}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +32,19 @@ Global
 		{88A09C6F-5287-44E9-8E72-9392D0773012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88A09C6F-5287-44E9-8E72-9392D0773012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88A09C6F-5287-44E9-8E72-9392D0773012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89E4D343-E642-4DDC-8CCA-1EAEF505BCFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E4D343-E642-4DDC-8CCA-1EAEF505BCFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E4D343-E642-4DDC-8CCA-1EAEF505BCFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E4D343-E642-4DDC-8CCA-1EAEF505BCFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB179C66-62D6-4346-9803-E04ED45FB124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB179C66-62D6-4346-9803-E04ED45FB124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB179C66-62D6-4346-9803-E04ED45FB124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB179C66-62D6-4346-9803-E04ED45FB124}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BC736EAE-C279-48A7-884A-462C7B9204CE} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 		{88A09C6F-5287-44E9-8E72-9392D0773012} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
+		{89E4D343-E642-4DDC-8CCA-1EAEF505BCFF} = {5EB8835E-5D64-4528-8733-24550C1B1D74}
+		{BB179C66-62D6-4346-9803-E04ED45FB124} = {5EB8835E-5D64-4528-8733-24550C1B1D74}
 	EndGlobalSection
 EndGlobal
