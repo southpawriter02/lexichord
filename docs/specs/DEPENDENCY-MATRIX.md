@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-28 (v0.5.7 added)                                              |
+| **Last Updated** | 2026-01-28 (v0.5.8 added)                                              |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -643,6 +643,41 @@
 | `CopyFormat`     | v0.5.7d    | Modules.RAG | Markdown/PlainText        |
 | `ExportFormat`   | v0.5.7d    | Modules.RAG | JSON/CSV/Markdown         |
 
+### 1.21 v0.5.8 Hardening Interfaces
+
+| Interface                     | Defined In | Module      | Purpose                        |
+| :---------------------------- | :--------- | :---------- | :----------------------------- |
+| `IRetrievalMetricsCalculator` | v0.5.8a    | Tests       | Quality metrics calculation    |
+| `IQueryResultCache`           | v0.5.8c    | Modules.RAG | Query result caching           |
+| `IResilientSearchService`     | v0.5.8d    | Modules.RAG | Resilient search with fallback |
+
+**New Classes (v0.5.8):**
+
+| Class                        | Defined In | Module      | Purpose                       |
+| :--------------------------- | :--------- | :---------- | :---------------------------- |
+| `RetrievalMetricsCalculator` | v0.5.8a    | Tests       | P@K, R@K, MRR calculations    |
+| `RetrievalQualityTests`      | v0.5.8a    | Tests       | Quality test suite            |
+| `SearchBenchmarks`           | v0.5.8b    | Benchmarks  | BenchmarkDotNet suite         |
+| `QueryResultCache`           | v0.5.8c    | Modules.RAG | LRU + TTL query caching       |
+| `ContextExpansionCache`      | v0.5.8c    | Modules.RAG | Session-based context caching |
+| `ResilientSearchService`     | v0.5.8d    | Modules.RAG | Fallback and retry logic      |
+
+**New Records (v0.5.8):**
+
+| Record                  | Defined In | Module      | Purpose                             |
+| :---------------------- | :--------- | :---------- | :---------------------------------- |
+| `QueryResult`           | v0.5.8a    | Tests       | Quality test result container       |
+| `CacheStatistics`       | v0.5.8c    | Modules.RAG | Cache monitoring metrics            |
+| `QueryCacheOptions`     | v0.5.8c    | Modules.RAG | Cache configuration                 |
+| `ResilientSearchResult` | v0.5.8d    | Modules.RAG | Search result with degradation info |
+| `SearchHealthStatus`    | v0.5.8d    | Modules.RAG | Dependency health snapshot          |
+
+**New Enums (v0.5.8):**
+
+| Enum                 | Defined In | Module      | Purpose                          |
+| :------------------- | :--------- | :---------- | :------------------------------- |
+| `DegradedSearchMode` | v0.5.8d    | Modules.RAG | Full/KeywordOnly/CachedOnly/Down |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1214,3 +1249,26 @@ graph TB
 - [ ] CopyFormat enum (v0.5.7d)
 - [ ] ExportFormat enum (v0.5.7d)
 - [ ] SearchResultsExportedEvent (v0.5.7d)
+
+### v0.5.8 Prerequisites for v0.6.0+
+
+- [ ] IRetrievalMetricsCalculator interface (v0.5.8a)
+- [ ] RetrievalMetricsCalculator implementation (v0.5.8a)
+- [ ] RetrievalQualityTests test suite (v0.5.8a)
+- [ ] QueryResult record (v0.5.8a)
+- [ ] Test corpus with gold-standard queries (v0.5.8a)
+- [ ] SearchBenchmarks BenchmarkDotNet suite (v0.5.8b)
+- [ ] Performance baselines documented (v0.5.8b)
+- [ ] IQueryResultCache interface (v0.5.8c)
+- [ ] QueryResultCache implementation (v0.5.8c)
+- [ ] ContextExpansionCache implementation (v0.5.8c)
+- [ ] CacheStatistics record (v0.5.8c)
+- [ ] QueryCacheOptions record (v0.5.8c)
+- [ ] Cache invalidation on document changes (v0.5.8c)
+- [ ] IResilientSearchService interface (v0.5.8d)
+- [ ] ResilientSearchService implementation (v0.5.8d)
+- [ ] ResilientSearchResult record (v0.5.8d)
+- [ ] SearchHealthStatus record (v0.5.8d)
+- [ ] DegradedSearchMode enum (v0.5.8d)
+- [ ] Polly circuit breaker for embedding API (v0.5.8d)
+- [ ] BM25 fallback integration (v0.5.8d)
