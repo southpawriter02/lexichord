@@ -1,0 +1,121 @@
+# Lexichord Development Services
+# Usage: docker compose up -d
+# Docs: https://docs.docker.com/compose/
+
+services:
+    # ============================================================================
+    # PostgreSQL 16 Database
+    # ============================================================================
+    # LOGIC: We use the Alpine variant for minimal image size (~80MB vs ~400MB).
+    # Data is persisted to a named volume to survive container recreation.
+    # The health check ensures dependent services wait for PostgreSQL to be ready.
+    # ============================================================================
+    postgres:
+        image: postgres:16-alpine
+        container_name: lexichord-postgres
+        restart: unless-stopped
+
+        # Environment variables for database initialization
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-lexichord}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lexichord_dev}
+            POSTGRES_DB: ${POSTGRES_DB:-lexichord}
+            # Performance tuning for development
+            POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+
+        # Port mapping: host:container
+        # LOGIC: Map to 5432 for standard tooling compatibility.
+        # Change host port if you have a local PostgreSQL installation.
+        ports:
+            - "${POSTGRES_PORT:-5432}:5432"
+
+        # Persistent data volume
+        # LOGIC: Named volume ensures data survives container recreation.
+        # Use 'docker compose down -v' to delete the volume and reset data.
+        volumes:
+            - lexichord-pgdata:/var/lib/postgresql/data
+            # Optional: Mount initialization scripts
+            - ./scripts/db-init:/docker-entrypoint-initdb.d:ro
+
+        # Health check configuration
+        # LOGIC: pg_isready is the standard PostgreSQL readiness probe.
+        # Dependent services can use 'depends_on' with 'condition: service_healthy'.
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U ${POSTGRES_USER:-lexichord} -d ${POSTGRES_DB:-lexichord}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+
+        # Resource limits for development
+        # LOGIC: Prevent runaway resource consumption on dev machines.
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
+
+        # Logging configuration
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+        # Network configuration
+        networks:
+            - lexichord-network
+
+    # ============================================================================
+    # pgAdmin 4 (Optional Database UI)
+    # ============================================================================
+    # LOGIC: Provides a web-based PostgreSQL administration interface.
+    # Disabled by default; enable with: docker compose --profile tools up -d
+    # ============================================================================
+    pgadmin:
+        image: dpage/pgadmin4:latest
+        container_name: lexichord-pgadmin
+        profiles:
+            - tools
+        restart: unless-stopped
+
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@lexichord.local}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+            PGADMIN_CONFIG_SERVER_MODE: "False"
+            PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+
+        ports:
+            - "${PGADMIN_PORT:-5050}:80"
+
+        volumes:
+            - lexichord-pgadmin:/var/lib/pgadmin
+
+        depends_on:
+            postgres:
+                condition: service_healthy
+
+        networks:
+            - lexichord-network
+
+# ============================================================================
+# Named Volumes
+# ============================================================================
+volumes:
+    lexichord-pgdata:
+        name: lexichord-pgdata
+    lexichord-pgadmin:
+        name: lexichord-pgadmin
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+    lexichord-network:
+        name: lexichord-network
+        driver: bridge

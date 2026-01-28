@@ -6,6 +6,32 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.5] - 2026-01-28 (In Progress)
+
+### The Memory (Data Layer)
+
+This release establishes the persistent data layer that gives Lexichord its "memory." The application can now store and retrieve data across sessions using PostgreSQL.
+
+#### What's New
+
+- **Docker Orchestration** — A reproducible PostgreSQL 16 development environment via Docker Compose with health checks, data persistence, and optional pgAdmin administration UI.
+
+- **Database Connector** — (Coming in v0.0.5b) Npgsql-based connectivity with connection pooling and Polly resilience patterns.
+
+- **FluentMigrator Runner** — (Coming in v0.0.5c) Database schema versioning with reversible migrations.
+
+- **Repository Base** — (Coming in v0.0.5d) Generic repository pattern with Dapper for type-safe CRUD operations.
+
+#### Why This Matters
+
+This work enables:
+
+1. **Data Persistence** — User data and settings survive application restarts.
+2. **Schema Evolution** — Migrations enable safe database updates.
+3. **Foundation** — Enables all data-dependent features (v0.0.6+).
+
+---
+
 ## [v0.0.4] - 2026-01-28 (In Progress)
 
 ### The Module Protocol
@@ -114,6 +140,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                       | Summary                                                 |
 | :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
+| v0.0.5  | 2026-01-28 | The Memory (Data Layer)        | Docker orchestration, database connector, migrations    |
 | v0.0.4  | 2026-01-28 | The Module Protocol            | Module contract, metadata, loader, license gating       |
 | v0.0.3  | 2026-01-28 | The Nervous System             | Dependency Injection, Logging, Crash Handling, Config   |
 | v0.0.2  | 2026-01-28 | The Host Shell & UI Foundation | Avalonia bootstrap, window stub, theme infrastructure   |
@@ -124,6 +151,12 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.5 Sub-Parts
+
+| Document                        | Sub-Part | Title                |
+| :------------------------------ | :------- | :------------------- |
+| [LCS-CL-005a](./LCS-CL-005a.md) | v0.0.5a  | Docker Orchestration |
 
 ### v0.0.4 Sub-Parts
 
