@@ -6,6 +6,26 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.7] - 2026-01-28 (In Progress)
+
+### The Event Bus (Communication)
+
+This release establishes MediatR-based in-process messaging that enables loose coupling between Lexichord modules. Commands, queries, and domain events now flow through a central mediator with pipeline behaviors for cross-cutting concerns.
+
+#### What's New
+
+- **MediatR Bootstrap** — Core messaging infrastructure with IMediator registration, assembly scanning for handler discovery, and CQRS marker interfaces (ICommand, IQuery, IDomainEvent).
+
+#### Why This Matters
+
+This work enables:
+
+1. **Loose Coupling** — Modules communicate via messages, not direct dependencies.
+2. **CQRS Pattern** — Clear separation between commands (writes) and queries (reads).
+3. **Extensibility** — Pipeline behaviors enable cross-cutting concerns (logging, validation).
+
+---
+
 ## [v0.0.6] - 2026-01-28 (In Progress)
 
 ### The Vault (Secure Secrets Storage)
@@ -166,6 +186,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                       | Summary                                                 |
 | :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
+| v0.0.7  | 2026-01-28 | The Event Bus (Communication)  | MediatR bootstrap, CQRS interfaces, handler discovery   |
 | v0.0.6  | 2026-01-28 | The Vault (Secure Storage)     | Secure secrets interface, metadata, exception hierarchy |
 | v0.0.5  | 2026-01-28 | The Memory (Data Layer)        | Docker orchestration, database connector, migrations    |
 | v0.0.4  | 2026-01-28 | The Module Protocol            | Module contract, metadata, loader, license gating       |
@@ -178,6 +199,12 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.7 Sub-Parts
+
+| Document                        | Sub-Part | Title             |
+| :------------------------------ | :------- | :---------------- |
+| [LCS-CL-007a](./LCS-CL-007a.md) | v0.0.7a  | MediatR Bootstrap |
 
 ### v0.0.6 Sub-Parts
 

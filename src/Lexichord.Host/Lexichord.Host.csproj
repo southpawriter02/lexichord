@@ -46,6 +46,9 @@
 
     <!-- v0.0.6b: Windows DPAPI Support -->
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+
+    <!-- v0.0.7a: MediatR Event Bus -->
+    <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
   </ItemGroup>
 
   <ItemGroup>

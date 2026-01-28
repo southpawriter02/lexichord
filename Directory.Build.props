@@ -14,4 +14,9 @@
     <Authors>Lexichord Team</Authors>
     <Copyright>Copyright © 2026</Copyright>
   </PropertyGroup>
+
+  <!-- v0.0.7a: MediatR Version (centralized) -->
+  <PropertyGroup>
+    <MediatRVersion>12.4.0</MediatRVersion>
+  </PropertyGroup>
 </Project>

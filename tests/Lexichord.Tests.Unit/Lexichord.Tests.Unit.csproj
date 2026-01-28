@@ -40,6 +40,9 @@
 
     <!-- v0.0.6b: Async LINQ support -->
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+
+    <!-- v0.0.7a: MediatR for handler testing -->
+    <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
   </ItemGroup>
 
   <ItemGroup>

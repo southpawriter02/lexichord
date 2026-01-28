@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Host.Infrastructure;
 using Lexichord.Host.Services;
 using System;
 using System.Collections.Generic;
@@ -111,6 +112,10 @@ public static class HostServices
             builder.ClearProviders();
             builder.AddSerilog(dispose: true);
         });
+
+        // LOGIC (v0.0.7a): Register MediatR for in-process messaging
+        // This enables loose coupling between modules via commands, queries, and events
+        services.AddMediatRServices();
 
         // LOGIC: Register core Host services as Singletons
         // These services maintain state across the application lifetime
