@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
+using Microsoft.Extensions.Logging;
 using Lexichord.Abstractions.Contracts;
 
 namespace Lexichord.Host.Services;
@@ -27,13 +28,16 @@ public sealed class WindowStateService : IWindowStateService
 
     private readonly string _filePath;
     private readonly Screens? _screens;
+    private readonly ILogger<WindowStateService> _logger;
 
     /// <summary>
     /// Initializes a new instance of the WindowStateService.
     /// </summary>
+    /// <param name="logger">The logger instance for diagnostics.</param>
     /// <param name="screens">Screen configuration for position validation.</param>
-    public WindowStateService(Screens? screens = null)
+    public WindowStateService(ILogger<WindowStateService> logger, Screens? screens = null)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _screens = screens;
 
         // LOGIC: Use platform-appropriate AppData location
@@ -44,6 +48,8 @@ public sealed class WindowStateService : IWindowStateService
         Directory.CreateDirectory(lexichordDir);
 
         _filePath = Path.Combine(lexichordDir, "appstate.json");
+        
+        _logger.LogDebug("WindowStateService initialized. State file: {FilePath}", _filePath);
     }
 
     /// <inheritdoc/>
@@ -53,29 +59,33 @@ public sealed class WindowStateService : IWindowStateService
         {
             if (!File.Exists(_filePath))
             {
-                // LOGIC: No saved state, return null to use defaults
+                _logger.LogDebug("No saved window state found at {FilePath}", _filePath);
                 return null;
             }
 
             var json = await File.ReadAllTextAsync(_filePath);
             var state = JsonSerializer.Deserialize<WindowStateRecord>(json, JsonOptions);
 
+            _logger.LogDebug(
+                "Loaded window state: Position=({X},{Y}), Size=({Width}x{Height})",
+                state?.X, state?.Y, state?.Width, state?.Height);
+
             return state;
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
-            // LOGIC: Corrupted JSON file—delete and return null
+            _logger.LogWarning(ex, "Corrupted window state file at {FilePath}, deleting", _filePath);
             TryDeleteCorruptedFile();
             return null;
         }
-        catch (IOException)
+        catch (IOException ex)
         {
-            // LOGIC: File access error—return null to use defaults
+            _logger.LogWarning(ex, "Failed to read window state from {FilePath}", _filePath);
             return null;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // LOGIC: Unexpected error—fail safe to defaults
+            _logger.LogWarning(ex, "Unexpected error loading window state from {FilePath}", _filePath);
             return null;
         }
     }
@@ -87,11 +97,14 @@ public sealed class WindowStateService : IWindowStateService
         {
             var json = JsonSerializer.Serialize(state, JsonOptions);
             await File.WriteAllTextAsync(_filePath, json);
+            
+            _logger.LogDebug("Saved window state to {FilePath}", _filePath);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // LOGIC: Failed to save—silently ignore
+            // LOGIC: Failed to save—log but continue
             // Window state is non-critical, app close must not fail
+            _logger.LogWarning(ex, "Failed to save window state to {FilePath}", _filePath);
         }
     }
 
@@ -100,7 +113,7 @@ public sealed class WindowStateService : IWindowStateService
     {
         if (_screens is null || _screens.All.Count == 0)
         {
-            // LOGIC: No screen info available, assume valid
+            _logger.LogDebug("No screen info available, assuming position valid");
             return true;
         }
 
@@ -125,7 +138,10 @@ public sealed class WindowStateService : IWindowStateService
             }
         }
 
-        // LOGIC: Window would be mostly off-screen
+        _logger.LogDebug(
+            "Window position ({X},{Y}) is mostly off-screen, will use defaults",
+            state.X, state.Y);
+
         return false;
     }
 
@@ -137,10 +153,11 @@ public sealed class WindowStateService : IWindowStateService
         try
         {
             File.Delete(_filePath);
+            _logger.LogDebug("Deleted corrupted state file at {FilePath}", _filePath);
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignore deletion errors
+            _logger.LogWarning(ex, "Failed to delete corrupted state file at {FilePath}", _filePath);
         }
     }
 }

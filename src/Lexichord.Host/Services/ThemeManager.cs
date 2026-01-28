@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Styling;
+using Microsoft.Extensions.Logging;
 using Lexichord.Abstractions.Contracts;
 
 namespace Lexichord.Host.Services;
@@ -20,15 +21,20 @@ namespace Lexichord.Host.Services;
 public sealed class ThemeManager : IThemeManager
 {
     private readonly Application _application;
+    private readonly ILogger<ThemeManager> _logger;
     private ThemeMode _currentTheme = ThemeMode.System;
 
     /// <summary>
     /// Initializes a new instance of the ThemeManager.
     /// </summary>
     /// <param name="application">The Avalonia application instance (injected via DI).</param>
-    public ThemeManager(Application application)
+    /// <param name="logger">The logger instance for diagnostics.</param>
+    public ThemeManager(Application application, ILogger<ThemeManager> logger)
     {
         _application = application ?? throw new ArgumentNullException(nameof(application));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        _logger.LogDebug("ThemeManager initialized");
 
         // LOGIC: Subscribe to platform theme changes for System mode
         if (_application.PlatformSettings is not null)
@@ -47,11 +53,17 @@ public sealed class ThemeManager : IThemeManager
     public void SetTheme(ThemeMode mode)
     {
         if (_currentTheme == mode)
+        {
+            _logger.LogDebug("Theme already set to {Theme}, ignoring", mode);
             return;
+        }
 
+        var oldTheme = _currentTheme;
         _currentTheme = mode;
         ApplyTheme(mode);
         ThemeChanged?.Invoke(this, mode);
+
+        _logger.LogInformation("Theme changed from {OldTheme} to {NewTheme}", oldTheme, mode);
     }
 
     /// <inheritdoc/>
@@ -60,6 +72,9 @@ public sealed class ThemeManager : IThemeManager
         // LOGIC: Toggle based on effective theme, not preference
         var effective = GetEffectiveTheme();
         var newMode = effective == ThemeMode.Dark ? ThemeMode.Light : ThemeMode.Dark;
+        
+        _logger.LogDebug("Toggling theme from effective {EffectiveTheme} to {NewMode}", effective, newMode);
+        
         SetTheme(newMode);
     }
 
@@ -99,6 +114,7 @@ public sealed class ThemeManager : IThemeManager
         // LOGIC: Only re-raise event if we're in System mode
         if (_currentTheme == ThemeMode.System)
         {
+            _logger.LogDebug("Platform color values changed while in System mode");
             ThemeChanged?.Invoke(this, ThemeMode.System);
         }
     }

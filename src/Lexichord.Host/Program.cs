@@ -1,34 +1,64 @@
 ﻿using Avalonia;
+using Serilog;
+using Serilog.Events;
 using System;
 
 namespace Lexichord.Host;
 
 /// <summary>
-/// Application entry point for Lexichord.
+/// Application entry point with bootstrap logging and exception handling.
 /// </summary>
 /// <remarks>
-/// LOGIC: This class configures the Avalonia application builder and starts
-/// the desktop application lifecycle. The Main method is the CLR entry point.
-///
-/// The BuildAvaloniaApp method is also called by the XAML previewer in IDEs,
-/// so it must be a public static method that can be invoked independently.
+/// LOGIC: The entry point establishes a bootstrap logger before Avalonia initializes.
+/// This captures any startup failures that occur before the full logging pipeline is ready.
+/// The bootstrap logger is minimal (console only) and is replaced once configuration loads.
 /// </remarks>
 internal sealed class Program
 {
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
-    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <param name="args">Command-line arguments.</param>
+    /// <returns>Exit code (0 = success, 1 = error).</returns>
     /// <remarks>
     /// LOGIC: STAThread is required on Windows for proper COM apartment threading.
     /// This enables clipboard operations, file dialogs, and drag-drop functionality.
     /// On other platforms, this attribute is ignored.
     /// </remarks>
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
-        BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        // LOGIC: Create bootstrap logger immediately for startup error capture
+        // This minimal logger writes to console only until full configuration loads
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .MinimumLevel.Override("System", LogEventLevel.Warning)
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+
+        try
+        {
+            Log.Information("Starting Lexichord application");
+            Log.Debug("Command line arguments: {Args}", args);
+
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+
+            Log.Information("Lexichord application shutdown complete");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Lexichord application terminated unexpectedly");
+            return 1;
+        }
+        finally
+        {
+            // LOGIC: Ensure all log entries are written before process exits
+            Log.CloseAndFlush();
+        }
     }
 
     /// <summary>

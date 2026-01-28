@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Host;
 using Lexichord.Host.Services;
 
 namespace Lexichord.Tests.Unit.Host;

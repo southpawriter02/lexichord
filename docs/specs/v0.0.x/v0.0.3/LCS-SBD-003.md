@@ -155,10 +155,10 @@ If this foundation is flawed, Module loading (v0.0.4) will fail to register serv
 | **0.3a** | `Microsoft.Extensions.DependencyInjection` package installed.         | [x]    |
 | **0.3a** | `HostServices.ConfigureServices()` registers all existing services.   | [x]    |
 | **0.3a** | `App.axaml.cs` builds `IServiceProvider` on startup.                  | [x]    |
-| **0.3b** | Serilog packages installed (Core, Console, File, Enrichers).          | [ ]    |
-| **0.3b** | Bootstrap logger wraps application startup.                           | [ ]    |
-| **0.3b** | Rolling log files created in `{AppData}/Lexichord/Logs/`.             | [ ]    |
-| **0.3b** | `ILogger<T>` injected into `ThemeManager` and `WindowStateService`.   | [ ]    |
+| **0.3b** | Serilog packages installed (Core, Console, File, Enrichers).          | [x]    |
+| **0.3b** | Bootstrap logger wraps application startup.                           | [x]    |
+| **0.3b** | Rolling log files created in `{AppData}/Lexichord/Logs/`.             | [x]    |
+| **0.3b** | `ILogger<T>` injected into `ThemeManager` and `WindowStateService`.   | [x]    |
 | **0.3c** | Global exception handlers registered for AppDomain and TaskScheduler. | [ ]    |
 | **0.3c** | `CrashReportWindow.axaml` displays exception details.                 | [ ]    |
 | **0.3c** | Crash reports saved to `{AppData}/Lexichord/CrashReports/`.           | [ ]    |

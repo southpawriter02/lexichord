@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Services;
 
@@ -34,6 +36,14 @@ public static class HostServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // LOGIC: Register Serilog as the ILogger<T> implementation
+        // This enables constructor injection of ILogger<T> in all services
+        services.AddLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.AddSerilog(dispose: true);
+        });
+
         // LOGIC: Register core Host services as Singletons
         // These services maintain state across the application lifetime
         services.AddSingleton<IThemeManager, ThemeManager>();

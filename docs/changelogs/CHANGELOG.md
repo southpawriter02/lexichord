@@ -16,6 +16,8 @@ This release establishes the runtime infrastructure that enables the application
 
 - **Dependency Injection Container** — Microsoft.Extensions.DependencyInjection is now the sole IoC container. All services are resolved from the DI container instead of manual instantiation.
 
+- **Structured Logging** — Serilog provides comprehensive logging with colorized console output for development and rolling file logs for production diagnostics.
+
 #### Why This Matters
 
 This work enables:
@@ -99,6 +101,7 @@ Each major version has detailed technical changelogs organized by sub-part:
 | Document                        | Sub-Part | Title                     |
 | :------------------------------ | :------- | :------------------------ |
 | [LCS-CL-003a](./LCS-CL-003a.md) | v0.0.3a  | Dependency Injection Root |
+| [LCS-CL-003b](./LCS-CL-003b.md) | v0.0.3b  | Serilog Pipeline          |
 
 ### v0.0.2 Sub-Parts
 
