@@ -189,9 +189,11 @@ v0.4.5a (Abstractions)
 | `IEmbeddingService`      | v0.4.4a | Query embedding   |
 | `IDocumentRepository`    | v0.4.1c | Document metadata |
 | `IDbConnectionFactory`   | v0.0.5b | Vector queries    |
-| `IMemoryCache`           | v0.2.2b | Query cache       |
+| `IMemoryCache`           | NuGet\* | Query cache       |
 | `ILicenseContext`        | v0.0.4c | Tier checking     |
 | `IMediator`              | v0.0.7a | Events            |
+
+> \* `IMemoryCache` is from `Microsoft.Extensions.Caching.Memory` NuGet package (introduced v0.2.2b).
 
 ---
 
