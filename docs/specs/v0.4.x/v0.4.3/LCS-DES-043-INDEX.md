@@ -43,7 +43,7 @@ graph TB
 
     subgraph "Dependencies"
         E[v0.4.2<br/>File Ingestion]
-        F[v0.1.3b<br/>Markdig]
+        F[v0.4.3d<br/>Markdig]
     end
 
     subgraph "Consumers"
@@ -173,19 +173,19 @@ v0.4.3a (Abstractions)
     │       │               │
     │       └───────────────┘ (fallback)
     │
-    └── v0.1.3b (Markdig) ── v0.4.3d (parsing)
+    └── v0.4.3d (Markdig NuGet) ── v0.4.3d (parsing)
 ```
 
 ---
 
 ## 6. Interface Dependencies
 
-| Interface           | Source  | Used By                    |
-| :------------------ | :------ | :------------------------- |
-| `IChunkingStrategy` | v0.4.3a | All chunking strategies    |
-| `IIngestionService` | v0.4.2a | Triggers chunking pipeline |
-| `IConfiguration`    | v0.0.3d | Chunking options           |
-| `MarkdownPipeline`  | v0.1.3b | Markdown parsing           |
+| Interface           | Source  | Used By                          |
+| :------------------ | :------ | :------------------------------- |
+| `IChunkingStrategy` | v0.4.3a | All chunking strategies          |
+| `IIngestionService` | v0.4.2a | Triggers chunking pipeline       |
+| `IConfiguration`    | v0.0.3d | Chunking options                 |
+| `MarkdownPipeline`  | v0.4.3d | Markdown parsing (Markdig NuGet) |
 
 ---
 

@@ -561,8 +561,7 @@ public sealed class QueryPreprocessor : IQueryPreprocessor
 
 **Key Deliverables:**
 
-- `FeatureNotLicensedException` exception type
-- License check integration in `PgVectorSearchService`
+- License check integration in `PgVectorSearchService` using `FeatureNotLicensedException` (from v0.4.4d)
 - `SearchLicenseGuard` helper class
 - MediatR event for search attempts
 - Unit tests for license enforcement
@@ -572,21 +571,8 @@ public sealed class QueryPreprocessor : IQueryPreprocessor
 ```csharp
 namespace Lexichord.Modules.RAG.Search;
 
-/// <summary>
-/// Exception thrown when a feature requires a higher license tier.
-/// </summary>
-public sealed class FeatureNotLicensedException : Exception
-{
-    public string FeatureName { get; }
-    public LicenseTier RequiredTier { get; }
-
-    public FeatureNotLicensedException(string featureName, LicenseTier requiredTier)
-        : base($"Feature '{featureName}' requires {requiredTier} license or higher.")
-    {
-        FeatureName = featureName;
-        RequiredTier = requiredTier;
-    }
-}
+// FeatureNotLicensedException from v0.4.4d is reused.
+// See LCS-DES-044d for full definition.
 
 /// <summary>
 /// Guard class for license-gated search operations.
@@ -683,6 +669,7 @@ public record SemanticSearchExecutedEvent : INotification
 
 - v0.0.4c: `ILicenseContext`, `LicenseTier`
 - v0.0.7a: `IMediator` for events
+- v0.4.4d: `FeatureNotLicensedException` for license enforcement
 
 ---
 
@@ -705,14 +692,13 @@ public record SemanticSearchExecutedEvent : INotification
 | 13        | v0.4.5c  | Implement abbreviation expansion        | 1            |
 | 14        | v0.4.5c  | Implement query embedding cache         | 1.5          |
 | 15        | v0.4.5c  | Unit tests for preprocessing            | 1.5          |
-| 16        | v0.4.5d  | Create FeatureNotLicensedException      | 0.5          |
-| 17        | v0.4.5d  | Implement SearchLicenseGuard            | 1            |
-| 18        | v0.4.5d  | Create SearchDeniedEvent                | 0.5          |
-| 19        | v0.4.5d  | Create SemanticSearchExecutedEvent      | 0.5          |
-| 20        | v0.4.5d  | Unit tests for license enforcement      | 1.5          |
-| 21        | All      | Integration tests for full search flow  | 2.5          |
-| 22        | All      | DI registration in RAGModule.cs         | 1            |
-| **Total** |          |                                         | **25 hours** |
+| 16        | v0.4.5d  | Implement SearchLicenseGuard            | 1            |
+| 17        | v0.4.5d  | Create SearchDeniedEvent                | 0.5          |
+| 18        | v0.4.5d  | Create SemanticSearchExecutedEvent      | 0.5          |
+| 19        | v0.4.5d  | Unit tests for license enforcement      | 1.5          |
+| 20        | All      | Integration tests for full search flow  | 2.5          |
+| 21        | All      | DI registration in RAGModule.cs         | 1            |
+| **Total** |          |                                         | **24 hours** |
 
 ---
 
@@ -1198,15 +1184,16 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Search"
 | 6   | `IQueryPreprocessor` interface             | [ ]    |
 | 7   | `QueryPreprocessor` implementation         | [ ]    |
 | 8   | Query embedding cache                      | [ ]    |
-| 9   | `FeatureNotLicensedException` exception    | [ ]    |
-| 10  | `SearchLicenseGuard` helper                | [ ]    |
-| 11  | `SearchDeniedEvent` notification           | [ ]    |
-| 12  | `SemanticSearchExecutedEvent` notification | [ ]    |
-| 13  | Unit tests for search service              | [ ]    |
-| 14  | Unit tests for preprocessor                | [ ]    |
-| 15  | Unit tests for license guard               | [ ]    |
-| 16  | Integration tests for full search flow     | [ ]    |
-| 17  | DI registration in RAGModule.cs            | [ ]    |
+| 9   | `SearchLicenseGuard` helper                | [ ]    |
+| 10  | `SearchDeniedEvent` notification           | [ ]    |
+| 11  | `SemanticSearchExecutedEvent` notification | [ ]    |
+| 12  | Unit tests for search service              | [ ]    |
+| 13  | Unit tests for preprocessor                | [ ]    |
+| 14  | Unit tests for license guard               | [ ]    |
+| 15  | Integration tests for full search flow     | [ ]    |
+| 16  | DI registration in RAGModule.cs            | [ ]    |
+
+> **Note:** `FeatureNotLicensedException` is reused from v0.4.4d.
 
 ---
 

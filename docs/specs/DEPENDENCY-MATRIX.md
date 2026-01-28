@@ -277,12 +277,13 @@
 
 **New Classes (v0.4.4):**
 
-| Class                      | Defined In | Module       | Purpose                                 |
-| :------------------------- | :--------- | :----------- | :-------------------------------------- |
-| `OpenAIEmbeddingService`   | v0.4.4b    | Modules.RAG  | OpenAI API integration with retry logic |
-| `TiktokenTokenCounter`     | v0.4.4c    | Modules.RAG  | Token counting using ML.Tokenizers      |
-| `DocumentIndexingPipeline` | v0.4.4d    | Modules.RAG  | Orchestrates chunk→embed→store flow     |
-| `EmbeddingException`       | v0.4.4a    | Abstractions | Exception for embedding failures        |
+| Class                         | Defined In | Module       | Purpose                                 |
+| :---------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `OpenAIEmbeddingService`      | v0.4.4b    | Modules.RAG  | OpenAI API integration with retry logic |
+| `TiktokenTokenCounter`        | v0.4.4c    | Modules.RAG  | Token counting using ML.Tokenizers      |
+| `DocumentIndexingPipeline`    | v0.4.4d    | Modules.RAG  | Orchestrates chunk→embed→store flow     |
+| `EmbeddingException`          | v0.4.4a    | Abstractions | Exception for embedding failures        |
+| `FeatureNotLicensedException` | v0.4.4d    | Modules.RAG  | Exception for license enforcement       |
 
 ### 1.10 v0.4.5 Semantic Search Interfaces
 
@@ -301,12 +302,11 @@
 
 **New Classes (v0.4.5):**
 
-| Class                         | Defined In | Module      | Purpose                           |
-| :---------------------------- | :--------- | :---------- | :-------------------------------- |
-| `PgVectorSearchService`       | v0.4.5b    | Modules.RAG | pgvector cosine similarity search |
-| `QueryPreprocessor`           | v0.4.5c    | Modules.RAG | Query normalization and caching   |
-| `SearchLicenseGuard`          | v0.4.5d    | Modules.RAG | License validation helper         |
-| `FeatureNotLicensedException` | v0.4.5d    | Modules.RAG | Exception for license enforcement |
+| Class                   | Defined In | Module      | Purpose                           |
+| :---------------------- | :--------- | :---------- | :-------------------------------- |
+| `PgVectorSearchService` | v0.4.5b    | Modules.RAG | pgvector cosine similarity search |
+| `QueryPreprocessor`     | v0.4.5c    | Modules.RAG | Query normalization and caching   |
+| `SearchLicenseGuard`    | v0.4.5d    | Modules.RAG | License validation helper         |
 
 ### 1.11 v0.4.6 Reference Panel Interfaces
 
@@ -448,6 +448,7 @@
 | `Velopack`                                 | 0.x     | v0.1.7a       | Auto-updater                         |
 | `Sentry`                                   | 4.x     | v0.1.7d       | Crash reporting                      |
 | `CsvHelper`                                | 31.x    | v0.2.5d       | CSV parsing for terminology import   |
+| `Markdig`                                  | 0.37.x  | v0.4.3d       | Markdown parsing for header chunking |
 | `Npgsql.Pgvector`                          | 0.2.x   | v0.4.1d       | pgvector type mapping for Dapper     |
 | `System.Threading.Channels`                | 9.0.x   | v0.4.2d       | Bounded ingestion queue              |
 | `System.IO.Hashing`                        | 9.0.x   | v0.4.2b       | SHA-256 hash computation             |
@@ -466,36 +467,38 @@
 
 ### 4.1 Phantom References (FIXED)
 
-| Spec    | Incorrect Reference                  | Correct Reference                                                                                                        |
-| :------ | :----------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| v0.1.3d | `ISettingsService` from v0.0.6       | `ISettingsService` from **v0.1.6a**                                                                                      |
-| v0.2.1  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (Microsoft.Extensions.Configuration, registered in v0.0.3d) or **`IOptions<LexichordOptions>`** |
-| v0.2.2  | `ILogger<T>` from v0.0.6             | `ILogger<T>` from **v0.0.3b** (Serilog Pipeline - Microsoft.Extensions.Logging integration)                              |
-| v0.2.3  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) or **`IOptions<LintingOptions>`** for linter settings                                 |
-| v0.2.4  | `IThemeManager` from v0.0.5          | `IThemeManager` from **v0.0.2c**                                                                                         |
-| v0.2.4  | `StyleViolation` from v0.2.3a        | `StyleViolation` from **v0.2.1b** (Domain Objects)                                                                       |
-| v0.2.4  | `ILinterService` from v0.2.3b        | `ILintingOrchestrator` from **v0.2.3a**                                                                                  |
-| v0.2.5  | `ILicenseService` from v0.0.4c       | `ILicenseService` from **v0.1.6c** (or use `ILicenseContext` from v0.0.4c)                                               |
-| v0.2.5  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) with **`IOptions<FilterOptions>`** for filter state                                   |
-| v0.2.6  | `StyleViolation` from v0.2.3a        | `StyleViolation` from **v0.2.1b** (Domain Objects)                                                                       |
-| v0.2.6  | `ViolationSeverity` from v0.2.3a     | `ViolationSeverity` from **v0.2.1b** (Domain Objects)                                                                    |
-| v0.2.6  | `IEditorService` from v0.1.3         | `IEditorService` from **v0.1.3a** (specify sub-part)                                                                     |
-| v0.2.7  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) with **`IOptions<T>`** for performance settings                                       |
-| v0.2.7  | `Serilog` from v0.0.3b               | Use **`ILogger<T>`** from `Microsoft.Extensions.Logging` (Serilog is the implementation configured in v0.0.3b)           |
-| v0.3.1d | `IFeatureMatrix` from v0.0.4b        | `IFeatureMatrix` is **NEW** in **v0.3.1d** (not from v0.0.4b)                                                            |
-| v0.2.5  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
-| v0.3.3  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
-| v0.3.3  | `Serilog` from v0.0.3b               | Use **`ILogger<T> / Serilog`** - emphasize interface over implementation                                                 |
-| v0.3.3  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
-| v0.3.4  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
-| v0.3.4  | `Serilog` from v0.0.3b               | Use **`ILogger<T> / Serilog`** - emphasize interface over implementation                                                 |
-| v0.3.4  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
-| v0.3.5  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
-| v0.3.6  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
-| v0.3.6  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
-| v0.3.7  | `IConfigurationService` from v0.0.3d | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
-| v0.3.7  | `Serilog` from v0.0.3b               | Use **`ILogger<T>`** (v0.0.3b) from Microsoft.Extensions.Logging                                                         |
-| v0.3.7  | `ViewModelBase` from v0.1.1          | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| Spec    | Incorrect Reference                   | Correct Reference                                                                                                        |
+| :------ | :------------------------------------ | :----------------------------------------------------------------------------------------------------------------------- |
+| v0.1.3d | `ISettingsService` from v0.0.6        | `ISettingsService` from **v0.1.6a**                                                                                      |
+| v0.2.1  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (Microsoft.Extensions.Configuration, registered in v0.0.3d) or **`IOptions<LexichordOptions>`** |
+| v0.2.2  | `ILogger<T>` from v0.0.6              | `ILogger<T>` from **v0.0.3b** (Serilog Pipeline - Microsoft.Extensions.Logging integration)                              |
+| v0.2.3  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) or **`IOptions<LintingOptions>`** for linter settings                                 |
+| v0.2.4  | `IThemeManager` from v0.0.5           | `IThemeManager` from **v0.0.2c**                                                                                         |
+| v0.2.4  | `StyleViolation` from v0.2.3a         | `StyleViolation` from **v0.2.1b** (Domain Objects)                                                                       |
+| v0.2.4  | `ILinterService` from v0.2.3b         | `ILintingOrchestrator` from **v0.2.3a**                                                                                  |
+| v0.2.5  | `ILicenseService` from v0.0.4c        | `ILicenseService` from **v0.1.6c** (or use `ILicenseContext` from v0.0.4c)                                               |
+| v0.2.5  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) with **`IOptions<FilterOptions>`** for filter state                                   |
+| v0.2.6  | `StyleViolation` from v0.2.3a         | `StyleViolation` from **v0.2.1b** (Domain Objects)                                                                       |
+| v0.2.6  | `ViolationSeverity` from v0.2.3a      | `ViolationSeverity` from **v0.2.1b** (Domain Objects)                                                                    |
+| v0.2.6  | `IEditorService` from v0.1.3          | `IEditorService` from **v0.1.3a** (specify sub-part)                                                                     |
+| v0.2.7  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) with **`IOptions<T>`** for performance settings                                       |
+| v0.2.7  | `Serilog` from v0.0.3b                | Use **`ILogger<T>`** from `Microsoft.Extensions.Logging` (Serilog is the implementation configured in v0.0.3b)           |
+| v0.3.1d | `IFeatureMatrix` from v0.0.4b         | `IFeatureMatrix` is **NEW** in **v0.3.1d** (not from v0.0.4b)                                                            |
+| v0.2.5  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.3.3  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
+| v0.3.3  | `Serilog` from v0.0.3b                | Use **`ILogger<T> / Serilog`** - emphasize interface over implementation                                                 |
+| v0.3.3  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.3.4  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
+| v0.3.4  | `Serilog` from v0.0.3b                | Use **`ILogger<T> / Serilog`** - emphasize interface over implementation                                                 |
+| v0.3.4  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.3.5  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.3.6  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
+| v0.3.6  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.3.7  | `IConfigurationService` from v0.0.3d  | Use **`IConfiguration`** (v0.0.3d) from Microsoft.Extensions.Configuration                                               |
+| v0.3.7  | `Serilog` from v0.0.3b                | Use **`ILogger<T>`** (v0.0.3b) from Microsoft.Extensions.Logging                                                         |
+| v0.3.7  | `ViewModelBase` from v0.1.1           | `ViewModelBase` is from **CommunityToolkit.Mvvm** (external NuGet ObservableObject wrapper)                              |
+| v0.4.3  | `Markdig` from v0.1.3b                | `Markdig` is **NEW** in **v0.4.3d** (NuGet package introduced for MarkdownHeaderChunkingStrategy)                        |
+| v0.4.5  | `FeatureNotLicensedException` v0.4.5d | Forward dependency: Exception is **MOVED** to **v0.4.4d** (first used in DocumentIndexingPipeline)                       |
 
 ### 4.2 Missing Definitions (Addressed)
 
@@ -719,7 +722,7 @@ graph TB
 - [ ] ParagraphChunkingStrategy (v0.4.3c)
 - [ ] MarkdownHeaderChunkingStrategy (v0.4.3d)
 - [ ] ChunkingStrategyFactory (v0.4.3)
-- [ ] Markdig NuGet for Markdown parsing (v0.1.3b)
+- [ ] Markdig NuGet for Markdown parsing (v0.4.3d)
 
 ### v0.4.4 Prerequisites for v0.4.5+
 
@@ -734,6 +737,7 @@ graph TB
 - [ ] DocumentIndexingPipeline (v0.4.4d)
 - [ ] IndexingResult record (v0.4.4d)
 - [ ] DocumentIndexedEvent, DocumentIndexingFailedEvent (v0.4.4d)
+- [ ] FeatureNotLicensedException exception (v0.4.4d)
 - [ ] Microsoft.ML.Tokenizers NuGet (v0.4.4c)
 - [ ] Polly.Extensions.Http NuGet (v0.4.4b)
 
@@ -744,7 +748,6 @@ graph TB
 - [ ] PgVectorSearchService implementation (v0.4.5b)
 - [ ] IQueryPreprocessor (v0.4.5c)
 - [ ] QueryPreprocessor implementation (v0.4.5c)
-- [ ] FeatureNotLicensedException exception (v0.4.5d)
 - [ ] SearchLicenseGuard helper class (v0.4.5d)
 - [ ] SearchDeniedEvent, SemanticSearchExecutedEvent (v0.4.5d)
 

@@ -2,18 +2,18 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-045d |
-| **Feature ID** | RAG-045d |
-| **Feature Name** | License Gating |
-| **Target Version** | v0.4.5d |
-| **Module Scope** | `Lexichord.Modules.RAG` |
-| **Swimlane** | Memory |
-| **License Tier** | WriterPro |
+| Field                | Value                             |
+| :------------------- | :-------------------------------- |
+| **Document ID**      | LCS-DES-045d                      |
+| **Feature ID**       | RAG-045d                          |
+| **Feature Name**     | License Gating                    |
+| **Target Version**   | v0.4.5d                           |
+| **Module Scope**     | `Lexichord.Modules.RAG`           |
+| **Swimlane**         | Memory                            |
+| **License Tier**     | WriterPro                         |
 | **Feature Gate Key** | `FeatureFlags.RAG.SemanticSearch` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-27 |
+| **Status**           | Draft                             |
+| **Last Updated**     | 2026-01-27                        |
 
 ---
 
@@ -34,19 +34,22 @@ Implement `SearchLicenseGuard` helper class that integrates with `ILicenseContex
 ### 3.1 Dependencies
 
 **Upstream Modules:**
+
 - v0.0.4c: `ILicenseContext`, `LicenseTier`
 - v0.0.7a: `IMediator` for events
+- v0.4.4d: `FeatureNotLicensedException` for license enforcement
 
 **NuGet Packages:**
+
 - `MediatR` 12.4.x - Event publishing
 
 ### 3.2 Licensing Behavior
 
 - **Load Behavior:** [x] Hard enforcement - Exception thrown on unauthorized access
 - **Fallback Experience:**
-  - `FeatureNotLicensedException` thrown to caller
-  - UI displays "Upgrade to WriterPro" modal
-  - `SearchDeniedEvent` published for analytics
+    - `FeatureNotLicensedException` thrown to caller
+    - UI displays "Upgrade to WriterPro" modal
+    - `SearchDeniedEvent` published for analytics
 
 ---
 
@@ -55,57 +58,16 @@ Implement `SearchLicenseGuard` helper class that integrates with `ILicenseContex
 ```csharp
 namespace Lexichord.Modules.RAG.Search;
 
-/// <summary>
-/// Exception thrown when a feature requires a higher license tier.
-/// </summary>
-public sealed class FeatureNotLicensedException : Exception
-{
-    /// <summary>
-    /// The name of the feature that was attempted.
-    /// </summary>
-    public string FeatureName { get; }
-
-    /// <summary>
-    /// The minimum tier required to use this feature.
-    /// </summary>
-    public LicenseTier RequiredTier { get; }
-
-    /// <summary>
-    /// The user's current license tier.
-    /// </summary>
-    public LicenseTier CurrentTier { get; }
-
-    /// <summary>
-    /// Creates a new FeatureNotLicensedException.
-    /// </summary>
-    /// <param name="featureName">Name of the feature.</param>
-    /// <param name="requiredTier">Minimum required tier.</param>
-    /// <param name="currentTier">User's current tier (optional).</param>
-    public FeatureNotLicensedException(
-        string featureName,
-        LicenseTier requiredTier,
-        LicenseTier? currentTier = null)
-        : base($"Feature '{featureName}' requires {requiredTier} license or higher.")
-    {
-        FeatureName = featureName;
-        RequiredTier = requiredTier;
-        CurrentTier = currentTier ?? LicenseTier.Core;
-    }
-
-    /// <summary>
-    /// Creates a new FeatureNotLicensedException with inner exception.
-    /// </summary>
-    public FeatureNotLicensedException(
-        string featureName,
-        LicenseTier requiredTier,
-        Exception innerException)
-        : base($"Feature '{featureName}' requires {requiredTier} license or higher.", innerException)
-    {
-        FeatureName = featureName;
-        RequiredTier = requiredTier;
-        CurrentTier = LicenseTier.Core;
-    }
-}
+// FeatureNotLicensedException is defined in v0.4.4d and reused here.
+// See: LCS-DES-044d for full definition.
+//
+// public sealed class FeatureNotLicensedException : Exception
+// {
+//     public string FeatureName { get; }
+//     public LicenseTier RequiredTier { get; }
+//     public LicenseTier CurrentTier { get; }
+//     ...
+// }
 
 /// <summary>
 /// Guard class for license-gated search operations.
@@ -369,11 +331,11 @@ When an unlicensed user attempts search, the UI should display:
 
 ### 6.2 Search Input State
 
-| Tier | Search Input State |
-| :--- | :----------------- |
-| Core | Disabled with lock icon, "Upgrade to use search" tooltip |
-| Writer | Disabled with lock icon, "Upgrade to use search" tooltip |
-| WriterPro+ | Enabled, functional |
+| Tier       | Search Input State                                       |
+| :--------- | :------------------------------------------------------- |
+| Core       | Disabled with lock icon, "Upgrade to use search" tooltip |
+| Writer     | Disabled with lock icon, "Upgrade to use search" tooltip |
+| WriterPro+ | Enabled, functional                                      |
 
 ---
 
@@ -402,13 +364,13 @@ START: "User attempts search"
 
 ## 8. User Stories
 
-| ID    | Role            | Story                                                       | Acceptance Criteria                    |
-| :---- | :-------------- | :---------------------------------------------------------- | :------------------------------------- |
-| US-01 | Free User       | As a free user, I want to know why search is locked.        | Clear upgrade message displayed.       |
-| US-02 | Free User       | As a free user, I want easy path to upgrade.                | Upgrade button in prompt.              |
-| US-03 | WriterPro User  | As a WriterPro user, I can search freely.                   | No license prompts or blocks.          |
-| US-04 | Developer       | As a developer, I want consistent license checking.         | Single guard class for all checks.     |
-| US-05 | Analytics       | As analytics, I want to track denied searches.              | SearchDeniedEvent published.           |
+| ID    | Role           | Story                                                | Acceptance Criteria                |
+| :---- | :------------- | :--------------------------------------------------- | :--------------------------------- |
+| US-01 | Free User      | As a free user, I want to know why search is locked. | Clear upgrade message displayed.   |
+| US-02 | Free User      | As a free user, I want easy path to upgrade.         | Upgrade button in prompt.          |
+| US-03 | WriterPro User | As a WriterPro user, I can search freely.            | No license prompts or blocks.      |
+| US-04 | Developer      | As a developer, I want consistent license checking.  | Single guard class for all checks. |
+| US-05 | Analytics      | As analytics, I want to track denied searches.       | SearchDeniedEvent published.       |
 
 ---
 
@@ -417,23 +379,28 @@ START: "User attempts search"
 ### UC-01: Licensed User Search
 
 **Preconditions:**
+
 - User has WriterPro license
 
 **Flow:**
+
 1. User attempts search.
 2. SearchLicenseGuard checks tier.
 3. Tier is WriterPro (passes).
 4. Search proceeds normally.
 
 **Postconditions:**
+
 - Search results returned
 
 ### UC-02: Unlicensed User Search
 
 **Preconditions:**
+
 - User has Core license
 
 **Flow:**
+
 1. User attempts search.
 2. SearchLicenseGuard checks tier.
 3. Tier is Core (fails).
@@ -442,6 +409,7 @@ START: "User attempts search"
 6. SearchDeniedEvent published.
 
 **Postconditions:**
+
 - User sees upgrade prompt
 
 ---
@@ -594,11 +562,11 @@ public class SearchDeniedEventTests
 
 ## 11. Observability & Logging
 
-| Level   | Source                   | Message Template                                                       |
-| :------ | :----------------------- | :--------------------------------------------------------------------- |
-| Trace   | SearchLicenseGuard       | `Search authorized for tier: {Tier}`                                   |
-| Debug   | SearchLicenseGuard       | `Search authorization failed: current tier {CurrentTier}, required {RequiredTier}` |
-| Debug   | SearchLicenseGuard       | `Search denied: current tier {CurrentTier}, required {RequiredTier}`   |
+| Level | Source             | Message Template                                                                   |
+| :---- | :----------------- | :--------------------------------------------------------------------------------- |
+| Trace | SearchLicenseGuard | `Search authorized for tier: {Tier}`                                               |
+| Debug | SearchLicenseGuard | `Search authorization failed: current tier {CurrentTier}, required {RequiredTier}` |
+| Debug | SearchLicenseGuard | `Search denied: current tier {CurrentTier}, required {RequiredTier}`               |
 
 ---
 
@@ -689,30 +657,30 @@ public class SearchAnalyticsHandler : INotificationHandler<SearchDeniedEvent>
 
 ## 14. Acceptance Criteria (QA)
 
-| #   | Criterion                                                                    |
-| :-- | :--------------------------------------------------------------------------- |
-| 1   | Core tier users cannot execute semantic search.                              |
-| 2   | Writer tier users cannot execute semantic search.                            |
-| 3   | WriterPro tier users can execute semantic search.                            |
-| 4   | Teams tier users can execute semantic search.                                |
-| 5   | Enterprise tier users can execute semantic search.                           |
-| 6   | `FeatureNotLicensedException` includes feature name and tiers.               |
-| 7   | `SearchDeniedEvent` published when search is blocked.                        |
-| 8   | `GetUpgradeMessage()` returns appropriate message for tier.                  |
+| #   | Criterion                                                      |
+| :-- | :------------------------------------------------------------- |
+| 1   | Core tier users cannot execute semantic search.                |
+| 2   | Writer tier users cannot execute semantic search.              |
+| 3   | WriterPro tier users can execute semantic search.              |
+| 4   | Teams tier users can execute semantic search.                  |
+| 5   | Enterprise tier users can execute semantic search.             |
+| 6   | `FeatureNotLicensedException` includes feature name and tiers. |
+| 7   | `SearchDeniedEvent` published when search is blocked.          |
+| 8   | `GetUpgradeMessage()` returns appropriate message for tier.    |
 
 ---
 
 ## 15. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `FeatureNotLicensedException` exception class                  | [ ]    |
-| 2  | `SearchLicenseGuard` helper class                              | [ ]    |
-| 3  | `SearchDeniedEvent` notification                               | [ ]    |
-| 4  | `SemanticSearchExecutedEvent` notification                     | [ ]    |
-| 5  | Unit tests for exception                                       | [ ]    |
-| 6  | Unit tests for guard                                           | [ ]    |
-| 7  | Unit tests for events                                          | [ ]    |
+| #   | Deliverable                                | Status |
+| :-- | :----------------------------------------- | :----- |
+| 1   | `SearchLicenseGuard` helper class          | [ ]    |
+| 2   | `SearchDeniedEvent` notification           | [ ]    |
+| 3   | `SemanticSearchExecutedEvent` notification | [ ]    |
+| 4   | Unit tests for guard                       | [ ]    |
+| 5   | Unit tests for events                      | [ ]    |
+
+> **Note:** `FeatureNotLicensedException` is reused from v0.4.4d.
 
 ---
 
@@ -736,21 +704,24 @@ dotnet test --filter "Feature=v0.4.5d"
 ```markdown
 ### Added (v0.4.5d)
 
-- `FeatureNotLicensedException` for license enforcement
 - `SearchLicenseGuard` helper class
 - `SearchDeniedEvent` for analytics
 - `SemanticSearchExecutedEvent` for usage tracking
 - WriterPro tier requirement for semantic search
+
+### Dependencies (reused from earlier versions)
+
+- `FeatureNotLicensedException` (v0.4.4d) for license enforcement
 ```
 
 ---
 
 ## 18. Deferred Features
 
-| Feature                      | Deferred To | Reason                                         |
-| :--------------------------- | :---------- | :--------------------------------------------- |
-| Trial access period          | v0.5.x      | Requires trial license support                 |
-| Search quota limits          | v0.5.x      | Requires usage tracking                        |
-| Per-tier result limits       | v0.5.x      | Requires tiered feature config                 |
+| Feature                | Deferred To | Reason                         |
+| :--------------------- | :---------- | :----------------------------- |
+| Trial access period    | v0.5.x      | Requires trial license support |
+| Search quota limits    | v0.5.x      | Requires usage tracking        |
+| Per-tier result limits | v0.5.x      | Requires tiered feature config |
 
 ---

@@ -2,15 +2,15 @@
 
 ## Document Control
 
-| Field            | Value                                      |
-| :--------------- | :----------------------------------------- |
-| **Document ID**  | LCS-SBD-043                                |
-| **Version**      | v0.4.3                                     |
-| **Codename**     | The Splitter (Chunking Strategies)         |
-| **Status**       | Draft                                      |
-| **Last Updated** | 2026-01-27                                 |
-| **Owner**        | Lead Architect                             |
-| **Depends On**   | v0.4.2 (File Ingestion), v0.1.3b (Markdig) |
+| Field            | Value                                            |
+| :--------------- | :----------------------------------------------- |
+| **Document ID**  | LCS-SBD-043                                      |
+| **Version**      | v0.4.3                                           |
+| **Codename**     | The Splitter (Chunking Strategies)               |
+| **Status**       | Draft                                            |
+| **Last Updated** | 2026-01-27                                       |
+| **Owner**        | Lead Architect                                   |
+| **Depends On**   | v0.4.2 (File Ingestion), v0.4.3d (Markdig NuGet) |
 
 ---
 
@@ -49,14 +49,14 @@ Chunking is **Core** functionality. All license tiers can chunk documents. The s
 
 ## 2. Dependencies on Prior Versions
 
-| Component           | Source Version | Usage in v0.4.3                        |
-| :------------------ | :------------- | :------------------------------------- |
-| `IIngestionService` | v0.4.2a        | Triggers chunking after file ingestion |
-| `Document`          | v0.4.1c        | Document entity containing content     |
-| `IConfiguration`    | v0.0.3d        | Chunking configuration settings        |
-| `Markdig`           | v0.1.3b        | Markdown parsing for header chunking   |
-| `IMediator`         | v0.0.7a        | Publish chunking events                |
-| `ILogger<T>`        | v0.0.3b        | Structured logging                     |
+| Component           | Source Version  | Usage in v0.4.3                        |
+| :------------------ | :-------------- | :------------------------------------- |
+| `IIngestionService` | v0.4.2a         | Triggers chunking after file ingestion |
+| `Document`          | v0.4.1c         | Document entity containing content     |
+| `IConfiguration`    | v0.0.3d         | Chunking configuration settings        |
+| `Markdig`           | v0.4.3d (NuGet) | Markdown parsing for header chunking   |
+| `IMediator`         | v0.0.7a         | Publish chunking events                |
+| `ILogger<T>`        | v0.0.3b         | Structured logging                     |
 
 ---
 
@@ -482,7 +482,7 @@ Produces chunks:
 
 - v0.4.3a: `IChunkingStrategy`, `TextChunk`, `ChunkMetadata`
 - v0.4.3b: `FixedSizeChunkingStrategy` (fallback for long sections)
-- v0.1.3b: `Markdig` for Markdown parsing
+- v0.4.3d: `Markdig` NuGet for Markdown parsing
 
 ---
 
@@ -521,11 +521,11 @@ Produces chunks:
 
 ### 5.1 Required Interfaces (from earlier versions)
 
-| Interface          | Source Version | Purpose                  |
-| :----------------- | :------------- | :----------------------- |
-| `IConfiguration`   | v0.0.3d        | Chunking configuration   |
-| `IMediator`        | v0.0.7a        | Event publishing         |
-| `MarkdownPipeline` | v0.1.3b        | Markdig Markdown parsing |
+| Interface          | Source Version | Purpose                          |
+| :----------------- | :------------- | :------------------------------- |
+| `IConfiguration`   | v0.0.3d        | Chunking configuration           |
+| `IMediator`        | v0.0.7a        | Event publishing                 |
+| `MarkdownPipeline` | v0.4.3d        | Markdig NuGet (Markdown parsing) |
 
 ### 5.2 New Interfaces (defined in v0.4.3)
 
@@ -579,7 +579,7 @@ graph TB
     end
 
     subgraph "External Dependencies"
-        MD[Markdig<br/>v0.1.3b]
+        MD[Markdig<br/>v0.4.3d]
         IS[IIngestionService<br/>v0.4.2a]
     end
 

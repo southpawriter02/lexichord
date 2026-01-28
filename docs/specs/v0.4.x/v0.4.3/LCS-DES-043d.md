@@ -2,16 +2,16 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-DES-043d                             |
-| **Version**      | v0.4.3d                                  |
-| **Title**        | Markdown Header Chunker                  |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
-| **Module**       | `Lexichord.Modules.RAG`                  |
-| **License Tier** | Core                                     |
+| Field            | Value                   |
+| :--------------- | :---------------------- |
+| **Document ID**  | LCS-DES-043d            |
+| **Version**      | v0.4.3d                 |
+| **Title**        | Markdown Header Chunker |
+| **Status**       | Draft                   |
+| **Last Updated** | 2026-01-27              |
+| **Owner**        | Lead Architect          |
+| **Module**       | `Lexichord.Modules.RAG` |
+| **License Tier** | Core                    |
 
 ---
 
@@ -104,46 +104,51 @@ MARKDOWN_HEADER_SPLIT(content, options):
 
 ### 2.2 Header Hierarchy Rules
 
-| Current Level | Next Level | Action |
-| :------------ | :--------- | :----- |
-| H1 | H1 | End section, start new H1 section |
-| H1 | H2 | Continue (H2 nested under H1) |
-| H1 | H3 | Continue (H3 nested under H1) |
-| H2 | H1 | End section (H1 is higher level) |
-| H2 | H2 | End section, start new H2 section |
-| H2 | H3 | Continue (H3 nested under H2) |
-| H3 | H1 | End section (H1 is higher level) |
-| H3 | H2 | End section (H2 is higher level) |
-| H3 | H3 | End section, start new H3 section |
+| Current Level | Next Level | Action                            |
+| :------------ | :--------- | :-------------------------------- |
+| H1            | H1         | End section, start new H1 section |
+| H1            | H2         | Continue (H2 nested under H1)     |
+| H1            | H3         | Continue (H3 nested under H1)     |
+| H2            | H1         | End section (H1 is higher level)  |
+| H2            | H2         | End section, start new H2 section |
+| H2            | H3         | Continue (H3 nested under H2)     |
+| H3            | H1         | End section (H1 is higher level)  |
+| H3            | H2         | End section (H2 is higher level)  |
+| H3            | H3         | End section, start new H3 section |
 
 ### 2.3 Visual Example
 
 ```markdown
-# Chapter 1           ← Start of Section 0 (H1)
+# Chapter 1 ← Start of Section 0 (H1)
+
 Intro text.
 
-## Section 1.1        ← Start of Section 1 (H2)
+## Section 1.1 ← Start of Section 1 (H2)
+
 Content here.
 
-### Subsection 1.1.1  ← Start of Section 2 (H3)
+### Subsection 1.1.1 ← Start of Section 2 (H3)
+
 Details here.
 
-## Section 1.2        ← Start of Section 3 (H2) — ends Sections 1 & 2
+## Section 1.2 ← Start of Section 3 (H2) — ends Sections 1 & 2
+
 More content.
 
-# Chapter 2           ← Start of Section 4 (H1) — ends Section 3
+# Chapter 2 ← Start of Section 4 (H1) — ends Section 3
+
 New chapter.
 ```
 
 **Result:**
 
-| Index | Heading | Level | Content |
-| :---- | :------ | :---- | :------ |
-| 0 | Chapter 1 | 1 | "Intro text." |
-| 1 | Section 1.1 | 2 | "Content here." |
-| 2 | Subsection 1.1.1 | 3 | "Details here." |
-| 3 | Section 1.2 | 2 | "More content." |
-| 4 | Chapter 2 | 1 | "New chapter." |
+| Index | Heading          | Level | Content         |
+| :---- | :--------------- | :---- | :-------------- |
+| 0     | Chapter 1        | 1     | "Intro text."   |
+| 1     | Section 1.1      | 2     | "Content here." |
+| 2     | Subsection 1.1.1 | 3     | "Details here." |
+| 3     | Section 1.2      | 2     | "More content." |
+| 4     | Chapter 2        | 1     | "New chapter."  |
 
 ---
 
@@ -361,7 +366,7 @@ var headings = document.Descendants<HeadingBlock>();
 Headers may contain rich inline content:
 
 ```markdown
-# **Bold** and *italic* header
+# **Bold** and _italic_ header
 ```
 
 The implementation extracts plain text from all `LiteralInline` children:
@@ -381,11 +386,11 @@ foreach (var inline in heading.Inline)
 
 ## 5. Configuration
 
-| Parameter | Type | Default | Impact |
-| :-------- | :--- | :------ | :----- |
-| `MaxSize` | int | 2000 | Triggers splitting of large sections |
-| `TargetSize` | int | 1000 | Used by FixedSize fallback |
-| `Overlap` | int | 100 | Used by FixedSize fallback |
+| Parameter    | Type | Default | Impact                               |
+| :----------- | :--- | :------ | :----------------------------------- |
+| `MaxSize`    | int  | 2000    | Triggers splitting of large sections |
+| `TargetSize` | int  | 1000    | Used by FixedSize fallback           |
+| `Overlap`    | int  | 100     | Used by FixedSize fallback           |
 
 ---
 
@@ -395,51 +400,59 @@ foreach (var inline in heading.Inline)
 
 ```markdown
 # Introduction
+
 Welcome to the guide.
 
 # Getting Started
+
 Follow these steps.
 
 # Conclusion
+
 That's all!
 ```
 
 **Output:**
 
-| Index | Heading | Level | Content |
-| :---- | :------ | :---- | :------ |
-| 0 | Introduction | 1 | "# Introduction\nWelcome to the guide." |
-| 1 | Getting Started | 1 | "# Getting Started\nFollow these steps." |
-| 2 | Conclusion | 1 | "# Conclusion\nThat's all!" |
+| Index | Heading         | Level | Content                                  |
+| :---- | :-------------- | :---- | :--------------------------------------- |
+| 0     | Introduction    | 1     | "# Introduction\nWelcome to the guide."  |
+| 1     | Getting Started | 1     | "# Getting Started\nFollow these steps." |
+| 2     | Conclusion      | 1     | "# Conclusion\nThat's all!"              |
 
 ### 6.2 Nested Headers
 
 ```markdown
 # Chapter 1
+
 Overview.
 
 ## Section A
+
 Details A.
 
 ### Subsection A1
+
 More details.
 
 ## Section B
+
 Details B.
 
 # Chapter 2
+
 New chapter.
 ```
 
 **Output:**
 
-| Index | Heading | Level | Lines |
-| :---- | :------ | :---- | :---- |
-| 0 | Chapter 1 | 1 | 0-1 (stops at H2) |
-| 1 | Section A | 2 | 3-4 (stops at H3) |
-| 2 | Subsection A1 | 3 | 6-7 (stops at H2) |
-| 3 | Section B | 2 | 9-10 (stops at H1) |
-| 4 | Chapter 2 | 1 | 12-end |
+| Index | Heading       | Level | Lines              |
+| :---- | :------------ | :---- | :----------------- |
+| 0     | Chapter 1     | 1     | 0-1 (stops at H2)  |
+| 1     | Section A     | 2     | 3-4 (stops at H3)  |
+| 2     | Subsection A1 | 3     | 6-7 (stops at H2)  |
+| 3     | Section B     | 2     | 9-10 (stops at H1) |
+| 4     | Chapter 2     | 1     | 12-end             |
 
 ### 6.3 With Preamble
 
@@ -448,49 +461,52 @@ This is preamble content before any headers.
 It should become its own chunk.
 
 # First Header
+
 Actual content.
 ```
 
 **Output:**
 
-| Index | Heading | Level | Content |
-| :---- | :------ | :---- | :------ |
-| 0 | *(null)* | 0 | "This is preamble content..." |
-| 1 | First Header | 1 | "# First Header\nActual content." |
+| Index | Heading      | Level | Content                           |
+| :---- | :----------- | :---- | :-------------------------------- |
+| 0     | _(null)_     | 0     | "This is preamble content..."     |
+| 1     | First Header | 1     | "# First Header\nActual content." |
 
 ### 6.4 Oversized Section
 
 ```markdown
 # Large Section
+
 [5000 characters of content...]
 
 # Next Section
+
 Short content.
 ```
 
 **Output (with MaxSize=2000):**
 
-| Index | Heading | Level | Content |
-| :---- | :------ | :---- | :------ |
-| 0 | Large Section | 1 | "# Large Section\n[first ~1900 chars]" |
-| 1 | Large Section | 1 | "[next ~1900 chars with overlap]" |
-| 2 | Large Section | 1 | "[remaining chars]" |
-| 3 | Next Section | 1 | "# Next Section\nShort content." |
+| Index | Heading       | Level | Content                                |
+| :---- | :------------ | :---- | :------------------------------------- |
+| 0     | Large Section | 1     | "# Large Section\n[first ~1900 chars]" |
+| 1     | Large Section | 1     | "[next ~1900 chars with overlap]"      |
+| 2     | Large Section | 1     | "[remaining chars]"                    |
+| 3     | Next Section  | 1     | "# Next Section\nShort content."       |
 
 ---
 
 ## 7. Edge Cases
 
-| Case | Behavior |
-| :--- | :------- |
-| No headers | Falls back to ParagraphChunkingStrategy |
-| Only headers (no content) | Creates chunks with just header text |
-| Header at end of file | Creates chunk with just the header |
-| Deeply nested (H6) | Handled same as other levels |
-| Code blocks with # | Not treated as headers (Markdig parses correctly) |
-| HTML comments | Preserved in content |
-| Mixed header styles (`#` and `===`) | Both parsed by Markdig |
-| Empty sections | Filtered out (unless IncludeEmptyChunks) |
+| Case                                | Behavior                                          |
+| :---------------------------------- | :------------------------------------------------ |
+| No headers                          | Falls back to ParagraphChunkingStrategy           |
+| Only headers (no content)           | Creates chunks with just header text              |
+| Header at end of file               | Creates chunk with just the header                |
+| Deeply nested (H6)                  | Handled same as other levels                      |
+| Code blocks with #                  | Not treated as headers (Markdig parses correctly) |
+| HTML comments                       | Preserved in content                              |
+| Mixed header styles (`#` and `===`) | Both parsed by Markdig                            |
+| Empty sections                      | Filtered out (unless IncludeEmptyChunks)          |
 
 ---
 
@@ -498,26 +514,26 @@ Short content.
 
 ### 8.1 Complexity
 
-| Operation | Time | Space |
-| :-------- | :--- | :---- |
-| Markdown parsing | O(n) | O(n) for AST |
-| Header extraction | O(h) where h = header count | O(h) |
-| Section extraction | O(n) | O(n) |
-| Overall | O(n) | O(n) |
+| Operation          | Time                        | Space        |
+| :----------------- | :-------------------------- | :----------- |
+| Markdown parsing   | O(n)                        | O(n) for AST |
+| Header extraction  | O(h) where h = header count | O(h)         |
+| Section extraction | O(n)                        | O(n)         |
+| Overall            | O(n)                        | O(n)         |
 
 ### 8.2 Benchmarks
 
 | Document Size | Headers | Chunks | Parse Time | Total Time |
 | :------------ | :------ | :----- | :--------- | :--------- |
-| 10 KB | 10 | 10 | < 5ms | < 10ms |
-| 100 KB | 50 | 50 | < 20ms | < 30ms |
-| 1 MB | 200 | 200 | < 100ms | < 150ms |
+| 10 KB         | 10      | 10     | < 5ms      | < 10ms     |
+| 100 KB        | 50      | 50     | < 20ms     | < 30ms     |
+| 1 MB          | 200     | 200    | < 100ms    | < 150ms    |
 
 ---
 
 ## 9. Unit Tests
 
-```csharp
+````csharp
 [Trait("Category", "Unit")]
 [Trait("Feature", "v0.4.3d")]
 public class MarkdownHeaderChunkingStrategyTests
@@ -761,64 +777,64 @@ public class MarkdownHeaderChunkingStrategyTests
         chunks.Should().HaveCountGreaterOrEqualTo(1);
     }
 }
-```
+````
 
 ---
 
 ## 10. Logging
 
-| Level | Message | Context |
-| :---- | :------ | :------ |
-| Info | "No headers found, falling back to paragraph chunking" | Fallback activation |
-| Debug | "Found {HeaderCount} headers in document" | After parsing |
-| Debug | "Created chunk for header: {Heading} (level {Level})" | Per header |
-| Debug | "Splitting oversized section: {Heading} ({Size} chars)" | When splitting |
-| Trace | "Parsed heading at line {Line}: {Text}" | Verbose parsing |
+| Level | Message                                                 | Context             |
+| :---- | :------------------------------------------------------ | :------------------ |
+| Info  | "No headers found, falling back to paragraph chunking"  | Fallback activation |
+| Debug | "Found {HeaderCount} headers in document"               | After parsing       |
+| Debug | "Created chunk for header: {Heading} (level {Level})"   | Per header          |
+| Debug | "Splitting oversized section: {Heading} ({Size} chars)" | When splitting      |
+| Trace | "Parsed heading at line {Line}: {Text}"                 | Verbose parsing     |
 
 ---
 
 ## 11. File Locations
 
-| File | Path |
-| :--- | :--- |
-| Strategy implementation | `src/Lexichord.Modules.RAG/Chunking/MarkdownHeaderChunkingStrategy.cs` |
-| Unit tests | `tests/Lexichord.Modules.RAG.Tests/Chunking/MarkdownHeaderChunkingStrategyTests.cs` |
+| File                    | Path                                                                                |
+| :---------------------- | :---------------------------------------------------------------------------------- |
+| Strategy implementation | `src/Lexichord.Modules.RAG/Chunking/MarkdownHeaderChunkingStrategy.cs`              |
+| Unit tests              | `tests/Lexichord.Modules.RAG.Tests/Chunking/MarkdownHeaderChunkingStrategyTests.cs` |
 
 ---
 
 ## 12. Dependencies
 
-| Dependency | Source | Purpose |
-| :--------- | :----- | :------ |
-| `Markdig` | v0.1.3b (NuGet) | Markdown parsing |
-| `ParagraphChunkingStrategy` | v0.4.3c | Fallback for no headers |
-| `FixedSizeChunkingStrategy` | v0.4.3b | Splitting oversized sections |
-| `IChunkingStrategy` | v0.4.3a | Interface implementation |
-| `TextChunk`, `ChunkMetadata` | v0.4.3a | Return types |
+| Dependency                   | Source          | Purpose                      |
+| :--------------------------- | :-------------- | :--------------------------- |
+| `Markdig`                    | v0.4.3d (NuGet) | Markdown parsing             |
+| `ParagraphChunkingStrategy`  | v0.4.3c         | Fallback for no headers      |
+| `FixedSizeChunkingStrategy`  | v0.4.3b         | Splitting oversized sections |
+| `IChunkingStrategy`          | v0.4.3a         | Interface implementation     |
+| `TextChunk`, `ChunkMetadata` | v0.4.3a         | Return types                 |
 
 ---
 
 ## 13. Acceptance Criteria
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | Parses Markdown headers using Markdig | [ ] |
-| 2 | Creates chunk per header section | [ ] |
-| 3 | Respects header hierarchy (H1 > H2 > H3) | [ ] |
-| 4 | Stores header text in ChunkMetadata.Heading | [ ] |
-| 5 | Stores header level in ChunkMetadata.Level | [ ] |
-| 6 | Handles preamble content before first header | [ ] |
-| 7 | Splits oversized sections with FixedSize | [ ] |
-| 8 | Falls back to Paragraph for no headers | [ ] |
-| 9 | Ignores # in code blocks | [ ] |
-| 10 | All unit tests pass | [ ] |
+| #   | Criterion                                    | Status |
+| :-- | :------------------------------------------- | :----- |
+| 1   | Parses Markdown headers using Markdig        | [ ]    |
+| 2   | Creates chunk per header section             | [ ]    |
+| 3   | Respects header hierarchy (H1 > H2 > H3)     | [ ]    |
+| 4   | Stores header text in ChunkMetadata.Heading  | [ ]    |
+| 5   | Stores header level in ChunkMetadata.Level   | [ ]    |
+| 6   | Handles preamble content before first header | [ ]    |
+| 7   | Splits oversized sections with FixedSize     | [ ]    |
+| 8   | Falls back to Paragraph for no headers       | [ ]    |
+| 9   | Ignores # in code blocks                     | [ ]    |
+| 10  | All unit tests pass                          | [ ]    |
 
 ---
 
 ## 14. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---

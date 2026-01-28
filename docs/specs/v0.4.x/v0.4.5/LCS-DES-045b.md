@@ -2,18 +2,18 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value |
-| :--- | :--- |
-| **Document ID** | LCS-DES-045b |
-| **Feature ID** | RAG-045b |
-| **Feature Name** | Vector Search Query |
-| **Target Version** | v0.4.5b |
-| **Module Scope** | `Lexichord.Modules.RAG` |
-| **Swimlane** | Memory |
-| **License Tier** | WriterPro |
+| Field                | Value                             |
+| :------------------- | :-------------------------------- |
+| **Document ID**      | LCS-DES-045b                      |
+| **Feature ID**       | RAG-045b                          |
+| **Feature Name**     | Vector Search Query               |
+| **Target Version**   | v0.4.5b                           |
+| **Module Scope**     | `Lexichord.Modules.RAG`           |
+| **Swimlane**         | Memory                            |
+| **License Tier**     | WriterPro                         |
 | **Feature Gate Key** | `FeatureFlags.RAG.SemanticSearch` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-27 |
+| **Status**           | Draft                             |
+| **Last Updated**     | 2026-01-27                        |
 
 ---
 
@@ -34,14 +34,17 @@ Implement `PgVectorSearchService` that converts the query to an embedding vector
 ### 3.1 Dependencies
 
 **Upstream Modules:**
+
 - `Lexichord.Abstractions` (ISemanticSearchService interface)
 - v0.4.4a: `IEmbeddingService` for query embedding
+- v0.4.4d: `FeatureNotLicensedException` for license enforcement
 - v0.4.1c: `IDocumentRepository` for document metadata
 - v0.4.5c: `IQueryPreprocessor` for query normalization
 - v0.4.5d: `SearchLicenseGuard` for license checks
 - v0.0.5b: `IDbConnectionFactory` for database access
 
 **NuGet Packages:**
+
 - `Dapper` 2.1.x - SQL execution
 - `Npgsql` 9.0.x - PostgreSQL driver
 - `Npgsql.Pgvector` 0.2.x - Vector type mapping
@@ -366,13 +369,13 @@ LIMIT @top_k;
 
 ### 5.3 Score Calculation
 
-| Cosine Distance | Similarity Score | Interpretation |
-| :-------------- | :--------------- | :------------- |
-| 0.0 | 1.0 | Identical |
-| 0.1 | 0.9 | Very similar |
-| 0.3 | 0.7 | Similar (default threshold) |
-| 0.5 | 0.5 | Moderate |
-| 1.0 | 0.0 | Orthogonal |
+| Cosine Distance | Similarity Score | Interpretation              |
+| :-------------- | :--------------- | :-------------------------- |
+| 0.0             | 1.0              | Identical                   |
+| 0.1             | 0.9              | Very similar                |
+| 0.3             | 0.7              | Similar (default threshold) |
+| 0.5             | 0.5              | Moderate                    |
+| 1.0             | 0.0              | Orthogonal                  |
 
 ---
 
@@ -419,12 +422,12 @@ START: SearchAsync called
 
 ## 8. User Stories
 
-| ID    | Role            | Story                                                       | Acceptance Criteria                    |
-| :---- | :-------------- | :---------------------------------------------------------- | :------------------------------------- |
-| US-01 | Writer          | As a writer, I want semantic search for my documents.       | Query returns relevant chunks.         |
-| US-02 | Writer          | As a writer, I want results ranked by relevance.            | Hits sorted by score descending.       |
-| US-03 | Writer          | As a writer, I want to filter to one document.              | DocumentFilter limits results.         |
-| US-04 | Developer       | As a developer, I want efficient vector queries.            | Uses HNSW index for fast search.       |
+| ID    | Role      | Story                                                 | Acceptance Criteria              |
+| :---- | :-------- | :---------------------------------------------------- | :------------------------------- |
+| US-01 | Writer    | As a writer, I want semantic search for my documents. | Query returns relevant chunks.   |
+| US-02 | Writer    | As a writer, I want results ranked by relevance.      | Hits sorted by score descending. |
+| US-03 | Writer    | As a writer, I want to filter to one document.        | DocumentFilter limits results.   |
+| US-04 | Developer | As a developer, I want efficient vector queries.      | Uses HNSW index for fast search. |
 
 ---
 
@@ -433,10 +436,12 @@ START: SearchAsync called
 ### UC-01: Semantic Search
 
 **Preconditions:**
+
 - User has WriterPro license
 - Documents are indexed with embeddings
 
 **Flow:**
+
 1. User enters "writing tips for dialogue" query.
 2. Service checks license (passes).
 3. Service preprocesses query.
@@ -446,6 +451,7 @@ START: SearchAsync called
 7. Service returns SearchResult with ranked hits.
 
 **Postconditions:**
+
 - User receives relevant document chunks
 
 ---
@@ -545,14 +551,14 @@ public class PgVectorSearchServiceTests
 
 ## 11. Observability & Logging
 
-| Level   | Source                   | Message Template                                                       |
-| :------ | :----------------------- | :--------------------------------------------------------------------- |
-| Debug   | PgVectorSearchService    | `Using cached embedding for query: '{Query}'`                          |
-| Debug   | PgVectorSearchService    | `Executing vector search: TopK={TopK}, MinScore={MinScore}, Filter={Filter}` |
-| Info    | PgVectorSearchService    | `Search completed: {HitCount} hits for '{Query}' in {Duration}ms`      |
-| Warning | PgVectorSearchService    | `Search returned no results`                                           |
-| Warning | PgVectorSearchService    | `Document {DocumentId} not found for chunk {ChunkId}`                  |
-| Error   | PgVectorSearchService    | `Search failed for query: '{Query}'`                                   |
+| Level   | Source                | Message Template                                                             |
+| :------ | :-------------------- | :--------------------------------------------------------------------------- |
+| Debug   | PgVectorSearchService | `Using cached embedding for query: '{Query}'`                                |
+| Debug   | PgVectorSearchService | `Executing vector search: TopK={TopK}, MinScore={MinScore}, Filter={Filter}` |
+| Info    | PgVectorSearchService | `Search completed: {HitCount} hits for '{Query}' in {Duration}ms`            |
+| Warning | PgVectorSearchService | `Search returned no results`                                                 |
+| Warning | PgVectorSearchService | `Document {DocumentId} not found for chunk {ChunkId}`                        |
+| Error   | PgVectorSearchService | `Search failed for query: '{Query}'`                                         |
 
 ---
 
@@ -628,31 +634,31 @@ public class PgVectorSearchIntegrationTests : IClassFixture<DatabaseFixture>
 
 ## 14. Acceptance Criteria (QA)
 
-| #   | Criterion                                                                    |
-| :-- | :--------------------------------------------------------------------------- |
-| 1   | Search returns chunks ranked by cosine similarity score.                     |
-| 2   | TopK parameter limits maximum results.                                       |
-| 3   | MinScore parameter filters low-relevance results.                            |
-| 4   | DocumentFilter limits results to specific document.                          |
-| 5   | Cached embeddings are reused for repeated queries.                           |
-| 6   | Unlicensed users receive FeatureNotLicensedException.                        |
-| 7   | SemanticSearchExecutedEvent published on success.                            |
-| 8   | Search latency < 200ms for 10K chunks.                                       |
+| #   | Criterion                                                |
+| :-- | :------------------------------------------------------- |
+| 1   | Search returns chunks ranked by cosine similarity score. |
+| 2   | TopK parameter limits maximum results.                   |
+| 3   | MinScore parameter filters low-relevance results.        |
+| 4   | DocumentFilter limits results to specific document.      |
+| 5   | Cached embeddings are reused for repeated queries.       |
+| 6   | Unlicensed users receive FeatureNotLicensedException.    |
+| 7   | SemanticSearchExecutedEvent published on success.        |
+| 8   | Search latency < 200ms for 10K chunks.                   |
 
 ---
 
 ## 15. Deliverable Checklist
 
-| #  | Deliverable                                                    | Status |
-| :- | :------------------------------------------------------------- | :----- |
-| 1  | `PgVectorSearchService` class                                  | [ ]    |
-| 2  | `ChunkSearchRow` internal record                               | [ ]    |
-| 3  | Cosine similarity SQL query                                    | [ ]    |
-| 4  | Document caching during result mapping                         | [ ]    |
-| 5  | Integration with IQueryPreprocessor                            | [ ]    |
-| 6  | Integration with SearchLicenseGuard                            | [ ]    |
-| 7  | Unit tests                                                     | [ ]    |
-| 8  | Integration tests                                              | [ ]    |
+| #   | Deliverable                            | Status |
+| :-- | :------------------------------------- | :----- |
+| 1   | `PgVectorSearchService` class          | [ ]    |
+| 2   | `ChunkSearchRow` internal record       | [ ]    |
+| 3   | Cosine similarity SQL query            | [ ]    |
+| 4   | Document caching during result mapping | [ ]    |
+| 5   | Integration with IQueryPreprocessor    | [ ]    |
+| 6   | Integration with SearchLicenseGuard    | [ ]    |
+| 7   | Unit tests                             | [ ]    |
+| 8   | Integration tests                      | [ ]    |
 
 ---
 
@@ -691,9 +697,9 @@ LIMIT 10;
 
 ## 18. Deferred Features
 
-| Feature                      | Deferred To | Reason                                         |
-| :--------------------------- | :---------- | :--------------------------------------------- |
-| Hybrid search (keyword + vector) | v0.6.x | Requires additional indexing                   |
-| Query rewriting/expansion    | v0.6.x      | AI-powered feature                             |
+| Feature                          | Deferred To | Reason                       |
+| :------------------------------- | :---------- | :--------------------------- |
+| Hybrid search (keyword + vector) | v0.6.x      | Requires additional indexing |
+| Query rewriting/expansion        | v0.6.x      | AI-powered feature           |
 
 ---
