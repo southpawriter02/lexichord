@@ -4,4 +4,11 @@
     It defines shared interfaces, enums, and attributes only.
     All external dependencies SHOULD be minimal (standard system libraries).
   -->
+
+  <ItemGroup>
+    <!-- v0.0.4a: Module Contract Dependencies -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+  </ItemGroup>
+
 </Project>

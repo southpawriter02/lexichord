@@ -6,6 +6,28 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.4] - 2026-01-28 (In Progress)
+
+### The Module Protocol
+
+This release establishes the module architecture that enables Lexichord's "modular monolith" — allowing features to be developed as independent modules while running in a single process.
+
+#### What's New
+
+- **Module Contract (`IModule`)** — A standardized interface defining how modules register services, initialize, and expose metadata.
+
+- **Module Metadata (`ModuleInfo`)** — Immutable record containing module identity, version, author, and optional dependencies.
+
+#### Why This Matters
+
+This work enables:
+
+1. **Extensibility** — Third-party and internal modules can be developed independently.
+2. **Feature Isolation** — Each module encapsulates its own services and state.
+3. **License Gating** — Future versions will enable per-module licensing tiers.
+
+---
+
 ## [v0.0.3] - 2026-01-28 (In Progress)
 
 ### The Nervous System (Logging & DI)
@@ -86,6 +108,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                       | Summary                                                 |
 | :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
+| v0.0.4  | 2026-01-28 | The Module Protocol            | Module contract, metadata, loader, license gating       |
 | v0.0.3  | 2026-01-28 | The Nervous System             | Dependency Injection, Logging, Crash Handling, Config   |
 | v0.0.2  | 2026-01-28 | The Host Shell & UI Foundation | Avalonia bootstrap, window stub, theme infrastructure   |
 | v0.0.1  | 2026-01-28 | The Architecture Skeleton      | Modular Monolith foundation, test infrastructure, CI/CD |
@@ -95,6 +118,12 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.4 Sub-Parts
+
+| Document                        | Sub-Part | Title             |
+| :------------------------------ | :------- | :---------------- |
+| [LCS-CL-004a](./LCS-CL-004a.md) | v0.0.4a  | IModule Interface |
 
 ### v0.0.3 Sub-Parts
 
