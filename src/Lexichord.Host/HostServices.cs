@@ -48,6 +48,7 @@ public static class HostServices
         // These services maintain state across the application lifetime
         services.AddSingleton<IThemeManager, ThemeManager>();
         services.AddSingleton<IWindowStateService, WindowStateService>();
+        services.AddSingleton<ICrashReportService, CrashReportService>();
 
         // LOGIC: Register service locator for XAML-instantiated components
         // Marked as obsolete to discourage direct usage

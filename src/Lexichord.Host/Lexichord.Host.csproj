@@ -11,6 +11,11 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
+  <!-- Allow unit tests to access internal types -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Lexichord.Tests.Unit" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- Avalonia Framework -->
     <PackageReference Include="Avalonia" Version="11.2.3" />

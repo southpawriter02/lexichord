@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Extensions;
@@ -83,11 +84,62 @@ public partial class App : Application
             // Apply persisted settings
             ApplyPersistedSettings();
 
+            // LOGIC: Register global exception handlers (v0.0.3c)
+            RegisterExceptionHandlers();
+
             // Register shutdown handler to dispose services
             desktop.ShutdownRequested += OnShutdownRequested;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Registers global exception handlers for unhandled exceptions.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: This method registers handlers for:
+    /// 1. AppDomain.UnhandledException - Captures exceptions on any thread
+    /// 2. TaskScheduler.UnobservedTaskException - Captures unobserved Task exceptions
+    /// </remarks>
+    private void RegisterExceptionHandlers()
+    {
+        var crashService = _serviceProvider!.GetRequiredService<ICrashReportService>();
+        var logger = _serviceProvider!.GetRequiredService<ILogger<App>>();
+
+        // LOGIC: AppDomain.UnhandledException captures exceptions on any thread
+        // that are not caught by any handler. IsTerminating indicates if the
+        // CLR is about to terminate the process.
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            var exception = e.ExceptionObject as Exception
+                ?? new Exception($"Unknown exception object: {e.ExceptionObject}");
+
+            logger.LogCritical(exception,
+                "Unhandled domain exception. IsTerminating: {IsTerminating}",
+                e.IsTerminating);
+
+            if (e.IsTerminating)
+            {
+                // LOGIC: If CLR is terminating, show crash dialog
+                // This gives user a chance to copy the report
+                crashService.ShowCrashReport(exception);
+            }
+        };
+
+        // LOGIC: TaskScheduler.UnobservedTaskException captures exceptions from
+        // Tasks that were never awaited or had their exceptions checked.
+        // We mark them as observed to prevent process termination.
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            logger.LogError(e.Exception, "Unobserved task exception");
+
+            // LOGIC: Mark as observed to prevent CLR from terminating
+            // The exception is logged but we don't crash for unobserved tasks
+            e.SetObserved();
+        };
+
+        logger.LogDebug("Global exception handlers registered");
     }
 
     private MainWindow CreateMainWindow()

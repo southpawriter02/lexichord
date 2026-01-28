@@ -102,6 +102,7 @@ Each major version has detailed technical changelogs organized by sub-part:
 | :------------------------------ | :------- | :------------------------ |
 | [LCS-CL-003a](./LCS-CL-003a.md) | v0.0.3a  | Dependency Injection Root |
 | [LCS-CL-003b](./LCS-CL-003b.md) | v0.0.3b  | Serilog Pipeline          |
+| [LCS-CL-003c](./LCS-CL-003c.md) | v0.0.3c  | Global Exception Trap     |
 
 ### v0.0.2 Sub-Parts
 
