@@ -40,6 +40,8 @@
     <!-- Project References (Production Code) -->
     <ProjectReference Include="..\..\src\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Lexichord.Host\Lexichord.Host.csproj" />
+    <!-- v0.0.4d: Sandbox Module for testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.Sandbox\Lexichord.Modules.Sandbox.csproj" />
   </ItemGroup>
 
   <ItemGroup>

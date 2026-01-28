@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Lexichord.Modules.Sandbox</RootNamespace>
+
+    <!-- LOGIC: Module metadata for assembly info -->
+    <AssemblyTitle>Lexichord Sandbox Module</AssemblyTitle>
+    <Description>Architecture validation and proof-of-concept module</Description>
+    <Authors>Lexichord Team</Authors>
+
+    <!-- LOGIC: Output to Modules directory so ModuleLoader discovers it -->
+    <!-- This path is relative to the project directory -->
+    <OutputPath>../../Modules/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+    <!-- LOGIC: Treat warnings as errors for module quality -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>9999</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- LOGIC: Modules ONLY reference Abstractions, NEVER Host -->
+    <!-- This is enforced by architecture tests -->
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- LOGIC: Required for IServiceCollection in RegisterServices -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+
+    <!-- LOGIC: Required for ILogger<T> in services -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

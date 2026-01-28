@@ -22,6 +22,8 @@ This release establishes the module architecture that enables Lexichord's "modul
 
 - **License Gate (Skeleton)** — Establishes license tier gating with `LicenseTier`, `ILicenseContext`, and `RequiresLicenseAttribute`. Stub implementation returns Core tier; v1.x will provide real validation.
 
+- **Sandbox Module (Proof of Concept)** — First feature module validating the module architecture. Demonstrates discovery, service registration, and async initialization.
+
 #### Why This Matters
 
 This work enables:
