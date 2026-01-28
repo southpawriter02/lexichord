@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Lexichord.Host.Views.MainWindow"
+        Title="Lexichord — The Orchestrator"
+        Width="1400"
+        Height="900"
+        MinWidth="1024"
+        MinHeight="768"
+        WindowStartupLocation="CenterScreen">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    LEXICHORD MAIN WINDOW (v0.0.2a Stub)
+    This is a minimal window to prove the Avalonia lifecycle is working.
+    The full Podium Layout will be implemented in v0.0.2b.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Grid>
+        <TextBlock Text="Welcome to Lexichord"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="32"
+                   FontWeight="Light"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+    </Grid>
+
+</Window>

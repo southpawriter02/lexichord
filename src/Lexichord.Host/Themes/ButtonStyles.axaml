@@ -296,29 +296,5 @@
     </Style>
   </ControlTheme>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       CONVENIENCE CLASSES
-       Apply via Classes="primary" etc.
-       ═══════════════════════════════════════════════════════════════════════════ -->
-
-  <Style Selector="Button.primary">
-    <Setter Property="Theme" Value="{StaticResource PrimaryButton}" />
-  </Style>
-
-  <Style Selector="Button.secondary">
-    <Setter Property="Theme" Value="{StaticResource SecondaryButton}" />
-  </Style>
-
-  <Style Selector="Button.ghost">
-    <Setter Property="Theme" Value="{StaticResource GhostButton}" />
-  </Style>
-
-  <Style Selector="Button.icon">
-    <Setter Property="Theme" Value="{StaticResource IconButton}" />
-  </Style>
-
-  <Style Selector="Button.destructive">
-    <Setter Property="Theme" Value="{StaticResource DestructiveButton}" />
-  </Style>
 
 </ResourceDictionary>

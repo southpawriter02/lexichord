@@ -1,0 +1,92 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LEXICHORD GLOBAL STYLES
+         Base control overrides applied to all Lexichord windows/views.
+         Load via StyleInclude in Application.Styles.
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Global TextBlock defaults -->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMD}" />
+    </Style>
+
+    <!-- Window/View background -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <Style Selector="UserControl">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <!-- Default Button theme -->
+    <Style Selector="Button">
+        <Setter Property="Theme" Value="{StaticResource SecondaryButton}" />
+    </Style>
+
+    <!-- Default TextBox theme -->
+    <Style Selector="TextBox">
+        <Setter Property="Theme" Value="{StaticResource LexTextBox}" />
+    </Style>
+
+    <!-- ScrollBar styling -->
+    <Style Selector="ScrollBar">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource BorderDefaultBrush}" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="MinWidth" Value="8" />
+        <Setter Property="MinHeight" Value="8" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="{DynamicResource TextMutedBrush}" />
+    </Style>
+
+    <!-- ToolTip styling -->
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSM}" />
+    </Style>
+
+    <!-- Separator styling -->
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,8" />
+    </Style>
+
+    <!-- Button class conveniences -->
+    <Style Selector="Button.primary">
+        <Setter Property="Theme" Value="{StaticResource PrimaryButton}" />
+    </Style>
+
+    <Style Selector="Button.secondary">
+        <Setter Property="Theme" Value="{StaticResource SecondaryButton}" />
+    </Style>
+
+    <Style Selector="Button.ghost">
+        <Setter Property="Theme" Value="{StaticResource GhostButton}" />
+    </Style>
+
+    <Style Selector="Button.icon">
+        <Setter Property="Theme" Value="{StaticResource IconButton}" />
+    </Style>
+
+    <Style Selector="Button.destructive">
+        <Setter Property="Theme" Value="{StaticResource DestructiveButton}" />
+    </Style>
+
+</Styles>

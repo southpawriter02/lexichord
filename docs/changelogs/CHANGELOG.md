@@ -6,6 +6,26 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.2] - 2026-01-28 (In Progress)
+
+### The Host Shell & UI Foundation
+
+This release introduces the visual foundation of Lexichord — the Avalonia-based desktop application that will host all writing features.
+
+#### What's New
+
+- **Avalonia UI Framework Bootstrapped** — The application now launches as a proper desktop window instead of a console application. This establishes the foundation for all future UI work.
+
+#### Why This Matters
+
+This work establishes:
+
+1. **Visual Identity** — Lexichord now has a window, title, and theme infrastructure for building the interface.
+2. **Cross-Platform Support** — Avalonia enables Windows, macOS, and Linux deployment from a single codebase.
+3. **Modern UI Patterns** — The architecture supports compiled bindings, resource dictionaries, and theme switching.
+
+---
+
 ## [v0.0.1] - 2026-01-28
 
 ### The Architecture Skeleton
@@ -36,15 +56,22 @@ This foundational work ensures:
 
 ## Version History
 
-| Version | Date       | Codename                  | Summary                                                 |
-| :------ | :--------- | :------------------------ | :------------------------------------------------------ |
-| v0.0.1  | 2026-01-28 | The Architecture Skeleton | Modular Monolith foundation, test infrastructure, CI/CD |
+| Version | Date       | Codename                       | Summary                                                 |
+| :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
+| v0.0.2  | 2026-01-28 | The Host Shell & UI Foundation | Avalonia bootstrap, window stub, theme infrastructure   |
+| v0.0.1  | 2026-01-28 | The Architecture Skeleton      | Modular Monolith foundation, test infrastructure, CI/CD |
 
 ---
 
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.2 Sub-Parts
+
+| Document                        | Sub-Part | Title              |
+| :------------------------------ | :------- | :----------------- |
+| [LCS-CL-002a](./LCS-CL-002a.md) | v0.0.2a  | Avalonia Bootstrap |
 
 ### v0.0.1 Sub-Parts
 

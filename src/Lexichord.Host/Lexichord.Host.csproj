@@ -1,8 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <!-- WinExe prevents console window on Windows -->
+    <OutputType>WinExe</OutputType>
+
+    <!-- Required for Windows COM interop (drag-drop, file dialogs) -->
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+
+    <!-- Use compiled bindings for performance -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia Framework -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+
+    <!-- Development Tools (Debug builds only) -->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- ALLOWED: Reference to Abstractions (Tier 0) -->
@@ -13,7 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Exclude Controls directory (future UI components, not yet implemented) -->
     <Compile Remove="Controls/**/*.cs" />
+    <AvaloniaXaml Remove="Controls/**/*.axaml" />
   </ItemGroup>
 
 </Project>

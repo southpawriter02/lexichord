@@ -11,10 +11,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- Avalonia base themes (required) -->
-                <ResourceInclude Source="avares://Avalonia.Themes.Fluent/FluentTheme.xaml" />
-
-                <!-- Lexichord custom theme (overrides Fluent where needed) -->
+                <!-- Lexichord custom theme resources (colors, fonts, ControlThemes) -->
                 <ResourceInclude Source="avares://Lexichord.Host/Themes/LexichordTheme.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -24,6 +21,7 @@
         <!-- Base Fluent theme for unstyled controls -->
         <FluentTheme />
 
-        <!-- Additional global styles can be added here -->
+        <!-- Lexichord global styles (overrides for controls) -->
+        <StyleInclude Source="avares://Lexichord.Host/Themes/LexichordStyles.axaml" />
     </Application.Styles>
 </Application>
