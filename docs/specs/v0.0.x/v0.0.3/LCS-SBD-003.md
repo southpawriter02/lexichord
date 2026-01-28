@@ -162,9 +162,9 @@ If this foundation is flawed, Module loading (v0.0.4) will fail to register serv
 | **0.3c** | Global exception handlers registered for AppDomain and TaskScheduler. | [x]    |
 | **0.3c** | `CrashReportWindow.axaml` displays exception details.                 | [x]    |
 | **0.3c** | Crash reports saved to `{AppData}/Lexichord/CrashReports/`.           | [x]    |
-| **0.3d** | `appsettings.json` created with Lexichord and Serilog sections.       | [ ]    |
-| **0.3d** | Configuration loads from JSON, Environment Variables, and CLI.        | [ ]    |
-| **0.3d** | `--debug-mode` CLI argument enables verbose logging.                  | [ ]    |
+| **0.3d** | `appsettings.json` created with Lexichord and Serilog sections.       | [x]    |
+| **0.3d** | Configuration loads from JSON, Environment Variables, and CLI.        | [x]    |
+| **0.3d** | `--debug-mode` CLI argument enables verbose logging.                  | [x]    |
 
 ## 4. Risks & Mitigations
 

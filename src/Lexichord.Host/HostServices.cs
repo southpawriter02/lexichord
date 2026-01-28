@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Services;
+using System;
+using System.Collections.Generic;
 
 namespace Lexichord.Host;
 
@@ -19,6 +21,60 @@ namespace Lexichord.Host;
 /// </remarks>
 public static class HostServices
 {
+    /// <summary>
+    /// Builds the application configuration from multiple sources.
+    /// </summary>
+    /// <param name="args">Command-line arguments.</param>
+    /// <returns>The built configuration.</returns>
+    /// <remarks>
+    /// LOGIC: Configuration sources are loaded in order of increasing precedence:
+    /// 1. appsettings.json (base settings, always present)
+    /// 2. appsettings.{Environment}.json (environment overrides, optional)
+    /// 3. Environment variables (deployment overrides, LEXICHORD_ prefix)
+    /// 4. Command-line arguments (runtime overrides, highest priority)
+    ///
+    /// Environment is determined by:
+    /// 1. LEXICHORD_ENVIRONMENT environment variable (preferred)
+    /// 2. DOTNET_ENVIRONMENT environment variable (fallback)
+    /// 3. "Production" (default)
+    /// </remarks>
+    public static IConfiguration BuildConfiguration(string[] args)
+    {
+        // LOGIC: Determine environment from multiple sources
+        var environment = Environment.GetEnvironmentVariable("LEXICHORD_ENVIRONMENT")
+            ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+            ?? "Production";
+
+        return new ConfigurationBuilder()
+            // Set base path to application directory (where exe lives)
+            .SetBasePath(AppContext.BaseDirectory)
+
+            // 1. Base configuration (required)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+
+            // 2. Environment-specific configuration (optional)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+
+            // 3. Environment variables with LEXICHORD_ prefix
+            // e.g., LEXICHORD_DEBUGMODE=true becomes Lexichord:DebugMode
+            .AddEnvironmentVariables(prefix: "LEXICHORD_")
+
+            // 4. Command-line arguments (highest precedence)
+            .AddCommandLine(args, new Dictionary<string, string>
+            {
+                // Map CLI switches to configuration keys
+                { "--debug-mode", "Lexichord:DebugMode" },
+                { "-d", "Lexichord:DebugMode" },
+                { "--log-level", "Serilog:MinimumLevel:Default" },
+                { "-l", "Serilog:MinimumLevel:Default" },
+                { "--data-path", "Lexichord:DataPath" },
+                { "--environment", "Lexichord:Environment" },
+                { "-e", "Lexichord:Environment" },
+                { "--show-devtools", "Debug:ShowDevTools" }
+            })
+            .Build();
+    }
+
     /// <summary>
     /// Configures all Host services in the DI container.
     /// </summary>
@@ -36,6 +92,18 @@ public static class HostServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // LOGIC: Register configuration as singleton for raw access
+        services.AddSingleton<IConfiguration>(configuration);
+
+        // LOGIC: Register configuration options using the Options pattern
+        // This enables strongly-typed access to configuration sections
+        services.Configure<LexichordOptions>(
+            configuration.GetSection(LexichordOptions.SectionName));
+        services.Configure<DebugOptions>(
+            configuration.GetSection(DebugOptions.SectionName));
+        services.Configure<FeatureFlagOptions>(
+            configuration.GetSection(FeatureFlagOptions.SectionName));
+
         // LOGIC: Register Serilog as the ILogger<T> implementation
         // This enables constructor injection of ILogger<T> in all services
         services.AddLogging(builder =>
@@ -59,3 +127,4 @@ public static class HostServices
         return services;
     }
 }
+

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Services;
 
@@ -17,6 +18,7 @@ public class ServiceLocatorTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging(); // Required for WindowStateService
         services.AddSingleton<IWindowStateService, WindowStateService>();
         var provider = services.BuildServiceProvider();
 
@@ -79,6 +81,7 @@ public class ServiceLocatorTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging(); // Required for WindowStateService
         services.AddSingleton<IWindowStateService, WindowStateService>();
         var provider = services.BuildServiceProvider();
 

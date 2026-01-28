@@ -23,10 +23,15 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
 
-    <!-- Dependency Injection & Configuration (v0.0.3a) -->
+    <!-- Dependency Injection & Configuration (v0.0.3a, v0.0.3d) -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
 
     <!-- Structured Logging (v0.0.3b) -->
     <PackageReference Include="Serilog" Version="4.2.0" />
@@ -52,6 +57,19 @@
     <!-- Exclude Controls directory (future UI components, not yet implemented) -->
     <Compile Remove="Controls/**/*.cs" />
     <AvaloniaXaml Remove="Controls/**/*.axaml" />
+  </ItemGroup>
+
+  <!-- Configuration files (v0.0.3d) -->
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Staging.json" Condition="Exists('appsettings.Staging.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
