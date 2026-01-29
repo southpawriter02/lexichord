@@ -63,7 +63,11 @@ public sealed class WindowStateService : IWindowStateService
                 return null;
             }
 
-            var json = await File.ReadAllTextAsync(_filePath);
+            // LOGIC: ConfigureAwait(false) prevents deadlock when this is called with
+            // .GetAwaiter().GetResult() from a synchronization context (UI thread).
+            // Without it, the continuation tries to post back to the UI thread which
+            // is blocked waiting for this method to complete, causing a deadlock.
+            var json = await File.ReadAllTextAsync(_filePath).ConfigureAwait(false);
             var state = JsonSerializer.Deserialize<WindowStateRecord>(json, JsonOptions);
 
             _logger.LogDebug(
@@ -96,7 +100,7 @@ public sealed class WindowStateService : IWindowStateService
         try
         {
             var json = JsonSerializer.Serialize(state, JsonOptions);
-            await File.WriteAllTextAsync(_filePath, json);
+            await File.WriteAllTextAsync(_filePath, json).ConfigureAwait(false);
             
             _logger.LogDebug("Saved window state to {FilePath}", _filePath);
         }

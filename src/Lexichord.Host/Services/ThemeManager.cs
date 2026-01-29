@@ -96,6 +96,41 @@ public sealed class ThemeManager : IThemeManager
             effectiveTheme);
     }
 
+    /// <summary>
+    /// Sets the theme synchronously without publishing MediatR events.
+    /// </summary>
+    /// <param name="theme">The theme to apply.</param>
+    /// <remarks>
+    /// LOGIC: Use this method during startup to avoid async deadlock. The async
+    /// SetThemeAsync method uses MediatR.Publish which can deadlock when called
+    /// with .GetAwaiter().GetResult() during Avalonia initialization because
+    /// the dispatcher isn't fully initialized yet.
+    /// </remarks>
+    internal void SetThemeSync(ThemeMode theme)
+    {
+        if (_currentTheme == theme)
+        {
+            _logger.LogDebug("Theme already set to {Theme}, ignoring (sync)", theme);
+            return;
+        }
+
+        var oldTheme = _currentTheme;
+        _currentTheme = theme;
+        ApplyTheme(theme);
+
+        var effectiveTheme = EffectiveTheme;
+        var eventArgs = new ThemeChangedEventArgs(oldTheme, theme, effectiveTheme);
+
+        // Raise the standard event (synchronous, no MediatR)
+        ThemeChanged?.Invoke(this, eventArgs);
+
+        _logger.LogInformation(
+            "Theme changed synchronously from {OldTheme} to {NewTheme} (effective: {EffectiveTheme})",
+            oldTheme,
+            theme,
+            effectiveTheme);
+    }
+
     /// <inheritdoc/>
     public ThemeVariant GetSystemTheme()
     {

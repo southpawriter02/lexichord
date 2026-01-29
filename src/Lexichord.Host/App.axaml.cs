@@ -102,24 +102,33 @@ public partial class App : Application
             // This allows modules to resolve services from the container
             moduleLoader.InitializeModulesAsync(_serviceProvider).GetAwaiter().GetResult();
 
+            Log.Information("Creating MainWindow...");
             // Create main window with injected services
             desktop.MainWindow = CreateMainWindow();
-            Log.Debug("MainWindow created");
+            Log.Information("MainWindow created and assigned to desktop.MainWindow");
 
+            Log.Information("Applying persisted settings...");
             // Apply persisted settings
             ApplyPersistedSettings();
+            Log.Information("Persisted settings applied");
 
+            Log.Information("Initializing layout from profile...");
             // LOGIC (v0.1.1c): Initialize layout from saved profile or use default
             InitializeLayoutAsync().GetAwaiter().GetResult();
+            Log.Information("Layout initialized");
 
+            Log.Information("Registering exception handlers...");
             // LOGIC: Register global exception handlers (v0.0.3c)
             RegisterExceptionHandlers();
+            Log.Information("Exception handlers registered");
 
             // Register shutdown handler to dispose services
             desktop.ShutdownRequested += OnShutdownRequested;
+            Log.Information("Startup complete, calling base.OnFrameworkInitializationCompleted");
         }
 
         base.OnFrameworkInitializationCompleted();
+        Log.Information("base.OnFrameworkInitializationCompleted returned");
     }
 
     /// <summary>
@@ -266,14 +275,30 @@ public partial class App : Application
 
     private void ApplyPersistedSettings()
     {
+        Log.Information("ApplyPersistedSettings - Resolving IWindowStateService...");
         var windowStateService = _serviceProvider!.GetRequiredService<IWindowStateService>();
-        var themeManager = _serviceProvider!.GetRequiredService<IThemeManager>();
+        Log.Information("ApplyPersistedSettings - IWindowStateService resolved");
+        
+        Log.Information("ApplyPersistedSettings - Resolving ThemeManager...");
+        var themeManager = _serviceProvider!.GetRequiredService<IThemeManager>() as ThemeManager;
+        Log.Information("ApplyPersistedSettings - ThemeManager resolved");
 
+        Log.Information("ApplyPersistedSettings - Loading window state...");
         var savedState = windowStateService.LoadAsync().GetAwaiter().GetResult();
-        if (savedState is not null)
+        Log.Information("ApplyPersistedSettings - Window state loaded: {HasState}", savedState is not null);
+        
+        if (savedState is not null && themeManager is not null)
         {
-            themeManager.SetThemeAsync(savedState.Theme).GetAwaiter().GetResult();
+            Log.Information("ApplyPersistedSettings - Applying theme synchronously: {Theme}", savedState.Theme);
+            // LOGIC: Use synchronous theme application during startup to avoid deadlock.
+            // SetThemeAsync uses MediatR.Publish which can deadlock when called with
+            // .GetAwaiter().GetResult() during Avalonia initialization because the
+            // dispatcher isn't fully initialized yet.
+            themeManager.SetThemeSync(savedState.Theme);
+            Log.Information("ApplyPersistedSettings - Theme applied synchronously");
         }
+        
+        Log.Information("ApplyPersistedSettings - Complete");
     }
 
     /// <summary>

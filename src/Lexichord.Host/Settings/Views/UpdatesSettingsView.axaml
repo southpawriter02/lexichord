@@ -1,0 +1,128 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Lexichord.Host.Settings"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+             x:Class="Lexichord.Host.Settings.UpdatesSettingsView"
+             x:DataType="settings:UpdatesSettingsViewModel">
+
+    <!-- LOGIC: Updates settings page with version info, channel selection, and update check.
+         Version: v0.1.6d -->
+
+    <ScrollViewer>
+        <StackPanel Margin="16" Spacing="24">
+            <!-- Version Information Section -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Version Information"
+                           Classes="h2"
+                           FontWeight="SemiBold" />
+
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="8"
+                        Padding="16">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Version:"
+                                       Foreground="{DynamicResource SecondaryForegroundBrush}" />
+                            <TextBlock Text="{Binding VersionInfo.DisplayVersion}"
+                                       FontWeight="SemiBold" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Build:"
+                                       Foreground="{DynamicResource SecondaryForegroundBrush}" />
+                            <TextBlock Text="{Binding VersionInfo.DetailedVersion}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Runtime:"
+                                       Foreground="{DynamicResource SecondaryForegroundBrush}" />
+                            <TextBlock Text="{Binding VersionInfo.RuntimeInfo}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Update Channel Section -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Update Channel"
+                           Classes="h2"
+                           FontWeight="SemiBold" />
+
+                <TextBlock Text="Choose which updates you want to receive."
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,0,0,8" />
+
+                <StackPanel Spacing="8">
+                    <!-- Stable Channel Option -->
+                    <RadioButton GroupName="ChannelGroup"
+                                 IsChecked="{Binding IsStable, Mode=OneWay}"
+                                 Command="{Binding SelectStableCommand}">
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Data="{StaticResource CheckCircleIcon}"
+                                          Width="16" Height="16" />
+                                <TextBlock Text="Stable"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="Production-ready releases. Recommended for most users."
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                       Margin="24,0,0,0" />
+                        </StackPanel>
+                    </RadioButton>
+
+                    <!-- Insider Channel Option -->
+                    <RadioButton GroupName="ChannelGroup"
+                                 IsChecked="{Binding IsInsider, Mode=OneWay}"
+                                 Command="{Binding SelectInsiderCommand}">
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Data="{StaticResource FlaskIcon}"
+                                          Width="16" Height="16" />
+                                <TextBlock Text="Insider"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="Early access to new features. May contain bugs."
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                       Margin="24,0,0,0" />
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Check for Updates Section -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Check for Updates"
+                           Classes="h2"
+                           FontWeight="SemiBold" />
+
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button Content="Check Now"
+                            Command="{Binding CheckForUpdatesCommand}"
+                            IsEnabled="{Binding !IsCheckingForUpdates}"
+                            MinWidth="100" />
+
+                    <TextBlock Text="●"
+                               IsVisible="{Binding IsCheckingForUpdates}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource AccentBrush}"
+                               FontSize="16" />
+
+                    <TextBlock Text="{Binding UpdateStatus}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding LastCheckDisplay, StringFormat='Last checked: {0}'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TertiaryForegroundBrush}"
+                           Margin="0,8,0,0" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

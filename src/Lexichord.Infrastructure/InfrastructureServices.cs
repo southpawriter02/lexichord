@@ -45,6 +45,7 @@ public static class InfrastructureServices
         // LOGIC: Register entity-specific repositories
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
+        services.AddScoped<IRecentFilesRepository, RecentFilesRepository>();
 
         // LOGIC: Register the generic repository for any entity type
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));

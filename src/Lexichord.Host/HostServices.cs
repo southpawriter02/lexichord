@@ -8,6 +8,7 @@ using Lexichord.Host.Infrastructure;
 using Lexichord.Host.Services;
 using Lexichord.Host.ViewModels;
 using Lexichord.Host.ViewModels.CommandPalette;
+using Lexichord.Infrastructure;
 using System;
 using System.Collections.Generic;
 
@@ -120,6 +121,10 @@ public static class HostServices
         // This enables loose coupling between modules via commands, queries, and events
         services.AddMediatRServices();
 
+        // LOGIC: Register file-based recent files repository for development mode
+        // Uses local JSON file instead of database for portability
+        services.AddSingleton<IRecentFilesRepository, FileBasedRecentFilesRepository>();
+
         // LOGIC: Register core Host services as Singletons
         // These services maintain state across the application lifetime
         services.AddSingleton<IThemeManager, ThemeManager>();
@@ -181,6 +186,11 @@ public static class HostServices
         // LOGIC (v0.1.6c): Register account settings for license management UI
         services.AddTransient<Settings.AccountSettingsViewModel>();
         services.AddSingleton<ISettingsPage, Settings.Pages.AccountSettingsPage>();
+
+        // LOGIC (v0.1.6d): Register update service and settings for channel management
+        services.AddSingleton<IUpdateService, Services.UpdateService>();
+        services.AddTransient<Settings.UpdatesSettingsViewModel>();
+        services.AddSingleton<ISettingsPage, Settings.Pages.UpdatesSettingsPage>();
 
         return services;
     }

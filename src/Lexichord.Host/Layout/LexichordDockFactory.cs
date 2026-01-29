@@ -162,7 +162,17 @@ public sealed class LexichordDockFactory : Factory, IDockFactory
             DocumentsId);
 
         // LOGIC: Initialize the factory context
-        InitLayout(_rootDock);
+        _logger.LogInformation("About to call InitLayout (Dock.Mvvm.Factory base method)");
+        try
+        {
+            InitLayout(_rootDock);
+            _logger.LogInformation("InitLayout completed successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "InitLayout threw exception");
+            throw;
+        }
 
         return _rootDock;
     }

@@ -24,6 +24,8 @@ This release establishes the centralized settings UI framework, enabling modules
 
 - **License Management UI** — Account settings page for license activation and tier management. Three-stage validation (format, checksum, server), secure key storage via `ISecureVault`, tier-colored badges, expiration warnings, and feature availability matrix.
 
+- **Update Channel Selector** — Updates settings page for switching between Stable and Insider channels. Assembly-driven version display, manual update checking (stub), and local settings persistence.
+
 - **Module Integration** — Modules implement `ISettingsPage` interface and register via `ISettingsPageRegistry` during initialization. Pages support hierarchical nesting via `ParentCategoryId`.
 
 #### Sub-Part Changelogs
@@ -33,6 +35,7 @@ This release establishes the centralized settings UI framework, enabling modules
 | [v0.1.6a](LCS-CL-016a.md) | Settings Dialog Framework | ✅ Complete |
 | [v0.1.6b](LCS-CL-016b.md) | Live Theme Preview        | ✅ Complete |
 | [v0.1.6c](LCS-CL-016c.md) | License Management UI     | ✅ Complete |
+| [v0.1.6d](LCS-CL-016d.md) | Update Channel Selector   | ✅ Complete |
 
 ---
 

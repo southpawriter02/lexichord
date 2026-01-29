@@ -64,8 +64,15 @@ public partial class MainWindowViewModel : ObservableObject
     {
         _logger.LogInformation("Initializing dock layout");
 
-        Layout = _dockFactory.CreateDefaultLayout();
+        _logger.LogDebug("Calling CreateDefaultLayout...");
+        var layout = _dockFactory.CreateDefaultLayout();
+        _logger.LogDebug("CreateDefaultLayout returned: {Layout}", layout?.Id ?? "null");
+        
+        _logger.LogDebug("Setting Layout property...");
+        Layout = layout;
+        _logger.LogDebug("Layout property set");
 
         _logger.LogDebug("Dock layout initialized with root: {RootId}", Layout?.Id);
+        _logger.LogInformation("InitializeLayout complete");
     }
 }
