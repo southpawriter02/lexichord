@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lexichord.Abstractions.Constants;
 using Lexichord.Modules.StatusBar.Services;
 using Microsoft.Extensions.Logging;
 
@@ -12,8 +13,7 @@ namespace Lexichord.Modules.StatusBar.ViewModels;
 /// LOGIC: This dialog allows users to enter an API key when the vault is empty.
 /// The key is securely stored in the vault and encrypted at rest.
 ///
-/// Implementation Note: This is a placeholder for v0.0.8a.
-/// Full vault integration comes in v0.0.8c.
+/// Security Note: The key value is never logged. Only success/failure is logged.
 /// </remarks>
 public partial class ApiKeyDialogViewModel : ObservableObject
 {
@@ -60,10 +60,21 @@ public partial class ApiKeyDialogViewModel : ObservableObject
             IsSaving = true;
             HasError = false;
 
-            await _vaultStatusService.StoreKeyAsync("default-api-key", ApiKey);
+            // Store using VaultKeys.TestApiKey constant
+            var success = await _vaultStatusService.StoreApiKeyAsync(
+                VaultKeys.TestApiKey,
+                ApiKey);
 
-            _logger.LogInformation("API key stored successfully");
-            CloseRequested?.Invoke(this, true);
+            if (success)
+            {
+                _logger.LogInformation("API key stored successfully");
+                CloseRequested?.Invoke(this, true);
+            }
+            else
+            {
+                ErrorMessage = "Failed to store key in vault";
+                HasError = true;
+            }
         }
         catch (Exception ex)
         {
@@ -83,3 +94,4 @@ public partial class ApiKeyDialogViewModel : ObservableObject
         CloseRequested?.Invoke(this, false);
     }
 }
+

@@ -280,6 +280,11 @@ public partial class StatusBarViewModel : ObservableObject
                     "Vault Error", "Secure vault encountered an error");
                 break;
 
+            case VaultStatus.Unavailable:
+                SetVaultStatus(ready: false, empty: false, error: true, unknown: false,
+                    "N/A", "Secure vault is not available on this platform");
+                break;
+
             default:
                 SetVaultStatus(ready: false, empty: false, error: false, unknown: true,
                     "Checking...", "Checking vault status...");

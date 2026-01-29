@@ -20,7 +20,7 @@ This release establishes the first feature module as a reference implementation 
 
 - **Database Health Monitoring** — SQLite-based health tracking with `HealthRepository` for uptime tracking and `HeartbeatService` for 60-second heartbeat recording. Includes staleness detection and `SystemHealthChangedEvent` for cross-module health updates.
 
-- **Vault Status Tracking** — Placeholder services for secure vault monitoring to be completed in v0.0.8c.
+- **Vault Status Tracking** — Secure vault integration with `VaultStatusService` that verifies API key presence, handles platform support detection, and provides "Ready", "No Key", "Error", or "N/A" status display. Includes `ApiKeyDialog` for user key entry.
 
 #### Why This Matters
 
