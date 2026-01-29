@@ -3,6 +3,7 @@
         xmlns:shell="using:Lexichord.Host.Views.Shell"
         xmlns:dock="using:Dock.Avalonia.Controls"
         xmlns:vm="using:Lexichord.Host.ViewModels"
+        xmlns:local="using:Lexichord.Host.Views"
         x:Class="Lexichord.Host.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Lexichord — The Orchestrator"
@@ -14,15 +15,14 @@
 
     <!--
     ═══════════════════════════════════════════════════════════════════════════
-    PODIUM LAYOUT
-    The main shell grid divides the window into three rows:
-    - Row 0: TopBar (title, menu, window controls)
-    - Row 1: Content Area (NavigationRail + ContentHost)
-    - Row 2: StatusBar (status messages, theme toggle, version)
+    PODIUM LAYOUT with PALETTE OVERLAY
+    The main shell uses a Panel to layer the palette overlay on top of content.
     ═══════════════════════════════════════════════════════════════════════════
     -->
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Panel>
+        <!-- Main content grid -->
+        <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- ═══════════════════════════════════════════════════════════════════
              ROW 0: TOP BAR
@@ -66,6 +66,11 @@
              ═══════════════════════════════════════════════════════════════════ -->
         <shell:StatusBar Grid.Row="2" x:Name="MainStatusBar" />
 
-    </Grid>
+        </Grid>
+
+        <!-- v0.1.5b: Command Palette Overlay -->
+        <local:CommandPaletteView x:Name="CommandPalette"
+                                   DataContext="{Binding CommandPaletteViewModel}"/>
+    </Panel>
 
 </Window>

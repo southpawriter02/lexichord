@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Commands;
 using Lexichord.Host.Views.Shell;
 
 namespace Lexichord.Host.Views;
@@ -19,6 +21,7 @@ public partial class MainWindow : Window
     private IShellRegionManager? _shellRegionManager;
     private IShutdownService? _shutdownService;
     private Abstractions.Contracts.Editor.IFileService? _fileService;
+    private ICommandPaletteService? _commandPaletteService;
     private bool _closeConfirmed;
 
     /// <summary>
@@ -30,6 +33,9 @@ public partial class MainWindow : Window
 
         // LOGIC: Subscribe to Closing event to save state
         Closing += OnWindowClosing;
+
+        // LOGIC (v0.1.5b): Subscribe to KeyDown for palette shortcut
+        KeyDown += OnMainWindowKeyDown;
     }
 
     /// <summary>
@@ -123,6 +129,18 @@ public partial class MainWindow : Window
     {
         get => _fileService;
         set => _fileService = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the command palette service.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.5b): Enables Ctrl+Shift+P shortcut for command palette.
+    /// </remarks>
+    public ICommandPaletteService? CommandPaletteService
+    {
+        get => _commandPaletteService;
+        set => _commandPaletteService = value;
     }
 
     /// <summary>
@@ -266,6 +284,38 @@ public partial class MainWindow : Window
             );
 
             await _windowStateService.SaveAsync(state);
+        }
+    }
+
+    /// <summary>
+    /// Handles keyboard input for global shortcuts.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.5b): Temporary handler for Ctrl+Shift+P until IKeyBindingService is implemented.
+    /// </remarks>
+    private async void OnMainWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        // LOGIC: Ctrl+Shift+P opens Command Palette
+        if (e.Key == Key.P &&
+            e.KeyModifiers.HasFlag(KeyModifiers.Control) &&
+            e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+        {
+            if (_commandPaletteService is not null)
+            {
+                await _commandPaletteService.ToggleAsync(PaletteMode.Commands);
+                e.Handled = true;
+            }
+        }
+
+        // LOGIC: Ctrl+P opens File Palette (v0.1.5c stub)
+        if (e.Key == Key.P &&
+            e.KeyModifiers == KeyModifiers.Control)
+        {
+            if (_commandPaletteService is not null)
+            {
+                await _commandPaletteService.ToggleAsync(PaletteMode.Files);
+                e.Handled = true;
+            }
         }
     }
 }

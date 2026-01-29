@@ -16,11 +16,14 @@ This release establishes the keyboard-centric command system that enables rapid 
 
 - **Command Registry** — Centralized system for registering, querying, and executing application commands. Commands use `module.action` naming convention with metadata for display titles, categories, icons, and keyboard shortcuts.
 
+- **Command Palette UI** — Keyboard-centric modal overlay for discovering and executing commands. Features fuzzy search via FuzzySharp, keyboard navigation (↑/↓, Page Up/Down, Home/End), and mode switching between Commands and Files. Shortcuts: Ctrl+Shift+P (commands), Ctrl+P (files).
+
 #### Sub-Part Changelogs
 
-| Version                   | Title            | Status      |
-| ------------------------- | ---------------- | ----------- |
-| [v0.1.5a](LCS-CL-015a.md) | Command Registry | ✅ Complete |
+| Version                   | Title              | Status      |
+| ------------------------- | ------------------ | ----------- |
+| [v0.1.5a](LCS-CL-015a.md) | Command Registry   | ✅ Complete |
+| [v0.1.5b](LCS-CL-015b.md) | Command Palette UI | ✅ Complete |
 
 ---
 
@@ -415,9 +418,10 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.1.5 Sub-Parts
 
-| Document                        | Sub-Part | Title            |
-| :------------------------------ | :------- | :--------------- |
-| [LCS-CL-015a](./LCS-CL-015a.md) | v0.1.5a  | Command Registry |
+| Document                        | Sub-Part | Title              |
+| :------------------------------ | :------- | :----------------- |
+| [LCS-CL-015a](./LCS-CL-015a.md) | v0.1.5a  | Command Registry   |
+| [LCS-CL-015b](./LCS-CL-015b.md) | v0.1.5b  | Command Palette UI |
 
 ### v0.1.2 Sub-Parts
 

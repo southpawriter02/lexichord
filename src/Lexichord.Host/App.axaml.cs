@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Commands;
 using Lexichord.Host.Extensions;
 using Lexichord.Host.Services;
 using Lexichord.Host.Views;
@@ -243,6 +244,9 @@ public partial class App : Application
         // the Editor module is not loaded
         var fileService = _serviceProvider!.GetService<Lexichord.Abstractions.Contracts.Editor.IFileService>();
 
+        // LOGIC (v0.1.5b): Resolve command palette service for keyboard shortcuts
+        var commandPaletteService = _serviceProvider!.GetRequiredService<ICommandPaletteService>();
+
         return new MainWindow
         {
             ThemeManager = themeManager,
@@ -250,7 +254,8 @@ public partial class App : Application
             ShellRegionManager = shellRegionManager,
             ViewModel = viewModel,
             ShutdownService = shutdownService,
-            FileService = fileService
+            FileService = fileService,
+            CommandPaletteService = commandPaletteService
         };
     }
 

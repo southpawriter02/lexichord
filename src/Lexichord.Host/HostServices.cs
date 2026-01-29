@@ -3,9 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Commands;
 using Lexichord.Host.Infrastructure;
 using Lexichord.Host.Services;
 using Lexichord.Host.ViewModels;
+using Lexichord.Host.ViewModels.CommandPalette;
 using System;
 using System.Collections.Generic;
 
@@ -155,6 +157,10 @@ public static class HostServices
 
         // LOGIC (v0.1.5a): Register command registry for centralized command management
         services.AddSingleton<ICommandRegistry, CommandRegistry>();
+
+        // LOGIC (v0.1.5b): Register command palette for command discovery UI
+        services.AddSingleton<CommandPaletteViewModel>();
+        services.AddSingleton<ICommandPaletteService, CommandPaletteService>();
 
         return services;
     }

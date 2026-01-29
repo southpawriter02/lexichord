@@ -1,0 +1,183 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lexichord.Host.ViewModels.CommandPalette"
+             x:Class="Lexichord.Host.Views.CommandPaletteView"
+             x:DataType="vm:CommandPaletteViewModel"
+             IsVisible="{Binding IsVisible}">
+
+    <UserControl.Styles>
+        <!-- Overlay background style -->
+        <Style Selector="Border.overlay">
+            <Setter Property="Background" Value="#80000000"/>
+        </Style>
+
+        <!-- Modal panel style -->
+        <Style Selector="Border.modal">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BoxShadow" Value="0 8 32 #40000000"/>
+            <Setter Property="Width" Value="600"/>
+            <Setter Property="MaxHeight" Value="400"/>
+        </Style>
+
+        <!-- Search input style -->
+        <Style Selector="TextBox.search">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="12"/>
+        </Style>
+
+        <!-- Result item styles -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="8,6"/>
+        </Style>
+
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <!-- LOGIC: Full-window overlay that captures clicks outside modal -->
+    <Border Classes="overlay"
+            PointerPressed="OnOverlayPointerPressed">
+        <Grid HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              Margin="0,100,0,0">
+
+            <!-- LOGIC: Modal panel doesn't propagate click to overlay -->
+            <Border Classes="modal"
+                    PointerPressed="OnModalPointerPressed">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Search Input Row -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+
+                        <!-- Mode indicator -->
+                        <TextBlock Grid.Column="0"
+                                   Text=">"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="12,12,0,12"
+                                   Foreground="{DynamicResource SystemAccentColor}"
+                                   IsVisible="{Binding CurrentMode, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+
+                        <!-- Search TextBox -->
+                        <TextBox Grid.Column="1"
+                                 x:Name="SearchInput"
+                                 Classes="search"
+                                 Text="{Binding SearchQuery, Mode=TwoWay}"
+                                 Watermark="{Binding Placeholder}"
+                                 KeyDown="OnSearchInputKeyDown"/>
+
+                        <!-- Escape hint -->
+                        <Border Grid.Column="2"
+                                Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                                CornerRadius="4"
+                                Padding="6,2"
+                                Margin="0,0,12,0"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="Esc"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Separator -->
+                    <Rectangle Grid.Row="0"
+                               VerticalAlignment="Bottom"
+                               Height="1"
+                               Fill="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+
+                    <!-- Results List -->
+                    <ListBox Grid.Row="1"
+                             x:Name="ResultsList"
+                             ItemsSource="{Binding FilteredItems}"
+                             SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             DoubleTapped="OnResultDoubleTapped">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <!-- LOGIC: Template selector based on item type -->
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.DataTemplates>
+
+                                        <!-- Command Result Template -->
+                                        <DataTemplate DataType="vm:CommandSearchResult">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <!-- Icon: Command icon (terminal/console style) -->
+                                                <PathIcon Grid.Column="0"
+                                                          Data="M8,5.14V19.14L19,12.14L8,5.14Z"
+                                                          Width="20"
+                                                          Height="20"
+                                                          Margin="0,0,12,0"
+                                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"/>
+
+                                                <!-- Title and Category -->
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding Title}"
+                                                               FontSize="14"/>
+                                                    <TextBlock Text="{Binding Category}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                                                </StackPanel>
+
+                                                <!-- Shortcut Badge -->
+                                                <Border Grid.Column="2"
+                                                        IsVisible="{Binding ShortcutDisplay, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                                                        CornerRadius="4"
+                                                        Padding="6,2"
+                                                        VerticalAlignment="Center"
+                                                        Margin="8,0,0,0">
+                                                    <TextBlock Text="{Binding ShortcutDisplay}"
+                                                               FontSize="11"
+                                                               FontFamily="Cascadia Code, Consolas, monospace"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"/>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+
+                                        <!-- File Result Template -->
+                                        <DataTemplate DataType="vm:FileSearchResult">
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <!-- Icon: File icon -->
+                                                <PathIcon Grid.Column="0"
+                                                          Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+                                                          Width="20"
+                                                          Height="20"
+                                                          Margin="0,0,12,0"
+                                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"/>
+
+                                                <!-- Filename and Path -->
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding FileName}"
+                                                               FontSize="14"/>
+                                                    <TextBlock Text="{Binding RelativePath}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+
+                                    </ContentControl.DataTemplates>
+                                </ContentControl>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- Empty state -->
+                    <TextBlock Grid.Row="1"
+                               Text="No results found"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               IsVisible="{Binding !FilteredItems.Count}"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

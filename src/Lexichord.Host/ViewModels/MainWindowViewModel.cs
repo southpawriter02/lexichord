@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Dock.Model.Controls;
 using Lexichord.Abstractions.Layout;
+using Lexichord.Host.ViewModels.CommandPalette;
 using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Host.ViewModels;
@@ -29,15 +30,26 @@ public partial class MainWindowViewModel : ObservableObject
     private IRootDock? _layout;
 
     /// <summary>
+    /// Gets the Command Palette ViewModel.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.5b): Exposed for binding in MainWindow.axaml.
+    /// </remarks>
+    public CommandPaletteViewModel CommandPaletteViewModel { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MainWindowViewModel"/> class.
     /// </summary>
     /// <param name="dockFactory">Factory for creating dock layouts.</param>
+    /// <param name="commandPaletteViewModel">ViewModel for the command palette.</param>
     /// <param name="logger">Logger for recording operations.</param>
     public MainWindowViewModel(
         IDockFactory dockFactory,
+        CommandPaletteViewModel commandPaletteViewModel,
         ILogger<MainWindowViewModel> logger)
     {
         _dockFactory = dockFactory;
+        CommandPaletteViewModel = commandPaletteViewModel;
         _logger = logger;
     }
 
