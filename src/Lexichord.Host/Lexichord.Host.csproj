@@ -49,6 +49,9 @@
 
     <!-- v0.0.7a: MediatR Event Bus -->
     <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
+
+    <!-- v0.0.7d: FluentValidation Pipeline Integration -->
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="$(FluentValidationVersion)" />
   </ItemGroup>
 
   <ItemGroup>

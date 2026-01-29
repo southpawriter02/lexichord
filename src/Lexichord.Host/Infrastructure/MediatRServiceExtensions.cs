@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using FluentValidation;
 using Lexichord.Host.Infrastructure.Behaviors;
 using Lexichord.Host.Infrastructure.Options;
 
@@ -65,8 +66,14 @@ public static class MediatRServiceExtensions
             // LoggingBehavior is FIRST (outermost) to capture total duration
             configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-            // v0.0.7d: configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            // v0.0.7d: ValidationBehavior is SECOND (after logging, before handler)
+            // This ensures validation errors are logged and we don't execute handlers with invalid data
+            configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
+
+        // v0.0.7d: Register FluentValidation validators from all scanned assemblies
+        // Validators are registered as Scoped by default, matching the MediatR handler lifetime
+        services.AddValidatorsFromAssemblies(assembliesToScan);
 
         return services;
     }

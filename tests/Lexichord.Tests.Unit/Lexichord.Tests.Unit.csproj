@@ -43,6 +43,9 @@
 
     <!-- v0.0.7a: MediatR for handler testing -->
     <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
+
+    <!-- v0.0.7d: FluentValidation for validator testing -->
+    <PackageReference Include="FluentValidation" Version="$(FluentValidationVersion)" />
   </ItemGroup>
 
   <ItemGroup>

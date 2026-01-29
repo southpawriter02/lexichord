@@ -19,4 +19,9 @@
   <PropertyGroup>
     <MediatRVersion>12.4.0</MediatRVersion>
   </PropertyGroup>
+
+  <!-- v0.0.7d: FluentValidation Version (centralized) -->
+  <PropertyGroup>
+    <FluentValidationVersion>11.9.2</FluentValidationVersion>
+  </PropertyGroup>
 </Project>

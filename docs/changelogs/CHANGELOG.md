@@ -20,6 +20,8 @@ This release establishes MediatR-based in-process messaging that enables loose c
 
 - **Logging Pipeline Behavior** — Automatic request/response logging with timing, slow request warnings, sensitive data redaction (`[SensitiveData]`, `[NoLog]`), and configurable thresholds.
 
+- **Validation Pipeline Behavior** — FluentValidation integration with automatic request validation, structured error aggregation (`ValidationException`, `ValidationError`), and validator auto-discovery.
+
 #### Why This Matters
 
 This work enables:
@@ -27,6 +29,7 @@ This work enables:
 1. **Loose Coupling** — Modules communicate via messages, not direct dependencies.
 2. **CQRS Pattern** — Clear separation between commands (writes) and queries (reads).
 3. **Extensibility** — Pipeline behaviors enable cross-cutting concerns (logging, validation).
+4. **Input Validation** — Commands are validated before handlers execute, with structured error responses.
 
 ---
 
@@ -206,11 +209,12 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.7 Sub-Parts
 
-| Document                        | Sub-Part | Title                     |
-| :------------------------------ | :------- | :------------------------ |
-| [LCS-CL-007a](./LCS-CL-007a.md) | v0.0.7a  | MediatR Bootstrap         |
-| [LCS-CL-007b](./LCS-CL-007b.md) | v0.0.7b  | Shared Domain Events      |
-| [LCS-CL-007c](./LCS-CL-007c.md) | v0.0.7c  | Logging Pipeline Behavior |
+| Document                        | Sub-Part | Title                        |
+| :------------------------------ | :------- | :--------------------------- |
+| [LCS-CL-007a](./LCS-CL-007a.md) | v0.0.7a  | MediatR Bootstrap            |
+| [LCS-CL-007b](./LCS-CL-007b.md) | v0.0.7b  | Shared Domain Events         |
+| [LCS-CL-007c](./LCS-CL-007c.md) | v0.0.7c  | Logging Pipeline Behavior    |
+| [LCS-CL-007d](./LCS-CL-007d.md) | v0.0.7d  | Validation Pipeline Behavior |
 
 ### v0.0.6 Sub-Parts
 
