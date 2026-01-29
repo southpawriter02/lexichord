@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.2.2] - 2026-01 (In Progress)
+
+### The Lexicon (Terminology Database)
+
+This release introduces **The Lexicon**, a persistent database for managing style terminology with full CRUD operations.
+
+#### What's New
+
+- **Style Terms Schema** — Database table for storing terminology entries within style sheets. Supports term-replacement pairs, categorization, severity levels, and soft-disable via `IsActive` flag. Includes fuzzy search via PostgreSQL's `pg_trgm` extension.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                  | Status      |
+| -------------------------------- | ---------------------- | ----------- |
+| [v0.2.2a](v0.2.x/LCS-CL-022a.md) | Style Schema Migration | ✅ Complete |
+
+---
+
 ## [v0.2.1] - 2026-01 (In Progress)
 
 ### The Rulebook (Style Module)
