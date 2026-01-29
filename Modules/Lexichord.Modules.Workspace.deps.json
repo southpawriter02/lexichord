@@ -6,14 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v9.0": {
-      "Lexichord.Modules.Sandbox/1.0.0": {
+      "Lexichord.Modules.Workspace/0.1.2": {
         "dependencies": {
           "Lexichord.Abstractions": "1.0.0",
+          "MediatR": "12.4.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.0"
         },
         "runtime": {
-          "Lexichord.Modules.Sandbox.dll": {}
+          "Lexichord.Modules.Workspace.dll": {}
         }
       },
       "CommunityToolkit.Mvvm/8.4.0": {
@@ -56,6 +57,18 @@
           "lib/net8.0/FluentValidation.dll": {
             "assemblyVersion": "11.0.0.0",
             "fileVersion": "11.9.2.0"
+          }
+        }
+      },
+      "MediatR/12.4.0": {
+        "dependencies": {
+          "MediatR.Contracts": "2.0.1",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/MediatR.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.4.0.0"
           }
         }
       },
@@ -117,7 +130,7 @@
     }
   },
   "libraries": {
-    "Lexichord.Modules.Sandbox/1.0.0": {
+    "Lexichord.Modules.Workspace/0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -156,6 +169,13 @@
       "sha512": "sha512-XeHp9LvFvu1fsQ/NvDCymV02GOCB1nz7ZUhfpI3uMhCcHTkV1K5bMkv+Nc/kuNYyAsX5+5bcmUanIEMd5QN+Eg==",
       "path": "fluentvalidation/11.9.2",
       "hashPath": "fluentvalidation.11.9.2.nupkg.sha512"
+    },
+    "MediatR/12.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-s8xhhvsTQqt7jI1XeVqcniiph/QoRmJb1qxVgk7UFpAgOzpzZ0VTl8zV+lFJgxISVqZuJRjmxF+P3AuHyelCrg==",
+      "path": "mediatr/12.4.0",
+      "hashPath": "mediatr.12.4.0.nupkg.sha512"
     },
     "MediatR.Contracts/2.0.1": {
       "type": "package",

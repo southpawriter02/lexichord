@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Module metadata -->
+    <AssemblyTitle>Lexichord Workspace Module</AssemblyTitle>
+    <Description>Project explorer and workspace management for Lexichord</Description>
+    <Version>0.1.2</Version>
+
+    <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
+    <OutputPath>$(SolutionDir)Modules\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- DI Abstractions only (not the full container) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <!-- MediatR for IMediator - using centralized version -->
+    <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The ONLY project reference allowed for modules -->
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
