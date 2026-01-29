@@ -1,118 +1,8 @@
+using System.Text.RegularExpressions;
+
 namespace Lexichord.Abstractions.Contracts;
 
-/// <summary>
-/// Represents a collection of style rules loaded from a YAML configuration.
-/// </summary>
-/// <remarks>
-/// LOGIC: StyleSheet is the "compiled" form of a YAML style definition file.
-/// Rules are organized by category and can have multiple severity levels.
-/// The Empty static property provides a valid, no-op sheet for initialization.
-///
-/// Full implementation in v0.2.1b expands this with:
-/// - IReadOnlyList&lt;StyleRule&gt; Rules
-/// - Version information
-/// - Metadata (author, description, extends)
-/// </remarks>
-public sealed record StyleSheet
-{
-    /// <summary>
-    /// Gets an empty style sheet with no rules.
-    /// </summary>
-    /// <remarks>
-    /// LOGIC: Used for initialization before the real sheet is loaded.
-    /// Analyzing with Empty returns no violations.
-    /// </remarks>
-    public static StyleSheet Empty { get; } = new();
-
-    /// <summary>
-    /// Gets the rules in this style sheet.
-    /// </summary>
-    /// <remarks>
-    /// LOGIC: Stub property returning empty list.
-    /// Full implementation in v0.2.1b provides actual rules.
-    /// </remarks>
-    public IReadOnlyList<StyleRule> Rules { get; init; } = [];
-
-    /// <summary>
-    /// Gets the name of this style sheet.
-    /// </summary>
-    public string Name { get; init; } = "Default";
-
-    /// <summary>
-    /// Gets the version of this style sheet.
-    /// </summary>
-    public string Version { get; init; } = "1.0.0";
-}
-
-/// <summary>
-/// Represents a single style rule that checks for a specific pattern.
-/// </summary>
-/// <remarks>
-/// LOGIC: Rules are the atomic unit of style checking.
-/// Each rule has an ID, pattern, category, and severity.
-/// Full implementation in v0.2.1b expands this with pattern matching logic.
-/// </remarks>
-/// <param name="Id">Unique rule identifier (e.g., "passive-voice").</param>
-/// <param name="Name">Display name for the rule.</param>
-/// <param name="Category">Category grouping (vocabulary, grammar, punctuation, etc.).</param>
-/// <param name="Severity">Default severity when this rule is violated.</param>
-public sealed record StyleRule(
-    string Id,
-    string Name,
-    RuleCategory Category,
-    ViolationSeverity Severity)
-{
-    /// <summary>
-    /// Gets the description of what this rule checks for.
-    /// </summary>
-    public string Description { get; init; } = string.Empty;
-
-    /// <summary>
-    /// Gets the pattern type used for matching.
-    /// </summary>
-    public PatternType PatternType { get; init; } = PatternType.Literal;
-
-    /// <summary>
-    /// Gets the pattern string (regex, literal, or word list reference).
-    /// </summary>
-    public string Pattern { get; init; } = string.Empty;
-
-    /// <summary>
-    /// Gets the suggestion text shown when this rule is violated.
-    /// </summary>
-    public string? Suggestion { get; init; }
-}
-
-/// <summary>
-/// Represents a style rule violation found during analysis.
-/// </summary>
-/// <remarks>
-/// LOGIC: Violations are produced by StyleEngine.AnalyzeAsync().
-/// They contain location information for highlighting in the editor.
-/// Full implementation in v0.2.1b expands with span information.
-/// </remarks>
-/// <param name="RuleId">The ID of the violated rule.</param>
-/// <param name="Message">Human-readable violation message.</param>
-/// <param name="Severity">Severity level of this violation.</param>
-/// <param name="StartOffset">Character offset where the violation starts.</param>
-/// <param name="Length">Length of the violating text.</param>
-public sealed record StyleViolation(
-    string RuleId,
-    string Message,
-    ViolationSeverity Severity,
-    int StartOffset,
-    int Length)
-{
-    /// <summary>
-    /// Gets the suggested replacement text, if available.
-    /// </summary>
-    public string? Suggestion { get; init; }
-
-    /// <summary>
-    /// Gets the original text that triggered the violation.
-    /// </summary>
-    public string? MatchedText { get; init; }
-}
+#region Enums
 
 /// <summary>
 /// Categories for organizing style rules.
@@ -123,23 +13,14 @@ public sealed record StyleViolation(
 /// </remarks>
 public enum RuleCategory
 {
-    /// <summary>Word choice and vocabulary rules.</summary>
-    Vocabulary,
+    /// <summary>Word choice and terminology rules (e.g., jargon, preferred terms).</summary>
+    Terminology = 0,
 
-    /// <summary>Grammar and sentence structure rules.</summary>
-    Grammar,
+    /// <summary>Formatting and whitespace rules (e.g., line length, spacing).</summary>
+    Formatting = 1,
 
-    /// <summary>Punctuation and formatting rules.</summary>
-    Punctuation,
-
-    /// <summary>Consistency rules (e.g., capitalization, spelling variants).</summary>
-    Consistency,
-
-    /// <summary>Document structure rules (e.g., heading levels).</summary>
-    Structure,
-
-    /// <summary>Custom user-defined rules.</summary>
-    Custom
+    /// <summary>Syntax and grammar rules (e.g., passive voice, sentence structure).</summary>
+    Syntax = 2
 }
 
 /// <summary>
@@ -147,24 +28,25 @@ public enum RuleCategory
 /// </summary>
 /// <remarks>
 /// LOGIC: Severity controls visual feedback in the editor.
+/// Ordered by importance (Error is most severe).
 /// - Error: Red underline, blocks "clean" status
 /// - Warning: Yellow underline, advisory
-/// - Suggestion: Blue underline, optional improvement
-/// - Hint: Subtle indicator, informational only
+/// - Info: Blue underline, informational
+/// - Hint: Subtle indicator, optional improvement
 /// </remarks>
 public enum ViolationSeverity
 {
-    /// <summary>Informational hint, minimal visual indicator.</summary>
-    Hint = 0,
-
-    /// <summary>Optional suggestion for improvement.</summary>
-    Suggestion = 1,
+    /// <summary>Critical error, must be fixed.</summary>
+    Error = 0,
 
     /// <summary>Advisory warning, should be addressed.</summary>
-    Warning = 2,
+    Warning = 1,
 
-    /// <summary>Critical error, must be fixed.</summary>
-    Error = 3
+    /// <summary>Informational message.</summary>
+    Info = 2,
+
+    /// <summary>Optional hint for improvement.</summary>
+    Hint = 3
 }
 
 /// <summary>
@@ -172,22 +54,575 @@ public enum ViolationSeverity
 /// </summary>
 /// <remarks>
 /// LOGIC: Different pattern types enable flexible rule definitions.
-/// Full implementation in v0.2.1b uses these for pattern compilation.
+/// Each type has different matching semantics and performance characteristics.
 /// </remarks>
 public enum PatternType
 {
-    /// <summary>Exact literal string match (case-insensitive).</summary>
-    Literal,
+    /// <summary>Regular expression pattern (most powerful, lazy compiled).</summary>
+    Regex = 0,
 
-    /// <summary>Regular expression pattern.</summary>
-    Regex,
+    /// <summary>Exact literal string match (case-sensitive).</summary>
+    Literal = 1,
 
-    /// <summary>Reference to a word list file.</summary>
-    WordList,
+    /// <summary>Literal string match ignoring case.</summary>
+    LiteralIgnoreCase = 2,
 
-    /// <summary>Custom analyzer implementation.</summary>
-    Custom
+    /// <summary>Match text that starts with the pattern.</summary>
+    StartsWith = 3,
+
+    /// <summary>Match text that ends with the pattern.</summary>
+    EndsWith = 4,
+
+    /// <summary>Match text that contains the pattern.</summary>
+    Contains = 5
 }
+
+#endregion
+
+#region StyleRule
+
+/// <summary>
+/// Represents a single style rule that checks for a specific pattern.
+/// </summary>
+/// <remarks>
+/// LOGIC: Rules are the atomic unit of style checking.
+/// Each rule has an ID, pattern, category, and severity.
+///
+/// Design Decisions:
+/// - Immutable record for thread-safety
+/// - Lazy regex compilation with 100ms timeout for safety
+/// - Pattern caching via Lazy&lt;Regex&gt; field
+///
+/// YAML Representation:
+/// <code>
+/// - id: no-jargon
+///   name: Avoid Jargon
+///   description: Technical jargon reduces accessibility
+///   category: terminology
+///   severity: warning
+///   pattern: \b(leverage|synergy|paradigm)\b
+///   pattern_type: regex
+///   suggestion: Use plain language
+/// </code>
+/// </remarks>
+/// <param name="Id">Unique rule identifier (e.g., "no-jargon").</param>
+/// <param name="Name">Display name for the rule.</param>
+/// <param name="Description">Detailed explanation of what this rule checks.</param>
+/// <param name="Category">Category grouping for organization.</param>
+/// <param name="DefaultSeverity">Default severity when this rule is violated.</param>
+/// <param name="Pattern">The pattern to match (regex, literal, etc.).</param>
+/// <param name="PatternType">How to interpret the pattern.</param>
+/// <param name="Suggestion">Optional fix suggestion shown to user.</param>
+/// <param name="IsEnabled">Whether this rule is active.</param>
+public sealed record StyleRule(
+    string Id,
+    string Name,
+    string Description,
+    RuleCategory Category,
+    ViolationSeverity DefaultSeverity,
+    string Pattern,
+    PatternType PatternType,
+    string? Suggestion,
+    bool IsEnabled = true)
+{
+    /// <summary>
+    /// Timeout for regex pattern matching to prevent ReDoS attacks.
+    /// </summary>
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
+
+    /// <summary>
+    /// Lazily compiled regex for performance.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Regex compilation is expensive. We defer it until first use
+    /// and cache the result. The Lazy ensures thread-safe initialization.
+    /// </remarks>
+    private Lazy<Regex?>? _compiledPattern;
+
+    /// <summary>
+    /// Gets the compiled regex pattern, or null if not a regex pattern type.
+    /// </summary>
+    private Regex? CompiledPattern
+    {
+        get
+        {
+            if (_compiledPattern is null)
+            {
+                _compiledPattern = new Lazy<Regex?>(() =>
+                {
+                    if (PatternType == PatternType.Regex)
+                    {
+                        try
+                        {
+                            return new Regex(
+                                Pattern,
+                                RegexOptions.Compiled | RegexOptions.Multiline,
+                                RegexTimeout);
+                        }
+                        catch (ArgumentException)
+                        {
+                            // Invalid regex pattern - return null
+                            return null;
+                        }
+                    }
+                    return null;
+                });
+            }
+            return _compiledPattern.Value;
+        }
+    }
+
+    /// <summary>
+    /// Finds all violations of this rule in the given content.
+    /// </summary>
+    /// <param name="content">The text content to analyze.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of violations found.</returns>
+    /// <remarks>
+    /// LOGIC: This is the core pattern matching logic.
+    /// 1. If disabled, return empty immediately
+    /// 2. Based on PatternType, use appropriate matching strategy
+    /// 3. For each match, compute line/column positions
+    /// 4. Return violations sorted by position
+    /// </remarks>
+    public Task<IReadOnlyList<StyleViolation>> FindViolationsAsync(
+        string content,
+        CancellationToken cancellationToken = default)
+    {
+        if (!IsEnabled || string.IsNullOrEmpty(content) || string.IsNullOrEmpty(Pattern))
+        {
+            return Task.FromResult<IReadOnlyList<StyleViolation>>([]);
+        }
+
+        var violations = new List<StyleViolation>();
+        var matches = FindMatches(content);
+
+        foreach (var (startOffset, length) in matches)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                break;
+
+            var endOffset = startOffset + length;
+            var matchedText = content.Substring(startOffset, length);
+
+            // Compute line and column positions
+            var (startLine, startColumn) = ComputePosition(content, startOffset);
+            var (endLine, endColumn) = ComputePosition(content, endOffset);
+
+            var violation = new StyleViolation(
+                Rule: this,
+                Message: $"{Name}: {Description}",
+                StartOffset: startOffset,
+                EndOffset: endOffset,
+                StartLine: startLine,
+                StartColumn: startColumn,
+                EndLine: endLine,
+                EndColumn: endColumn,
+                MatchedText: matchedText,
+                Suggestion: Suggestion,
+                Severity: DefaultSeverity);
+
+            violations.Add(violation);
+        }
+
+        return Task.FromResult<IReadOnlyList<StyleViolation>>(violations);
+    }
+
+    /// <summary>
+    /// Finds all pattern matches in the content.
+    /// </summary>
+    /// <returns>Enumerable of (startOffset, length) tuples.</returns>
+    private IEnumerable<(int StartOffset, int Length)> FindMatches(string content)
+    {
+        return PatternType switch
+        {
+            PatternType.Regex => FindRegexMatches(content),
+            PatternType.Literal => FindLiteralMatches(content, StringComparison.Ordinal),
+            PatternType.LiteralIgnoreCase => FindLiteralMatches(content, StringComparison.OrdinalIgnoreCase),
+            PatternType.StartsWith => FindStartsWithMatches(content),
+            PatternType.EndsWith => FindEndsWithMatches(content),
+            PatternType.Contains => FindLiteralMatches(content, StringComparison.Ordinal),
+            _ => []
+        };
+    }
+
+    private IEnumerable<(int, int)> FindRegexMatches(string content)
+    {
+        var regex = CompiledPattern;
+        if (regex is null) yield break;
+
+        MatchCollection? matches = null;
+        try
+        {
+            matches = regex.Matches(content);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            // Pattern timed out - return no matches for safety
+            yield break;
+        }
+
+        foreach (Match match in matches)
+        {
+            yield return (match.Index, match.Length);
+        }
+    }
+
+    private IEnumerable<(int, int)> FindLiteralMatches(string content, StringComparison comparison)
+    {
+        var index = 0;
+        while ((index = content.IndexOf(Pattern, index, comparison)) >= 0)
+        {
+            yield return (index, Pattern.Length);
+            index += Pattern.Length;
+        }
+    }
+
+    private IEnumerable<(int, int)> FindStartsWithMatches(string content)
+    {
+        // Match at start of each line
+        var lines = content.Split('\n');
+        var offset = 0;
+        foreach (var line in lines)
+        {
+            if (line.StartsWith(Pattern, StringComparison.OrdinalIgnoreCase))
+            {
+                yield return (offset, Pattern.Length);
+            }
+            offset += line.Length + 1; // +1 for newline
+        }
+    }
+
+    private IEnumerable<(int, int)> FindEndsWithMatches(string content)
+    {
+        // Match at end of each line
+        var lines = content.Split('\n');
+        var offset = 0;
+        foreach (var line in lines)
+        {
+            var trimmedLine = line.TrimEnd('\r');
+            if (trimmedLine.EndsWith(Pattern, StringComparison.OrdinalIgnoreCase))
+            {
+                var matchStart = offset + trimmedLine.Length - Pattern.Length;
+                yield return (matchStart, Pattern.Length);
+            }
+            offset += line.Length + 1;
+        }
+    }
+
+    /// <summary>
+    /// Computes line and column from character offset.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Lines and columns are 1-indexed for editor compatibility.
+    /// We scan through the content counting newlines.
+    /// </remarks>
+    private static (int Line, int Column) ComputePosition(string content, int offset)
+    {
+        var line = 1;
+        var column = 1;
+
+        for (var i = 0; i < offset && i < content.Length; i++)
+        {
+            if (content[i] == '\n')
+            {
+                line++;
+                column = 1;
+            }
+            else
+            {
+                column++;
+            }
+        }
+
+        return (line, column);
+    }
+
+    /// <summary>
+    /// Creates a disabled copy of this rule.
+    /// </summary>
+    public StyleRule Disable() => this with { IsEnabled = false };
+
+    /// <summary>
+    /// Creates an enabled copy of this rule.
+    /// </summary>
+    public StyleRule Enable() => this with { IsEnabled = true };
+
+    /// <summary>
+    /// Creates a copy with different severity.
+    /// </summary>
+    public StyleRule WithSeverity(ViolationSeverity severity) =>
+        this with { DefaultSeverity = severity };
+
+    /// <summary>
+    /// Creates a copy with different pattern.
+    /// </summary>
+    public StyleRule WithPattern(string pattern, PatternType patternType) =>
+        this with { Pattern = pattern, PatternType = patternType };
+}
+
+#endregion
+
+#region StyleViolation
+
+/// <summary>
+/// Represents a style rule violation found during analysis.
+/// </summary>
+/// <remarks>
+/// LOGIC: Violations are produced by StyleRule.FindViolationsAsync().
+/// They contain complete location information for highlighting in the editor.
+///
+/// Design Decisions:
+/// - Immutable record for thread-safety
+/// - Contains reference to original Rule for context
+/// - Both offset-based and line/column positions for flexibility
+/// </remarks>
+/// <param name="Rule">The rule that was violated.</param>
+/// <param name="Message">Human-readable violation message.</param>
+/// <param name="StartOffset">Character offset where the violation starts (0-indexed).</param>
+/// <param name="EndOffset">Character offset where the violation ends (exclusive).</param>
+/// <param name="StartLine">Starting line number (1-indexed).</param>
+/// <param name="StartColumn">Starting column number (1-indexed).</param>
+/// <param name="EndLine">Ending line number.</param>
+/// <param name="EndColumn">Ending column number.</param>
+/// <param name="MatchedText">The text that triggered the violation.</param>
+/// <param name="Suggestion">Optional suggested replacement.</param>
+/// <param name="Severity">Severity of this specific violation.</param>
+public sealed record StyleViolation(
+    StyleRule Rule,
+    string Message,
+    int StartOffset,
+    int EndOffset,
+    int StartLine,
+    int StartColumn,
+    int EndLine,
+    int EndColumn,
+    string MatchedText,
+    string? Suggestion,
+    ViolationSeverity Severity)
+{
+    /// <summary>
+    /// Gets the length of the violating text.
+    /// </summary>
+    public int Length => EndOffset - StartOffset;
+
+    /// <summary>
+    /// Gets the surrounding context with the match highlighted.
+    /// </summary>
+    /// <param name="content">The full document content.</param>
+    /// <param name="contextChars">Number of characters before/after to include.</param>
+    /// <returns>String with match highlighted in square brackets.</returns>
+    /// <remarks>
+    /// LOGIC: Provides context for displaying violations.
+    /// Format: "...prefix[matched]suffix..."
+    /// </remarks>
+    public string GetSurroundingContext(string content, int contextChars = 20)
+    {
+        if (string.IsNullOrEmpty(content) || StartOffset < 0 || EndOffset > content.Length)
+        {
+            return $"[{MatchedText}]";
+        }
+
+        var prefixStart = Math.Max(0, StartOffset - contextChars);
+        var suffixEnd = Math.Min(content.Length, EndOffset + contextChars);
+
+        var prefix = content[prefixStart..StartOffset];
+        var suffix = content[EndOffset..suffixEnd];
+
+        var hasLeadingEllipsis = prefixStart > 0;
+        var hasTrailingEllipsis = suffixEnd < content.Length;
+
+        return $"{(hasLeadingEllipsis ? "..." : "")}{prefix}[{MatchedText}]{suffix}{(hasTrailingEllipsis ? "..." : "")}";
+    }
+
+    /// <summary>
+    /// Creates a copy with different severity.
+    /// </summary>
+    public StyleViolation WithSeverity(ViolationSeverity severity) =>
+        this with { Severity = severity };
+
+    /// <summary>
+    /// Creates a copy with different message.
+    /// </summary>
+    public StyleViolation WithMessage(string message) =>
+        this with { Message = message };
+}
+
+#endregion
+
+#region StyleSheet
+
+/// <summary>
+/// Represents a collection of style rules forming a complete style guide.
+/// </summary>
+/// <remarks>
+/// LOGIC: A StyleSheet is the aggregate root for style governance.
+/// It contains:
+/// - Metadata about the style guide (name, version, author)
+/// - Collection of StyleRules
+/// - Inheritance information (extends another sheet)
+///
+/// Design Decisions:
+/// - Immutable to allow safe sharing across threads
+/// - Rules are exposed as IReadOnlyList to prevent modification
+/// - Helper methods for common filtering operations
+/// - Static Empty instance for default/null object pattern
+///
+/// YAML Representation:
+/// <code>
+/// name: Corporate Style Guide
+/// version: "2.0"
+/// author: Documentation Team
+/// extends: default
+/// rules:
+///   - id: no-jargon
+///     name: Avoid Jargon
+///     ...
+/// </code>
+/// </remarks>
+/// <param name="Name">Display name for the style sheet.</param>
+/// <param name="Rules">Collection of style rules.</param>
+/// <param name="Description">Optional description of the style guide.</param>
+/// <param name="Version">Optional semantic version.</param>
+/// <param name="Author">Optional author or team name.</param>
+/// <param name="Extends">Optional base style sheet to extend.</param>
+public sealed record StyleSheet(
+    string Name,
+    IReadOnlyList<StyleRule> Rules,
+    string? Description = null,
+    string? Version = null,
+    string? Author = null,
+    string? Extends = null)
+{
+    /// <summary>
+    /// Empty style sheet for use as default/null object.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Using a static empty instance avoids null checks
+    /// throughout the codebase. Any code expecting a StyleSheet
+    /// can safely operate on Empty without special cases.
+    /// </remarks>
+    public static StyleSheet Empty { get; } = new(
+        Name: "Empty",
+        Rules: Array.Empty<StyleRule>(),
+        Description: "No rules configured");
+
+    /// <summary>
+    /// Gets all enabled rules.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Most operations only care about enabled rules.
+    /// This filters once and caches the result in the caller.
+    /// </remarks>
+    public IReadOnlyList<StyleRule> GetEnabledRules() =>
+        Rules.Where(r => r.IsEnabled).ToList().AsReadOnly();
+
+    /// <summary>
+    /// Gets rules filtered by category.
+    /// </summary>
+    /// <param name="category">The category to filter by.</param>
+    /// <returns>Rules in the specified category.</returns>
+    public IReadOnlyList<StyleRule> GetRulesByCategory(RuleCategory category) =>
+        Rules.Where(r => r.Category == category && r.IsEnabled).ToList().AsReadOnly();
+
+    /// <summary>
+    /// Gets rules filtered by severity.
+    /// </summary>
+    /// <param name="severity">The minimum severity to include.</param>
+    /// <returns>Rules at or above the specified severity.</returns>
+    public IReadOnlyList<StyleRule> GetRulesBySeverity(ViolationSeverity severity) =>
+        Rules.Where(r => r.DefaultSeverity <= severity && r.IsEnabled).ToList().AsReadOnly();
+
+    /// <summary>
+    /// Finds a rule by its unique identifier.
+    /// </summary>
+    /// <param name="ruleId">The rule ID to search for.</param>
+    /// <returns>The rule if found, null otherwise.</returns>
+    public StyleRule? FindRuleById(string ruleId) =>
+        Rules.FirstOrDefault(r => r.Id.Equals(ruleId, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Gets whether this sheet extends another.
+    /// </summary>
+    public bool HasBaseSheet => !string.IsNullOrEmpty(Extends);
+
+    /// <summary>
+    /// Gets the total number of enabled rules.
+    /// </summary>
+    public int EnabledRuleCount => Rules.Count(r => r.IsEnabled);
+
+    /// <summary>
+    /// Creates a new StyleSheet by merging this one with a base sheet.
+    /// </summary>
+    /// <param name="baseSheet">The base sheet to merge with.</param>
+    /// <returns>A new StyleSheet with merged rules.</returns>
+    /// <remarks>
+    /// LOGIC: Rules from this sheet override rules from base sheet
+    /// with the same ID. This enables "extends: default" behavior.
+    ///
+    /// Merge priority (highest wins):
+    /// 1. Rules from this sheet
+    /// 2. Rules from base sheet (if not overridden)
+    /// </remarks>
+    public StyleSheet MergeWith(StyleSheet baseSheet)
+    {
+        var thisRuleIds = new HashSet<string>(
+            Rules.Select(r => r.Id),
+            StringComparer.OrdinalIgnoreCase);
+
+        var mergedRules = Rules.ToList();
+
+        // LOGIC: Add base rules that aren't overridden
+        foreach (var baseRule in baseSheet.Rules)
+        {
+            if (!thisRuleIds.Contains(baseRule.Id))
+            {
+                mergedRules.Add(baseRule);
+            }
+        }
+
+        return this with
+        {
+            Rules = mergedRules.AsReadOnly(),
+            Extends = null // Already merged
+        };
+    }
+
+    /// <summary>
+    /// Creates a copy with a rule disabled.
+    /// </summary>
+    /// <param name="ruleId">The ID of the rule to disable.</param>
+    /// <returns>A new StyleSheet with the rule disabled.</returns>
+    public StyleSheet DisableRule(string ruleId)
+    {
+        var newRules = Rules.Select(r =>
+            r.Id.Equals(ruleId, StringComparison.OrdinalIgnoreCase)
+                ? r.Disable()
+                : r).ToList();
+
+        return this with { Rules = newRules.AsReadOnly() };
+    }
+
+    /// <summary>
+    /// Creates a copy with a rule's severity changed.
+    /// </summary>
+    /// <param name="ruleId">The ID of the rule to modify.</param>
+    /// <param name="severity">The new severity.</param>
+    /// <returns>A new StyleSheet with the modified rule.</returns>
+    public StyleSheet SetRuleSeverity(string ruleId, ViolationSeverity severity)
+    {
+        var newRules = Rules.Select(r =>
+            r.Id.Equals(ruleId, StringComparison.OrdinalIgnoreCase)
+                ? r.WithSeverity(severity)
+                : r).ToList();
+
+        return this with { Rules = newRules.AsReadOnly() };
+    }
+}
+
+#endregion
+
+#region Supporting Types
 
 /// <summary>
 /// Result of validating YAML style sheet content.
@@ -238,3 +673,5 @@ public sealed class StyleWatcherErrorEventArgs : EventArgs
     /// </summary>
     public required Exception Exception { get; init; }
 }
+
+#endregion

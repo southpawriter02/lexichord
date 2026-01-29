@@ -73,12 +73,10 @@ public sealed class YamlStyleSheetLoader : IStyleSheetLoader
         _logger.LogDebug("LoadEmbeddedDefaultAsync called (stub - returning empty)");
 
         // TODO v0.2.1c: Load from embedded lexichord.yaml resource
-        var defaultSheet = new StyleSheet
-        {
-            Name = "Lexichord Default",
-            Version = "0.2.1",
-            Rules = []
-        };
+        var defaultSheet = new StyleSheet(
+            Name: "Lexichord Default",
+            Rules: [],
+            Version: "0.2.1");
 
         return Task.FromResult(defaultSheet);
     }

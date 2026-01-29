@@ -41,12 +41,10 @@ public class StyleEngineTests
     public void SetActiveStyleSheet_UpdatesActiveSheet()
     {
         // Arrange
-        var customSheet = new StyleSheet
-        {
-            Name = "Custom",
-            Version = "1.0.0",
-            Rules = []
-        };
+        var customSheet = new StyleSheet(
+            Name: "Custom",
+            Rules: [],
+            Version: "1.0.0");
 
         // Act
         _sut.SetActiveStyleSheet(customSheet);
@@ -61,7 +59,7 @@ public class StyleEngineTests
     public void SetActiveStyleSheet_RaisesStyleSheetChangedEvent()
     {
         // Arrange
-        var customSheet = new StyleSheet { Name = "Custom", Version = "1.0.0" };
+        var customSheet = new StyleSheet(Name: "Custom", Rules: [], Version: "1.0.0");
         StyleSheetChangedEventArgs? eventArgs = null;
         _sut.StyleSheetChanged += (_, args) => eventArgs = args;
 
@@ -111,12 +109,10 @@ public class StyleEngineTests
     {
         // Arrange
         var content = "This is some test content.";
-        _sut.SetActiveStyleSheet(new StyleSheet
-        {
-            Name = "Empty",
-            Version = "1.0.0",
-            Rules = []
-        });
+        _sut.SetActiveStyleSheet(new StyleSheet(
+            Name: "Empty",
+            Rules: [],
+            Version: "1.0.0"));
 
         // Act
         var result = await _sut.AnalyzeAsync(content);
@@ -129,12 +125,10 @@ public class StyleEngineTests
     public async Task AnalyzeAsync_UsesActiveSheet_WhenNoSheetProvided()
     {
         // Arrange
-        var customSheet = new StyleSheet
-        {
-            Name = "Active",
-            Version = "1.0.0",
-            Rules = []
-        };
+        var customSheet = new StyleSheet(
+            Name: "Active",
+            Rules: [],
+            Version: "1.0.0");
         _sut.SetActiveStyleSheet(customSheet);
 
         // Act
@@ -150,12 +144,10 @@ public class StyleEngineTests
     public async Task AnalyzeAsync_UsesProvidedSheet_WhenSheetProvided()
     {
         // Arrange
-        var providedSheet = new StyleSheet
-        {
-            Name = "Provided",
-            Version = "1.0.0",
-            Rules = []
-        };
+        var providedSheet = new StyleSheet(
+            Name: "Provided",
+            Rules: [],
+            Version: "1.0.0");
 
         // Act
         var result = await _sut.AnalyzeAsync("Some content", providedSheet);

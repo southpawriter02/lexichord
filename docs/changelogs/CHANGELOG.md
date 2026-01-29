@@ -18,7 +18,13 @@ This release introduces **The Rulebook**, the Style Module that enables governed
 
 - **IStyleEngine Interface** — Core contract for style analysis. Features active style sheet management, thread-safe analysis methods, and event-driven sheet change notifications.
 
-- **Domain Model** — Style domain types including `StyleSheet`, `StyleRule`, `StyleViolation` records with supporting enums for rule categories (`Vocabulary`, `Grammar`, `Punctuation`), violation severity levels, and pattern types.
+- **Rule Object Model** — Full domain object implementations for style governance:
+    - `RuleCategory` enum: Terminology, Formatting, Syntax
+    - `ViolationSeverity` enum: Error, Warning, Info, Hint (ordered by importance)
+    - `PatternType` enum: Regex, Literal, LiteralIgnoreCase, StartsWith, EndsWith, Contains
+    - `StyleRule` record with `FindViolationsAsync()`, lazy regex compilation (100ms timeout), position calculation
+    - `StyleViolation` record with line/column positions, `GetSurroundingContext()` for match preview
+    - `StyleSheet` record with `MergeWith()` for rule inheritance, filtering methods, and `Empty` singleton
 
 - **Stub Services** — Skeleton implementations for `YamlStyleSheetLoader` and `FileSystemStyleWatcher` ready for full implementation in upcoming sub-parts.
 
@@ -33,7 +39,7 @@ The Rulebook provides governed writing environments where style guides are appli
 | Version                          | Title              | Status      |
 | -------------------------------- | ------------------ | ----------- |
 | [v0.2.1a](v0.2.x/LCS-CL-021a.md) | Module Scaffolding | ✅ Complete |
-| v0.2.1b                          | Style Rules        | 🔲 Planned  |
+| [v0.2.1b](v0.2.x/LCS-CL-021b.md) | Rule Object Model  | ✅ Complete |
 | v0.2.1c                          | YAML Loading       | 🔲 Planned  |
 | v0.2.1d                          | Hot Reload         | 🔲 Planned  |
 
