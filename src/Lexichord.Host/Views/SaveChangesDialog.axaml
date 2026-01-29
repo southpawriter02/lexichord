@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Lexichord.Host.ViewModels"
+        x:Class="Lexichord.Host.Views.SaveChangesDialog"
+        x:DataType="vm:SaveChangesDialogViewModel"
+        Title="Save Changes?"
+        Width="450"
+        MinWidth="400"
+        Height="350"
+        MinHeight="300"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False"
+        SystemDecorations="BorderOnly">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="0">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="20,20,20,10">
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontWeight="SemiBold"
+                       FontSize="14"
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Document List -->
+        <Border Grid.Row="1"
+                Margin="20,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                BorderThickness="1"
+                CornerRadius="4">
+            <ListBox ItemsSource="{Binding DirtyDocuments}"
+                     Padding="5">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+                                      Width="16" Height="16"
+                                      Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                            <TextBlock Text="{Binding Title}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <!-- Progress and Error -->
+        <StackPanel Grid.Row="2" Margin="20,10">
+            <!-- Progress Bar (visible during save) -->
+            <ProgressBar Value="{Binding SaveProgress}"
+                         Maximum="100"
+                         IsVisible="{Binding IsSaving}"
+                         Height="8"/>
+
+            <!-- Currently Saving -->
+            <TextBlock IsVisible="{Binding IsSaving}"
+                       FontSize="12"
+                       Margin="0,5,0,0">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="Saving {0}...">
+                        <Binding Path="CurrentlySaving"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
+            <!-- Error Message -->
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="#FF5252"
+                       TextWrapping="Wrap"
+                       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10"
+                    Margin="20">
+
+            <Button Content="Save All"
+                    Command="{Binding SaveAllCommand}"
+                    IsDefault="True"
+                    Width="100"
+                    Classes="accent"/>
+
+            <Button Content="Discard All"
+                    Command="{Binding DiscardAllCommand}"
+                    Width="100"/>
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    IsCancel="True"
+                    Width="100"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

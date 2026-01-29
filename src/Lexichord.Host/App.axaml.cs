@@ -185,11 +185,22 @@ public partial class App : Application
         // This demonstrates the transition from direct instantiation to DI
         var themeManager = _serviceProvider!.GetRequiredService<IThemeManager>();
         var windowStateService = _serviceProvider!.GetRequiredService<IWindowStateService>();
+        var shellRegionManager = _serviceProvider!.GetRequiredService<IShellRegionManager>();
+        var viewModel = _serviceProvider!.GetRequiredService<ViewModels.MainWindowViewModel>();
+        var shutdownService = _serviceProvider!.GetRequiredService<IShutdownService>();
+
+        // LOGIC (v0.1.4c): Try to resolve IFileService - it may not be registered if
+        // the Editor module is not loaded
+        var fileService = _serviceProvider!.GetService<Lexichord.Abstractions.Contracts.Editor.IFileService>();
 
         return new MainWindow
         {
             ThemeManager = themeManager,
-            WindowStateService = windowStateService
+            WindowStateService = windowStateService,
+            ShellRegionManager = shellRegionManager,
+            ViewModel = viewModel,
+            ShutdownService = shutdownService,
+            FileService = fileService
         };
     }
 
@@ -230,7 +241,7 @@ public partial class App : Application
         }
     }
 
-    private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
+    private void OnShutdownRequested(object? sender, Avalonia.Controls.ApplicationLifetimes.ShutdownRequestedEventArgs e)
     {
         Log.Information("Application shutdown requested, disposing services");
         

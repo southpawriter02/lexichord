@@ -18,12 +18,15 @@ This release establishes file I/O and document persistence capabilities, startin
 
 - **Atomic Saves** — Corruption-proof file saves using Write-Temp-Delete-Rename strategy. Three-phase execution ensures original file is preserved on any failure. Includes encoding detection, error recovery, and MediatR events for save success/failure.
 
+- **Safe Close Workflow** — Window close interception prompts users to save unsaved changes. Modal dialog offers Save All, Discard All, or Cancel options. Prevents accidental data loss when closing with dirty documents.
+
 #### Sub-Part Changelogs
 
 | Version                   | Title                | Status      |
 | ------------------------- | -------------------- | ----------- |
 | [v0.1.4a](LCS-CL-014a.md) | Dirty State Tracking | ✅ Complete |
 | [v0.1.4b](LCS-CL-014b.md) | Atomic Saves         | ✅ Complete |
+| [v0.1.4c](LCS-CL-014c.md) | Safe Close Workflow  | ✅ Complete |
 
 ---
 

@@ -142,6 +142,10 @@ public static class HostServices
         // LOGIC (v0.1.1a): Register dock layout services
         services.AddDockServices();
 
+        // LOGIC (v0.1.4c): Register shutdown service for safe close workflow
+        // Coordinates dirty document checking and save confirmation on close
+        services.AddSingleton<IShutdownService, ShutdownService>();
+
         return services;
     }
 

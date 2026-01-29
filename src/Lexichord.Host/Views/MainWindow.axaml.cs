@@ -17,6 +17,9 @@ public partial class MainWindow : Window
     private IWindowStateService? _windowStateService;
     private IThemeManager? _themeManager;
     private IShellRegionManager? _shellRegionManager;
+    private IShutdownService? _shutdownService;
+    private Abstractions.Contracts.Editor.IFileService? _fileService;
+    private bool _closeConfirmed;
 
     /// <summary>
     /// Initializes a new instance of the MainWindow class.
@@ -99,6 +102,30 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
+    /// Gets or sets the shutdown service.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.4c): When set, enables dirty document checking on close.
+    /// </remarks>
+    public IShutdownService? ShutdownService
+    {
+        get => _shutdownService;
+        set => _shutdownService = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the file service.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.4c): Used by SaveChangesDialog to save dirty documents.
+    /// </remarks>
+    public Abstractions.Contracts.Editor.IFileService? FileService
+    {
+        get => _fileService;
+        set => _fileService = value;
+    }
+
+    /// <summary>
     /// Initializes shell regions with module-contributed views.
     /// </summary>
     /// <remarks>
@@ -167,28 +194,78 @@ public partial class MainWindow : Window
     /// <summary>
     /// Saves window state when the window is closing.
     /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.4c): Checks for dirty documents before allowing close.
+    /// Shows SaveChangesDialog when dirty documents exist.
+    /// </remarks>
     private async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (_windowStateService is null)
+        // LOGIC (v0.1.4c): Check for dirty documents unless close was already confirmed
+        if (!_closeConfirmed && _shutdownService?.HasDirtyDocuments == true && _fileService is not null)
+        {
+            e.Cancel = true;
+
+            var dirtyDocs = _shutdownService.GetDirtyDocuments();
+            var viewModel = new ViewModels.SaveChangesDialogViewModel(_fileService);
+            var dialog = new SaveChangesDialog(viewModel);
+
+            // Start showing the dialog
+            var resultTask = viewModel.ShowAsync(dirtyDocs);
+
+            // Show dialog modally
+            await dialog.ShowDialog(this);
+
+            // Get result (dialog should have completed the task)
+            if (resultTask.IsCompleted)
+            {
+                var result = resultTask.Result;
+
+                switch (result.Action)
+                {
+                    case ViewModels.SaveChangesAction.SaveAll:
+                        if (result.AllSucceeded)
+                        {
+                            _closeConfirmed = true;
+                            Close();
+                        }
+                        // If partial failure, stay open
+                        break;
+
+                    case ViewModels.SaveChangesAction.DiscardAll:
+                        _closeConfirmed = true;
+                        Close();
+                        break;
+
+                    case ViewModels.SaveChangesAction.Cancel:
+                        // Keep window open
+                        break;
+                }
+            }
+
             return;
+        }
 
-        // LOGIC: Capture current state
-        // Store current position and size (before maximizing, we don't have RestoreBounds in Avalonia 11)
-        // When maximized, Width/Height reflect maximized size, but Position is still original
-        var isMaximized = WindowState == WindowState.Maximized;
+        // Save window state
+        if (_windowStateService is not null)
+        {
+            // LOGIC: Capture current state
+            // Store current position and size (before maximizing, we don't have RestoreBounds in Avalonia 11)
+            // When maximized, Width/Height reflect maximized size, but Position is still original
+            var isMaximized = WindowState == WindowState.Maximized;
 
-        // LOGIC: For maximized windows, we save the screen-appropriate defaults
-        // since Avalonia 11 doesn't expose RestoreBounds. This means maximized
-        // windows will restore to their last known pre-maximized size on next launch.
-        var state = new WindowStateRecord(
-            X: Position.X,
-            Y: Position.Y,
-            Width: isMaximized ? 1400 : Width,  // Default size for maximized
-            Height: isMaximized ? 900 : Height, // Default size for maximized
-            IsMaximized: isMaximized,
-            Theme: _themeManager?.CurrentTheme ?? ThemeMode.System
-        );
+            // LOGIC: For maximized windows, we save the screen-appropriate defaults
+            // since Avalonia 11 doesn't expose RestoreBounds. This means maximized
+            // windows will restore to their last known pre-maximized size on next launch.
+            var state = new WindowStateRecord(
+                X: Position.X,
+                Y: Position.Y,
+                Width: isMaximized ? 1400 : Width,  // Default size for maximized
+                Height: isMaximized ? 900 : Height, // Default size for maximized
+                IsMaximized: isMaximized,
+                Theme: _themeManager?.CurrentTheme ?? ThemeMode.System
+            );
 
-        await _windowStateService.SaveAsync(state);
+            await _windowStateService.SaveAsync(state);
+        }
     }
 }
