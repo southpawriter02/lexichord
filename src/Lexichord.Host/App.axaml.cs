@@ -247,6 +247,9 @@ public partial class App : Application
         // LOGIC (v0.1.5b): Resolve command palette service for keyboard shortcuts
         var commandPaletteService = _serviceProvider!.GetRequiredService<ICommandPaletteService>();
 
+        // LOGIC (v0.1.5d): Resolve keybinding service for shortcut management
+        var keyBindingService = _serviceProvider!.GetRequiredService<IKeyBindingService>();
+
         return new MainWindow
         {
             ThemeManager = themeManager,
@@ -255,7 +258,9 @@ public partial class App : Application
             ViewModel = viewModel,
             ShutdownService = shutdownService,
             FileService = fileService,
-            CommandPaletteService = commandPaletteService
+            CommandPaletteService = commandPaletteService,
+            KeyBindingService = keyBindingService,
+            ServiceProvider = _serviceProvider
         };
     }
 

@@ -6,6 +6,30 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.1.6] - 2026-01 (In Progress)
+
+### The Settings Framework
+
+This release establishes the centralized settings UI framework, enabling modules to contribute configuration pages to a unified Settings dialog.
+
+#### What's New
+
+- **Settings Page Registry** — Central registry for module-contributed settings pages with hierarchical organization, license tier filtering, and full-text search capabilities.
+
+- **Settings ViewModel** — State management for the Settings dialog with tree navigation, search filtering, error handling for page loading failures, and MediatR event integration.
+
+- **Settings Window** — Modal dialog with split-panel layout (220px navigation tree, flexible content area), search box, TreeView navigation, and keyboard shortcuts (Ctrl+,, Escape).
+
+- **Module Integration** — Modules implement `ISettingsPage` interface and register via `ISettingsPageRegistry` during initialization. Pages support hierarchical nesting via `ParentCategoryId`.
+
+#### Sub-Part Changelogs
+
+| Version                   | Title                     | Status      |
+| ------------------------- | ------------------------- | ----------- |
+| [v0.1.6a](LCS-CL-016a.md) | Settings Dialog Framework | ✅ Complete |
+
+---
+
 ## [v0.1.5] - 2026-01 (In Progress)
 
 ### The Conductor's Baton (Command Palette)

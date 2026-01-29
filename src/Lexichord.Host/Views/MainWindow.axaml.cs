@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private Abstractions.Contracts.Editor.IFileService? _fileService;
     private ICommandPaletteService? _commandPaletteService;
     private IKeyBindingService? _keyBindingService;
+    private IServiceProvider? _serviceProvider;
     private bool _closeConfirmed;
 
     /// <summary>
@@ -154,6 +155,18 @@ public partial class MainWindow : Window
     {
         get => _keyBindingService;
         set => _keyBindingService = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the service provider for resolving services.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.6a): Used to create SettingsViewModel instances for the Settings window.
+    /// </remarks>
+    public IServiceProvider? ServiceProvider
+    {
+        get => _serviceProvider;
+        set => _serviceProvider = value;
     }
 
     /// <summary>
@@ -345,6 +358,45 @@ public partial class MainWindow : Window
                 e.Handled = true;
             }
         }
+
+        // LOGIC (v0.1.6a): Ctrl+, opens Settings window (Cmd+, on macOS)
+        if (e.Key == Key.OemComma &&
+            e.KeyModifiers == KeyModifiers.Control &&
+            !e.Handled)
+        {
+            await OpenSettingsWindowAsync();
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>
+    /// Opens the Settings window.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.6a): Creates a new SettingsViewModel, initializes it, and shows the window.
+    /// </remarks>
+    private async Task OpenSettingsWindowAsync(Abstractions.Contracts.SettingsWindowOptions? options = null)
+    {
+        if (_serviceProvider is null)
+        {
+            return;
+        }
+
+        // Resolve ViewModel from DI
+        var viewModel = _serviceProvider.GetService(typeof(ViewModels.SettingsViewModel))
+            as ViewModels.SettingsViewModel;
+
+        if (viewModel is null)
+        {
+            return;
+        }
+
+        // Initialize with options
+        viewModel.Initialize(options);
+
+        // Create and show the window
+        var settingsWindow = new SettingsWindow(viewModel);
+        await settingsWindow.ShowDialog(this);
     }
 
     /// <summary>

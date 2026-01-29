@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Lexichord.Host.ViewModels"
+        xmlns:contracts="using:Lexichord.Abstractions.Contracts"
+        mc:Ignorable="d"
+        x:Class="Lexichord.Host.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="Settings"
+        Width="800"
+        Height="600"
+        MinWidth="600"
+        MinHeight="400"
+        WindowStartupLocation="CenterOwner">
+
+    <!-- LOGIC: Escape key closes the settings window -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}"/>
+    </Window.KeyBindings>
+
+    <Grid ColumnDefinitions="220,*">
+        <!-- Left Panel: Navigation Tree -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                BorderThickness="0,0,1,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <DockPanel>
+                <!-- Search Box -->
+                <TextBox DockPanel.Dock="Top"
+                         Text="{Binding SearchQuery}"
+                         Watermark="Search settings..."
+                         Margin="8"
+                         Classes="clearButton"/>
+
+                <!-- Category Tree -->
+                <TreeView ItemsSource="{Binding Categories}"
+                          SelectedItem="{Binding SelectedCategory}"
+                          Margin="0,0,0,8">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Children}"
+                                          x:DataType="contracts:SettingsCategoryNode">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding DisplayName}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </DockPanel>
+        </Border>
+
+        <!-- Right Panel: Content Area -->
+        <DockPanel Grid.Column="1">
+            <!-- Page Header -->
+            <Border DockPanel.Dock="Top"
+                    Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                    Padding="16,12">
+                <TextBlock Text="{Binding SelectedPage.DisplayName, FallbackValue='Select a category'}"
+                           FontSize="18"
+                           FontWeight="SemiBold"/>
+            </Border>
+
+            <!-- Page Content -->
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="16">
+                <ContentControl Content="{Binding CurrentPageContent}"/>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
+</Window>

@@ -170,6 +170,10 @@ public static class HostServices
         // LOGIC (v0.1.5d): Register keybinding service for keyboard shortcut management
         services.AddSingleton<IKeyBindingService, KeyBindingManager>();
 
+        // LOGIC (v0.1.6a): Register settings page registry and ViewModel
+        services.AddSingleton<ISettingsPageRegistry, SettingsPageRegistry>();
+        services.AddTransient<SettingsViewModel>();
+
         return services;
     }
 
