@@ -41,6 +41,8 @@
     <ProjectReference Include="..\..\src\Lexichord.Host\Lexichord.Host.csproj" />
     <!-- v0.0.5b: Database Connector -->
     <ProjectReference Include="..\..\src\Lexichord.Infrastructure\Lexichord.Infrastructure.csproj" />
+    <!-- v0.0.8d: StatusBar module for Golden Skeleton integration tests -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.StatusBar\Lexichord.Modules.StatusBar.csproj" />
   </ItemGroup>
 
   <ItemGroup>

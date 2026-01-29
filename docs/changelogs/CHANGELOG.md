@@ -236,10 +236,12 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.8 Sub-Parts
 
-| Document                        | Sub-Part | Title                 |
-| :------------------------------ | :------- | :-------------------- |
-| [LCS-CL-008a](./LCS-CL-008a.md) | v0.0.8a  | Status Bar Module     |
-| [LCS-CL-008b](./LCS-CL-008b.md) | v0.0.8b  | Database Health Check |
+| Document                        | Sub-Part | Title                   |
+| :------------------------------ | :------- | :---------------------- |
+| [LCS-CL-008a](./LCS-CL-008a.md) | v0.0.8a  | Status Bar Module       |
+| [LCS-CL-008b](./LCS-CL-008b.md) | v0.0.8b  | Database Health Check   |
+| [LCS-CL-008c](./LCS-CL-008c.md) | v0.0.8c  | Secure Vault Check      |
+| [LCS-CL-008d](./LCS-CL-008d.md) | v0.0.8d  | Golden Skeleton Release |
 
 ### v0.0.7 Sub-Parts
 
