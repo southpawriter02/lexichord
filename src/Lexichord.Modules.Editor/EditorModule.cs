@@ -18,6 +18,7 @@ namespace Lexichord.Modules.Editor;
 /// - Syntax highlighting (v0.1.3b)
 /// - Search and replace (v0.1.3c)
 /// - Editor configuration (v0.1.3d)
+/// - Atomic file saves (v0.1.4b)
 /// </remarks>
 public class EditorModule : IModule
 {
@@ -27,9 +28,9 @@ public class EditorModule : IModule
     public ModuleInfo Info => new(
         Id: "editor",
         Name: "Editor",
-        Version: new Version(0, 1, 3),
+        Version: new Version(0, 1, 4),
         Author: "Lexichord Team",
-        Description: "High-performance text editor with syntax highlighting"
+        Description: "High-performance text editor with syntax highlighting and atomic saves"
     );
 
     /// <inheritdoc/>
@@ -44,6 +45,9 @@ public class EditorModule : IModule
 
         // LOGIC: v0.1.3c - Register search service (transient - one per document)
         services.AddTransient<ISearchService, SearchService>();
+
+        // LOGIC: v0.1.4b - Register file service for atomic saves
+        services.AddSingleton<IFileService, FileService>();
 
         // LOGIC: Register views and view models as transient (new instance per document)
         services.AddTransient<ManuscriptViewModel>();

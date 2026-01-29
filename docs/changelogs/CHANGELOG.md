@@ -10,17 +10,20 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ### Scribe (IO & Persistence)
 
-This release establishes file I/O and document persistence capabilities, starting with dirty state tracking.
+This release establishes file I/O and document persistence capabilities, starting with dirty state tracking and atomic saves.
 
 #### What's New
 
 - **Dirty State Tracking** — Visual "\*" indicator in tab titles when documents have unsaved changes. Debounced updates (50ms) prevent excessive state changes during rapid typing. Content hashing enables detection when undo returns to saved state.
+
+- **Atomic Saves** — Corruption-proof file saves using Write-Temp-Delete-Rename strategy. Three-phase execution ensures original file is preserved on any failure. Includes encoding detection, error recovery, and MediatR events for save success/failure.
 
 #### Sub-Part Changelogs
 
 | Version                   | Title                | Status      |
 | ------------------------- | -------------------- | ----------- |
 | [v0.1.4a](LCS-CL-014a.md) | Dirty State Tracking | ✅ Complete |
+| [v0.1.4b](LCS-CL-014b.md) | Atomic Saves         | ✅ Complete |
 
 ---
 
