@@ -64,4 +64,29 @@ public interface IStyleConfigurationWatcher : IDisposable
     /// Watcher may auto-restart; consumers should log but not crash.
     /// </remarks>
     event EventHandler<StyleWatcherErrorEventArgs>? WatcherError;
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Debouncing prevents multiple reloads during rapid saves.
+    /// Typical editor save operations may trigger multiple file events.
+    /// Default is 300ms which handles most save scenarios.
+    /// </remarks>
+    int DebounceDelayMs { get; set; }
+
+    /// <summary>
+    /// Forces an immediate reload of the style configuration file.
+    /// </summary>
+    /// <returns>A task representing the async reload operation.</returns>
+    /// <remarks>
+    /// LOGIC: Allows manual reload trigger independent of file changes.
+    /// Useful for:
+    /// - Initial load when watcher starts
+    /// - User-initiated refresh command
+    /// - Recovery after error conditions
+    ///
+    /// Does nothing if not currently watching.
+    /// </remarks>
+    Task ForceReloadAsync();
 }

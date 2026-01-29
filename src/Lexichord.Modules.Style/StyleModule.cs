@@ -83,13 +83,39 @@ public sealed class StyleModule : IModule
                 defaultSheet.Rules.Count,
                 defaultSheet.Name);
 
-            // TODO v0.2.1d: Check license tier and start file watcher
-            // var licenseContext = provider.GetService<ILicenseContext>();
-            // if (licenseContext?.GetCurrentTier() >= LicenseTier.WriterPro)
-            // {
-            //     await TryLoadCustomRulesAsync(provider);
-            //     StartFileWatcher(provider);
-            // }
+            // LOGIC: v0.2.1d - Start file watcher for live reload
+            // The watcher internally checks for WriterPro license tier
+            var watcher = provider.GetRequiredService<IStyleConfigurationWatcher>();
+            var workspaceService = provider.GetService<IWorkspaceService>();
+            
+            if (workspaceService?.CurrentWorkspace?.RootPath is { } projectRoot)
+            {
+                _logger.LogDebug("Starting style configuration watcher for '{Path}'", projectRoot);
+                watcher.StartWatching(projectRoot);
+                
+                // LOGIC: Try to load custom rules if they exist
+                var customStylePath = Path.Combine(projectRoot, ".lexichord", "style.yaml");
+                if (File.Exists(customStylePath))
+                {
+                    try
+                    {
+                        _logger.LogDebug("Loading custom style rules from '{Path}'", customStylePath);
+                        var customSheet = await loader.LoadFromFileAsync(customStylePath);
+                        engine.SetActiveStyleSheet(customSheet);
+                        _logger.LogInformation(
+                            "Loaded custom style sheet with {RuleCount} rules from '{SheetName}'",
+                            customSheet.Rules.Count, customSheet.Name);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to load custom style rules, using defaults");
+                    }
+                }
+            }
+            else
+            {
+                _logger.LogDebug("No workspace open, skipping style watcher initialization");
+            }
         }
         catch (Exception ex)
         {

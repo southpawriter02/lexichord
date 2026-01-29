@@ -32,7 +32,11 @@ This release introduces **The Rulebook**, the Style Module that enables governed
     - Embedded `lexichord.yaml` with 26 default rules across Terminology, Formatting, and Syntax categories
     - `ValidateYaml()` for editor-side syntax checking before save
 
-- **Stub Services** — Skeleton implementation for `FileSystemStyleWatcher` ready for hot-reload in v0.2.1d.
+- **Configuration Watcher** — Live reload of `.lexichord/style.yaml` without restart:
+    - `FileSystemWatcher` with 300ms debouncing for rapid save handling
+    - License-gated to WriterPro tier and above
+    - Graceful fallback keeps previous valid rules on YAML errors
+    - MediatR events (`StyleSheetReloadedEvent`, `StyleWatcherErrorEvent`) for system-wide notification
 
 #### Philosophy: Concordance
 
@@ -47,7 +51,7 @@ The Rulebook provides governed writing environments where style guides are appli
 | [v0.2.1a](v0.2.x/LCS-CL-021a.md) | Module Scaffolding | ✅ Complete |
 | [v0.2.1b](v0.2.x/LCS-CL-021b.md) | Rule Object Model  | ✅ Complete |
 | [v0.2.1c](v0.2.x/LCS-CL-021c.md) | YAML Deserializer  | ✅ Complete |
-| v0.2.1d                          | Hot Reload         | 🔲 Planned  |
+| [v0.2.1d](v0.2.x/LCS-CL-021d.md) | Hot Reload         | ✅ Complete |
 
 ---
 
