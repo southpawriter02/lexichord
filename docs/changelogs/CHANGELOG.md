@@ -6,6 +6,43 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.1.3] - 2026-01 (In Progress)
+
+### The Manuscript (Editor Module)
+
+This release establishes the core text editing infrastructure using AvaloniaEdit, providing a high-performance editor foundation for manuscript creation and editing.
+
+#### What's New
+
+- **AvaloniaEdit Integration** — High-performance text editor based on AvaloniaEdit 11.1.0, supporting large documents with syntax highlighting (to come in v0.1.3b).
+
+- **ManuscriptViewModel** — Document ViewModel extending `DocumentViewModelBase` with full editor state management including caret position, selection tracking, and document statistics.
+
+- **EditorService** — Document lifecycle management with open/create/save/close operations, thread-safe document tracking, and file path deduplication.
+
+- **Editor Configuration** — Configurable editor settings including font family, font size, line numbers, word wrap, and whitespace display (persistence in v0.1.3d).
+
+- **Keyboard Shortcuts** — Ctrl+S (save), Ctrl+F (search overlay placeholder), Ctrl+G (go to line placeholder), Escape (hide search).
+
+#### Why This Matters
+
+This work enables:
+
+- Professional-quality text editing experience for technical writers
+- Foundation for syntax highlighting, search, and other editor features
+- Live document statistics (line/word/character counts) for writers
+
+#### Sub-Part Changelogs
+
+| Version                   | Title                            | Status      |
+| ------------------------- | -------------------------------- | ----------- |
+| [v0.1.3a](LCS-CL-013a.md) | AvalonEdit Integration           | ✅ Complete |
+| v0.1.3b                   | Syntax Highlighting              | 🔜 Planned  |
+| v0.1.3c                   | Search Overlay                   | 🔜 Planned  |
+| v0.1.3d                   | Editor Configuration Persistence | 🔜 Planned  |
+
+---
+
 ## [v0.1.2] - 2026-01-28 (In Progress)
 
 ### The Explorer (Project Management)

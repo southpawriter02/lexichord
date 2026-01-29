@@ -64,6 +64,8 @@
     <ProjectReference Include="..\..\src\Lexichord.Modules.StatusBar\Lexichord.Modules.StatusBar.csproj" />
     <!-- v0.1.2a: Workspace Module for testing -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.Workspace\Lexichord.Modules.Workspace.csproj" />
+    <!-- v0.1.3a: Editor Module for testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.Editor\Lexichord.Modules.Editor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
