@@ -153,6 +153,9 @@ public static class HostServices
         services.AddSingleton<IRecentFilesService, RecentFilesService>();
         services.AddSingleton<OpenRecentMenuViewModel>();
 
+        // LOGIC (v0.1.5a): Register command registry for centralized command management
+        services.AddSingleton<ICommandRegistry, CommandRegistry>();
+
         return services;
     }
 

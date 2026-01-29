@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Lexichord.Abstractions.Contracts;
 using Microsoft.Extensions.Logging;
+using DapperCommandDefinition = Dapper.CommandDefinition;
 
 namespace Lexichord.Infrastructure.Data;
 
@@ -47,7 +48,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
             LIMIT @MaxCount
             """;
 
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { MaxCount = maxCount },
             cancellationToken: cancellationToken);
@@ -82,7 +83,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
             WHERE "FilePath" = @FilePath
             """;
 
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { FilePath = filePath },
             cancellationToken: cancellationToken);
@@ -121,7 +122,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
             """;
 
         var now = DateTimeOffset.UtcNow;
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new
             {
@@ -146,7 +147,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
 
         const string sql = """DELETE FROM "RecentFiles" WHERE "FilePath" = @FilePath""";
 
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { FilePath = filePath },
             cancellationToken: cancellationToken);
@@ -165,7 +166,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
 
         const string sql = """DELETE FROM "RecentFiles" """;
 
-        var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
         var affected = await connection.ExecuteAsync(command);
 
         _logger.LogInformation("Cleared all recent files: {Count} entries deleted", affected);
@@ -186,7 +187,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
             )
             """;
 
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { KeepCount = keepCount },
             cancellationToken: cancellationToken);
@@ -208,7 +209,7 @@ public sealed class RecentFilesRepository : IRecentFilesRepository
 
         const string sql = """SELECT COUNT(*) FROM "RecentFiles" """;
 
-        var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
         var count = await connection.ExecuteScalarAsync<int>(command);
 
         _logger.LogDebug("GetCount: {Count} entries", count);

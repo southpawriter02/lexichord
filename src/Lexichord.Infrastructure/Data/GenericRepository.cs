@@ -3,6 +3,7 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using Lexichord.Abstractions.Contracts;
 using Microsoft.Extensions.Logging;
+using DapperCommandDefinition = Dapper.CommandDefinition;
 
 namespace Lexichord.Infrastructure.Data;
 
@@ -63,7 +64,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = $@"SELECT * FROM ""{_tableName}"" WHERE ""{_idColumn}"" = @Id";
-        var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
         var result = await connection.QuerySingleOrDefaultAsync<T>(command);
         _logger.LogDebug("GetById {Table} Id={Id}: {Result}", _tableName, id, result is not null ? "Found" : "NotFound");
         return result;
@@ -74,7 +75,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = $@"SELECT * FROM ""{_tableName}""";
-        var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
         var results = await connection.QueryAsync<T>(command);
         var count = results.TryGetNonEnumeratedCount(out var c) ? c : results.Count();
         _logger.LogDebug("GetAll {Table}: {Count} records", _tableName, count);
@@ -95,13 +96,13 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
 
         // Get total count
         var countSql = $@"SELECT COUNT(*) FROM ""{_tableName}""";
-        var countCommand = new CommandDefinition(countSql, cancellationToken: cancellationToken);
+        var countCommand = new DapperCommandDefinition(countSql, cancellationToken: cancellationToken);
         var totalCount = await connection.ExecuteScalarAsync<long>(countCommand);
 
         // Get page items
         var offset = (pageNumber - 1) * pageSize;
         var sql = $@"SELECT * FROM ""{_tableName}"" ORDER BY ""{_idColumn}"" LIMIT @PageSize OFFSET @Offset";
-        var command = new CommandDefinition(sql, new { PageSize = pageSize, Offset = offset }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { PageSize = pageSize, Offset = offset }, cancellationToken: cancellationToken);
         var items = await connection.QueryAsync<T>(command);
 
         _logger.LogDebug("GetPaged {Table} Page={Page} Size={Size}: {Count} of {Total}",
@@ -115,7 +116,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = $@"SELECT EXISTS(SELECT 1 FROM ""{_tableName}"" WHERE ""{_idColumn}"" = @Id)";
-        var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
         var exists = await connection.ExecuteScalarAsync<bool>(command);
         _logger.LogDebug("Exists {Table} Id={Id}: {Exists}", _tableName, id, exists);
         return exists;
@@ -126,7 +127,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = $@"SELECT COUNT(*) FROM ""{_tableName}""";
-        var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
         var count = await connection.ExecuteScalarAsync<long>(command);
         _logger.LogDebug("Count {Table}: {Count}", _tableName, count);
         return count;
@@ -172,7 +173,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = $@"DELETE FROM ""{_tableName}"" WHERE ""{_idColumn}"" = @Id";
-        var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
         var affected = await connection.ExecuteAsync(command);
         var result = affected > 0;
         _logger.LogDebug("Delete {Table} Id={Id}: {Result}", _tableName, id, result ? "Success" : "NotFound");
@@ -190,7 +191,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
         CancellationToken cancellationToken = default)
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-        var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
         var results = await connection.QueryAsync<TResult>(command);
         _logger.LogDebug("Query executed: {Count} results", results.Count());
         return results;
@@ -203,7 +204,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
         CancellationToken cancellationToken = default)
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-        var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
         var result = await connection.QuerySingleOrDefaultAsync<TResult>(command);
         _logger.LogDebug("QuerySingle executed: {Found}", result is not null ? "Found" : "NotFound");
         return result;
@@ -216,7 +217,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
         CancellationToken cancellationToken = default)
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-        var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
         var affected = await connection.ExecuteAsync(command);
         _logger.LogDebug("Execute completed: {Affected} rows affected", affected);
         return affected;
@@ -229,7 +230,7 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId> where T : cl
         CancellationToken cancellationToken = default)
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-        var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
         var result = await connection.ExecuteScalarAsync<TResult>(command);
         _logger.LogDebug("ExecuteScalar completed");
         return result!;

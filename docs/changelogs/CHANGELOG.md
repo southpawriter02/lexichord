@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.1.5] - 2026-01 (In Progress)
+
+### The Conductor's Baton (Command Palette)
+
+This release establishes the keyboard-centric command system that enables rapid access to all application functionality through commands, shortcuts, and a searchable palette.
+
+#### What's New
+
+- **Command Registry** — Centralized system for registering, querying, and executing application commands. Commands use `module.action` naming convention with metadata for display titles, categories, icons, and keyboard shortcuts.
+
+#### Sub-Part Changelogs
+
+| Version                   | Title            | Status      |
+| ------------------------- | ---------------- | ----------- |
+| [v0.1.5a](LCS-CL-015a.md) | Command Registry | ✅ Complete |
+
+---
+
 ## [v0.1.4] - 2026-01 (In Progress)
 
 ### Scribe (IO & Persistence)
@@ -377,6 +395,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                          | Summary                                                    |
 | :------ | :--------- | :-------------------------------- | :--------------------------------------------------------- |
+| v0.1.5  | 2026-01-29 | The Conductor's Baton (Commands)  | Command Registry, command execution and discovery          |
 | v0.1.2  | 2026-01-28 | The Explorer (Project Management) | Workspace service, file system watcher, project context    |
 | v0.1.1  | 2026-01-28 | The Layout Engine (Docking)       | Dock.Avalonia integration, region injection, serialization |
 | v0.0.8  | 2026-01-29 | The Hello World (Golden Skeleton) | Shell regions, Status Bar module reference implementation  |
@@ -393,6 +412,12 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.1.5 Sub-Parts
+
+| Document                        | Sub-Part | Title            |
+| :------------------------------ | :------- | :--------------- |
+| [LCS-CL-015a](./LCS-CL-015a.md) | v0.1.5a  | Command Registry |
 
 ### v0.1.2 Sub-Parts
 

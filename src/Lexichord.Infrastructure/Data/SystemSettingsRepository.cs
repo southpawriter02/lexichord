@@ -3,6 +3,7 @@ using Dapper;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Entities;
 using Microsoft.Extensions.Logging;
+using DapperCommandDefinition = Dapper.CommandDefinition;
 
 namespace Lexichord.Infrastructure.Data;
 
@@ -38,7 +39,7 @@ public sealed class SystemSettingsRepository : ISystemSettingsRepository
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"SELECT * FROM ""SystemSettings"" WHERE ""Key"" = @Key";
-        var command = new CommandDefinition(sql, new { Key = key }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Key = key }, cancellationToken: cancellationToken);
         var result = await connection.QuerySingleOrDefaultAsync<SystemSetting>(command);
         _logger.LogDebug("GetByKey '{Key}': {Result}", key, result is not null ? "Found" : "NotFound");
         return result;
@@ -91,7 +92,7 @@ public sealed class SystemSettingsRepository : ISystemSettingsRepository
             VALUES (@Key, @Value, @Description, NOW())
             ON CONFLICT (""Key"")
             DO UPDATE SET ""Value"" = @Value, ""UpdatedAt"" = NOW()";
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { Key = key, Value = value, Description = description },
             cancellationToken: cancellationToken);
@@ -115,7 +116,7 @@ public sealed class SystemSettingsRepository : ISystemSettingsRepository
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"SELECT * FROM ""SystemSettings"" ORDER BY ""Key""";
-        var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
         var results = await connection.QueryAsync<SystemSetting>(command);
         _logger.LogDebug("GetAll: {Count} settings", results.Count());
         return results;
@@ -128,7 +129,7 @@ public sealed class SystemSettingsRepository : ISystemSettingsRepository
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"SELECT * FROM ""SystemSettings"" WHERE ""Key"" LIKE @Prefix ORDER BY ""Key""";
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { Prefix = prefix + "%" },
             cancellationToken: cancellationToken);
@@ -142,7 +143,7 @@ public sealed class SystemSettingsRepository : ISystemSettingsRepository
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"DELETE FROM ""SystemSettings"" WHERE ""Key"" = @Key";
-        var command = new CommandDefinition(sql, new { Key = key }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Key = key }, cancellationToken: cancellationToken);
         var affected = await connection.ExecuteAsync(command);
         var result = affected > 0;
         _logger.LogDebug("Delete '{Key}': {Result}", key, result ? "Success" : "NotFound");

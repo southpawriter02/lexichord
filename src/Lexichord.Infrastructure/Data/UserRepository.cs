@@ -2,6 +2,7 @@ using Dapper;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Entities;
 using Microsoft.Extensions.Logging;
+using DapperCommandDefinition = Dapper.CommandDefinition;
 
 namespace Lexichord.Infrastructure.Data;
 
@@ -34,7 +35,7 @@ public sealed class UserRepository : GenericRepository<User, Guid>, IUserReposit
         var sql = @"
             SELECT * FROM ""Users""
             WHERE LOWER(""Email"") = LOWER(@Email)";
-        var command = new CommandDefinition(sql, new { Email = email }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Email = email }, cancellationToken: cancellationToken);
         var result = await connection.QuerySingleOrDefaultAsync<User>(command);
         _userLogger.LogDebug("GetByEmail {Email}: {Result}", email, result is not null ? "Found" : "NotFound");
         return result;
@@ -45,7 +46,7 @@ public sealed class UserRepository : GenericRepository<User, Guid>, IUserReposit
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"SELECT * FROM ""Users"" WHERE ""IsActive"" = true ORDER BY ""DisplayName""";
-        var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
         var results = await connection.QueryAsync<User>(command);
         _userLogger.LogDebug("GetActiveUsers: {Count} users", results.Count());
         return results;
@@ -56,7 +57,7 @@ public sealed class UserRepository : GenericRepository<User, Guid>, IUserReposit
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"SELECT EXISTS(SELECT 1 FROM ""Users"" WHERE LOWER(""Email"") = LOWER(@Email))";
-        var command = new CommandDefinition(sql, new { Email = email }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { Email = email }, cancellationToken: cancellationToken);
         var exists = await connection.ExecuteScalarAsync<bool>(command);
         _userLogger.LogDebug("EmailExists {Email}: {Exists}", email, exists);
         return exists;
@@ -75,7 +76,7 @@ public sealed class UserRepository : GenericRepository<User, Guid>, IUserReposit
                OR ""Email"" ILIKE @SearchPattern
             ORDER BY ""DisplayName""
             LIMIT @MaxResults";
-        var command = new CommandDefinition(
+        var command = new DapperCommandDefinition(
             sql,
             new { SearchPattern = $"%{searchTerm}%", MaxResults = maxResults },
             cancellationToken: cancellationToken);
@@ -89,7 +90,7 @@ public sealed class UserRepository : GenericRepository<User, Guid>, IUserReposit
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"UPDATE ""Users"" SET ""IsActive"" = false WHERE ""Id"" = @UserId";
-        var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
         var affected = await connection.ExecuteAsync(command);
         var result = affected > 0;
         _userLogger.LogInformation("Deactivate User {UserId}: {Result}", userId, result ? "Success" : "NotFound");
@@ -101,7 +102,7 @@ public sealed class UserRepository : GenericRepository<User, Guid>, IUserReposit
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         var sql = @"UPDATE ""Users"" SET ""IsActive"" = true WHERE ""Id"" = @UserId";
-        var command = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+        var command = new DapperCommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
         var affected = await connection.ExecuteAsync(command);
         var result = affected > 0;
         _userLogger.LogInformation("Reactivate User {UserId}: {Result}", userId, result ? "Success" : "NotFound");
