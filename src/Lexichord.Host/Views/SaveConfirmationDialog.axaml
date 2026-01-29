@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Lexichord.Host.ViewModels"
+        x:Class="Lexichord.Host.Views.SaveConfirmationDialog"
+        x:DataType="vm:SaveConfirmationViewModel"
+        Title="Save Changes"
+        Width="400"
+        Height="160"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+    
+    <Grid RowDefinitions="*, Auto" Margin="20">
+        <!-- Message -->
+        <StackPanel Grid.Row="0" VerticalAlignment="Center">
+            <TextBlock Text="Do you want to save changes to"
+                       TextWrapping="Wrap"
+                       FontSize="14" />
+            <TextBlock Text="{Binding DocumentTitle}"
+                       TextWrapping="Wrap"
+                       FontWeight="SemiBold"
+                       FontSize="14"
+                       Margin="0,4,0,0" />
+        </StackPanel>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,16,0,0">
+            <Button Content="Don't Save" 
+                    Command="{Binding DontSaveCommand}"
+                    Width="100" />
+            <Button Content="Cancel" 
+                    Command="{Binding CancelCommand}"
+                    Width="80" />
+            <Button Content="Save" 
+                    Command="{Binding SaveCommand}"
+                    Width="80"
+                    Classes="accent" />
+        </StackPanel>
+    </Grid>
+</Window>

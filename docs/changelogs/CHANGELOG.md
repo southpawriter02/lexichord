@@ -22,6 +22,8 @@ This release establishes a flexible, IDE-like docking system using `Dock.Avaloni
 
 - **Layout Serialization** — JSON-based layout persistence enables saving/loading workspace arrangements. Features named profiles, auto-save with debouncing, atomic file writes, and schema versioning for future migrations.
 
+- **Tab Infrastructure** — Core abstractions for document tabs including `IDocumentTab`, `DocumentViewModelBase`, and `ITabService`. Features dirty state tracking with visual indicators, pinning with automatic tab reordering, save confirmation dialogs, and a standard IDE context menu. MediatR integration enables lifecycle notifications for close, pin, and dirty state changes.
+
 - **MainWindowViewModel** — New ViewModel managing the dock layout lifecycle with proper DI integration.
 
 #### Why This Matters
@@ -30,10 +32,10 @@ This work enables:
 
 1. **Flexible Layouts** — Users can resize, drag, and rearrange panels to customize their workspace.
 2. **Module Panel Registration** — Modules can contribute tool panes and documents without knowledge of the docking library.
-3. **Future Serialization** — Stable IDs enable layout persistence in future sub-parts.
+3. **Document Management** — Documents can track unsaved changes, prompt for save on close, and respect pinned state.
 
 > [!NOTE]
-> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md), [LCS-CL-011b.md](./LCS-CL-011b.md), and [LCS-CL-011c.md](./LCS-CL-011c.md).
+> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md), [LCS-CL-011b.md](./LCS-CL-011b.md), [LCS-CL-011c.md](./LCS-CL-011c.md), and [LCS-CL-011d.md](./LCS-CL-011d.md).
 
 ---
 

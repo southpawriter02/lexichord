@@ -21,6 +21,9 @@
 
     <!-- v0.1.1a: Dock.Model (required for IDockable, IRootDock interfaces) -->
     <PackageReference Include="Dock.Model" Version="$(DockAvaloniaVersion)" />
+
+    <!-- v0.1.1d: CommunityToolkit.Mvvm (required for DocumentViewModelBase) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <!-- Allow unit tests to access internal types -->

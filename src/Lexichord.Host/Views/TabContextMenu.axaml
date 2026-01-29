@@ -1,0 +1,52 @@
+<MenuFlyout xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:CompileBindings="False">
+    
+    <!-- Close Operations -->
+    <MenuItem Header="_Close" 
+              Command="{Binding CloseCommand}"
+              InputGesture="Ctrl+W">
+        <MenuItem.Icon>
+            <PathIcon Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+        </MenuItem.Icon>
+    </MenuItem>
+    
+    <MenuItem Header="Close _All" 
+              Command="{Binding CloseAllCommand}" />
+    
+    <MenuItem Header="Close All _But This" 
+              Command="{Binding CloseAllButThisCommand}" />
+    
+    <MenuItem Header="Close to the _Right" 
+              Command="{Binding CloseToTheRightCommand}" />
+    
+    <Separator />
+    
+    <!-- Pin Operations -->
+    <MenuItem Header="{Binding PinMenuText}" 
+              Command="{Binding TogglePinCommand}">
+        <MenuItem.Icon>
+            <PathIcon Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+        </MenuItem.Icon>
+    </MenuItem>
+    
+    <Separator />
+    
+    <!-- File Operations (for file-based documents) -->
+    <MenuItem Header="Copy _Path" 
+              Command="{Binding CopyPathCommand}"
+              IsVisible="{Binding HasFilePath}">
+        <MenuItem.Icon>
+            <PathIcon Data="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
+        </MenuItem.Icon>
+    </MenuItem>
+    
+    <MenuItem Header="_Reveal in Explorer" 
+              Command="{Binding RevealInExplorerCommand}"
+              IsVisible="{Binding HasFilePath}">
+        <MenuItem.Icon>
+            <PathIcon Data="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" />
+        </MenuItem.Icon>
+    </MenuItem>
+    
+</MenuFlyout>

@@ -162,6 +162,10 @@ public static class HostServices
         services.AddSingleton<Lexichord.Abstractions.Layout.ILayoutService, Layout.JsonLayoutService>();
         services.AddSingleton<ViewModels.MainWindowViewModel>();
 
+        // LOGIC (v0.1.1d): Register tab infrastructure services
+        services.AddSingleton<Lexichord.Abstractions.Layout.ITabService, Layout.TabService>();
+        services.AddSingleton<Lexichord.Abstractions.Services.ISaveDialogService, Services.SaveDialogService>();
+
         return services;
     }
 }
