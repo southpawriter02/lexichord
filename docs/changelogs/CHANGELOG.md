@@ -6,6 +6,33 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.1.1] - 2026-01-28 (In Progress)
+
+### The Layout Engine (Docking System)
+
+This release establishes a flexible, IDE-like docking system using `Dock.Avalonia`. Modules can contribute documents and tool panes to resizable, draggable regions.
+
+#### What's New
+
+- **Dock Library Integration** — Integrated `Dock.Avalonia` to provide resizable splitters and draggable panels in the main window. Replaced static grid layout with a 4-region dock system (Left, Center, Right, Bottom).
+
+- **Layout Abstractions** — Created `IDockFactory`, `IDocument`, `ITool`, and `DockRegionConfig` interfaces that decouple modules from the docking library implementation.
+
+- **MainWindowViewModel** — New ViewModel managing the dock layout lifecycle with proper DI integration.
+
+#### Why This Matters
+
+This work enables:
+
+1. **Flexible Layouts** — Users can resize, drag, and rearrange panels to customize their workspace.
+2. **Module Panel Registration** — Modules can contribute tool panes and documents without knowledge of the docking library.
+3. **Future Serialization** — Stable IDs enable layout persistence in future sub-parts.
+
+> [!NOTE]
+> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md).
+
+---
+
 ## [v0.0.8] - 2026-01-29 (In Progress)
 
 ### The Hello World (Golden Skeleton)

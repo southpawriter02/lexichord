@@ -24,4 +24,9 @@
   <PropertyGroup>
     <FluentValidationVersion>11.9.2</FluentValidationVersion>
   </PropertyGroup>
+
+  <!-- v0.1.1a: Dock.Avalonia Version (centralized) -->
+  <PropertyGroup>
+    <DockAvaloniaVersion>11.1.0.1</DockAvaloniaVersion>
+  </PropertyGroup>
 </Project>

@@ -80,6 +80,25 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
+    /// Gets or sets the main window ViewModel.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.1a): When set, initializes the dock layout and sets as DataContext.
+    /// </remarks>
+    public ViewModels.MainWindowViewModel? ViewModel
+    {
+        get => DataContext as ViewModels.MainWindowViewModel;
+        set
+        {
+            DataContext = value;
+            if (value is not null)
+            {
+                value.InitializeLayout();
+            }
+        }
+    }
+
+    /// <summary>
     /// Initializes shell regions with module-contributed views.
     /// </summary>
     /// <remarks>

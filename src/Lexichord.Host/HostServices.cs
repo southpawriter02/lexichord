@@ -139,6 +139,26 @@ public static class HostServices
         services.AddSingleton<IServiceLocator>(sp => new ServiceLocator(sp));
         #pragma warning restore CS0618
 
+        // LOGIC (v0.1.1a): Register dock layout services
+        services.AddDockServices();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers dock layout services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The configured service collection for chaining.</returns>
+    /// <remarks>
+    /// LOGIC (v0.1.1a): Registers the dock factory and main window ViewModel
+    /// as singletons to ensure consistent layout state across the application.
+    /// </remarks>
+    public static IServiceCollection AddDockServices(this IServiceCollection services)
+    {
+        services.AddSingleton<Lexichord.Abstractions.Layout.IDockFactory, Layout.LexichordDockFactory>();
+        services.AddSingleton<ViewModels.MainWindowViewModel>();
+
         return services;
     }
 }

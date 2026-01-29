@@ -52,6 +52,11 @@
 
     <!-- v0.0.7d: FluentValidation Pipeline Integration -->
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="$(FluentValidationVersion)" />
+
+    <!-- v0.1.1a: Dock.Avalonia Docking System -->
+    <PackageReference Include="Dock.Avalonia" Version="$(DockAvaloniaVersion)" />
+    <PackageReference Include="Dock.Model.Avalonia" Version="$(DockAvaloniaVersion)" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="$(DockAvaloniaVersion)" />
   </ItemGroup>
 
   <ItemGroup>

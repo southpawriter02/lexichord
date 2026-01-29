@@ -47,6 +47,9 @@
 
     <!-- v0.0.7d: FluentValidation for validator testing -->
     <PackageReference Include="FluentValidation" Version="$(FluentValidationVersion)" />
+
+    <!-- v0.1.1a: Dock.Avalonia for layout testing -->
+    <PackageReference Include="Dock.Model.Avalonia" Version="$(DockAvaloniaVersion)" />
   </ItemGroup>
 
   <ItemGroup>

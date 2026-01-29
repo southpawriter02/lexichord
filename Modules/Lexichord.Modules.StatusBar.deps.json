@@ -108,6 +108,14 @@
           }
         }
       },
+      "Dock.Model/11.1.0.1": {
+        "runtime": {
+          "lib/net8.0/Dock.Model.dll": {
+            "assemblyVersion": "11.1.0.1",
+            "fileVersion": "11.1.0.1"
+          }
+        }
+      },
       "FluentValidation/11.9.2": {
         "runtime": {
           "lib/net8.0/FluentValidation.dll": {
@@ -327,6 +335,7 @@
       "Lexichord.Abstractions/1.0.0": {
         "dependencies": {
           "Dapper.Contrib": "2.0.78",
+          "Dock.Model": "11.1.0.1",
           "FluentValidation": "11.9.2",
           "MediatR.Contracts": "2.0.1",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
@@ -388,6 +397,13 @@
       "sha512": "sha512-sUfDVIf8LlHNiz3MfUFodeyRiemfN1JFkPxYjCxFWlwNPg1iQ49mB+0E89TkywWs4X8fiRWOVDQgtH5FtzK5Kw==",
       "path": "dapper.contrib/2.0.78",
       "hashPath": "dapper.contrib.2.0.78.nupkg.sha512"
+    },
+    "Dock.Model/11.1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-mIUZqu9JC1VXYc+NP39lZ3IjWEwlzv65Sb3ptGkv9LRYmZclLMuI9Do9beo6al3dwbAUNqTqE4EajNjTJ6U+pg==",
+      "path": "dock.model/11.1.0.1",
+      "hashPath": "dock.model.11.1.0.1.nupkg.sha512"
     },
     "FluentValidation/11.9.2": {
       "type": "package",

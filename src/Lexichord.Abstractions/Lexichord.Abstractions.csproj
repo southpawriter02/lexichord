@@ -18,6 +18,9 @@
 
     <!-- v0.0.7d: FluentValidation (required for IValidator<T> interface) -->
     <PackageReference Include="FluentValidation" Version="$(FluentValidationVersion)" />
+
+    <!-- v0.1.1a: Dock.Model (required for IDockable, IRootDock interfaces) -->
+    <PackageReference Include="Dock.Model" Version="$(DockAvaloniaVersion)" />
   </ItemGroup>
 
   <!-- Allow unit tests to access internal types -->

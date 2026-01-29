@@ -1,7 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="using:Lexichord.Host.Views.Shell"
+        xmlns:dock="using:Dock.Avalonia.Controls"
+        xmlns:vm="using:Lexichord.Host.ViewModels"
         x:Class="Lexichord.Host.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="Lexichord — The Orchestrator"
         Width="1400"
         Height="900"
@@ -28,18 +31,31 @@
              ═══════════════════════════════════════════════════════════════════ -->
         <shell:TopBar Grid.Row="0" />
 
-        <!-- ═══════════════════════════════════════════════════════════════════
+        <!-- ═══════════════════════════════════════════════════════
              ROW 1: CONTENT AREA
-             Contains NavigationRail (left) and ContentHost (center)
+             Contains the dock-based layout system with resizable panels
              Height: * (fills remaining space)
-             ═══════════════════════════════════════════════════════════════════ -->
+             ═══════════════════════════════════════════════════════ -->
         <Grid Grid.Row="1" ColumnDefinitions="60,*">
 
             <!-- Navigation Rail: Section switching icons -->
             <shell:NavigationRail Grid.Column="0" />
 
-            <!-- Content Host: Module views inject here -->
-            <shell:ContentHostPanel Grid.Column="1" x:Name="ContentHost" />
+            <!-- v0.1.1a: Dock-based Content Area -->
+            <dock:DockControl Grid.Column="1"
+                              Layout="{Binding Layout}"
+                              InitializeFactory="True"
+                              InitializeLayout="True">
+                <dock:DockControl.Styles>
+                    <!-- Consistent styling with Lexichord theme -->
+                    <Style Selector="dock|ToolChromeControl">
+                        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
+                    </Style>
+                    <Style Selector="dock|DocumentTabStripItem">
+                        <Setter Property="FontFamily" Value="{StaticResource InterFont}"/>
+                    </Style>
+                </dock:DockControl.Styles>
+            </dock:DockControl>
 
         </Grid>
 
