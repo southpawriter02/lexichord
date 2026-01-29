@@ -232,7 +232,10 @@ public partial class MainWindow : Window
         }
 
         // LOGIC: Restore theme preference
-        _themeManager?.SetTheme(state.Theme);
+        if (_themeManager is not null)
+        {
+            await _themeManager.SetThemeAsync(state.Theme);
+        }
     }
 
     /// <summary>

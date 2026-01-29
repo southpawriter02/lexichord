@@ -10,8 +10,10 @@ namespace Lexichord.Host.Views.Shell;
 /// <remarks>
 /// LOGIC: The StatusBar contains the theme toggle button which:
 /// 1. Displays 🌙 (moon) for dark mode, ☀️ (sun) for light mode
-/// 2. Calls ThemeManager.ToggleTheme() on click
+/// 2. Cycles through Light -> Dark -> System on click
 /// 3. Updates icon when ThemeChanged event fires
+///
+/// Version: v0.1.6b - Updated for async theme manager
 /// </remarks>
 public partial class StatusBar : UserControl
 {
@@ -42,15 +44,29 @@ public partial class StatusBar : UserControl
     /// <summary>
     /// Handles the theme toggle button click.
     /// </summary>
-    private void OnThemeToggleClick(object? sender, RoutedEventArgs e)
+    /// <remarks>
+    /// LOGIC (v0.1.6b): Cycles through Light -> Dark -> System themes.
+    /// </remarks>
+    private async void OnThemeToggleClick(object? sender, RoutedEventArgs e)
     {
-        _themeManager?.ToggleTheme();
+        if (_themeManager is null) return;
+
+        // LOGIC: Cycle through themes based on current selection
+        var nextTheme = _themeManager.CurrentTheme switch
+        {
+            ThemeMode.Light => ThemeMode.Dark,
+            ThemeMode.Dark => ThemeMode.System,
+            ThemeMode.System => ThemeMode.Light,
+            _ => ThemeMode.System
+        };
+
+        await _themeManager.SetThemeAsync(nextTheme);
     }
 
     /// <summary>
     /// Handles theme changed events.
     /// </summary>
-    private void OnThemeChanged(object? sender, ThemeMode mode)
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs args)
     {
         UpdateThemeIcon();
     }
@@ -63,7 +79,7 @@ public partial class StatusBar : UserControl
         if (_themeIcon is null || _themeManager is null)
             return;
 
-        var effective = _themeManager.GetEffectiveTheme();
-        _themeIcon.Text = effective == ThemeMode.Dark ? "🌙" : "☀️";
+        var effective = _themeManager.EffectiveTheme;
+        _themeIcon.Text = effective == ThemeVariant.Dark ? "🌙" : "☀️";
     }
 }

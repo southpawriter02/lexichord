@@ -1,7 +1,9 @@
 using Avalonia;
-using Avalonia.Styling;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Events;
+using AvaloniaThemeVariant = Avalonia.Styling.ThemeVariant;
 
 namespace Lexichord.Host.Services;
 
@@ -17,11 +19,14 @@ namespace Lexichord.Host.Services;
 ///
 /// Our Colors.Dark.axaml and Colors.Light.axaml define matching brush keys,
 /// so all controls update seamlessly when the variant changes.
+///
+/// Version: v0.1.6b - Updated with async methods, EffectiveTheme, and MediatR events.
 /// </remarks>
 public sealed class ThemeManager : IThemeManager
 {
     private readonly Application _application;
     private readonly ILogger<ThemeManager> _logger;
+    private readonly IMediator _mediator;
     private ThemeMode _currentTheme = ThemeMode.System;
 
     /// <summary>
@@ -29,10 +34,15 @@ public sealed class ThemeManager : IThemeManager
     /// </summary>
     /// <param name="application">The Avalonia application instance (injected via DI).</param>
     /// <param name="logger">The logger instance for diagnostics.</param>
-    public ThemeManager(Application application, ILogger<ThemeManager> logger)
+    /// <param name="mediator">The MediatR instance for publishing events.</param>
+    public ThemeManager(
+        Application application,
+        ILogger<ThemeManager> logger,
+        IMediator mediator)
     {
         _application = application ?? throw new ArgumentNullException(nameof(application));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
         _logger.LogDebug("ThemeManager initialized");
 
@@ -47,47 +57,72 @@ public sealed class ThemeManager : IThemeManager
     public ThemeMode CurrentTheme => _currentTheme;
 
     /// <inheritdoc/>
-    public event EventHandler<ThemeMode>? ThemeChanged;
+    public ThemeVariant EffectiveTheme => GetEffectiveThemeVariant();
 
     /// <inheritdoc/>
-    public void SetTheme(ThemeMode mode)
+    public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
+
+    /// <inheritdoc/>
+    public async Task SetThemeAsync(ThemeMode theme)
     {
-        if (_currentTheme == mode)
+        if (_currentTheme == theme)
         {
-            _logger.LogDebug("Theme already set to {Theme}, ignoring", mode);
+            _logger.LogDebug("Theme already set to {Theme}, ignoring", theme);
             return;
         }
 
         var oldTheme = _currentTheme;
-        _currentTheme = mode;
-        ApplyTheme(mode);
-        ThemeChanged?.Invoke(this, mode);
+        _currentTheme = theme;
+        ApplyTheme(theme);
 
-        _logger.LogInformation("Theme changed from {OldTheme} to {NewTheme}", oldTheme, mode);
+        var effectiveTheme = EffectiveTheme;
+        var eventArgs = new ThemeChangedEventArgs(oldTheme, theme, effectiveTheme);
+
+        // Raise the standard event
+        ThemeChanged?.Invoke(this, eventArgs);
+
+        // Publish MediatR notification for cross-module awareness
+        await _mediator.Publish(new ThemeChangedEvent
+        {
+            OldTheme = oldTheme,
+            NewTheme = theme,
+            EffectiveTheme = effectiveTheme
+        });
+
+        _logger.LogInformation(
+            "Theme changed from {OldTheme} to {NewTheme} (effective: {EffectiveTheme})",
+            oldTheme,
+            theme,
+            effectiveTheme);
     }
 
     /// <inheritdoc/>
-    public void ToggleTheme()
+    public ThemeVariant GetSystemTheme()
     {
-        // LOGIC: Toggle based on effective theme, not preference
-        var effective = GetEffectiveTheme();
-        var newMode = effective == ThemeMode.Dark ? ThemeMode.Light : ThemeMode.Dark;
-        
-        _logger.LogDebug("Toggling theme from effective {EffectiveTheme} to {NewMode}", effective, newMode);
-        
-        SetTheme(newMode);
+        // LOGIC: Query Avalonia's platform settings for current color scheme
+        var colorScheme = _application.PlatformSettings?.GetColorValues();
+
+        // LOGIC: PlatformThemeVariant is an enum that matches Avalonia's ThemeVariant names
+        // We check if the platform is using dark mode
+        var isDark = colorScheme?.ThemeVariant == Avalonia.Platform.PlatformThemeVariant.Dark;
+
+        return isDark ? ThemeVariant.Dark : ThemeVariant.Light;
     }
 
-    /// <inheritdoc/>
-    public ThemeMode GetEffectiveTheme()
+    /// <summary>
+    /// Gets the effective theme variant being displayed.
+    /// </summary>
+    private ThemeVariant GetEffectiveThemeVariant()
     {
         if (_currentTheme != ThemeMode.System)
-            return _currentTheme;
+        {
+            return _currentTheme == ThemeMode.Dark
+                ? ThemeVariant.Dark
+                : ThemeVariant.Light;
+        }
 
-        // LOGIC: Resolve system theme by checking Avalonia's actual theme variant
-        return _application.ActualThemeVariant == ThemeVariant.Dark
-            ? ThemeMode.Dark
-            : ThemeMode.Light;
+        // LOGIC: Resolve system theme
+        return GetSystemTheme();
     }
 
     /// <summary>
@@ -99,23 +134,40 @@ public sealed class ThemeManager : IThemeManager
         // LOGIC: Map our ThemeMode to Avalonia's ThemeVariant
         _application.RequestedThemeVariant = mode switch
         {
-            ThemeMode.Dark => ThemeVariant.Dark,
-            ThemeMode.Light => ThemeVariant.Light,
-            ThemeMode.System => ThemeVariant.Default,
-            _ => ThemeVariant.Default
+            ThemeMode.Dark => AvaloniaThemeVariant.Dark,
+            ThemeMode.Light => AvaloniaThemeVariant.Light,
+            ThemeMode.System => AvaloniaThemeVariant.Default,
+            _ => AvaloniaThemeVariant.Default
         };
     }
 
     /// <summary>
     /// Handles platform color values changed event.
     /// </summary>
-    private void OnPlatformColorValuesChanged(object? sender, Avalonia.Platform.PlatformColorValues e)
+    private async void OnPlatformColorValuesChanged(
+        object? sender,
+        Avalonia.Platform.PlatformColorValues e)
     {
         // LOGIC: Only re-raise event if we're in System mode
         if (_currentTheme == ThemeMode.System)
         {
             _logger.LogDebug("Platform color values changed while in System mode");
-            ThemeChanged?.Invoke(this, ThemeMode.System);
+
+            var effectiveTheme = GetSystemTheme();
+            var eventArgs = new ThemeChangedEventArgs(
+                ThemeMode.System,
+                ThemeMode.System,
+                effectiveTheme);
+
+            ThemeChanged?.Invoke(this, eventArgs);
+
+            // Publish MediatR notification
+            await _mediator.Publish(new ThemeChangedEvent
+            {
+                OldTheme = ThemeMode.System,
+                NewTheme = ThemeMode.System,
+                EffectiveTheme = effectiveTheme
+            });
         }
     }
 }

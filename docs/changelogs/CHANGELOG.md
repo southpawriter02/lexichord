@@ -10,7 +10,7 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ### The Settings Framework
 
-This release establishes the centralized settings UI framework, enabling modules to contribute configuration pages to a unified Settings dialog.
+This release establishes the centralized settings UI framework, enabling modules to contribute configuration pages to a unified Settings dialog, with live theme preview as the first module-contributed settings page.
 
 #### What's New
 
@@ -20,6 +20,8 @@ This release establishes the centralized settings UI framework, enabling modules
 
 - **Settings Window** — Modal dialog with split-panel layout (220px navigation tree, flexible content area), search box, TreeView navigation, and keyboard shortcuts (Ctrl+,, Escape).
 
+- **Live Theme Preview** — Real-time theme switching from the Appearance settings page. Select Light, Dark, or System themes with instant visual feedback. OS theme synchronization for System mode.
+
 - **Module Integration** — Modules implement `ISettingsPage` interface and register via `ISettingsPageRegistry` during initialization. Pages support hierarchical nesting via `ParentCategoryId`.
 
 #### Sub-Part Changelogs
@@ -27,6 +29,7 @@ This release establishes the centralized settings UI framework, enabling modules
 | Version                   | Title                     | Status      |
 | ------------------------- | ------------------------- | ----------- |
 | [v0.1.6a](LCS-CL-016a.md) | Settings Dialog Framework | ✅ Complete |
+| [v0.1.6b](LCS-CL-016b.md) | Live Theme Preview        | ✅ Complete |
 
 ---
 

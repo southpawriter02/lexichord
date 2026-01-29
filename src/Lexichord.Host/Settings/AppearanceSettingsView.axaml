@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Lexichord.Host.Settings"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+             x:Class="Lexichord.Host.Settings.AppearanceSettingsView"
+             x:DataType="settings:AppearanceSettingsViewModel">
+
+    <!-- LOGIC: Simple theme selection UI with RadioButtons.
+         Each button binds to a command that applies the theme immediately.
+         Version: v0.1.6b -->
+
+    <StackPanel Margin="16" Spacing="16">
+        <!-- Theme Selection Section -->
+        <TextBlock Text="Theme"
+                   Classes="h2"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8" />
+
+        <TextBlock Text="Choose how Lexichord looks."
+                   Classes="description"
+                   Foreground="{DynamicResource SecondaryForegroundBrush}"
+                   Margin="0,0,0,12" />
+
+        <StackPanel Spacing="8">
+            <!-- Light Theme Option -->
+            <RadioButton GroupName="ThemeGroup"
+                         IsChecked="{Binding IsLightSelected, Mode=OneWay}"
+                         Command="{Binding SelectLightThemeCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource SunIcon}"
+                              Width="16"
+                              Height="16" />
+                    <TextBlock Text="Light"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </RadioButton>
+
+            <!-- Dark Theme Option -->
+            <RadioButton GroupName="ThemeGroup"
+                         IsChecked="{Binding IsDarkSelected, Mode=OneWay}"
+                         Command="{Binding SelectDarkThemeCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource MoonIcon}"
+                              Width="16"
+                              Height="16" />
+                    <TextBlock Text="Dark"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </RadioButton>
+
+            <!-- System Theme Option -->
+            <RadioButton GroupName="ThemeGroup"
+                         IsChecked="{Binding IsSystemSelected, Mode=OneWay}"
+                         Command="{Binding SelectSystemThemeCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource ComputerIcon}"
+                              Width="16"
+                              Height="16" />
+                    <TextBlock Text="System"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+
+        <TextBlock Text="Match your operating system's appearance setting."
+                   Classes="hint"
+                   FontSize="12"
+                   Foreground="{DynamicResource TertiaryForegroundBrush}"
+                   Margin="24,4,0,0" />
+    </StackPanel>
+</UserControl>

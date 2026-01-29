@@ -272,7 +272,7 @@ public partial class App : Application
         var savedState = windowStateService.LoadAsync().GetAwaiter().GetResult();
         if (savedState is not null)
         {
-            themeManager.SetTheme(savedState.Theme);
+            themeManager.SetThemeAsync(savedState.Theme).GetAwaiter().GetResult();
         }
     }
 

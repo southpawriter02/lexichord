@@ -50,7 +50,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage> { page });
         _registryMock.Setup(r => r.GetChildPages("root"))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
 
@@ -75,7 +75,7 @@ public class SettingsViewModelTests
         _registryMock.Setup(r => r.GetChildPages(It.IsAny<string>()))
             .Returns(new List<ISettingsPage>());
         _registryMock.Setup(r => r.GetPage("page2")).Returns(page2);
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         var options = new SettingsWindowOptions(InitialCategoryId: "page2");
@@ -96,7 +96,9 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage>());
         _registryMock.Setup(r => r.GetChildPages(null))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _registryMock.Setup(r => r.SearchPages(It.IsAny<string>(), It.IsAny<LicenseTier>()))
+            .Returns(new List<ISettingsPage>());
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         var options = new SettingsWindowOptions(SearchQuery: "editor");
@@ -120,7 +122,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage> { page1, page2 });
         _registryMock.Setup(r => r.GetChildPages(It.IsAny<string>()))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
 
@@ -149,7 +151,7 @@ public class SettingsViewModelTests
         _registryMock.Setup(r => r.GetChildPages(It.IsAny<string>()))
             .Returns(new List<ISettingsPage>());
         _registryMock.Setup(r => r.GetPage("page2")).Returns(page2);
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         viewModel.Initialize();
@@ -174,7 +176,7 @@ public class SettingsViewModelTests
         _registryMock.Setup(r => r.GetChildPages(It.IsAny<string>()))
             .Returns(new List<ISettingsPage>());
         _registryMock.Setup(r => r.GetPage("nonexistent")).Returns((ISettingsPage?)null);
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         viewModel.Initialize();
@@ -202,7 +204,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage> { page });
         _registryMock.Setup(r => r.GetChildPages(It.IsAny<string>()))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         viewModel.Initialize();
@@ -226,7 +228,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage> { page });
         _registryMock.Setup(r => r.GetChildPages(It.IsAny<string>()))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
 
@@ -256,7 +258,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage> { child });
         _registryMock.Setup(r => r.GetChildPages("child"))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
 
@@ -282,7 +284,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage>());
         _registryMock.Setup(r => r.GetChildPages(null))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         viewModel.Initialize();
@@ -292,7 +294,7 @@ public class SettingsViewModelTests
 
         // Assert
         _mediatorMock.Verify(
-            m => m.Publish(It.IsAny<Abstractions.Events.SettingsClosedEvent>(), It.IsAny<CancellationToken>()),
+            m => m.Publish(It.IsAny<Lexichord.Abstractions.Events.SettingsClosedEvent>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -304,7 +306,7 @@ public class SettingsViewModelTests
             .Returns(new List<ISettingsPage>());
         _registryMock.Setup(r => r.GetChildPages(null))
             .Returns(new List<ISettingsPage>());
-        _licenseContextMock.Setup(l => l.CurrentTier).Returns(LicenseTier.Core);
+        _licenseContextMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Core);
 
         var viewModel = CreateViewModel();
         viewModel.Initialize();

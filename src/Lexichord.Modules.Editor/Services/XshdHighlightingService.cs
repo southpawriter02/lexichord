@@ -132,7 +132,7 @@ public sealed class XshdHighlightingService : ISyntaxHighlightingService, IDispo
         }
 
         // LOGIC: Initialize theme from current app theme
-        _currentTheme = MapThemeModeToEditorTheme(_themeManager.GetEffectiveTheme());
+        _currentTheme = MapThemeVariantToEditorTheme(_themeManager.EffectiveTheme);
 
         // LOGIC: Subscribe to theme changes
         _themeManager.ThemeChanged += OnThemeChanged;
@@ -384,20 +384,20 @@ public sealed class XshdHighlightingService : ISyntaxHighlightingService, IDispo
     /// <summary>
     /// Handles theme change events from the theme manager.
     /// </summary>
-    private void OnThemeChanged(object? sender, ThemeMode newTheme)
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs args)
     {
-        var editorTheme = MapThemeModeToEditorTheme(newTheme);
+        var editorTheme = MapThemeVariantToEditorTheme(args.EffectiveTheme);
         SetTheme(editorTheme);
     }
 
     /// <summary>
-    /// Maps application ThemeMode to EditorTheme.
+    /// Maps ThemeVariant to EditorTheme.
     /// </summary>
-    private static EditorTheme MapThemeModeToEditorTheme(ThemeMode themeMode)
+    private static EditorTheme MapThemeVariantToEditorTheme(ThemeVariant themeVariant)
     {
-        return themeMode switch
+        return themeVariant switch
         {
-            ThemeMode.Dark => EditorTheme.Dark,
+            ThemeVariant.Dark => EditorTheme.Dark,
             _ => EditorTheme.Light
         };
     }

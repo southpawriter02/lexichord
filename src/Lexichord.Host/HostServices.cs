@@ -174,6 +174,10 @@ public static class HostServices
         services.AddSingleton<ISettingsPageRegistry, SettingsPageRegistry>();
         services.AddTransient<SettingsViewModel>();
 
+        // LOGIC (v0.1.6b): Register appearance settings for live theme preview
+        services.AddTransient<Settings.AppearanceSettingsViewModel>();
+        services.AddSingleton<ISettingsPage, Settings.Pages.AppearanceSettingsPage>();
+
         return services;
     }
 

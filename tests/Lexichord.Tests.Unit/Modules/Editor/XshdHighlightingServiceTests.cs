@@ -17,7 +17,8 @@ public class XshdHighlightingServiceTests : IDisposable
     public XshdHighlightingServiceTests()
     {
         _themeManagerMock = new Mock<IThemeManager>();
-        _themeManagerMock.Setup(x => x.GetEffectiveTheme()).Returns(ThemeMode.Light);
+        _themeManagerMock.Setup(x => x.EffectiveTheme).Returns(ThemeVariant.Light);
+        _themeManagerMock.Setup(x => x.CurrentTheme).Returns(ThemeMode.Light);
 
         _sut = new XshdHighlightingService(
             _themeManagerMock.Object,
@@ -322,7 +323,8 @@ public class XshdHighlightingServiceTests : IDisposable
     {
         // Arrange
         var darkThemeManager = new Mock<IThemeManager>();
-        darkThemeManager.Setup(x => x.GetEffectiveTheme()).Returns(ThemeMode.Dark);
+        darkThemeManager.Setup(x => x.EffectiveTheme).Returns(ThemeVariant.Dark);
+        darkThemeManager.Setup(x => x.CurrentTheme).Returns(ThemeMode.Dark);
 
         // Act
         using var service = new XshdHighlightingService(
@@ -340,8 +342,14 @@ public class XshdHighlightingServiceTests : IDisposable
         var eventRaised = false;
         _sut.HighlightingChanged += (_, _) => eventRaised = true;
 
+        // Create event args for theme change
+        var eventArgs = new ThemeChangedEventArgs(
+            ThemeMode.Light,
+            ThemeMode.Dark,
+            ThemeVariant.Dark);
+
         // Act - simulate theme manager raising event
-        _themeManagerMock.Raise(x => x.ThemeChanged += null, _themeManagerMock.Object, ThemeMode.Dark);
+        _themeManagerMock.Raise(x => x.ThemeChanged += null, _themeManagerMock.Object, eventArgs);
 
         // Assert
         _sut.CurrentTheme.Should().Be(EditorTheme.Dark);
