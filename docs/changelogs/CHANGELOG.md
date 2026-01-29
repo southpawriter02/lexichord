@@ -26,7 +26,13 @@ This release introduces **The Rulebook**, the Style Module that enables governed
     - `StyleViolation` record with line/column positions, `GetSurroundingContext()` for match preview
     - `StyleSheet` record with `MergeWith()` for rule inheritance, filtering methods, and `Empty` singleton
 
-- **Stub Services** — Skeleton implementations for `YamlStyleSheetLoader` and `FileSystemStyleWatcher` ready for full implementation in upcoming sub-parts.
+- **YAML Deserializer** — Full YamlDotNet integration for loading style sheets:
+    - YAML DTOs with snake_case to PascalCase mapping
+    - Schema validation with helpful error messages (required fields, kebab-case IDs, enum validation)
+    - Embedded `lexichord.yaml` with 26 default rules across Terminology, Formatting, and Syntax categories
+    - `ValidateYaml()` for editor-side syntax checking before save
+
+- **Stub Services** — Skeleton implementation for `FileSystemStyleWatcher` ready for hot-reload in v0.2.1d.
 
 #### Philosophy: Concordance
 
@@ -40,7 +46,7 @@ The Rulebook provides governed writing environments where style guides are appli
 | -------------------------------- | ------------------ | ----------- |
 | [v0.2.1a](v0.2.x/LCS-CL-021a.md) | Module Scaffolding | ✅ Complete |
 | [v0.2.1b](v0.2.x/LCS-CL-021b.md) | Rule Object Model  | ✅ Complete |
-| v0.2.1c                          | YAML Loading       | 🔲 Planned  |
+| [v0.2.1c](v0.2.x/LCS-CL-021c.md) | YAML Deserializer  | ✅ Complete |
 | v0.2.1d                          | Hot Reload         | 🔲 Planned  |
 
 ---

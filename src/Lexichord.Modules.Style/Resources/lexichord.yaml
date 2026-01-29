@@ -1,0 +1,256 @@
+# Lexichord Default Style Guide
+# Version: 0.2.1
+# Author: Lexichord Team
+# Description: Out-of-the-box style rules for technical writing
+
+name: Lexichord Default
+version: "0.2.1"
+author: Lexichord Team
+description: Standard style rules for clear, consistent technical writing
+
+rules:
+  # ============================================================================
+  # TERMINOLOGY RULES - Word choice and jargon avoidance
+  # ============================================================================
+
+  - id: no-jargon
+    name: Avoid Jargon
+    description: Replace corporate jargon with plain language
+    category: terminology
+    severity: warning
+    pattern: \b(leverage|synergy|paradigm|holistic|bandwidth|circle back|touch base)\b
+    pattern_type: regex
+    suggestion: Use plain language instead of business jargon
+
+  - id: no-click-here
+    name: Avoid "Click Here"
+    description: Use descriptive link text instead of generic "click here"
+    category: terminology
+    severity: warning
+    pattern: \b[Cc]lick\s+[Hh]ere\b
+    pattern_type: regex
+    suggestion: Use descriptive link text that explains where the link goes
+
+  - id: prefer-you
+    name: Prefer "You" Over "User"
+    description: Address readers directly for better engagement
+    category: terminology
+    severity: info
+    pattern: \b[Tt]he\s+user\s+(should|must|can|will)\b
+    pattern_type: regex
+    suggestion: Try "You can..." instead of "The user can..."
+
+  - id: no-very
+    name: Avoid "Very"
+    description: Remove filler words that add no meaning
+    category: terminology
+    severity: hint
+    pattern: \bvery\b
+    pattern_type: literal_ignore_case
+    suggestion: Remove "very" or use a more precise word
+
+  - id: no-really
+    name: Avoid "Really"
+    description: Remove filler words that add no meaning
+    category: terminology
+    severity: hint
+    pattern: \breally\b
+    pattern_type: literal_ignore_case
+    suggestion: Remove "really" or use a more precise word
+
+  - id: prefer-inclusive-guys
+    name: Avoid "Guys"
+    description: Use gender-neutral language
+    category: terminology
+    severity: info
+    pattern: \b[Gg]uys\b
+    pattern_type: regex
+    suggestion: Use "everyone", "team", or "folks" instead
+
+  - id: no-simply
+    name: Avoid "Simply"
+    description: What's simple to you may not be simple to readers
+    category: terminology
+    severity: info
+    pattern: \b[Ss]imply\b
+    pattern_type: regex
+    suggestion: Remove "simply" - it can seem dismissive
+
+  - id: no-obviously
+    name: Avoid "Obviously"
+    description: If it were obvious, you wouldn't need to write it
+    category: terminology
+    severity: info
+    pattern: \b[Oo]bviously\b
+    pattern_type: regex
+    suggestion: Remove "obviously" - explain instead of assuming
+
+  - id: no-basically
+    name: Avoid "Basically"
+    description: Filler word that weakens technical explanations
+    category: terminology
+    severity: hint
+    pattern: \b[Bb]asically\b
+    pattern_type: regex
+    suggestion: Remove "basically" and explain directly
+
+  - id: no-just
+    name: Avoid "Just"
+    description: Minimizing language that can frustrate readers
+    category: terminology
+    severity: hint
+    pattern: \b[Jj]ust\b
+    pattern_type: regex
+    suggestion: Consider removing "just" - it may minimize complexity
+
+  # ============================================================================
+  # FORMATTING RULES - Document structure and consistency
+  # ============================================================================
+
+  - id: no-trailing-whitespace
+    name: No Trailing Whitespace
+    description: Lines should not end with spaces or tabs
+    category: formatting
+    severity: warning
+    pattern: "[ \t]+$"
+    pattern_type: regex
+    suggestion: Remove trailing whitespace
+
+  - id: no-multiple-blank-lines
+    name: No Multiple Blank Lines
+    description: Use single blank lines between sections
+    category: formatting
+    severity: info
+    pattern: \n{3,}
+    pattern_type: regex
+    suggestion: Reduce to a single blank line
+
+  - id: heading-space-after-hash
+    name: Space After Heading Hash
+    description: Markdown headings need space after the hash marks
+    category: formatting
+    severity: error
+    pattern: ^#{1,6}[^# \n]
+    pattern_type: regex
+    suggestion: Add a space after the # characters
+
+  - id: no-tabs
+    name: No Tab Characters
+    description: Use spaces for consistent indentation
+    category: formatting
+    severity: info
+    pattern: \t
+    pattern_type: regex
+    suggestion: Replace tabs with spaces
+
+  - id: todo-comment
+    name: TODO Comment Found
+    description: Address TODO items before publishing
+    category: formatting
+    severity: warning
+    pattern: TODO
+    pattern_type: literal
+    suggestion: Address this TODO item or create a tracking issue
+
+  - id: fixme-comment
+    name: FIXME Comment Found
+    description: Address FIXME items before publishing
+    category: formatting
+    severity: error
+    pattern: FIXME
+    pattern_type: literal
+    suggestion: Address this FIXME item before publishing
+
+  - id: xxx-comment
+    name: XXX Marker Found
+    description: Development markers should be removed
+    category: formatting
+    severity: warning
+    pattern: XXX
+    pattern_type: literal
+    suggestion: Remove development markers
+
+  - id: consistent-list-markers
+    name: Inconsistent List Markers
+    description: Use consistent markers for unordered lists
+    category: formatting
+    severity: hint
+    pattern: ^(\*|\+) 
+    pattern_type: regex
+    suggestion: Consider using - for all unordered list items
+
+  # ============================================================================
+  # SYNTAX RULES - Grammar and sentence structure
+  # ============================================================================
+
+  - id: no-passive-voice
+    name: Avoid Passive Voice
+    description: Prefer active voice for clearer writing
+    category: syntax
+    severity: info
+    pattern: \b(is|are|was|were|be|been|being)\s+(being\s+)?\w+ed\b
+    pattern_type: regex
+    suggestion: Try rewriting in active voice
+
+  - id: no-double-negative
+    name: No Double Negatives
+    description: Double negatives confuse readers
+    category: syntax
+    severity: warning
+    pattern: \b(not|n't)\s+\w+\s+(not|n't|never|no|none)\b
+    pattern_type: regex
+    suggestion: Rewrite to use positive phrasing
+
+  - id: no-weasel-words
+    name: Avoid Weasel Words
+    description: Be specific instead of using vague qualifiers
+    category: syntax
+    severity: info
+    pattern: \b(some|many|most|few|various|several|often|sometimes|frequently)\b
+    pattern_type: regex
+    suggestion: Be specific - how many? how often?
+
+  - id: no-future-tense
+    name: Prefer Present Tense
+    description: Documentation describes current behavior
+    category: syntax
+    severity: hint
+    pattern: \b(will\s+be|is\s+going\s+to)\b
+    pattern_type: regex
+    suggestion: Use present tense to describe current functionality
+
+  - id: no-exclamation
+    name: Limit Exclamation Marks
+    description: Exclamation marks can seem unprofessional
+    category: syntax
+    severity: hint
+    pattern: "!"
+    pattern_type: literal
+    suggestion: Consider removing the exclamation mark
+
+  - id: sentence-start-and
+    name: Sentence Starting with "And"
+    description: Starting sentences with conjunctions can be informal
+    category: syntax
+    severity: hint
+    pattern: ^And\s
+    pattern_type: regex
+    suggestion: Consider rephrasing to avoid starting with "And"
+
+  - id: sentence-start-but
+    name: Sentence Starting with "But"
+    description: Starting sentences with conjunctions can be informal
+    category: syntax
+    severity: hint
+    pattern: ^But\s
+    pattern_type: regex
+    suggestion: Consider using "However" or rephrasing
+
+  - id: repeated-word
+    name: Repeated Word
+    description: Avoid repeating words adjacent to each other
+    category: syntax
+    severity: warning
+    pattern: \b(\w+)\s+\1\b
+    pattern_type: regex
+    suggestion: Remove the repeated word
