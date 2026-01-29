@@ -22,12 +22,15 @@ This release integrates Velopack for native platform packaging and auto-updates.
 
 - **Signing Infrastructure** — CI pipeline for code signing Windows executables (PFX/SignTool) and macOS applications (Developer ID/Notarization). Signed binaries avoid SmartScreen and Gatekeeper security warnings.
 
+- **Release Notes Viewer** — Automatic display of `CHANGELOG.md` after updates. First-run detection compares stored vs. current version, opening release notes in a new editor tab. Settings persist to track run history and installation ID.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                  | Status      |
 | -------------------------------- | ---------------------- | ----------- |
 | [v0.1.7a](v0.1.x/LCS-CL-017a.md) | Velopack Integration   | ✅ Complete |
 | [v0.1.7b](v0.1.x/LCS-CL-017b.md) | Signing Infrastructure | ✅ Complete |
+| [v0.1.7c](v0.1.x/LCS-CL-017c.md) | Release Notes Viewer   | ✅ Complete |
 
 ---
 

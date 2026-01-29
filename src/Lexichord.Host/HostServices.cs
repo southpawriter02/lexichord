@@ -194,6 +194,9 @@ public static class HostServices
         services.AddTransient<Settings.UpdatesSettingsViewModel>();
         services.AddSingleton<ISettingsPage, Settings.Pages.UpdatesSettingsPage>();
 
+        // LOGIC (v0.1.7c): Register first run service for update detection and release notes
+        services.AddSingleton<IFirstRunService, Services.FirstRunService>();
+
 
         return services;
     }

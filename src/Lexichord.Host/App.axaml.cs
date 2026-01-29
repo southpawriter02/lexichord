@@ -117,6 +117,11 @@ public partial class App : Application
             InitializeLayoutAsync().GetAwaiter().GetResult();
             Log.Information("Layout initialized");
 
+            Log.Information("Handling first run detection...");
+            // LOGIC (v0.1.7c): Handle first run scenarios after layout is ready
+            HandleFirstRunAsync().GetAwaiter().GetResult();
+            Log.Information("First run handling complete");
+
             Log.Information("Registering exception handlers...");
             // LOGIC: Register global exception handlers (v0.0.3c)
             RegisterExceptionHandlers();
@@ -326,6 +331,62 @@ public partial class App : Application
         }
     }
 
+    /// <summary>
+    /// Handles first run scenarios after updates.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.7c): First run handling:
+    /// 1. Check if this is first run after update
+    /// 2. Open CHANGELOG.md in editor if release notes should display
+    /// 3. Mark run as completed to update stored version
+    /// </remarks>
+    private async Task HandleFirstRunAsync()
+    {
+        var firstRunService = _serviceProvider!.GetRequiredService<IFirstRunService>();
+
+        if (firstRunService.IsFirstRunAfterUpdate)
+        {
+            Log.Information(
+                "First run after update detected: {Previous} -> {Current}",
+                firstRunService.PreviousVersion,
+                firstRunService.CurrentVersion);
+
+            // Try to open CHANGELOG.md in editor
+            var editorService = _serviceProvider!.GetService<Lexichord.Abstractions.Contracts.Editor.IEditorService>();
+            if (editorService is not null && File.Exists(firstRunService.ChangelogPath))
+            {
+                try
+                {
+                    await editorService.OpenDocumentAsync(firstRunService.ChangelogPath);
+                    Log.Information("Opened release notes: {Path}", firstRunService.ChangelogPath);
+
+                    // Publish event for analytics
+                    var mediator = _serviceProvider!.GetRequiredService<MediatR.IMediator>();
+                    await mediator.Publish(new Lexichord.Abstractions.Events.ReleaseNotesDisplayedEvent(
+                        firstRunService.CurrentVersion,
+                        DateTimeOffset.UtcNow));
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "Failed to open release notes, falling back to toast");
+                    // TODO: Show toast notification as fallback
+                }
+            }
+            else if (!File.Exists(firstRunService.ChangelogPath))
+            {
+                Log.Warning("CHANGELOG.md not found at {Path}", firstRunService.ChangelogPath);
+            }
+        }
+        else if (firstRunService.IsFirstRunEver)
+        {
+            Log.Information("First run ever detected: Version={Version}", firstRunService.CurrentVersion);
+            // TODO: Show welcome screen for fresh installations
+        }
+
+        // Mark run as completed to update stored version
+        await firstRunService.MarkRunCompletedAsync();
+    }
+
     private void OnShutdownRequested(object? sender, Avalonia.Controls.ApplicationLifetimes.ShutdownRequestedEventArgs e)
     {
         Log.Information("Application shutdown requested, disposing services");
@@ -335,3 +396,4 @@ public partial class App : Application
         _serviceProvider?.Dispose();
     }
 }
+

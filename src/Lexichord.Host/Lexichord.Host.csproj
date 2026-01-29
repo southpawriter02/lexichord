@@ -95,4 +95,12 @@
     </None>
   </ItemGroup>
 
+  <!-- v0.1.7c: Bundle CHANGELOG.md for Release Notes Viewer -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../../docs/changelogs/CHANGELOG.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>CHANGELOG.md</Link>
+    </None>
+  </ItemGroup>
+
 </Project>
