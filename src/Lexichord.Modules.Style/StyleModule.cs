@@ -1,4 +1,5 @@
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Modules.Style.Data;
 using Lexichord.Modules.Style.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -49,6 +50,15 @@ public sealed class StyleModule : IModule
 
         // LOGIC: File system watcher for live reload
         services.AddSingleton<IStyleConfigurationWatcher, FileSystemStyleWatcher>();
+
+        // LOGIC: v0.2.2b - Memory cache for terminology lookups
+        services.AddMemoryCache();
+
+        // LOGIC: v0.2.2b - Configure terminology cache options
+        services.Configure<TerminologyCacheOptions>(options => { });
+
+        // LOGIC: v0.2.2b - Terminology repository with caching
+        services.AddSingleton<ITerminologyRepository, TerminologyRepository>();
     }
 
     /// <inheritdoc/>

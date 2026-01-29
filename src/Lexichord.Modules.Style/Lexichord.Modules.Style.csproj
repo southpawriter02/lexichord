@@ -24,6 +24,14 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
 
+    <!-- v0.2.2b: Caching for terminology lookups -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+
+    <!-- v0.2.2b: Dapper for database access -->
+    <PackageReference Include="Dapper" Version="2.1.35" />
+
     <!-- MediatR for events -->
     <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
   </ItemGroup>

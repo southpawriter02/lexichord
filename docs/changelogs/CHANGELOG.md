@@ -16,11 +16,14 @@ This release introduces **The Lexicon**, a persistent database for managing styl
 
 - **Style Terms Schema** — Database table for storing terminology entries within style sheets. Supports term-replacement pairs, categorization, severity levels, and soft-disable via `IsActive` flag. Includes fuzzy search via PostgreSQL's `pg_trgm` extension.
 
+- **Terminology Repository** — High-performance data access layer with `IMemoryCache` integration. Provides O(1) active term lookups via cached HashSet, with automatic cache invalidation on write operations.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                  | Status      |
 | -------------------------------- | ---------------------- | ----------- |
 | [v0.2.2a](v0.2.x/LCS-CL-022a.md) | Style Schema Migration | ✅ Complete |
+| [v0.2.2b](v0.2.x/LCS-CL-022b.md) | Repository Layer       | ✅ Complete |
 
 ---
 
