@@ -1,0 +1,163 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:local="clr-namespace:Lexichord.Modules.Workspace.Views"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Workspace.ViewModels"
+             xmlns:models="clr-namespace:Lexichord.Modules.Workspace.Models"
+             mc:Ignorable="d"
+             d:DesignWidth="300" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Workspace.Views.ProjectExplorerView"
+             x:DataType="vm:ProjectExplorerViewModel">
+
+    <UserControl.Styles>
+        <!-- Tree item hover effect -->
+        <Style Selector="TreeViewItem:pointerover > Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+        </Style>
+
+        <!-- Selected item style -->
+        <Style Selector="TreeViewItem:selected > Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListAccentLowBrush}" />
+        </Style>
+
+        <!-- File/folder row style -->
+        <Style Selector="StackPanel.file-row">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="6" />
+            <Setter Property="Height" Value="24" />
+        </Style>
+
+        <!-- Icon styling -->
+        <Style Selector="mi|MaterialIcon">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+        </Style>
+
+        <!-- Toolbar button style -->
+        <Style Selector="Button.toolbar-btn">
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="MinWidth" Value="28" />
+            <Setter Property="MinHeight" Value="28" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Toolbar -->
+        <Border Grid.Row="0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <!-- Refresh button -->
+                <Button Classes="toolbar-btn"
+                        ToolTip.Tip="Refresh"
+                        Command="{Binding RefreshCommand}">
+                    <mi:MaterialIcon Kind="Refresh" />
+                </Button>
+
+                <!-- Expand All button -->
+                <Button Classes="toolbar-btn"
+                        ToolTip.Tip="Expand All"
+                        Command="{Binding ExpandAllCommand}">
+                    <mi:MaterialIcon Kind="UnfoldMoreHorizontal" />
+                </Button>
+
+                <!-- Collapse All button -->
+                <Button Classes="toolbar-btn"
+                        ToolTip.Tip="Collapse All"
+                        Command="{Binding CollapseAllCommand}">
+                    <mi:MaterialIcon Kind="UnfoldLessHorizontal" />
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Main content area -->
+        <Panel Grid.Row="1">
+            <!-- Tree View (visible when workspace is open) -->
+            <TreeView Name="FileTree"
+                      ItemsSource="{Binding RootNodes}"
+                      SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                      IsVisible="{Binding HasWorkspace}"
+                      DoubleTapped="OnTreeDoubleTapped">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Children}"
+                                      x:DataType="models:FileTreeNode">
+                        <StackPanel Classes="file-row"
+                                    VerticalAlignment="Center">
+                            <!-- File/Folder Icon -->
+                            <mi:MaterialIcon Kind="{Binding IconKind}"
+                                             Foreground="{Binding IsDirectory,
+                                                 Converter={StaticResource BoolToColorConverter},
+                                                 ConverterParameter=folder}" />
+
+                            <!-- Name (display mode) -->
+                            <TextBlock Text="{Binding Name}"
+                                       IsVisible="{Binding !IsEditing}"
+                                       VerticalAlignment="Center" />
+
+                            <!-- Name (edit mode) -->
+                            <TextBox Text="{Binding EditName}"
+                                     IsVisible="{Binding IsEditing}"
+                                     Name="EditNameTextBox"
+                                     MinWidth="100"
+                                     VerticalAlignment="Center"
+                                     KeyDown="OnEditKeyDown"
+                                     LostFocus="OnEditLostFocus" />
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+
+            <!-- Loading overlay -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    IsVisible="{Binding IsLoading}"
+                    Opacity="0.8"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="150" />
+                    <TextBlock Text="Loading..."
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- Empty state (no workspace open) -->
+            <StackPanel IsVisible="{Binding !HasWorkspace}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="12">
+                <mi:MaterialIcon Kind="FolderOpenOutline"
+                                 Width="48"
+                                 Height="48"
+                                 Opacity="0.5" />
+                <TextBlock Text="No folder open"
+                           HorizontalAlignment="Center"
+                           Opacity="0.7" />
+                <Button Content="Open Folder"
+                        HorizontalAlignment="Center"
+                        Padding="16,8"
+                        Classes="accent" />
+            </StackPanel>
+        </Panel>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="8,4">
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontSize="11"
+                       Opacity="0.7" />
+        </Border>
+    </Grid>
+
+    <UserControl.Resources>
+        <!-- Simple converter for folder icon color (can be expanded) -->
+        <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+    </UserControl.Resources>
+</UserControl>

@@ -1,5 +1,8 @@
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Layout;
 using Lexichord.Modules.Workspace.Services;
+using Lexichord.Modules.Workspace.ViewModels;
+using Lexichord.Modules.Workspace.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -42,6 +45,12 @@ public sealed class WorkspaceModule : IModule
 
         // File system watcher (robust implementation from v0.1.2b)
         services.AddSingleton<IFileSystemWatcher, RobustFileSystemWatcher>();
+
+        // v0.1.2c: File system access for tree view
+        services.AddSingleton<IFileSystemAccess, FileSystemAccess>();
+
+        // v0.1.2c: Project Explorer ViewModel (transient for per-view instances)
+        services.AddTransient<ProjectExplorerViewModel>();
     }
 
     /// <inheritdoc/>
@@ -61,8 +70,33 @@ public sealed class WorkspaceModule : IModule
             logger.LogDebug("WorkspaceService resolved successfully, IsWorkspaceOpen: {IsOpen}",
                 workspaceService.IsWorkspaceOpen);
 
-            // NOTE: ProjectExplorerView registration will be added in v0.1.2c
-            // when the view and view model are implemented
+            // v0.1.2c: Register ProjectExplorerView in the Left dock region
+            var regionManager = provider.GetService<IRegionManager>();
+            if (regionManager != null)
+            {
+                logger.LogDebug("Registering ProjectExplorerView in Left region");
+
+                await regionManager.RegisterToolAsync(
+                    region: ShellRegion.Left,
+                    id: "workspace.project-explorer",
+                    title: "Explorer",
+                    viewFactory: sp =>
+                    {
+                        var vm = sp.GetRequiredService<ProjectExplorerViewModel>();
+                        var view = new ProjectExplorerView { DataContext = vm };
+                        return view;
+                    },
+                    options: new ToolRegistrationOptions(
+                        ActivateOnRegister: true,
+                        CanClose: false
+                    ));
+
+                logger.LogInformation("ProjectExplorerView registered in Left region");
+            }
+            else
+            {
+                logger.LogWarning("IRegionManager not available, ProjectExplorerView not registered");
+            }
 
             logger.LogInformation("{ModuleName} module initialized successfully", Info.Name);
         }
@@ -71,8 +105,6 @@ public sealed class WorkspaceModule : IModule
             logger.LogError(ex, "Failed to initialize {ModuleName} module", Info.Name);
             throw;
         }
-
-        await Task.CompletedTask;
     }
 
     /// <inheritdoc/>

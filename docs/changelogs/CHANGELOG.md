@@ -29,6 +29,13 @@ This release establishes workspace and project management capabilities, enabling
 
 - **External File Changes Event** — `ExternalFileChangesEvent` MediatR notification enables modules to react to file system changes detected by the watcher.
 
+- **Tree View UI (Project Explorer)** — Hierarchical file browser with:
+    - **Material Design Icons** — File type icons based on extension (programming, documents, etc.)
+    - **Lazy Loading** — Directory contents loaded on-demand when expanded
+    - **Smart Sorting** — Directories before files, alphabetical within each category
+    - **Live Updates** — Tree updates automatically when external file changes are detected
+    - **MediatR Integration** — Publishes `FileOpenRequestedEvent` when files are opened
+
 #### Why This Matters
 
 This work enables:
@@ -39,7 +46,7 @@ This work enables:
 4. **Reliable File Watching** — External edits (git checkout, npm install, IDE refactors) are detected reliably without event storms.
 
 > [!NOTE]
-> For detailed technical changes, see [LCS-CL-012a.md](./LCS-CL-012a.md) and [LCS-CL-012b.md](./LCS-CL-012b.md).
+> For detailed technical changes, see [LCS-CL-012a.md](./LCS-CL-012a.md), [LCS-CL-012b.md](./LCS-CL-012b.md), and [LCS-CL-012c.md](./LCS-CL-012c.md).
 
 ---
 
@@ -308,9 +315,11 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.1.2 Sub-Parts
 
-| Document                        | Sub-Part | Title             |
-| :------------------------------ | :------- | :---------------- |
-| [LCS-CL-012a](./LCS-CL-012a.md) | v0.1.2a  | Workspace Service |
+| Document                        | Sub-Part | Title               |
+| :------------------------------ | :------- | :------------------ |
+| [LCS-CL-012a](./LCS-CL-012a.md) | v0.1.2a  | Workspace Service   |
+| [LCS-CL-012b](./LCS-CL-012b.md) | v0.1.2b  | File System Watcher |
+| [LCS-CL-012c](./LCS-CL-012c.md) | v0.1.2c  | Tree View UI        |
 
 ### v0.1.1 Sub-Parts
 
