@@ -20,7 +20,14 @@ This release establishes workspace and project management capabilities, enabling
 
 - **Path Validation** — `WorkspaceInfo.ContainsPath()` provides security-aware path validation, preventing directory traversal attacks when filtering files.
 
-- **File System Watcher Interface** — Abstraction layer for file change detection (v0.1.2a stub, full implementation in v0.1.2b).
+- **Robust File System Watcher** — Production-ready file change detection with:
+    - **Debouncing** — Accumulates rapid changes (default 100ms) to prevent event storms
+    - **Batching** — Emits grouped changes as single events for efficiency
+    - **Ignore Patterns** — Configurable glob patterns to filter `.git`, `node_modules`, temp files, etc.
+    - **Buffer Overflow Detection** — Signals need for directory rescan when OS buffer overflows
+    - **Error Recovery** — Automatic restart attempts (up to 3) on watcher failures
+
+- **External File Changes Event** — `ExternalFileChangesEvent` MediatR notification enables modules to react to file system changes detected by the watcher.
 
 #### Why This Matters
 
@@ -28,10 +35,11 @@ This work enables:
 
 1. **Project Context** — The application can track which project folder is open, enabling file-aware features.
 2. **Recent Projects** — Users can quickly reopen previously used workspaces.
-3. **Cross-Module Coordination** — Other modules can react to workspace changes via MediatR events.
+3. **Cross-Module Coordination** — Other modules can react to workspace and file changes via MediatR events.
+4. **Reliable File Watching** — External edits (git checkout, npm install, IDE refactors) are detected reliably without event storms.
 
 > [!NOTE]
-> For detailed technical changes, see [LCS-CL-012a.md](./LCS-CL-012a.md).
+> For detailed technical changes, see [LCS-CL-012a.md](./LCS-CL-012a.md) and [LCS-CL-012b.md](./LCS-CL-012b.md).
 
 ---
 

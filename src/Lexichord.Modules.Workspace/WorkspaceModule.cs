@@ -40,8 +40,8 @@ public sealed class WorkspaceModule : IModule
         // Workspace state management
         services.AddSingleton<IWorkspaceService, WorkspaceService>();
 
-        // File system watcher (stub implementation for v0.1.2a, real implementation in v0.1.2b)
-        services.AddSingleton<IFileSystemWatcher, StubFileSystemWatcher>();
+        // File system watcher (robust implementation from v0.1.2b)
+        services.AddSingleton<IFileSystemWatcher, RobustFileSystemWatcher>();
     }
 
     /// <inheritdoc/>

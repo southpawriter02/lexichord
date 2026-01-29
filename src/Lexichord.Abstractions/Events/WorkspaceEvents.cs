@@ -1,3 +1,4 @@
+using Lexichord.Abstractions.Contracts;
 using MediatR;
 
 namespace Lexichord.Abstractions.Events;
@@ -35,3 +36,22 @@ public record WorkspaceOpenedEvent(
 public record WorkspaceClosedEvent(
     string WorkspaceRootPath
 ) : INotification;
+
+/// <summary>
+/// Event published when external file system changes are detected in the workspace.
+/// </summary>
+/// <param name="Changes">Collection of detected file system changes.</param>
+/// <remarks>
+/// LOGIC: Published by WorkspaceService when the file system watcher detects changes:
+/// - Batched changes are received from IFileSystemWatcher.ChangesDetected
+/// - Each change includes type (Created, Changed, Deleted, Renamed), path, and directory status
+///
+/// Handlers can use this to:
+/// - Update file tree views
+/// - Invalidate caches
+/// - Refresh content displays
+/// </remarks>
+public record ExternalFileChangesEvent(
+    IReadOnlyList<FileSystemChangeInfo> Changes
+) : INotification;
+

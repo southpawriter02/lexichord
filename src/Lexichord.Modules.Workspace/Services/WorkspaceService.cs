@@ -54,7 +54,8 @@ public sealed class WorkspaceService : IWorkspaceService, IDisposable
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        // Wire up file watcher error handling
+        // Wire up file watcher event handlers
+        _fileWatcher.ChangesDetected += OnFileChangesDetected;
         _fileWatcher.Error += OnFileWatcherError;
     }
 
@@ -294,9 +295,28 @@ public sealed class WorkspaceService : IWorkspaceService, IDisposable
         }
     }
 
+    /// <summary>
+    /// Handles file changes detected by the watcher.
+    /// </summary>
+    private async void OnFileChangesDetected(object? sender, FileSystemChangeBatchEventArgs e)
+    {
+        _logger.LogDebug("File changes detected: {Count} items", e.Changes.Count);
+
+        try
+        {
+            // LOGIC: Publish MediatR event for cross-module notification
+            await _mediator.Publish(new ExternalFileChangesEvent(e.Changes));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error publishing external file changes event");
+        }
+    }
+
     /// <inheritdoc/>
     public void Dispose()
     {
+        _fileWatcher.ChangesDetected -= OnFileChangesDetected;
         _fileWatcher.Error -= OnFileWatcherError;
     }
 }

@@ -29,4 +29,10 @@
     <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Allow test projects to access internal members -->
+    <InternalsVisibleTo Include="Lexichord.Tests.Unit" />
+    <InternalsVisibleTo Include="Lexichord.Tests.Integration" />
+  </ItemGroup>
+
 </Project>
