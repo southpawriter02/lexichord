@@ -1,6 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Lexichord.Host.Views.Shell.TopBar">
+             xmlns:vm="using:Lexichord.Host.ViewModels"
+             x:Class="Lexichord.Host.Views.Shell.TopBar"
+             x:DataType="vm:OpenRecentMenuViewModel">
 
     <!--
     ═══════════════════════════════════════════════════════════════════════════
@@ -42,6 +44,38 @@
                            FontSize="{StaticResource FontSizeMD}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
+
+                <!-- LOGIC (v0.1.4d): Menu Bar with File menu -->
+                <Menu VerticalAlignment="Center" 
+                      FontSize="{StaticResource FontSizeMD}"
+                      Margin="24,0,0,0">
+                    <MenuItem Header="_File">
+                        <!-- Open Recent submenu - populated from OpenRecentMenuViewModel -->
+                        <MenuItem Header="Open _Recent" 
+                                  x:Name="OpenRecentMenuItem"
+                                  ItemsSource="{Binding RecentFiles}">
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate x:DataType="vm:RecentFileMenuItemViewModel">
+                                    <TextBlock Text="{Binding DisplayText}" 
+                                               ToolTip.Tip="{Binding ToolTip}"/>
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                            <MenuItem.Styles>
+                                <Style Selector="MenuItem > MenuItem" x:DataType="vm:RecentFileMenuItemViewModel">
+                                    <Setter Property="Command" Value="{Binding OpenCommand}"/>
+                                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
+                                </Style>
+                            </MenuItem.Styles>
+                        </MenuItem>
+                        <MenuItem Header="_Clear Recent Files" 
+                                  Command="{Binding ClearHistoryCommand}"
+                                  IsEnabled="{Binding HasRecentFiles}"/>
+                        <Separator/>
+                        <MenuItem Header="_Exit" 
+                                  Click="OnExitClick"
+                                  InputGesture="Alt+F4"/>
+                    </MenuItem>
+                </Menu>
             </StackPanel>
 
             <!-- Center: Spacer (future: document tabs) -->

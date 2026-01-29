@@ -5,6 +5,7 @@ using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Host.Infrastructure;
 using Lexichord.Host.Services;
+using Lexichord.Host.ViewModels;
 using System;
 using System.Collections.Generic;
 
@@ -145,6 +146,12 @@ public static class HostServices
         // LOGIC (v0.1.4c): Register shutdown service for safe close workflow
         // Coordinates dirty document checking and save confirmation on close
         services.AddSingleton<IShutdownService, ShutdownService>();
+
+        // LOGIC (v0.1.4d): Register recent files services for MRU history
+        services.Configure<RecentFilesOptions>(
+            configuration.GetSection(RecentFilesOptions.SectionName));
+        services.AddSingleton<IRecentFilesService, RecentFilesService>();
+        services.AddSingleton<OpenRecentMenuViewModel>();
 
         return services;
     }

@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-28 (v0.0.6a added)                                             |
+| **Last Updated** | 2026-01-29 (v0.1.4d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -68,6 +68,7 @@
 | `IFileService`                | v0.1.4b    | Abstractions | Atomic file I/O                              |
 | `IShutdownService`            | v0.1.4c    | Abstractions | Safe close workflow                          |
 | `IRecentFilesService`         | v0.1.4d    | Abstractions | MRU file history                             |
+| `IRecentFilesRepository`      | v0.1.4d    | Abstractions | MRU file data access                         |
 | `ICommandRegistry`            | v0.1.5a    | Abstractions | Command registration                         |
 | `IFileIndexService`           | v0.1.5c    | Abstractions | Workspace file indexing                      |
 | `IKeyBindingService`          | v0.1.5d    | Abstractions | Keyboard shortcut management                 |
@@ -710,6 +711,7 @@
 | `DocumentSavedEvent`            | v0.1.4b    | Document saved                    |
 | `DocumentClosedEvent`           | v0.1.4c    | Document tab closed               |
 | `DocumentDirtyChangedEvent`     | v0.1.4a    | Dirty state changed               |
+| `FileOpenedEvent`               | v0.1.4d    | File opened (for MRU tracking)    |
 | `CommandExecutedEvent`          | v0.1.5b    | Command invoked                   |
 | `ThemeChangedEvent`             | v0.1.6b    | Theme selection changed           |
 | `StyleSheetReloadedEvent`       | v0.2.1d    | Style rules reloaded              |

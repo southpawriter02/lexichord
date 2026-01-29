@@ -20,6 +20,8 @@ This release establishes file I/O and document persistence capabilities, startin
 
 - **Safe Close Workflow** — Window close interception prompts users to save unsaved changes. Modal dialog offers Save All, Discard All, or Cancel options. Prevents accidental data loss when closing with dirty documents.
 
+- **Recent Files History** — MRU (Most Recently Used) file tracking with database persistence. Files automatically tracked when opened and displayed in "File > Open Recent" menu. Missing files shown as disabled with option to prune.
+
 #### Sub-Part Changelogs
 
 | Version                   | Title                | Status      |
@@ -27,6 +29,7 @@ This release establishes file I/O and document persistence capabilities, startin
 | [v0.1.4a](LCS-CL-014a.md) | Dirty State Tracking | ✅ Complete |
 | [v0.1.4b](LCS-CL-014b.md) | Atomic Saves         | ✅ Complete |
 | [v0.1.4c](LCS-CL-014c.md) | Safe Close Workflow  | ✅ Complete |
+| [v0.1.4d](LCS-CL-014d.md) | Recent Files History | ✅ Complete |
 
 ---
 

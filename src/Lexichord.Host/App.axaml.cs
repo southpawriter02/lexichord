@@ -64,6 +64,17 @@ public partial class App : Application
             SerilogExtensions.ConfigureSerilog(configuration);
             Log.Information("Avalonia framework initialized, building DI container");
 
+            // LOGIC (v0.0.5c): Check for migration commands BEFORE building full DI container
+            // This allows migrations to run without initializing the UI
+            if (TryProcessMigrationCommand(desktop.Args ?? [], configuration))
+            {
+                // LOGIC: Migration command processed - exit immediately
+                // We use Environment.Exit instead of desktop.Shutdown because the
+                // Avalonia dispatcher is not yet fully initialized at this point
+                Environment.Exit(0);
+                return;
+            }
+
             // Build DI container
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(configuration);
@@ -108,6 +119,45 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Processes migration commands if present in arguments.
+    /// </summary>
+    /// <param name="args">Command-line arguments.</param>
+    /// <param name="configuration">Application configuration.</param>
+    /// <returns>True if a migration command was processed (app should exit).</returns>
+    /// <remarks>
+    /// LOGIC (v0.0.5c): Migration commands require:
+    /// 1. Minimal DI setup (just database and migration services)
+    /// 2. No UI initialization
+    /// 3. Exit after completion
+    /// </remarks>
+    private static bool TryProcessMigrationCommand(string[] args, IConfiguration configuration)
+    {
+        // Quick check - if no --migrate arg, skip expensive setup
+        if (!args.Any(a => a.StartsWith("--migrate", StringComparison.OrdinalIgnoreCase)))
+        {
+            return false;
+        }
+
+        Log.Information("Migration command detected, initializing migration services");
+
+        // Build minimal service collection for migrations only
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddLogging(builder => builder.AddSerilog(Log.Logger));
+
+        // Register database and migration services
+        Lexichord.Infrastructure.InfrastructureServices.AddDatabaseServices(services, configuration);
+        Lexichord.Infrastructure.Migrations.MigrationServices.AddMigrationServices(services);
+
+        using var provider = services.BuildServiceProvider();
+
+        var migrationRunner = provider.GetRequiredService<Lexichord.Infrastructure.Migrations.IMigrationRunner>();
+        var logger = provider.GetRequiredService<ILogger<App>>();
+
+        return Commands.MigrationCommand.ProcessMigrationArgs(args, migrationRunner, logger);
     }
 
     /// <summary>
