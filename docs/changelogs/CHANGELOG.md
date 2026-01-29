@@ -20,6 +20,8 @@ This release establishes the keyboard-centric command system that enables rapid 
 
 - **File Jumper** — Workspace file indexing service enabling fast file search via the Command Palette. Features background indexing with progress reporting, fuzzy file name matching, LRU-based recent files tracking, and incremental updates from file system watcher events. Configurable ignore patterns and binary file filtering.
 
+- **Keybinding Service** — User-customizable keyboard shortcuts for commands with JSON-based configuration persistence. Features conflict detection with context-aware filtering, file watching for hot-reload, and platform-agnostic gesture processing. Gestures like Ctrl+S, Ctrl+Shift+P are routed to commands registered in the Command Registry.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title              | Status      |
@@ -27,6 +29,7 @@ This release establishes the keyboard-centric command system that enables rapid 
 | [v0.1.5a](LCS-CL-015a.md)        | Command Registry   | ✅ Complete |
 | [v0.1.5b](LCS-CL-015b.md)        | Command Palette UI | ✅ Complete |
 | [v0.1.5c](v0.1.x/LCS-CL-015c.md) | File Jumper        | ✅ Complete |
+| [v0.1.5d](LCS-CL-015d.md)        | Keybinding Service | ✅ Complete |
 
 ---
 
@@ -426,6 +429,7 @@ Each major version has detailed technical changelogs organized by sub-part:
 | [LCS-CL-015a](./LCS-CL-015a.md)        | v0.1.5a  | Command Registry   |
 | [LCS-CL-015b](./LCS-CL-015b.md)        | v0.1.5b  | Command Palette UI |
 | [LCS-CL-015c](./v0.1.x/LCS-CL-015c.md) | v0.1.5c  | File Jumper        |
+| [LCS-CL-015d](./LCS-CL-015d.md)        | v0.1.5d  | Keybinding Service |
 
 ### v0.1.2 Sub-Parts
 

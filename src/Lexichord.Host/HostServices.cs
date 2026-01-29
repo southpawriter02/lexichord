@@ -167,6 +167,9 @@ public static class HostServices
             configuration.GetSection(FileIndexSettings.SectionName));
         services.AddSingleton<IFileIndexService, FileIndexService>();
 
+        // LOGIC (v0.1.5d): Register keybinding service for keyboard shortcut management
+        services.AddSingleton<IKeyBindingService, KeyBindingManager>();
+
         return services;
     }
 

@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private IShutdownService? _shutdownService;
     private Abstractions.Contracts.Editor.IFileService? _fileService;
     private ICommandPaletteService? _commandPaletteService;
+    private IKeyBindingService? _keyBindingService;
     private bool _closeConfirmed;
 
     /// <summary>
@@ -141,6 +142,18 @@ public partial class MainWindow : Window
     {
         get => _commandPaletteService;
         set => _commandPaletteService = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the keybinding service.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.5d): Routes key events to registered command shortcuts.
+    /// </remarks>
+    public IKeyBindingService? KeyBindingService
+    {
+        get => _keyBindingService;
+        set => _keyBindingService = value;
     }
 
     /// <summary>
@@ -291,14 +304,28 @@ public partial class MainWindow : Window
     /// Handles keyboard input for global shortcuts.
     /// </summary>
     /// <remarks>
-    /// LOGIC (v0.1.5b): Temporary handler for Ctrl+Shift+P until IKeyBindingService is implemented.
+    /// LOGIC (v0.1.5d): Routes key events through IKeyBindingService for command execution.
+    /// Falls back to hardcoded shortcuts for palette commands if service unavailable.
     /// </remarks>
     private async void OnMainWindowKeyDown(object? sender, KeyEventArgs e)
     {
-        // LOGIC: Ctrl+Shift+P opens Command Palette
+        // LOGIC (v0.1.5d): Use keybinding service for global shortcut routing
+        if (_keyBindingService is Services.KeyBindingManager keyBindingManager)
+        {
+            // Get current context (could be enhanced to detect focused component)
+            var context = GetCurrentContext();
+            if (keyBindingManager.TryHandleKeyEvent(e, context))
+            {
+                return; // Event was handled by a registered command
+            }
+        }
+
+        // LOGIC: Fallback for palette commands (registered commands may not exist yet)
+        // Ctrl+Shift+P opens Command Palette
         if (e.Key == Key.P &&
             e.KeyModifiers.HasFlag(KeyModifiers.Control) &&
-            e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+            e.KeyModifiers.HasFlag(KeyModifiers.Shift) &&
+            !e.Handled)
         {
             if (_commandPaletteService is not null)
             {
@@ -307,9 +334,10 @@ public partial class MainWindow : Window
             }
         }
 
-        // LOGIC: Ctrl+P opens File Palette (v0.1.5c stub)
+        // LOGIC: Ctrl+P opens File Palette
         if (e.Key == Key.P &&
-            e.KeyModifiers == KeyModifiers.Control)
+            e.KeyModifiers == KeyModifiers.Control &&
+            !e.Handled)
         {
             if (_commandPaletteService is not null)
             {
@@ -317,5 +345,20 @@ public partial class MainWindow : Window
                 e.Handled = true;
             }
         }
+    }
+
+    /// <summary>
+    /// Determines the current UI context for context-aware keybindings.
+    /// </summary>
+    /// <returns>Context string like "editorFocus" or null for global.</returns>
+    /// <remarks>
+    /// LOGIC (v0.1.5d): Returns a context identifier based on the currently focused element.
+    /// This enables context-aware keyboard shortcuts.
+    /// </remarks>
+    private static string? GetCurrentContext()
+    {
+        // TODO (v0.1.5d): Implement focus-based context detection
+        // For now, return null (global context)
+        return null;
     }
 }
