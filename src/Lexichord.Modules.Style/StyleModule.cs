@@ -59,6 +59,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.2b - Terminology repository with caching
         services.AddSingleton<ITerminologyRepository, TerminologyRepository>();
+
+        // LOGIC: v0.2.2c - Terminology seeder with embedded defaults
+        services.AddSingleton<ITerminologySeeder, TerminologySeeder>();
     }
 
     /// <inheritdoc/>
@@ -92,6 +95,17 @@ public sealed class StyleModule : IModule
                 "Style module initialized with {RuleCount} rules from '{SheetName}'",
                 defaultSheet.Rules.Count,
                 defaultSheet.Name);
+
+            // LOGIC: v0.2.2c - Seed terminology database with default terms
+            var seeder = provider.GetRequiredService<ITerminologySeeder>();
+            var seedResult = await seeder.SeedIfEmptyAsync();
+            if (seedResult.WasEmpty)
+            {
+                _logger.LogInformation(
+                    "Seeded {Count} style terms in {Duration}ms",
+                    seedResult.TermsSeeded,
+                    seedResult.Duration.TotalMilliseconds);
+            }
 
             // LOGIC: v0.2.1d - Start file watcher for live reload
             // The watcher internally checks for WriterPro license tier

@@ -128,7 +128,12 @@ public class StyleModuleTests
         module.RegisterServices(services);
 
         // Assert
-        services.Should().OnlyContain(sd => sd.Lifetime == ServiceLifetime.Singleton);
+        // LOGIC: Filter to only Lexichord services (exclude framework services from AddMemoryCache)
+        var lexichordServices = services.Where(sd =>
+            sd.ServiceType.FullName?.StartsWith("Lexichord") == true ||
+            sd.ImplementationType?.FullName?.StartsWith("Lexichord") == true);
+
+        lexichordServices.Should().OnlyContain(sd => sd.Lifetime == ServiceLifetime.Singleton);
     }
 
     [Fact]
