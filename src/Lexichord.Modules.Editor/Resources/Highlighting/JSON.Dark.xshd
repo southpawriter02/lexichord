@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JSON syntax highlighting for Lexichord (Dark Theme) -->
+<SyntaxDefinition name="JSON"
+                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="PropertyKey" foreground="#79C0FF" />
+  <Color name="String" foreground="#A5D6FF" />
+  <Color name="Number" foreground="#79C0FF" />
+  <Color name="Boolean" foreground="#FF7B72" fontWeight="bold" />
+  <Color name="Null" foreground="#FF7B72" fontWeight="bold" />
+  <Color name="Punctuation" foreground="#C9D1D9" />
+
+  <RuleSet ignoreCase="false">
+
+    <!-- Property keys (before colon) -->
+    <Span color="PropertyKey">
+      <Begin>"</Begin>
+      <End>"(?=\s*:)</End>
+    </Span>
+
+    <!-- String values -->
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Rule foreground="#7EE787">\\.</Rule>
+      </RuleSet>
+    </Span>
+
+    <!-- Numbers -->
+    <Rule color="Number">
+      -?\d+\.?\d*([eE][+-]?\d+)?
+    </Rule>
+
+    <!-- Boolean and null -->
+    <Keywords color="Boolean">
+      <Word>true</Word>
+      <Word>false</Word>
+    </Keywords>
+
+    <Keywords color="Null">
+      <Word>null</Word>
+    </Keywords>
+
+    <!-- Punctuation -->
+    <Rule color="Punctuation">
+      [\[\]\{\}:,]
+    </Rule>
+
+  </RuleSet>
+</SyntaxDefinition>

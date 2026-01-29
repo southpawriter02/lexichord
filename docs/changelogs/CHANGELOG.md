@@ -14,7 +14,9 @@ This release establishes the core text editing infrastructure using AvaloniaEdit
 
 #### What's New
 
-- **AvaloniaEdit Integration** — High-performance text editor based on AvaloniaEdit 11.1.0, supporting large documents with syntax highlighting (to come in v0.1.3b).
+- **AvaloniaEdit Integration** — High-performance text editor based on AvaloniaEdit 11.1.0, supporting large documents with syntax highlighting.
+
+- **Syntax Highlighting Service** — Theme-aware syntax highlighting for Markdown, JSON, YAML, and XML with automatic theme adaptation. XSHD definitions loaded from embedded resources with light/dark variants.
 
 - **ManuscriptViewModel** — Document ViewModel extending `DocumentViewModelBase` with full editor state management including caret position, selection tracking, and document statistics.
 
@@ -29,7 +31,8 @@ This release establishes the core text editing infrastructure using AvaloniaEdit
 This work enables:
 
 - Professional-quality text editing experience for technical writers
-- Foundation for syntax highlighting, search, and other editor features
+- Syntax highlighting for common technical writing formats
+- Foundation for search and other editor features
 - Live document statistics (line/word/character counts) for writers
 
 #### Sub-Part Changelogs
@@ -37,7 +40,7 @@ This work enables:
 | Version                   | Title                            | Status      |
 | ------------------------- | -------------------------------- | ----------- |
 | [v0.1.3a](LCS-CL-013a.md) | AvalonEdit Integration           | ✅ Complete |
-| v0.1.3b                   | Syntax Highlighting              | 🔜 Planned  |
+| [v0.1.3b](LCS-CL-013b.md) | Syntax Highlighting              | ✅ Complete |
 | v0.1.3c                   | Search Overlay                   | 🔜 Planned  |
 | v0.1.3d                   | Editor Configuration Persistence | 🔜 Planned  |
 

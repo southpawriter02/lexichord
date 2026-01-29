@@ -39,6 +39,9 @@ public class EditorModule : IModule
         services.AddSingleton<IEditorConfigurationService, EditorConfigurationService>();
         services.AddSingleton<IEditorService, EditorService>();
 
+        // LOGIC: v0.1.3b - Register syntax highlighting service
+        services.AddSingleton<ISyntaxHighlightingService, XshdHighlightingService>();
+
         // LOGIC: Register views and view models as transient (new instance per document)
         services.AddTransient<ManuscriptViewModel>();
     }
@@ -52,6 +55,10 @@ public class EditorModule : IModule
         // LOGIC: Load editor configuration
         var configService = provider.GetRequiredService<IEditorConfigurationService>();
         await configService.LoadSettingsAsync();
+
+        // LOGIC: v0.1.3b - Pre-load syntax highlighting definitions
+        var highlightingService = provider.GetRequiredService<ISyntaxHighlightingService>();
+        await highlightingService.LoadDefinitionsAsync();
 
         _logger.LogInformation("Editor module initialized successfully");
     }

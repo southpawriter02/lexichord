@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- XML syntax highlighting for Lexichord (Light Theme) -->
+<SyntaxDefinition name="XML"
+                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="Comment" foreground="#57606A" fontStyle="italic" />
+  <Color name="CData" foreground="#0A3069" background="#F6F8FA" />
+  <Color name="Declaration" foreground="#CF222E" />
+  <Color name="Tag" foreground="#116329" />
+  <Color name="AttributeName" foreground="#0550AE" />
+  <Color name="AttributeValue" foreground="#0A3069" />
+  <Color name="Entity" foreground="#CF222E" />
+  <Color name="DocType" foreground="#8250DF" />
+
+  <RuleSet ignoreCase="false">
+
+    <!-- XML Declaration -->
+    <Span color="Declaration" multiline="false">
+      <Begin>&lt;\?xml</Begin>
+      <End>\?&gt;</End>
+    </Span>
+
+    <!-- DOCTYPE -->
+    <Span color="DocType" multiline="false">
+      <Begin>&lt;!DOCTYPE</Begin>
+      <End>&gt;</End>
+    </Span>
+
+    <!-- Comments -->
+    <Span color="Comment" multiline="true">
+      <Begin>&lt;!--</Begin>
+      <End>--&gt;</End>
+    </Span>
+
+    <!-- CDATA -->
+    <Span color="CData" multiline="true">
+      <Begin>&lt;!\[CDATA\[</Begin>
+      <End>\]\]&gt;</End>
+    </Span>
+
+    <!-- Processing Instructions -->
+    <Span color="Declaration" multiline="false">
+      <Begin>&lt;\?</Begin>
+      <End>\?&gt;</End>
+    </Span>
+
+    <!-- Tags with attributes -->
+    <Span color="Tag" multiline="true">
+      <Begin>&lt;</Begin>
+      <End>&gt;</End>
+      <RuleSet>
+        <!-- Attribute name -->
+        <Rule color="AttributeName">
+          [\w:]+(?=\s*=)
+        </Rule>
+        <!-- Attribute value -->
+        <Span color="AttributeValue">
+          <Begin>"</Begin>
+          <End>"</End>
+        </Span>
+        <Span color="AttributeValue">
+          <Begin>'</Begin>
+          <End>'</End>
+        </Span>
+      </RuleSet>
+    </Span>
+
+    <!-- Entities -->
+    <Rule color="Entity">
+      &amp;[a-zA-Z]+;
+    </Rule>
+    <Rule color="Entity">
+      &amp;#\d+;
+    </Rule>
+    <Rule color="Entity">
+      &amp;#x[0-9a-fA-F]+;
+    </Rule>
+
+  </RuleSet>
+</SyntaxDefinition>

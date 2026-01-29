@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YAML syntax highlighting for Lexichord (Light Theme) -->
+<SyntaxDefinition name="YAML"
+                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="Key" foreground="#0550AE" />
+  <Color name="String" foreground="#0A3069" />
+  <Color name="Number" foreground="#0550AE" />
+  <Color name="Boolean" foreground="#CF222E" fontWeight="bold" />
+  <Color name="Null" foreground="#CF222E" fontWeight="bold" />
+  <Color name="Comment" foreground="#57606A" fontStyle="italic" />
+  <Color name="Anchor" foreground="#8250DF" />
+  <Color name="Tag" foreground="#116329" />
+  <Color name="Directive" foreground="#CF222E" />
+
+  <RuleSet ignoreCase="false">
+
+    <!-- Comments -->
+    <Span color="Comment">
+      <Begin>\#</Begin>
+    </Span>
+
+    <!-- Directives -->
+    <Rule color="Directive">
+      ^%.*$
+    </Rule>
+
+    <!-- Anchors and aliases -->
+    <Rule color="Anchor">
+      [&amp;\*][a-zA-Z_][a-zA-Z0-9_]*
+    </Rule>
+
+    <!-- Tags -->
+    <Rule color="Tag">
+      ![a-zA-Z_][a-zA-Z0-9_]*
+    </Rule>
+
+    <!-- Keys (word followed by colon) -->
+    <Rule color="Key">
+      ^[\s]*[a-zA-Z_][a-zA-Z0-9_]*(?=\s*:)
+    </Rule>
+
+    <!-- Quoted strings -->
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+
+    <Span color="String">
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
+
+    <!-- Numbers -->
+    <Rule color="Number">
+      (?&lt;=:\s)-?\d+\.?\d*
+    </Rule>
+
+    <!-- Boolean -->
+    <Rule color="Boolean">
+      (?&lt;=:\s)(true|false|yes|no|on|off)(?=\s|$)
+    </Rule>
+
+    <!-- Null -->
+    <Rule color="Null">
+      (?&lt;=:\s)(null|~)(?=\s|$)
+    </Rule>
+
+  </RuleSet>
+</SyntaxDefinition>

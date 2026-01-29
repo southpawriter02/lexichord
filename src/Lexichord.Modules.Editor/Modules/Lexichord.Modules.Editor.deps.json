@@ -6,17 +6,18 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v9.0": {
-      "Lexichord.Modules.Workspace/0.1.2": {
+      "Lexichord.Modules.Editor/0.1.3": {
         "dependencies": {
           "Avalonia": "11.2.3",
+          "Avalonia.AvaloniaEdit": "11.1.0",
+          "CommunityToolkit.Mvvm": "8.4.0",
           "Lexichord.Abstractions": "1.0.0",
-          "Material.Icons.Avalonia": "2.4.1",
-          "MediatR": "12.4.0",
+          "MediatR.Contracts": "2.0.1",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.0"
         },
         "runtime": {
-          "Lexichord.Modules.Workspace.dll": {}
+          "Lexichord.Modules.Editor.dll": {}
         }
       },
       "Avalonia/11.2.3": {
@@ -72,6 +73,17 @@
           }
         }
       },
+      "Avalonia.AvaloniaEdit/11.1.0": {
+        "dependencies": {
+          "Avalonia": "11.2.3"
+        },
+        "runtime": {
+          "lib/net6.0/AvaloniaEdit.dll": {
+            "assemblyVersion": "11.0.6.0",
+            "fileVersion": "11.0.6.0"
+          }
+        }
+      },
       "Avalonia.BuildServices/0.0.29": {},
       "Avalonia.Remote.Protocol/11.2.3": {
         "runtime": {
@@ -121,38 +133,6 @@
           "lib/net8.0/FluentValidation.dll": {
             "assemblyVersion": "11.0.0.0",
             "fileVersion": "11.9.2.0"
-          }
-        }
-      },
-      "Material.Icons/2.4.1": {
-        "runtime": {
-          "lib/netstandard2.0/Material.Icons.dll": {
-            "assemblyVersion": "2.4.1.0",
-            "fileVersion": "2.4.1.0"
-          }
-        }
-      },
-      "Material.Icons.Avalonia/2.4.1": {
-        "dependencies": {
-          "Avalonia": "11.2.3",
-          "Material.Icons": "2.4.1"
-        },
-        "runtime": {
-          "lib/netstandard2.0/Material.Icons.Avalonia.dll": {
-            "assemblyVersion": "2.4.1.0",
-            "fileVersion": "2.4.1.0"
-          }
-        }
-      },
-      "MediatR/12.4.0": {
-        "dependencies": {
-          "MediatR.Contracts": "2.0.1",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
-        },
-        "runtime": {
-          "lib/net6.0/MediatR.dll": {
-            "assemblyVersion": "12.0.0.0",
-            "fileVersion": "12.4.0.0"
           }
         }
       },
@@ -222,7 +202,7 @@
     }
   },
   "libraries": {
-    "Lexichord.Modules.Workspace/0.1.2": {
+    "Lexichord.Modules.Editor/0.1.3": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -233,6 +213,13 @@
       "sha512": "sha512-pD6woFAUfGcyEvMmrpctntU4jv4fT8752pfx1J5iRORVX3Ob0oQi8PWo0TXVaAJZiSfH0cdKTeKx0w0DzD0/mg==",
       "path": "avalonia/11.2.3",
       "hashPath": "avalonia.11.2.3.nupkg.sha512"
+    },
+    "Avalonia.AvaloniaEdit/11.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2s0bkZIviwb++fyD2S6GkX1dTsv2e3yJX5GvJKG4+R5KDcJpRtwOkH4GX1dvOL+eX35tPgmrDmrhBKCk/ezOBw==",
+      "path": "avalonia.avaloniaedit/11.1.0",
+      "hashPath": "avalonia.avaloniaedit.11.1.0.nupkg.sha512"
     },
     "Avalonia.BuildServices/0.0.29": {
       "type": "package",
@@ -282,27 +269,6 @@
       "sha512": "sha512-XeHp9LvFvu1fsQ/NvDCymV02GOCB1nz7ZUhfpI3uMhCcHTkV1K5bMkv+Nc/kuNYyAsX5+5bcmUanIEMd5QN+Eg==",
       "path": "fluentvalidation/11.9.2",
       "hashPath": "fluentvalidation.11.9.2.nupkg.sha512"
-    },
-    "Material.Icons/2.4.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-5/8ekF4GXqpluBF+kPfv3TytBpV5Z+h4CUU5iNCDC7+A9hPQvtn08ZUjMUXtcRGxGyfScHYDqzshzTvYiPTCdA==",
-      "path": "material.icons/2.4.1",
-      "hashPath": "material.icons.2.4.1.nupkg.sha512"
-    },
-    "Material.Icons.Avalonia/2.4.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-bJZzJCHfZDBg33ZyiSxvexMs2qMGkkv1XEgkAJkqLK9I8WNIUGLCnXcjoBrpSh2Sd2ytoD1IEjV72Zy54St3zA==",
-      "path": "material.icons.avalonia/2.4.1",
-      "hashPath": "material.icons.avalonia.2.4.1.nupkg.sha512"
-    },
-    "MediatR/12.4.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-s8xhhvsTQqt7jI1XeVqcniiph/QoRmJb1qxVgk7UFpAgOzpzZ0VTl8zV+lFJgxISVqZuJRjmxF+P3AuHyelCrg==",
-      "path": "mediatr/12.4.0",
-      "hashPath": "mediatr.12.4.0.nupkg.sha512"
     },
     "MediatR.Contracts/2.0.1": {
       "type": "package",
