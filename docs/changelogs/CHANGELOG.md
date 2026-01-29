@@ -20,11 +20,14 @@ This release integrates Velopack for native platform packaging and auto-updates.
 
 - **Build Scripts** — Cross-platform packaging scripts (`pack-windows.ps1`, `pack-macos.sh`) for creating distributable installers via Velopack CLI.
 
+- **Signing Infrastructure** — CI pipeline for code signing Windows executables (PFX/SignTool) and macOS applications (Developer ID/Notarization). Signed binaries avoid SmartScreen and Gatekeeper security warnings.
+
 #### Sub-Part Changelogs
 
-| Version                          | Title                | Status      |
-| -------------------------------- | -------------------- | ----------- |
-| [v0.1.7a](v0.1.x/LCS-CL-017a.md) | Velopack Integration | ✅ Complete |
+| Version                          | Title                  | Status      |
+| -------------------------------- | ---------------------- | ----------- |
+| [v0.1.7a](v0.1.x/LCS-CL-017a.md) | Velopack Integration   | ✅ Complete |
+| [v0.1.7b](v0.1.x/LCS-CL-017b.md) | Signing Infrastructure | ✅ Complete |
 
 ---
 

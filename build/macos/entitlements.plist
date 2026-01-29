@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    Lexichord macOS Entitlements
+    
+    Required for .NET 9 / Avalonia applications to function properly
+    when signed and notarized for distribution.
+    
+    Version: v0.1.7b
+-->
+<plist version="1.0">
+<dict>
+    <!-- .NET JIT Compilation -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    
+    <!-- .NET Runtime Memory Allocation -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    
+    <!-- .NET Assembly Loading -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+    
+    <!-- Network Access (updates, telemetry, API calls) -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    
+    <!-- File Dialog Access -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+</dict>
+</plist>

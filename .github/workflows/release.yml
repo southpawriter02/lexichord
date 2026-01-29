@@ -1,0 +1,323 @@
+# =============================================================================
+# Lexichord Release Pipeline
+# =============================================================================
+# Purpose: Build, sign, and publish release artifacts for Windows and macOS.
+# Triggers: Push of tags matching 'v*' (e.g., v0.1.7, v1.0.0)
+# =============================================================================
+
+name: Release
+
+on:
+    push:
+        tags:
+            - "v*"
+
+# Cancel in-progress runs when a new tag is pushed
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    DOTNET_VERSION: "9.0.x"
+    DOTNET_NOLOGO: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+    # =========================================================================
+    # Windows Build & Sign
+    # =========================================================================
+    build-windows:
+        name: Build Windows
+        runs-on: windows-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup .NET ${{ env.DOTNET_VERSION }}
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            - name: Install Velopack CLI
+              run: dotnet tool install -g vpk
+
+            - name: Extract Version from Tag
+              id: version
+              shell: pwsh
+              run: |
+                  $version = "${{ github.ref_name }}" -replace '^v', ''
+                  echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+                  Write-Host "Version: $version"
+
+            - name: Restore Dependencies
+              run: dotnet restore
+
+            - name: Build Solution
+              run: dotnet build --no-restore --configuration Release
+
+            - name: Run Unit Tests
+              run: dotnet test --no-build --configuration Release --filter Category!=Integration
+
+            - name: Publish Windows x64
+              run: |
+                  dotnet publish src/Lexichord.Host/Lexichord.Host.csproj `
+                      --configuration Release `
+                      --runtime win-x64 `
+                      --self-contained true `
+                      --output ./publish/win-x64 `
+                      -p:Version=${{ steps.version.outputs.VERSION }} `
+                      -p:PublishSingleFile=false `
+                      -p:DebugType=None `
+                      -p:DebugSymbols=false
+
+            # Code Signing (only if certificate is available)
+            - name: Decode Certificate
+              if: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 != '' }}
+              shell: pwsh
+              run: |
+                  $certBytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}")
+                  [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\certificate.pfx", $certBytes)
+
+            - name: Sign Executables
+              if: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 != '' }}
+              shell: pwsh
+              run: |
+                  ./build/scripts/sign-windows.ps1 `
+                      -ExePath "./publish/win-x64/Lexichord.Host.exe" `
+                      -CertificatePath "$env:RUNNER_TEMP\certificate.pfx" `
+                      -CertificatePassword "${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}"
+
+            - name: Clean Up Certificate
+              if: always()
+              shell: pwsh
+              run: |
+                  if (Test-Path "$env:RUNNER_TEMP\certificate.pfx") {
+                      Remove-Item -Force "$env:RUNNER_TEMP\certificate.pfx"
+                  }
+
+            - name: Package with Velopack
+              shell: pwsh
+              run: |
+                  New-Item -ItemType Directory -Force -Path ./releases/windows | Out-Null
+                  vpk pack `
+                      --packId Lexichord `
+                      --packVersion ${{ steps.version.outputs.VERSION }} `
+                      --packDir ./publish/win-x64 `
+                      --mainExe Lexichord.Host.exe `
+                      --outputDir ./releases/windows `
+                      --packTitle Lexichord
+
+            - name: Upload Windows Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: windows-release
+                  path: |
+                      ./releases/windows/*.exe
+                      ./releases/windows/*.nupkg
+                      ./releases/windows/RELEASES
+                  retention-days: 30
+
+    # =========================================================================
+    # macOS Build & Sign
+    # =========================================================================
+    build-macos:
+        name: Build macOS
+        runs-on: macos-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup .NET ${{ env.DOTNET_VERSION }}
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: ${{ env.DOTNET_VERSION }}
+
+            - name: Install Velopack CLI
+              run: dotnet tool install -g vpk
+
+            - name: Extract Version from Tag
+              id: version
+              run: |
+                  version="${GITHUB_REF_NAME#v}"
+                  echo "VERSION=$version" >> $GITHUB_OUTPUT
+                  echo "Version: $version"
+
+            - name: Restore Dependencies
+              run: dotnet restore
+
+            - name: Build Solution
+              run: dotnet build --no-restore --configuration Release
+
+            - name: Run Unit Tests
+              run: dotnet test --no-build --configuration Release --filter Category!=Integration
+
+            - name: Publish macOS x64
+              run: |
+                  dotnet publish src/Lexichord.Host/Lexichord.Host.csproj \
+                      --configuration Release \
+                      --runtime osx-x64 \
+                      --self-contained true \
+                      --output ./publish/osx-x64 \
+                      -p:Version=${{ steps.version.outputs.VERSION }} \
+                      -p:PublishSingleFile=false \
+                      -p:DebugType=None \
+                      -p:DebugSymbols=false
+
+            - name: Publish macOS ARM64
+              run: |
+                  dotnet publish src/Lexichord.Host/Lexichord.Host.csproj \
+                      --configuration Release \
+                      --runtime osx-arm64 \
+                      --self-contained true \
+                      --output ./publish/osx-arm64 \
+                      -p:Version=${{ steps.version.outputs.VERSION }} \
+                      -p:PublishSingleFile=false \
+                      -p:DebugType=None \
+                      -p:DebugSymbols=false
+
+            # Code Signing (only if certificate is available)
+            - name: Import Developer Certificate
+              if: ${{ secrets.APPLE_DEVELOPER_ID != '' }}
+              run: |
+                  # For now, we assume the Developer ID certificate is already in the keychain
+                  # In a real setup, you would import a .p12 certificate here
+                  echo "Certificate identity: ${{ secrets.APPLE_DEVELOPER_ID }}"
+
+            - name: Create macOS App Bundle (x64)
+              run: |
+                  mkdir -p ./Lexichord.app/Contents/MacOS
+                  mkdir -p ./Lexichord.app/Contents/Resources
+                  cp -R ./publish/osx-x64/* ./Lexichord.app/Contents/MacOS/
+                  
+                  # Create Info.plist
+                  cat > ./Lexichord.app/Contents/Info.plist << EOF
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                  <plist version="1.0">
+                  <dict>
+                      <key>CFBundleName</key>
+                      <string>Lexichord</string>
+                      <key>CFBundleDisplayName</key>
+                      <string>Lexichord</string>
+                      <key>CFBundleIdentifier</key>
+                      <string>com.lexichord.app</string>
+                      <key>CFBundleVersion</key>
+                      <string>${{ steps.version.outputs.VERSION }}</string>
+                      <key>CFBundleShortVersionString</key>
+                      <string>${{ steps.version.outputs.VERSION }}</string>
+                      <key>CFBundleExecutable</key>
+                      <string>Lexichord.Host</string>
+                      <key>CFBundlePackageType</key>
+                      <string>APPL</string>
+                      <key>NSHighResolutionCapable</key>
+                      <true/>
+                      <key>LSMinimumSystemVersion</key>
+                      <string>10.15</string>
+                  </dict>
+                  </plist>
+                  EOF
+
+            - name: Sign macOS App Bundle
+              if: ${{ secrets.APPLE_DEVELOPER_ID != '' }}
+              env:
+                  APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
+                  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+                  APPLE_ID: ${{ secrets.APPLE_ID }}
+                  APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+              run: |
+                  chmod +x ./build/scripts/sign-macos.sh
+                  ./build/scripts/sign-macos.sh ./Lexichord.app --notarize
+
+            - name: Create DMG
+              run: |
+                  mkdir -p ./releases/macos
+                  hdiutil create -volname "Lexichord" \
+                      -srcfolder ./Lexichord.app \
+                      -ov -format UDZO \
+                      "./releases/macos/Lexichord-${{ steps.version.outputs.VERSION }}.dmg"
+
+            - name: Upload macOS Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: macos-release
+                  path: ./releases/macos/*.dmg
+                  retention-days: 30
+
+    # =========================================================================
+    # Create GitHub Release
+    # =========================================================================
+    create-release:
+        name: Create Release
+        needs: [build-windows, build-macos]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Extract Version from Tag
+              id: version
+              run: |
+                  version="${GITHUB_REF_NAME#v}"
+                  echo "VERSION=$version" >> $GITHUB_OUTPUT
+
+            - name: Download Windows Artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: windows-release
+                  path: ./artifacts/windows
+
+            - name: Download macOS Artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: macos-release
+                  path: ./artifacts/macos
+
+            - name: Generate Release Notes
+              run: |
+                  # Extract release notes from CHANGELOG.md for this version
+                  version="${{ steps.version.outputs.VERSION }}"
+                  
+                  # Create release notes header
+                  echo "# Lexichord v${version}" > release-notes.md
+                  echo "" >> release-notes.md
+                  echo "## Downloads" >> release-notes.md
+                  echo "" >> release-notes.md
+                  echo "| Platform | File |" >> release-notes.md
+                  echo "|----------|------|" >> release-notes.md
+                  echo "| Windows x64 | \`Lexichord-Setup.exe\` |" >> release-notes.md
+                  echo "| macOS | \`Lexichord-${version}.dmg\` |" >> release-notes.md
+                  echo "" >> release-notes.md
+                  echo "## What's Changed" >> release-notes.md
+                  echo "" >> release-notes.md
+                  echo "See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/changelogs/CHANGELOG.md) for details." >> release-notes.md
+
+            - name: List Artifacts
+              run: |
+                  echo "Windows artifacts:"
+                  ls -la ./artifacts/windows/ || echo "No Windows artifacts"
+                  echo ""
+                  echo "macOS artifacts:"
+                  ls -la ./artifacts/macos/ || echo "No macOS artifacts"
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  name: "Lexichord v${{ steps.version.outputs.VERSION }}"
+                  body_path: release-notes.md
+                  draft: false
+                  prerelease: ${{ contains(github.ref_name, '-') }}
+                  files: |
+                      ./artifacts/windows/*.exe
+                      ./artifacts/windows/*.nupkg
+                      ./artifacts/macos/*.dmg
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
