@@ -22,6 +22,8 @@ This release establishes the centralized settings UI framework, enabling modules
 
 - **Live Theme Preview** — Real-time theme switching from the Appearance settings page. Select Light, Dark, or System themes with instant visual feedback. OS theme synchronization for System mode.
 
+- **License Management UI** — Account settings page for license activation and tier management. Three-stage validation (format, checksum, server), secure key storage via `ISecureVault`, tier-colored badges, expiration warnings, and feature availability matrix.
+
 - **Module Integration** — Modules implement `ISettingsPage` interface and register via `ISettingsPageRegistry` during initialization. Pages support hierarchical nesting via `ParentCategoryId`.
 
 #### Sub-Part Changelogs
@@ -30,6 +32,7 @@ This release establishes the centralized settings UI framework, enabling modules
 | ------------------------- | ------------------------- | ----------- |
 | [v0.1.6a](LCS-CL-016a.md) | Settings Dialog Framework | ✅ Complete |
 | [v0.1.6b](LCS-CL-016b.md) | Live Theme Preview        | ✅ Complete |
+| [v0.1.6c](LCS-CL-016c.md) | License Management UI     | ✅ Complete |
 
 ---
 

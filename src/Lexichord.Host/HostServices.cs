@@ -126,11 +126,11 @@ public static class HostServices
         services.AddSingleton<IWindowStateService, WindowStateService>();
         services.AddSingleton<ICrashReportService, CrashReportService>();
 
-        // LOGIC: Register license context as singleton
-        // License state is application-wide and should not change per-request
-        // v0.0.4c: Stub implementation returning Core tier
-        // v1.x: Will be replaced with real license validation
-        services.AddSingleton<ILicenseContext, HardcodedLicenseContext>();
+        // LOGIC (v0.1.6c): Register license service as singleton
+        // License state is application-wide; ILicenseService extends ILicenseContext
+        // Provides validation, activation, and tier management
+        services.AddSingleton<ILicenseService, LicenseService>();
+        services.AddSingleton<ILicenseContext>(sp => sp.GetRequiredService<ILicenseService>());
 
         // LOGIC (v0.0.8a): Register shell region manager for module views
         // Manages views contributed by modules to shell regions (Top, Left, Center, Right, Bottom)
@@ -177,6 +177,10 @@ public static class HostServices
         // LOGIC (v0.1.6b): Register appearance settings for live theme preview
         services.AddTransient<Settings.AppearanceSettingsViewModel>();
         services.AddSingleton<ISettingsPage, Settings.Pages.AppearanceSettingsPage>();
+
+        // LOGIC (v0.1.6c): Register account settings for license management UI
+        services.AddTransient<Settings.AccountSettingsViewModel>();
+        services.AddSingleton<ISettingsPage, Settings.Pages.AccountSettingsPage>();
 
         return services;
     }
