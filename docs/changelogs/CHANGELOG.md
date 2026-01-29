@@ -18,12 +18,15 @@ This release establishes the keyboard-centric command system that enables rapid 
 
 - **Command Palette UI** — Keyboard-centric modal overlay for discovering and executing commands. Features fuzzy search via FuzzySharp, keyboard navigation (↑/↓, Page Up/Down, Home/End), and mode switching between Commands and Files. Shortcuts: Ctrl+Shift+P (commands), Ctrl+P (files).
 
+- **File Jumper** — Workspace file indexing service enabling fast file search via the Command Palette. Features background indexing with progress reporting, fuzzy file name matching, LRU-based recent files tracking, and incremental updates from file system watcher events. Configurable ignore patterns and binary file filtering.
+
 #### Sub-Part Changelogs
 
-| Version                   | Title              | Status      |
-| ------------------------- | ------------------ | ----------- |
-| [v0.1.5a](LCS-CL-015a.md) | Command Registry   | ✅ Complete |
-| [v0.1.5b](LCS-CL-015b.md) | Command Palette UI | ✅ Complete |
+| Version                          | Title              | Status      |
+| -------------------------------- | ------------------ | ----------- |
+| [v0.1.5a](LCS-CL-015a.md)        | Command Registry   | ✅ Complete |
+| [v0.1.5b](LCS-CL-015b.md)        | Command Palette UI | ✅ Complete |
+| [v0.1.5c](v0.1.x/LCS-CL-015c.md) | File Jumper        | ✅ Complete |
 
 ---
 
@@ -418,10 +421,11 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.1.5 Sub-Parts
 
-| Document                        | Sub-Part | Title              |
-| :------------------------------ | :------- | :----------------- |
-| [LCS-CL-015a](./LCS-CL-015a.md) | v0.1.5a  | Command Registry   |
-| [LCS-CL-015b](./LCS-CL-015b.md) | v0.1.5b  | Command Palette UI |
+| Document                               | Sub-Part | Title              |
+| :------------------------------------- | :------- | :----------------- |
+| [LCS-CL-015a](./LCS-CL-015a.md)        | v0.1.5a  | Command Registry   |
+| [LCS-CL-015b](./LCS-CL-015b.md)        | v0.1.5b  | Command Palette UI |
+| [LCS-CL-015c](./v0.1.x/LCS-CL-015c.md) | v0.1.5c  | File Jumper        |
 
 ### v0.1.2 Sub-Parts
 

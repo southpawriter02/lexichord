@@ -162,6 +162,11 @@ public static class HostServices
         services.AddSingleton<CommandPaletteViewModel>();
         services.AddSingleton<ICommandPaletteService, CommandPaletteService>();
 
+        // LOGIC (v0.1.5c): Register file index service for workspace file search
+        services.Configure<FileIndexSettings>(
+            configuration.GetSection(FileIndexSettings.SectionName));
+        services.AddSingleton<IFileIndexService, FileIndexService>();
+
         return services;
     }
 
