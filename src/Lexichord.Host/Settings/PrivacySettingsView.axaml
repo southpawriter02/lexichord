@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:Lexichord.Host.Settings"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+             x:Class="Lexichord.Host.Settings.PrivacySettingsView"
+             x:DataType="settings:PrivacySettingsViewModel">
+
+    <!-- LOGIC: Privacy settings UI with toggle for crash reporting.
+         Provides clear disclosure of what data is collected.
+         Version: v0.1.7d -->
+
+    <StackPanel Margin="16" Spacing="16">
+        <!-- Privacy Section Header -->
+        <TextBlock Text="Privacy"
+                   Classes="h2"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8" />
+
+        <TextBlock Text="Control how Lexichord collects and uses data."
+                   Classes="description"
+                   Foreground="{DynamicResource SecondaryForegroundBrush}"
+                   Margin="0,0,0,12" />
+
+        <!-- Crash Reporting Section -->
+        <Border BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="16">
+            <StackPanel Spacing="8">
+                <DockPanel>
+                    <ToggleSwitch DockPanel.Dock="Right"
+                                  IsChecked="{Binding CrashReportingEnabled}"
+                                  VerticalAlignment="Center" />
+                    <StackPanel>
+                        <TextBlock Text="Send crash reports"
+                                   FontWeight="Medium" />
+                        <TextBlock Text="Help improve Lexichord by automatically sending crash reports when something goes wrong."
+                                   TextWrapping="Wrap"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                   Margin="0,4,16,0" />
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Data disclosure -->
+                <StackPanel Margin="0,8,0,0" Spacing="4">
+                    <TextBlock Text="What's collected:"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                    <TextBlock Text="• Exception type and stack trace"
+                               FontSize="11"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                    <TextBlock Text="• Application version and OS type"
+                               FontSize="11"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                    <TextBlock Text="• Anonymous installation ID"
+                               FontSize="11"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                </StackPanel>
+
+                <StackPanel Margin="0,4,0,0" Spacing="4">
+                    <TextBlock Text="Never collected:"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                    <TextBlock Text="• File contents or document text"
+                               FontSize="11"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                    <TextBlock Text="• Personal information or file paths"
+                               FontSize="11"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                    <TextBlock Text="• Usage analytics or tracking data"
+                               FontSize="11"
+                               Foreground="{DynamicResource TertiaryForegroundBrush}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Learn More Link -->
+        <Button Content="Learn More About Privacy"
+                Command="{Binding LearnMoreCommand}"
+                HorizontalAlignment="Left"
+                Classes="link" />
+    </StackPanel>
+</UserControl>

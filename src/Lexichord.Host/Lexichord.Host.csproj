@@ -61,6 +61,10 @@
 
     <!-- v0.1.7a: Velopack Auto-Update Framework -->
     <PackageReference Include="Velopack" Version="$(VelopackVersion)" />
+
+    <!-- v0.1.7d: Sentry Crash Reporting -->
+    <PackageReference Include="Sentry" Version="$(SentryVersion)" />
+    <PackageReference Include="Sentry.Serilog" Version="$(SentryVersion)" />
   </ItemGroup>
 
 

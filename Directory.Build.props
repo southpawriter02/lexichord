@@ -35,4 +35,9 @@
     <VelopackVersion>0.0.1251</VelopackVersion>
   </PropertyGroup>
 
+  <!-- v0.1.7d: Sentry Version (centralized) -->
+  <PropertyGroup>
+    <SentryVersion>5.5.0</SentryVersion>
+  </PropertyGroup>
+
 </Project>

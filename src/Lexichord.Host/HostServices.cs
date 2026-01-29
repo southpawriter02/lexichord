@@ -197,6 +197,14 @@ public static class HostServices
         // LOGIC (v0.1.7c): Register first run service for update detection and release notes
         services.AddSingleton<IFirstRunService, Services.FirstRunService>();
 
+        // LOGIC (v0.1.7d): Register telemetry service for opt-in crash reporting
+        // Privacy-first: disabled by default, user must explicitly enable
+        services.AddSingleton<ITelemetryService, Services.TelemetryService>();
+
+        // LOGIC (v0.1.7d): Register privacy settings for telemetry preferences UI
+        services.AddTransient<Settings.PrivacySettingsViewModel>();
+        services.AddSingleton<ISettingsPage, Settings.Pages.PrivacySettingsPage>();
+
 
         return services;
     }

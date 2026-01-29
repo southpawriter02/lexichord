@@ -203,11 +203,18 @@ public partial class App : Application
     /// LOGIC: This method registers handlers for:
     /// 1. AppDomain.UnhandledException - Captures exceptions on any thread
     /// 2. TaskScheduler.UnobservedTaskException - Captures unobserved Task exceptions
+    ///
+    /// LOGIC (v0.1.7d): Also initializes GlobalExceptionHandler for telemetry
+    /// This routes exceptions to ITelemetryService for opt-in crash reporting.
     /// </remarks>
     private void RegisterExceptionHandlers()
     {
         var crashService = _serviceProvider!.GetRequiredService<ICrashReportService>();
         var logger = _serviceProvider!.GetRequiredService<ILogger<App>>();
+
+        // LOGIC (v0.1.7d): Initialize global exception handler for telemetry
+        // This captures exceptions and sends them to Sentry when telemetry is enabled
+        GlobalExceptionHandler.Initialize(_serviceProvider!);
 
         // LOGIC: AppDomain.UnhandledException captures exceptions on any thread
         // that are not caught by any handler. IsTerminating indicates if the
