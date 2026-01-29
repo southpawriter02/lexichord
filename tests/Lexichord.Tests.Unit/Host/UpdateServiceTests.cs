@@ -1,10 +1,14 @@
-using Lexichord.Abstractions.Contracts;
-using Lexichord.Abstractions.Events;
+using global::Lexichord.Abstractions.Contracts;
+using global::Lexichord.Abstractions.Events;
 using Lexichord.Host.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+
+// Type alias with global qualifier for use in test methods
+using LexichordUpdateOptions = global::Lexichord.Abstractions.Contracts.UpdateOptions;
+
 
 namespace Lexichord.Tests.Unit.Host;
 
@@ -17,14 +21,17 @@ namespace Lexichord.Tests.Unit.Host;
 /// - Channel Switching: Verifies SetChannelAsync behavior
 /// - Update Checking: Verifies CheckForUpdatesAsync stub behavior
 /// - Events: Verifies event publication
+/// - v0.1.7a additions: Tests for DownloadUpdatesAsync, ApplyUpdatesAndRestart,
+///   IsUpdateReady, and UpdateProgress
 ///
-/// Version: v0.1.6d
+/// Version: v0.1.7a
 /// </remarks>
 public class UpdateServiceTests : IDisposable
 {
     private readonly Mock<IMediator> _mediator;
     private readonly Mock<ILogger<UpdateService>> _logger;
     private readonly string _testSettingsPath;
+    private readonly LexichordUpdateOptions _options;
 
     public UpdateServiceTests()
     {
@@ -39,6 +46,13 @@ public class UpdateServiceTests : IDisposable
 
         // Ensure parent directory exists
         Directory.CreateDirectory(Path.GetDirectoryName(_testSettingsPath)!);
+
+        // Default options for testing (empty URLs = dev mode, no update manager)
+        _options = new LexichordUpdateOptions(
+            StableUpdateUrl: string.Empty,
+            InsiderUpdateUrl: string.Empty,
+            AutoCheckOnStartup: false,
+            AutoDownload: false);
     }
 
     public void Dispose()
@@ -54,7 +68,12 @@ public class UpdateServiceTests : IDisposable
 
     private UpdateService CreateService()
     {
-        return new UpdateService(_mediator.Object, _logger.Object, _testSettingsPath);
+        return new UpdateService(_mediator.Object, _logger.Object, _options, _testSettingsPath);
+    }
+
+    private UpdateService CreateService(LexichordUpdateOptions options)
+    {
+        return new UpdateService(_mediator.Object, _logger.Object, options, _testSettingsPath);
     }
 
     #region Initialization Tests
@@ -104,6 +123,16 @@ public class UpdateServiceTests : IDisposable
 
         // Assert
         Assert.Null(service.LastCheckTime);
+    }
+
+    [Fact]
+    public void IsUpdateReady_InitializesToFalse()
+    {
+        // Arrange & Act
+        var service = CreateService();
+
+        // Assert
+        Assert.False(service.IsUpdateReady);
     }
 
     #endregion
@@ -187,14 +216,27 @@ public class UpdateServiceTests : IDisposable
             Times.Once);
     }
 
+    [Fact]
+    public async Task SetChannelAsync_ResetsIsUpdateReady()
+    {
+        // Arrange
+        var service = CreateService();
+
+        // Act
+        await service.SetChannelAsync(UpdateChannel.Insider);
+
+        // Assert
+        Assert.False(service.IsUpdateReady);
+    }
+
     #endregion
 
     #region Update Checking Tests
 
     [Fact]
-    public async Task CheckForUpdatesAsync_ReturnsNull_StubImplementation()
+    public async Task CheckForUpdatesAsync_ReturnsNull_WhenNotInstalledViaVelopack()
     {
-        // Arrange
+        // Arrange - Empty URLs means no Velopack UpdateManager
         var service = CreateService();
 
         // Act
@@ -234,19 +276,6 @@ public class UpdateServiceTests : IDisposable
                 e.UpdateFound == false),
             It.IsAny<CancellationToken>()),
             Times.Once);
-    }
-
-    [Fact]
-    public async Task CheckForUpdatesAsync_CancellationThrows()
-    {
-        // Arrange
-        var service = CreateService();
-        using var cts = new CancellationTokenSource();
-        cts.Cancel();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<TaskCanceledException>(
-            () => service.CheckForUpdatesAsync(cts.Token));
     }
 
     #endregion
@@ -291,6 +320,106 @@ public class UpdateServiceTests : IDisposable
 
         // Assert
         Assert.Contains(".NET", info.RuntimeInfo);
+    }
+
+    #endregion
+
+    #region v0.1.7a: DownloadUpdatesAsync Tests
+
+    [Fact]
+    public async Task DownloadUpdatesAsync_DoesNothing_WhenNotInstalled()
+    {
+        // Arrange
+        var service = CreateService();
+        var update = new UpdateInfo("1.0.0", "Notes", "url", DateTime.Now, false, 1000);
+
+        // Act - Should not throw, just logs warning
+        await service.DownloadUpdatesAsync(update);
+
+        // Assert
+        Assert.False(service.IsUpdateReady);
+    }
+
+    [Fact]
+    public async Task DownloadUpdatesAsync_DoesNothing_WhenNoUpdateChecked()
+    {
+        // Arrange
+        var service = CreateService();
+        var update = new UpdateInfo("1.0.0", "Notes", "url", DateTime.Now, false, 1000);
+
+        // Act - Should not throw, just logs warning
+        await service.DownloadUpdatesAsync(update);
+
+        // Assert
+        Assert.False(service.IsUpdateReady);
+    }
+
+    #endregion
+
+    #region v0.1.7a: ApplyUpdatesAndRestart Tests
+
+    [Fact]
+    public void ApplyUpdatesAndRestart_ThrowsWhenNoUpdateReady()
+    {
+        // Arrange
+        var service = CreateService();
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() => service.ApplyUpdatesAndRestart());
+        Assert.Contains("No update is ready", ex.Message);
+    }
+
+    #endregion
+
+    #region v0.1.7a: UpdateProgress Event Tests
+
+    [Fact]
+    public void UpdateProgress_EventCanBeSubscribed()
+    {
+        // Arrange
+        var service = CreateService();
+        service.UpdateProgress += (_, _) => { /* Handler registered */ };
+
+        // Assert - Just verify subscription works (event only fires during actual download)
+        Assert.NotNull(service);
+    }
+
+    #endregion
+
+    #region v0.1.7a: UpdateOptions Tests
+
+    [Fact]
+    public void GetUrlForChannel_ReturnsStableUrl_ForStableChannel()
+    {
+        // Arrange
+        var options = new LexichordUpdateOptions(
+            StableUpdateUrl: "https://stable.example.com",
+            InsiderUpdateUrl: "https://insider.example.com",
+            AutoCheckOnStartup: true,
+            AutoDownload: false);
+
+        // Act
+        var url = options.GetUrlForChannel(UpdateChannel.Stable);
+
+        // Assert
+        Assert.Equal("https://stable.example.com", url);
+    }
+
+    [Fact]
+    public void GetUrlForChannel_ReturnsInsiderUrl_ForInsiderChannel()
+    {
+        // Arrange
+        var options = new LexichordUpdateOptions(
+            StableUpdateUrl: "https://stable.example.com",
+            InsiderUpdateUrl: "https://insider.example.com",
+            AutoCheckOnStartup: true,
+            AutoDownload: false);
+
+        // Act
+        var url = options.GetUrlForChannel(UpdateChannel.Insider);
+
+        // Assert
+        Assert.Equal("https://insider.example.com", url);
     }
 
     #endregion

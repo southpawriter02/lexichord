@@ -2,6 +2,7 @@
 using Serilog;
 using Serilog.Events;
 using System;
+using Velopack;
 
 namespace Lexichord.Host;
 
@@ -28,6 +29,10 @@ internal sealed class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        // LOGIC: VelopackApp must run first to handle install, uninstall, and update hooks.
+        // This call may not return if Velopack is handling a lifecycle event.
+        VelopackApp.Build().Run();
+
         // LOGIC: Create bootstrap logger immediately for startup error capture
         // This minimal logger writes to console only until full configuration loads
         Log.Logger = new LoggerConfiguration()

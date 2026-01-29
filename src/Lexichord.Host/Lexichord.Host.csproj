@@ -58,7 +58,11 @@
     <PackageReference Include="Dock.Avalonia" Version="$(DockAvaloniaVersion)" />
     <PackageReference Include="Dock.Model.Avalonia" Version="$(DockAvaloniaVersion)" />
     <PackageReference Include="Dock.Model.Mvvm" Version="$(DockAvaloniaVersion)" />
+
+    <!-- v0.1.7a: Velopack Auto-Update Framework -->
+    <PackageReference Include="Velopack" Version="$(VelopackVersion)" />
   </ItemGroup>
+
 
   <ItemGroup>
     <!-- ALLOWED: Reference to Abstractions (Tier 0) -->

@@ -29,4 +29,10 @@
   <PropertyGroup>
     <DockAvaloniaVersion>11.1.0.1</DockAvaloniaVersion>
   </PropertyGroup>
+
+  <!-- v0.1.7a: Velopack Version (centralized) -->
+  <PropertyGroup>
+    <VelopackVersion>0.0.1251</VelopackVersion>
+  </PropertyGroup>
+
 </Project>

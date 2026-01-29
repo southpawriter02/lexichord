@@ -187,10 +187,13 @@ public static class HostServices
         services.AddTransient<Settings.AccountSettingsViewModel>();
         services.AddSingleton<ISettingsPage, Settings.Pages.AccountSettingsPage>();
 
-        // LOGIC (v0.1.6d): Register update service and settings for channel management
+        // LOGIC (v0.1.6d/v0.1.7a): Register update service and settings
+        services.Configure<Lexichord.Abstractions.Contracts.UpdateOptions>(
+            configuration.GetSection("UpdateOptions"));
         services.AddSingleton<IUpdateService, Services.UpdateService>();
         services.AddTransient<Settings.UpdatesSettingsViewModel>();
         services.AddSingleton<ISettingsPage, Settings.Pages.UpdatesSettingsPage>();
+
 
         return services;
     }

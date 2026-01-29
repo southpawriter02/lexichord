@@ -6,6 +6,28 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.1.7] - 2026-01 (In Progress)
+
+### Distribution & Updates
+
+This release integrates Velopack for native platform packaging and auto-updates.
+
+#### What's New
+
+- **Velopack Integration** — Native auto-update framework replacing stub implementation. Supports delta updates for efficient downloads, channel-specific update feeds (Stable/Insider), and in-app update installation with automatic restart.
+
+- **Update Service Enhancements** — Extended `IUpdateService` with real download/apply functionality including progress reporting, ready-state tracking, and platform-aware behavior (skips updates in development mode).
+
+- **Build Scripts** — Cross-platform packaging scripts (`pack-windows.ps1`, `pack-macos.sh`) for creating distributable installers via Velopack CLI.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                | Status      |
+| -------------------------------- | -------------------- | ----------- |
+| [v0.1.7a](v0.1.x/LCS-CL-017a.md) | Velopack Integration | ✅ Complete |
+
+---
+
 ## [v0.1.6] - 2026-01 (In Progress)
 
 ### The Settings Framework
