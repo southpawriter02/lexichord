@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.Workspace
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.Editor", "src\Lexichord.Modules.Editor\Lexichord.Modules.Editor.csproj", "{2C3A047A-A7DF-46AB-8DCE-4CCE40510698}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.Style", "src\Lexichord.Modules.Style\Lexichord.Modules.Style.csproj", "{8538CFCC-332B-4337-90B8-9978DE3C8AD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,18 @@ Global
 		{2C3A047A-A7DF-46AB-8DCE-4CCE40510698}.Release|x64.Build.0 = Release|Any CPU
 		{2C3A047A-A7DF-46AB-8DCE-4CCE40510698}.Release|x86.ActiveCfg = Release|Any CPU
 		{2C3A047A-A7DF-46AB-8DCE-4CCE40510698}.Release|x86.Build.0 = Release|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Debug|x64.Build.0 = Debug|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Debug|x86.Build.0 = Debug|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Release|x64.ActiveCfg = Release|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Release|x64.Build.0 = Release|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Release|x86.ActiveCfg = Release|Any CPU
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,5 +171,6 @@ Global
 		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 		{87BE27AB-8EFC-4305-A4BC-9101FB563908} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 		{2C3A047A-A7DF-46AB-8DCE-4CCE40510698} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
+		{8538CFCC-332B-4337-90B8-9978DE3C8AD7} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 	EndGlobalSection
 EndGlobal

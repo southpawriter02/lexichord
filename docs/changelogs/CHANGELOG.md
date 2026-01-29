@@ -6,6 +6,39 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.2.1] - 2026-01 (In Progress)
+
+### The Rulebook (Style Module)
+
+This release introduces **The Rulebook**, the Style Module that enables governed writing environments with consistent style enforcement.
+
+#### What's New
+
+- **Style Module Foundation** — New `Lexichord.Modules.Style` project establishing the infrastructure for style checking. Implements `IModule` with "The Rulebook" identity and proper service registration.
+
+- **IStyleEngine Interface** — Core contract for style analysis. Features active style sheet management, thread-safe analysis methods, and event-driven sheet change notifications.
+
+- **Domain Model** — Style domain types including `StyleSheet`, `StyleRule`, `StyleViolation` records with supporting enums for rule categories (`Vocabulary`, `Grammar`, `Punctuation`), violation severity levels, and pattern types.
+
+- **Stub Services** — Skeleton implementations for `YamlStyleSheetLoader` and `FileSystemStyleWatcher` ready for full implementation in upcoming sub-parts.
+
+#### Philosophy: Concordance
+
+> "Rules over improvisation"
+
+The Rulebook provides governed writing environments where style guides are applied consistently across all content. Writers focus on content while the system enforces house style.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title              | Status      |
+| -------------------------------- | ------------------ | ----------- |
+| [v0.2.1a](v0.2.x/LCS-CL-021a.md) | Module Scaffolding | ✅ Complete |
+| v0.2.1b                          | Style Rules        | 🔲 Planned  |
+| v0.2.1c                          | YAML Loading       | 🔲 Planned  |
+| v0.2.1d                          | Hot Reload         | 🔲 Planned  |
+
+---
+
 ## [v0.1.7] - 2026-01 (In Progress)
 
 ### Distribution & Updates

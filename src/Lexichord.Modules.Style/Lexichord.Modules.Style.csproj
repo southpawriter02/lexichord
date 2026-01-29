@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Module metadata -->
+    <AssemblyTitle>Lexichord Style Module</AssemblyTitle>
+    <Description>The Rulebook - Style and writing rules engine</Description>
+    <Version>0.2.1</Version>
+
+    <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
+    <OutputPath>$(SolutionDir)Modules\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- YamlDotNet for YAML deserialization (v0.2.1c) -->
+    <PackageReference Include="YamlDotNet" Version="15.1.6" />
+
+    <!-- DI Abstractions only (not the full container) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+
+    <!-- MediatR for events -->
+    <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The ONLY project reference allowed for modules -->
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+  <!-- Embed default style sheet (v0.2.1c) -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\*.yaml" />
+  </ItemGroup>
+
+</Project>
