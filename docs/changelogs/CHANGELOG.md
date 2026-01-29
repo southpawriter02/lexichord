@@ -20,6 +20,8 @@ This release establishes a flexible, IDE-like docking system using `Dock.Avaloni
 
 - **Region Injection Service** — Added `IRegionManager` service enabling modules to inject tool panes and documents into dock regions without direct Dock.Avalonia dependency. Includes MediatR integration for region change notifications.
 
+- **Layout Serialization** — JSON-based layout persistence enables saving/loading workspace arrangements. Features named profiles, auto-save with debouncing, atomic file writes, and schema versioning for future migrations.
+
 - **MainWindowViewModel** — New ViewModel managing the dock layout lifecycle with proper DI integration.
 
 #### Why This Matters
@@ -31,7 +33,7 @@ This work enables:
 3. **Future Serialization** — Stable IDs enable layout persistence in future sub-parts.
 
 > [!NOTE]
-> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md) and [LCS-CL-011b.md](./LCS-CL-011b.md).
+> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md), [LCS-CL-011b.md](./LCS-CL-011b.md), and [LCS-CL-011c.md](./LCS-CL-011c.md).
 
 ---
 
@@ -262,6 +264,14 @@ This foundational work ensures:
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.1.1 Sub-Parts
+
+| Document                        | Sub-Part | Title                    |
+| :------------------------------ | :------- | :----------------------- |
+| [LCS-CL-011a](./LCS-CL-011a.md) | v0.1.1a  | Dock Library Integration |
+| [LCS-CL-011b](./LCS-CL-011b.md) | v0.1.1b  | Region Injection Service |
+| [LCS-CL-011c](./LCS-CL-011c.md) | v0.1.1c  | Layout Serialization     |
 
 ### v0.0.8 Sub-Parts
 

@@ -159,6 +159,7 @@ public static class HostServices
         services.AddSingleton<Services.IUiDispatcher, Services.AvaloniaUiDispatcher>();
         services.AddSingleton<Lexichord.Abstractions.Layout.IDockFactory, Layout.LexichordDockFactory>();
         services.AddSingleton<Lexichord.Abstractions.Layout.IRegionManager, Layout.DockRegionManager>();
+        services.AddSingleton<Lexichord.Abstractions.Layout.ILayoutService, Layout.JsonLayoutService>();
         services.AddSingleton<ViewModels.MainWindowViewModel>();
 
         return services;

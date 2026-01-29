@@ -97,6 +97,9 @@ public partial class App : Application
             // Apply persisted settings
             ApplyPersistedSettings();
 
+            // LOGIC (v0.1.1c): Initialize layout from saved profile or use default
+            InitializeLayoutAsync().GetAwaiter().GetResult();
+
             // LOGIC: Register global exception handlers (v0.0.3c)
             RegisterExceptionHandlers();
 
@@ -199,6 +202,31 @@ public partial class App : Application
         if (savedState is not null)
         {
             themeManager.SetTheme(savedState.Theme);
+        }
+    }
+
+    /// <summary>
+    /// Initializes the layout from saved profile or creates default.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.1.1c): Layout initialization:
+    /// 1. Try to load saved layout from ILayoutService
+    /// 2. If no saved layout, the default layout is already created by IDockFactory
+    /// </remarks>
+    private async Task InitializeLayoutAsync()
+    {
+        var layoutService = _serviceProvider!.GetRequiredService<Lexichord.Abstractions.Layout.ILayoutService>();
+
+        // Try to load the default profile
+        var loaded = await layoutService.LoadLayoutAsync();
+
+        if (loaded)
+        {
+            Log.Debug("Layout restored from profile: {Profile}", layoutService.CurrentProfileName);
+        }
+        else
+        {
+            Log.Debug("No saved layout found, using default layout");
         }
     }
 
