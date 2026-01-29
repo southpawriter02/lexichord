@@ -186,6 +186,12 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
     public ISearchService SearchService => _searchService;
 
     /// <summary>
+    /// Gets the configuration service for zoom and settings.
+    /// </summary>
+    /// <remarks>v0.1.3d: Exposed for View to apply settings directly to TextEditor.</remarks>
+    public IEditorConfigurationService ConfigurationService => _configService;
+
+    /// <summary>
     /// Command to show the search overlay.
     /// </summary>
     [RelayCommand]

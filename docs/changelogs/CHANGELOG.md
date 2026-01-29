@@ -24,9 +24,11 @@ This release establishes the core text editing infrastructure using AvaloniaEdit
 
 - **EditorService** — Document lifecycle management with open/create/save/close operations, thread-safe document tracking, and file path deduplication.
 
-- **Editor Configuration** — Configurable editor settings including font family, font size, line numbers, word wrap, and whitespace display (persistence in v0.1.3d).
+- **Editor Configuration** — Configurable editor settings including font family, font size, line numbers, word wrap, and whitespace display with JSON file persistence. Font fallback chain resolves missing fonts automatically.
 
-- **Keyboard Shortcuts** — Ctrl+S (save), Ctrl+F (search overlay), Ctrl+H (toggle replace), F3/Shift+F3 (find next/previous), Escape (hide search).
+- **Ctrl+Scroll Zoom** — Real-time font size adjustment via Ctrl+Mouse Wheel with debounced persistence. Keyboard shortcuts: Ctrl+0 (reset), Ctrl++/- (zoom in/out).
+
+- **Keyboard Shortcuts** — Ctrl+S (save), Ctrl+F (search overlay), Ctrl+H (toggle replace), F3/Shift+F3 (find next/previous), Escape (hide search), Ctrl+0/+/- (zoom).
 
 #### Why This Matters
 
@@ -36,6 +38,7 @@ This work enables:
 - Syntax highlighting for common technical writing formats
 - Foundation for search and other editor features
 - Live document statistics (line/word/character counts) for writers
+- Customizable editor appearance with persistent settings
 
 #### Sub-Part Changelogs
 
@@ -44,7 +47,7 @@ This work enables:
 | [v0.1.3a](LCS-CL-013a.md) | AvalonEdit Integration           | ✅ Complete |
 | [v0.1.3b](LCS-CL-013b.md) | Syntax Highlighting              | ✅ Complete |
 | [v0.1.3c](LCS-CL-013c.md) | Search Overlay                   | ✅ Complete |
-| v0.1.3d                   | Editor Configuration Persistence | 🔜 Planned  |
+| [v0.1.3d](LCS-CL-013d.md) | Editor Configuration Persistence | ✅ Complete |
 
 ---
 

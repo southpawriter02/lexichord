@@ -1,0 +1,134 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Editor.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="Lexichord.Modules.Editor.Views.EditorSettingsView"
+             x:DataType="vm:EditorSettingsViewModel">
+    <!--
+        v0.1.3d: Editor Settings Panel
+        LOGIC: Provides UI for configuring editor preferences.
+        - Font section: family dropdown, size slider with preview
+        - Indentation section: Tab/Space toggle, sizes
+        - Display section: line numbers, word wrap, whitespace, etc.
+        - Reset button at bottom
+    -->
+    <ScrollViewer>
+        <StackPanel Spacing="24" Margin="24">
+            <!-- Section: Font -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="Font" Classes="SettingsSectionHeader" FontWeight="SemiBold" FontSize="16" />
+                
+                <Grid ColumnDefinitions="150, *" RowDefinitions="Auto, Auto, Auto">
+                    <!-- Font Family -->
+                    <TextBlock Text="Font Family" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" />
+                    <ComboBox ItemsSource="{Binding AvailableFonts}" 
+                              SelectedItem="{Binding FontFamily}"
+                              Grid.Row="0" Grid.Column="1" 
+                              HorizontalAlignment="Stretch" />
+                    
+                    <!-- Font Size -->
+                    <TextBlock Text="Font Size" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,12,0,0" />
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,12,0,0">
+                        <Slider Value="{Binding FontSize}" 
+                                Minimum="8" Maximum="72" 
+                                TickFrequency="2"
+                                Width="200" />
+                        <TextBlock Text="{Binding FontSize, StringFormat={}{0:F0}pt}" 
+                                   VerticalAlignment="Center" Width="40" />
+                    </StackPanel>
+                    
+                    <!-- Font Preview -->
+                    <TextBlock Text="Preview" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,12,0,0" />
+                    <Border Grid.Row="2" Grid.Column="1" 
+                            Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                            BorderThickness="1" CornerRadius="4"
+                            Padding="8" Margin="0,12,0,0">
+                        <TextBlock Text="The quick brown fox jumps over the lazy dog"
+                                   FontFamily="{Binding FontFamily}"
+                                   FontSize="{Binding FontSize}"
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </Grid>
+            </StackPanel>
+            
+            <Separator />
+            
+            <!-- Section: Indentation -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="Indentation" Classes="SettingsSectionHeader" FontWeight="SemiBold" FontSize="16" />
+                
+                <Grid ColumnDefinitions="150, *" RowDefinitions="Auto, Auto, Auto">
+                    <!-- Tab/Space Toggle -->
+                    <TextBlock Text="Insert Spaces" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" />
+                    <ToggleSwitch IsChecked="{Binding UseSpacesForTabs}" 
+                                  OnContent="Spaces" OffContent="Tabs"
+                                  Grid.Row="0" Grid.Column="1" />
+                    
+                    <!-- Tab Size -->
+                    <TextBlock Text="Tab Size" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,8,0,0" />
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                        <Slider Value="{Binding TabSize}" 
+                                Minimum="1" Maximum="8" 
+                                TickFrequency="1"
+                                Width="150" />
+                        <TextBlock Text="{Binding TabSize}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    
+                    <!-- Indent Size -->
+                    <TextBlock Text="Indent Size" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,8,0,0" />
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                        <Slider Value="{Binding IndentSize}" 
+                                Minimum="1" Maximum="8" 
+                                TickFrequency="1"
+                                Width="150" />
+                        <TextBlock Text="{Binding IndentSize}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+            
+            <Separator />
+            
+            <!-- Section: Display -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="Display" Classes="SettingsSectionHeader" FontWeight="SemiBold" FontSize="16" />
+                
+                <Grid ColumnDefinitions="150, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto">
+                    <!-- Show Line Numbers -->
+                    <TextBlock Text="Line Numbers" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" />
+                    <CheckBox IsChecked="{Binding ShowLineNumbers}" Grid.Row="0" Grid.Column="1" />
+                    
+                    <!-- Word Wrap -->
+                    <TextBlock Text="Word Wrap" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4,0,0" />
+                    <CheckBox IsChecked="{Binding WordWrap}" Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" />
+                    
+                    <!-- Highlight Current Line -->
+                    <TextBlock Text="Highlight Current Line" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4,0,0" />
+                    <CheckBox IsChecked="{Binding HighlightCurrentLine}" Grid.Row="2" Grid.Column="1" Margin="0,4,0,0" />
+                    
+                    <!-- Show Whitespace -->
+                    <TextBlock Text="Show Whitespace" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,4,0,0" />
+                    <CheckBox IsChecked="{Binding ShowWhitespace}" Grid.Row="3" Grid.Column="1" Margin="0,4,0,0" />
+                    
+                    <!-- Highlight Matching Brackets -->
+                    <TextBlock Text="Match Brackets" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,4,0,0" />
+                    <CheckBox IsChecked="{Binding HighlightMatchingBrackets}" Grid.Row="4" Grid.Column="1" Margin="0,4,0,0" />
+                    
+                    <!-- Smooth Scrolling -->
+                    <TextBlock Text="Smooth Scrolling" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,4,0,0" />
+                    <CheckBox IsChecked="{Binding SmoothScrolling}" Grid.Row="5" Grid.Column="1" Margin="0,4,0,0" />
+                </Grid>
+            </StackPanel>
+            
+            <Separator />
+            
+            <!-- Reset Button -->
+            <Button Content="Reset to Defaults" 
+                    Command="{Binding ResetToDefaultsCommand}"
+                    HorizontalAlignment="Left"
+                    Classes="accent" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
