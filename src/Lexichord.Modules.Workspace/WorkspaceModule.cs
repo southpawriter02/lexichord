@@ -51,6 +51,9 @@ public sealed class WorkspaceModule : IModule
 
         // v0.1.2c: Project Explorer ViewModel (transient for per-view instances)
         services.AddTransient<ProjectExplorerViewModel>();
+
+        // v0.1.2d: File operations service for context menu actions
+        services.AddSingleton<IFileOperationService, FileOperationService>();
     }
 
     /// <inheritdoc/>

@@ -17,6 +17,7 @@ using System.Globalization;
 /// - Double-click to open files
 /// - Keyboard navigation for rename mode
 /// - Focus management for edit textbox
+/// - Keyboard shortcuts (F2, Delete, Ctrl+N, Ctrl+Shift+N)
 /// </remarks>
 public partial class ProjectExplorerView : UserControl
 {
@@ -45,9 +46,51 @@ public partial class ProjectExplorerView : UserControl
     }
 
     /// <summary>
+    /// Handles keyboard shortcuts on the tree view.
+    /// </summary>
+    private async void OnTreeKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (ViewModel == null)
+            return;
+
+        // Don't process shortcuts if we're in edit mode
+        if (ViewModel.SelectedNode?.IsEditing == true)
+            return;
+
+        switch (e.Key)
+        {
+            case Key.F2:
+                // Rename selected item
+                ViewModel.RenameCommand.Execute(null);
+                e.Handled = true;
+                break;
+
+            case Key.Delete:
+                // Delete selected item
+                await ViewModel.DeleteCommand.ExecuteAsync(false);
+                e.Handled = true;
+                break;
+
+            case Key.N when e.KeyModifiers.HasFlag(KeyModifiers.Control):
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                {
+                    // Ctrl+Shift+N: New folder
+                    await ViewModel.NewFolderCommand.ExecuteAsync(null);
+                }
+                else
+                {
+                    // Ctrl+N: New file
+                    await ViewModel.NewFileCommand.ExecuteAsync(null);
+                }
+                e.Handled = true;
+                break;
+        }
+    }
+
+    /// <summary>
     /// Handles keyboard input during rename mode.
     /// </summary>
-    private void OnEditKeyDown(object? sender, KeyEventArgs e)
+    private async void OnEditKeyDown(object? sender, KeyEventArgs e)
     {
         if (sender is not TextBox textBox)
             return;
@@ -59,13 +102,13 @@ public partial class ProjectExplorerView : UserControl
         {
             case Key.Enter:
                 // Commit the rename
-                CommitRename(node);
+                await CommitRenameAsync(node);
                 e.Handled = true;
                 break;
 
             case Key.Escape:
                 // Cancel the rename
-                node.CancelEdit();
+                ViewModel?.HandleRenameCancellation(node);
                 e.Handled = true;
                 break;
         }
@@ -74,7 +117,7 @@ public partial class ProjectExplorerView : UserControl
     /// <summary>
     /// Handles losing focus during rename mode (auto-commit).
     /// </summary>
-    private void OnEditLostFocus(object? sender, RoutedEventArgs e)
+    private async void OnEditLostFocus(object? sender, RoutedEventArgs e)
     {
         if (sender is not TextBox textBox)
             return;
@@ -85,19 +128,23 @@ public partial class ProjectExplorerView : UserControl
         if (node.IsEditing)
         {
             // Auto-commit on focus loss
-            CommitRename(node);
+            await CommitRenameAsync(node);
         }
     }
 
     /// <summary>
-    /// Commits a rename operation.
+    /// Commits a rename operation asynchronously.
     /// </summary>
     /// <param name="node">The node being renamed.</param>
-    private void CommitRename(FileTreeNode node)
+    private async Task CommitRenameAsync(FileTreeNode node)
     {
-        // TODO: v0.1.2d will implement actual file rename
-        // For now, just cancel the edit mode
-        node.CancelEdit();
+        if (ViewModel == null)
+        {
+            node.CancelEdit();
+            return;
+        }
+
+        await ViewModel.CommitRenameAsync(node);
     }
 }
 

@@ -36,6 +36,14 @@ This release establishes workspace and project management capabilities, enabling
     - **Live Updates** — Tree updates automatically when external file changes are detected
     - **MediatR Integration** — Publishes `FileOpenRequestedEvent` when files are opened
 
+- **Context Menu Actions** — Full file and folder management in the Project Explorer:
+    - **New File/Folder** — Create new items with inline name editing (Ctrl+N, Ctrl+Shift+N)
+    - **Rename** — Inline renaming with validation (F2)
+    - **Delete** — Remove files/folders with recursive support
+    - **Reveal in Explorer** — Open containing folder in OS file browser (Windows/macOS/Linux)
+    - **Protected Paths** — Prevents modification of `.git` folders and workspace root
+    - **Name Validation** — Blocks invalid characters, reserved names, and path traversal
+
 #### Why This Matters
 
 This work enables:
@@ -44,9 +52,10 @@ This work enables:
 2. **Recent Projects** — Users can quickly reopen previously used workspaces.
 3. **Cross-Module Coordination** — Other modules can react to workspace and file changes via MediatR events.
 4. **Reliable File Watching** — External edits (git checkout, npm install, IDE refactors) are detected reliably without event storms.
+5. **File Management** — Users can create, rename, and delete files/folders without leaving the IDE.
 
 > [!NOTE]
-> For detailed technical changes, see [LCS-CL-012a.md](./LCS-CL-012a.md), [LCS-CL-012b.md](./LCS-CL-012b.md), and [LCS-CL-012c.md](./LCS-CL-012c.md).
+> For detailed technical changes, see [LCS-CL-012a.md](./LCS-CL-012a.md), [LCS-CL-012b.md](./LCS-CL-012b.md), [LCS-CL-012c.md](./LCS-CL-012c.md), and [LCS-CL-012d.md](./LCS-CL-012d.md).
 
 ---
 

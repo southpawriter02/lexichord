@@ -80,7 +80,40 @@
                       ItemsSource="{Binding RootNodes}"
                       SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
                       IsVisible="{Binding HasWorkspace}"
-                      DoubleTapped="OnTreeDoubleTapped">
+                      DoubleTapped="OnTreeDoubleTapped"
+                      KeyDown="OnTreeKeyDown">
+                <!-- Context Menu -->
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="New File" Command="{Binding NewFileCommand}" InputGesture="Ctrl+N">
+                            <MenuItem.Icon>
+                                <mi:MaterialIcon Kind="FilePlus" Width="16" Height="16"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="New Folder" Command="{Binding NewFolderCommand}" InputGesture="Ctrl+Shift+N">
+                            <MenuItem.Icon>
+                                <mi:MaterialIcon Kind="FolderPlus" Width="16" Height="16"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Rename" Command="{Binding RenameCommand}" InputGesture="F2">
+                            <MenuItem.Icon>
+                                <mi:MaterialIcon Kind="RenameBox" Width="16" Height="16"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Delete" Command="{Binding DeleteCommand}" InputGesture="Delete">
+                            <MenuItem.Icon>
+                                <mi:MaterialIcon Kind="Delete" Width="16" Height="16"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Reveal in Explorer" Command="{Binding RevealInExplorerCommand}">
+                            <MenuItem.Icon>
+                                <mi:MaterialIcon Kind="FolderSearch" Width="16" Height="16"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}"
                                       x:DataType="models:FileTreeNode">

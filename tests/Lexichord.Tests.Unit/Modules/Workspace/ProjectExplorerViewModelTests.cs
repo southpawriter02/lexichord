@@ -16,6 +16,7 @@ public class ProjectExplorerViewModelTests
 {
     private readonly Mock<IWorkspaceService> _mockWorkspaceService;
     private readonly Mock<IFileSystemAccess> _mockFileSystemAccess;
+    private readonly Mock<IFileOperationService> _mockFileOperationService;
     private readonly Mock<IMediator> _mockMediator;
     private readonly Mock<ILogger<ProjectExplorerViewModel>> _mockLogger;
 
@@ -23,6 +24,7 @@ public class ProjectExplorerViewModelTests
     {
         _mockWorkspaceService = new Mock<IWorkspaceService>();
         _mockFileSystemAccess = new Mock<IFileSystemAccess>();
+        _mockFileOperationService = new Mock<IFileOperationService>();
         _mockMediator = new Mock<IMediator>();
         _mockLogger = new Mock<ILogger<ProjectExplorerViewModel>>();
 
@@ -36,6 +38,7 @@ public class ProjectExplorerViewModelTests
         return new ProjectExplorerViewModel(
             _mockWorkspaceService.Object,
             _mockFileSystemAccess.Object,
+            _mockFileOperationService.Object,
             _mockMediator.Object,
             _mockLogger.Object);
     }
