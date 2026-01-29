@@ -81,16 +81,21 @@ public class ManuscriptViewModelTests
     #region Content and Dirty State Tests
 
     [Fact]
-    public void Content_WhenChanged_MarksDirty()
+    public void Content_WhenChanged_TriggersPropertyChangedNotifications()
     {
         // Arrange
         _sut.Initialize("id", "Test", "/path.md", "", System.Text.Encoding.UTF8);
+        var changedProperties = new List<string>();
+        _sut.PropertyChanged += (_, e) => changedProperties.Add(e.PropertyName!);
 
         // Act
         _sut.Content = "New content";
 
-        // Assert
-        _sut.IsDirty.Should().BeTrue();
+        // Assert - Content change triggers stat recalc notifications
+        // Note: IsDirty is now debounced (50ms) so not checked here
+        changedProperties.Should().Contain(nameof(ManuscriptViewModel.LineCount));
+        changedProperties.Should().Contain(nameof(ManuscriptViewModel.CharacterCount));
+        changedProperties.Should().Contain(nameof(ManuscriptViewModel.WordCount));
     }
 
     [Fact]
@@ -260,9 +265,9 @@ public class ManuscriptViewModelTests
         // Act
         _sut.InsertText(", world");
 
-        // Assert
+        // Assert - Check content was inserted correctly
+        // Note: IsDirty is debounced (50ms) and requires UI thread, tested elsewhere
         _sut.Content.Should().Be("Hello, world!");
-        _sut.IsDirty.Should().BeTrue();
     }
 
     #endregion
@@ -277,6 +282,129 @@ public class ManuscriptViewModelTests
 
         // Act & Assert
         _sut.FileExtension.Should().Be(".md");
+    }
+
+    #endregion
+
+    #region Dirty State Tracking Tests (v0.1.4a)
+
+    [Fact]
+    public void Initialize_SetsLastSavedContentHash()
+    {
+        // Arrange & Act
+        _sut.Initialize("id", "Test", "/path.md", "Initial content", System.Text.Encoding.UTF8);
+
+        // Assert
+        _sut.LastSavedContentHash.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void ContentMatchesLastSaved_AfterInitialize_ReturnsTrue()
+    {
+        // Arrange
+        _sut.Initialize("id", "Test", "/path.md", "Initial content", System.Text.Encoding.UTF8);
+
+        // Act & Assert
+        _sut.ContentMatchesLastSaved().Should().BeTrue();
+    }
+
+    [Fact]
+    public void ContentMatchesLastSaved_AfterContentChange_ReturnsFalse()
+    {
+        // Arrange
+        _sut.Initialize("id", "Test", "/path.md", "Initial content", System.Text.Encoding.UTF8);
+
+        // Act - Change content directly (bypassing debounce for synchronous test)
+        // We set the backing field via public setter which triggers debounce
+        _sut.GetType().GetField("_content", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+            .SetValue(_sut, "Changed content");
+
+        // Assert
+        _sut.ContentMatchesLastSaved().Should().BeFalse();
+    }
+
+    [Fact]
+    public void ClearDirty_WithHash_UpdatesLastSavedContentHash()
+    {
+        // Arrange
+        _sut.Initialize("id", "Test", "/path.md", "Initial", System.Text.Encoding.UTF8);
+        var originalHash = _sut.LastSavedContentHash;
+
+        // Act
+        _sut.ClearDirty("new-content-hash");
+
+        // Assert
+        _sut.LastSavedContentHash.Should().Be("new-content-hash");
+        _sut.LastSavedContentHash.Should().NotBe(originalHash);
+    }
+
+    [Fact]
+    public void ClearDirty_WithHash_SetsIsDirtyFalse()
+    {
+        // Arrange
+        _sut.Initialize("id", "Test", "/path.md", "", System.Text.Encoding.UTF8);
+        _sut.IsDirty = true; // Force dirty state
+
+        // Act
+        _sut.ClearDirty("some-hash");
+
+        // Assert
+        _sut.IsDirty.Should().BeFalse();
+    }
+
+    [Fact]
+    public void DirtyStateChanged_WhenClearDirtyCalled_EventRaised()
+    {
+        // Arrange
+        _sut.Initialize("id", "Test", "/path.md", "", System.Text.Encoding.UTF8);
+        _sut.IsDirty = true;
+        var eventRaised = false;
+        _sut.DirtyStateChanged += (_, args) =>
+        {
+            eventRaised = true;
+            args.IsDirty.Should().BeFalse();
+            args.DocumentId.Should().Be("id");
+        };
+
+        // Act
+        _sut.ClearDirty("test-hash");
+
+        // Assert
+        eventRaised.Should().BeTrue();
+    }
+
+    [Fact]
+    public void DisplayTitle_WhenDirty_ShowsAsterisk()
+    {
+        // Arrange
+        _sut.Initialize("id", "MyDocument", null, "", System.Text.Encoding.UTF8);
+
+        // Act
+        _sut.IsDirty = true;
+
+        // Assert
+        _sut.DisplayTitle.Should().Be("MyDocument*");
+    }
+
+    [Fact]
+    public void DisplayTitle_WhenClean_NoAsterisk()
+    {
+        // Arrange
+        _sut.Initialize("id", "MyDocument", null, "", System.Text.Encoding.UTF8);
+
+        // Assert
+        _sut.DisplayTitle.Should().Be("MyDocument");
+    }
+
+    [Fact]
+    public void Dispose_DoesNotThrow()
+    {
+        // Arrange
+        _sut.Initialize("id", "Test", null, "", System.Text.Encoding.UTF8);
+
+        // Act & Assert
+        var act = () => _sut.Dispose();
+        act.Should().NotThrow();
     }
 
     #endregion

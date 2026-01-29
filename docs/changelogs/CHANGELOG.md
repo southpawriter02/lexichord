@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.1.4] - 2026-01 (In Progress)
+
+### Scribe (IO & Persistence)
+
+This release establishes file I/O and document persistence capabilities, starting with dirty state tracking.
+
+#### What's New
+
+- **Dirty State Tracking** — Visual "\*" indicator in tab titles when documents have unsaved changes. Debounced updates (50ms) prevent excessive state changes during rapid typing. Content hashing enables detection when undo returns to saved state.
+
+#### Sub-Part Changelogs
+
+| Version                   | Title                | Status      |
+| ------------------------- | -------------------- | ----------- |
+| [v0.1.4a](LCS-CL-014a.md) | Dirty State Tracking | ✅ Complete |
+
+---
+
 ## [v0.1.3] - 2026-01 (In Progress)
 
 ### The Manuscript (Editor Module)

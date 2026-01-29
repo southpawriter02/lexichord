@@ -1,9 +1,12 @@
 using System.ComponentModel;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Editor;
+using Lexichord.Abstractions.Events;
 using Lexichord.Abstractions.Services;
 using Lexichord.Abstractions.ViewModels;
 using Lexichord.Modules.Editor.Services;
@@ -25,7 +28,7 @@ namespace Lexichord.Modules.Editor.ViewModels;
 /// Settings are read from IEditorConfigurationService and update
 /// when the service raises SettingsChanged.
 /// </remarks>
-public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptViewModel
+public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptViewModel, IDirtyStateTracker, IDisposable
 {
     private readonly IEditorService _editorService;
     private readonly IEditorConfigurationService _configService;
@@ -33,6 +36,10 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
     private readonly IMediator _mediator;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<ManuscriptViewModel> _logger;
+    private readonly System.Timers.Timer _debounceTimer;
+    private bool _pendingDirty;
+
+    private const int DebounceDelayMs = 50;
 
     private string _id = string.Empty;
     private string _title = "Untitled";
@@ -62,6 +69,12 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
 
         // LOGIC: Subscribe to settings changes
         _configService.SettingsChanged += OnSettingsChanged;
+
+        // LOGIC: Debounce timer prevents excessive IsDirty updates
+        // during rapid typing. Timer fires 50ms after last change.
+        _debounceTimer = new System.Timers.Timer(DebounceDelayMs);
+        _debounceTimer.AutoReset = false;
+        _debounceTimer.Elapsed += OnDebounceTimerElapsed;
     }
 
     #region Document Properties
@@ -93,7 +106,7 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
         {
             if (SetProperty(ref _content, value))
             {
-                MarkDirty();
+                MarkDirtyDebounced();
                 OnPropertyChanged(nameof(LineCount));
                 OnPropertyChanged(nameof(CharacterCount));
                 OnPropertyChanged(nameof(WordCount));
@@ -118,6 +131,18 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
 
     /// <inheritdoc/>
     public int WordCount => CountWords(Content);
+
+    #endregion
+
+    #region IDirtyStateTracker Implementation
+
+    /// <inheritdoc/>
+    public string? LastSavedContentHash { get; private set; }
+
+    /// <inheritdoc/>
+    public event EventHandler<DirtyStateChangedEventArgs>? DirtyStateChanged;
+
+    // Note: IDirtyStateTracker methods are in #region Private Methods
 
     #endregion
 
@@ -254,7 +279,7 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
             var result = await _editorService.SaveDocumentAsync(this);
             if (result)
             {
-                MarkClean();
+                ClearDirty(ComputeContentHash(Content));
             }
             return result;
         }
@@ -286,8 +311,10 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
         _content = content;
         _encoding = encoding;
 
-        // LOGIC: Don't mark as dirty on initial load
+        // LOGIC: Store initial content hash and mark clean
+        LastSavedContentHash = ComputeContentHash(content);
         MarkClean();
+        _pendingDirty = false;
 
         NotifyAllPropertiesChanged();
         
@@ -422,6 +449,126 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
             return 0;
 
         return Regex.Matches(text, @"\b\w+\b").Count;
+    }
+
+    /// <summary>
+    /// Marks document dirty with debouncing.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Starts/resets debounce timer. Actual state change
+    /// occurs after timer expires (50ms of no further calls).
+    /// </remarks>
+    private void MarkDirtyDebounced()
+    {
+        _pendingDirty = true;
+        _debounceTimer.Stop();
+        _debounceTimer.Start();
+    }
+
+    /// <inheritdoc/>
+    void IDirtyStateTracker.MarkDirty()
+    {
+        MarkDirtyDebounced();
+    }
+
+    /// <inheritdoc/>
+    void IDirtyStateTracker.ClearDirty()
+    {
+        ClearDirty(ComputeContentHash(Content));
+    }
+
+    /// <inheritdoc/>
+    public void ClearDirty(string contentHash)
+    {
+        if (!IsDirty && LastSavedContentHash == contentHash)
+            return;
+
+        LastSavedContentHash = contentHash;
+        _pendingDirty = false;
+        MarkClean();
+
+        RaiseDirtyStateChanged(false);
+    }
+
+    /// <inheritdoc/>
+    public bool ContentMatchesLastSaved()
+    {
+        if (LastSavedContentHash is null)
+            return false;
+
+        var currentHash = ComputeContentHash(Content);
+        return currentHash == LastSavedContentHash;
+    }
+
+    private void OnDebounceTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        // LOGIC: Timer elapsed - apply the pending dirty state
+        if (_pendingDirty && !IsDirty)
+        {
+            // Marshal to UI thread
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                if (_pendingDirty && !IsDirty)
+                {
+                    MarkDirty();
+                    RaiseDirtyStateChanged(true);
+                    _logger.LogDebug("Document {DocumentId} marked dirty after debounce", DocumentId);
+                }
+            });
+        }
+    }
+
+    private void RaiseDirtyStateChanged(bool isDirty)
+    {
+        var args = new DirtyStateChangedEventArgs
+        {
+            DocumentId = DocumentId,
+            FilePath = FilePath,
+            IsDirty = isDirty
+        };
+
+        DirtyStateChanged?.Invoke(this, args);
+
+        // Publish MediatR domain event
+        _ = _mediator.Publish(new DocumentDirtyChangedEvent(
+            DocumentId,
+            FilePath,
+            isDirty,
+            DateTimeOffset.UtcNow));
+    }
+
+    private static string ComputeContentHash(string content)
+    {
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToBase64String(hash);
+    }
+
+    #endregion
+
+    #region IDisposable
+
+    /// <summary>
+    /// Disposes the view model and releases resources.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Disposes managed resources.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _debounceTimer.Stop();
+            _debounceTimer.Elapsed -= OnDebounceTimerElapsed;
+            _debounceTimer.Dispose();
+            _configService.SettingsChanged -= OnSettingsChanged;
+        }
     }
 
     #endregion
