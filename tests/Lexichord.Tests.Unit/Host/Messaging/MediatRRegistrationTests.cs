@@ -1,5 +1,6 @@
 using Lexichord.Host.Infrastructure;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lexichord.Tests.Unit.Host.Messaging;
@@ -60,6 +61,10 @@ public class MediatRRegistrationTests
     {
         // Arrange
         var services = new ServiceCollection();
+        // Required for BindConfiguration() in AddMediatRServices
+        var configuration = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging();
         // Pass the test assembly to discover test handlers
         var testAssembly = typeof(TestCommand).Assembly;
         services.AddMediatRServices(testAssembly);
@@ -76,6 +81,10 @@ public class MediatRRegistrationTests
     {
         // Arrange
         var services = new ServiceCollection();
+        // Required for BindConfiguration() in AddMediatRServices
+        var configuration = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging();
         // Pass the test assembly to discover test handlers
         var testAssembly = typeof(TestQuery).Assembly;
         services.AddMediatRServices(testAssembly);

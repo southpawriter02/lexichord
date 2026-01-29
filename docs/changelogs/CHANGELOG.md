@@ -18,6 +18,8 @@ This release establishes a flexible, IDE-like docking system using `Dock.Avaloni
 
 - **Layout Abstractions** — Created `IDockFactory`, `IDocument`, `ITool`, and `DockRegionConfig` interfaces that decouple modules from the docking library implementation.
 
+- **Region Injection Service** — Added `IRegionManager` service enabling modules to inject tool panes and documents into dock regions without direct Dock.Avalonia dependency. Includes MediatR integration for region change notifications.
+
 - **MainWindowViewModel** — New ViewModel managing the dock layout lifecycle with proper DI integration.
 
 #### Why This Matters
@@ -29,7 +31,7 @@ This work enables:
 3. **Future Serialization** — Stable IDs enable layout persistence in future sub-parts.
 
 > [!NOTE]
-> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md).
+> For detailed technical changes, see [LCS-CL-011a.md](./LCS-CL-011a.md) and [LCS-CL-011b.md](./LCS-CL-011b.md).
 
 ---
 

@@ -156,7 +156,9 @@ public static class HostServices
     /// </remarks>
     public static IServiceCollection AddDockServices(this IServiceCollection services)
     {
+        services.AddSingleton<Services.IUiDispatcher, Services.AvaloniaUiDispatcher>();
         services.AddSingleton<Lexichord.Abstractions.Layout.IDockFactory, Layout.LexichordDockFactory>();
+        services.AddSingleton<Lexichord.Abstractions.Layout.IRegionManager, Layout.DockRegionManager>();
         services.AddSingleton<ViewModels.MainWindowViewModel>();
 
         return services;

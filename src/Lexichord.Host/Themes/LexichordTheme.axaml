@@ -29,6 +29,7 @@
 
     <!-- Default font family -->
     <FontFamily x:Key="DefaultFontFamily">Inter, Segoe UI, -apple-system, sans-serif</FontFamily>
+    <FontFamily x:Key="InterFont">Inter, Segoe UI, -apple-system, sans-serif</FontFamily>
     <FontFamily x:Key="MonoFontFamily">JetBrains Mono, Consolas, Courier New, monospace</FontFamily>
 
     <!-- Typography Scale -->
