@@ -42,6 +42,9 @@ public class EditorModule : IModule
         // LOGIC: v0.1.3b - Register syntax highlighting service
         services.AddSingleton<ISyntaxHighlightingService, XshdHighlightingService>();
 
+        // LOGIC: v0.1.3c - Register search service (transient - one per document)
+        services.AddTransient<ISearchService, SearchService>();
+
         // LOGIC: Register views and view models as transient (new instance per document)
         services.AddTransient<ManuscriptViewModel>();
     }

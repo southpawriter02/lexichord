@@ -1,0 +1,161 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lexichord.Modules.Editor.ViewModels"
+             x:Class="Lexichord.Modules.Editor.Views.SearchOverlayView"
+             x:DataType="vm:SearchOverlayViewModel"
+             MinWidth="320"
+             MaxWidth="400">
+
+    <!-- LOGIC: Search overlay positioned at top-right of editor -->
+    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="8">
+        <StackPanel Spacing="4">
+
+            <!-- Search Row -->
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+
+                <!-- Search TextBox -->
+                <TextBox x:Name="SearchTextBox"
+                         Grid.Column="0"
+                         Text="{Binding SearchText}"
+                         Watermark="Search..."
+                         Classes.hasNoResults="{Binding HasNoResults}">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding FindNextCommand}" />
+                        <KeyBinding Gesture="Shift+Enter" Command="{Binding FindPreviousCommand}" />
+                        <KeyBinding Gesture="Escape" Command="{Binding HideCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+
+                <!-- Match Status -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding MatchStatus}"
+                           VerticalAlignment="Center"
+                           Margin="8,0"
+                           Opacity="0.7"
+                           MinWidth="70"
+                           TextAlignment="Right" />
+
+                <!-- Previous Button -->
+                <Button Grid.Column="2"
+                        Command="{Binding FindPreviousCommand}"
+                        ToolTip.Tip="Previous Match (Shift+F3)"
+                        Padding="4">
+                    <PathIcon Data="M20,16.5L16.5,20L1,8L16.5,-4L20,-.5L8,8Z"
+                              Width="12"
+                              Height="12">
+                        <PathIcon.RenderTransform>
+                            <RotateTransform Angle="90" />
+                        </PathIcon.RenderTransform>
+                    </PathIcon>
+                </Button>
+
+                <!-- Next Button -->
+                <Button Grid.Column="3"
+                        Command="{Binding FindNextCommand}"
+                        ToolTip.Tip="Next Match (F3)"
+                        Padding="4">
+                    <PathIcon Data="M20,16.5L16.5,20L1,8L16.5,-4L20,-.5L8,8Z"
+                              Width="12"
+                              Height="12">
+                        <PathIcon.RenderTransform>
+                            <RotateTransform Angle="-90" />
+                        </PathIcon.RenderTransform>
+                    </PathIcon>
+                </Button>
+
+                <!-- Close Button -->
+                <Button Grid.Column="4"
+                        Command="{Binding HideCommand}"
+                        ToolTip.Tip="Close (Escape)"
+                        Padding="4">
+                    <PathIcon Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                              Width="12"
+                              Height="12" />
+                </Button>
+            </Grid>
+
+            <!-- Replace Row (collapsible) -->
+            <Grid ColumnDefinitions="*,Auto,Auto"
+                  IsVisible="{Binding IsReplaceVisible}">
+
+                <!-- Replace TextBox -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding ReplaceText}"
+                         Watermark="Replace..." />
+
+                <!-- Replace Button -->
+                <Button Grid.Column="1"
+                        Command="{Binding ReplaceNextCommand}"
+                        ToolTip.Tip="Replace and Find Next"
+                        Content="Replace"
+                        Margin="4,0,0,0"
+                        Padding="8,4" />
+
+                <!-- Replace All Button -->
+                <Button Grid.Column="2"
+                        Command="{Binding ReplaceAllCommand}"
+                        ToolTip.Tip="Replace All"
+                        Content="All"
+                        Margin="4,0,0,0"
+                        Padding="8,4" />
+            </Grid>
+
+            <!-- Options Row -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8"
+                        HorizontalAlignment="Left">
+
+                <!-- Toggle Replace -->
+                <ToggleButton IsChecked="{Binding IsReplaceVisible}"
+                              ToolTip.Tip="Toggle Replace (Ctrl+H)"
+                              Padding="4"
+                              Width="28"
+                              Height="28">
+                    <PathIcon Data="M14,12C14,14.21 12.21,16 10,16S6,14.21 6,12 7.79,8 10,8 14,9.79 14,12M12,12A2,2 0 1,0 10,10A2,2 0 0,0 12,12M10,2C10,2 10,2 10,2A8,8 0 1,0 10,18A8,8 0 0,0 10,2M10,4A6,6 0 1,1 10,16A6,6 0 0,1 10,4M14.9,17.1L16.3,15.7L21,20.5L19.6,21.9L14.9,17.1Z"
+                              Width="14"
+                              Height="14" />
+                </ToggleButton>
+
+                <Separator Width="1" Margin="4,2" />
+
+                <!-- Match Case -->
+                <ToggleButton IsChecked="{Binding MatchCase}"
+                              ToolTip.Tip="Match Case"
+                              Content="Aa"
+                              Padding="4"
+                              FontWeight="SemiBold"
+                              Width="28"
+                              Height="28" />
+
+                <!-- Whole Word -->
+                <ToggleButton IsChecked="{Binding WholeWord}"
+                              ToolTip.Tip="Match Whole Word"
+                              Content="W"
+                              Padding="4"
+                              FontWeight="SemiBold"
+                              Width="28"
+                              Height="28" />
+
+                <!-- Use Regex -->
+                <ToggleButton IsChecked="{Binding UseRegex}"
+                              ToolTip.Tip="Use Regular Expression"
+                              Content=".*"
+                              Padding="4"
+                              FontFamily="Consolas,Courier New"
+                              Width="28"
+                              Height="28" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+
+    <UserControl.Styles>
+        <!-- No results highlighting -->
+        <Style Selector="TextBox.hasNoResults">
+            <Setter Property="BorderBrush" Value="Red" />
+        </Style>
+    </UserControl.Styles>
+</UserControl>

@@ -2,6 +2,7 @@ using System.Text;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Modules.Editor.Services;
 using Lexichord.Modules.Editor.ViewModels;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -29,6 +30,12 @@ public class EditorServiceTests : IDisposable
         services.AddSingleton<ILogger<ManuscriptViewModel>>(NullLogger<ManuscriptViewModel>.Instance);
         services.AddSingleton<ILogger<EditorService>>(NullLogger<EditorService>.Instance);
         services.AddSingleton<IEditorService, EditorService>();
+        
+        // v0.1.3c: Add search dependencies for ManuscriptViewModel
+        services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+        services.AddSingleton<ISearchService>(new Mock<ISearchService>().Object);
+        services.AddSingleton<IMediator>(new Mock<IMediator>().Object);
+        
         _serviceProvider = services.BuildServiceProvider();
 
         _sut = new EditorService(

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ae="https://github.com/avaloniaui/avaloniaedit"
              xmlns:vm="using:Lexichord.Modules.Editor.ViewModels"
+             xmlns:views="using:Lexichord.Modules.Editor.Views"
              x:Class="Lexichord.Modules.Editor.Views.ManuscriptView"
              x:DataType="vm:ManuscriptViewModel">
     
@@ -17,16 +18,13 @@
                        VerticalScrollBarVisibility="Auto"
                        Padding="8" />
 
-        <!-- Search Overlay Host (v0.1.3c) - positioned at top right -->
-        <Border x:Name="SearchOverlayHost"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="0,8,24,0"
-                IsVisible="{Binding IsSearchVisible}"
-                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-                CornerRadius="4"
-                Padding="8">
-            <TextBlock Text="Search (v0.1.3c)" Opacity="0.5" />
-        </Border>
+        <!-- Search Overlay (v0.1.3c) - positioned at top right -->
+        <!-- Note: DataContext set in code-behind when SearchViewModel is available -->
+        <views:SearchOverlayView x:Name="SearchOverlay"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Top"
+                                 Margin="0,8,24,0"
+                                 IsVisible="{Binding IsSearchVisible}" />
     </Grid>
 </UserControl>
+

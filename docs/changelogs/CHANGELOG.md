@@ -18,13 +18,15 @@ This release establishes the core text editing infrastructure using AvaloniaEdit
 
 - **Syntax Highlighting Service** — Theme-aware syntax highlighting for Markdown, JSON, YAML, and XML with automatic theme adaptation. XSHD definitions loaded from embedded resources with light/dark variants.
 
+- **Search & Replace Overlay** — Inline search and replace with live highlighting, match navigation (F3/Shift+F3), and replace all. Supports case-sensitive, whole word, and regex modes with ReDoS protection.
+
 - **ManuscriptViewModel** — Document ViewModel extending `DocumentViewModelBase` with full editor state management including caret position, selection tracking, and document statistics.
 
 - **EditorService** — Document lifecycle management with open/create/save/close operations, thread-safe document tracking, and file path deduplication.
 
 - **Editor Configuration** — Configurable editor settings including font family, font size, line numbers, word wrap, and whitespace display (persistence in v0.1.3d).
 
-- **Keyboard Shortcuts** — Ctrl+S (save), Ctrl+F (search overlay placeholder), Ctrl+G (go to line placeholder), Escape (hide search).
+- **Keyboard Shortcuts** — Ctrl+S (save), Ctrl+F (search overlay), Ctrl+H (toggle replace), F3/Shift+F3 (find next/previous), Escape (hide search).
 
 #### Why This Matters
 
@@ -41,7 +43,7 @@ This work enables:
 | ------------------------- | -------------------------------- | ----------- |
 | [v0.1.3a](LCS-CL-013a.md) | AvalonEdit Integration           | ✅ Complete |
 | [v0.1.3b](LCS-CL-013b.md) | Syntax Highlighting              | ✅ Complete |
-| v0.1.3c                   | Search Overlay                   | 🔜 Planned  |
+| [v0.1.3c](LCS-CL-013c.md) | Search Overlay                   | ✅ Complete |
 | v0.1.3d                   | Editor Configuration Persistence | 🔜 Planned  |
 
 ---

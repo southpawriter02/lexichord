@@ -104,6 +104,9 @@ public partial class ManuscriptView : UserControl
             _isUpdatingFromViewModel = true;
             TextEditor.Text = _viewModel.Content;
             _isUpdatingFromViewModel = false;
+
+            // LOGIC: Attach search service to editor (v0.1.3c)
+            _viewModel.SearchService.AttachToEditor(TextEditor);
         }
     }
 
@@ -128,6 +131,14 @@ public partial class ManuscriptView : UserControl
                 if (TextEditor.TextArea.Caret.Offset != pos.Offset)
                 {
                     TextEditor.TextArea.Caret.Offset = pos.Offset;
+                }
+                break;
+
+            case nameof(ManuscriptViewModel.SearchViewModel):
+                // LOGIC: Wire up SearchOverlay DataContext when SearchViewModel is created (v0.1.3c)
+                if (_viewModel?.SearchViewModel is not null)
+                {
+                    SearchOverlay.DataContext = _viewModel.SearchViewModel;
                 }
                 break;
         }
@@ -196,6 +207,22 @@ public partial class ManuscriptView : UserControl
                 case Key.F:
                     // Show search overlay (v0.1.3c)
                     _viewModel?.ShowSearchCommand?.Execute(null);
+                    FocusSearchOverlay();
+                    e.Handled = true;
+                    break;
+
+                case Key.H:
+                    // Toggle replace visibility (v0.1.3c)
+                    if (_viewModel?.IsSearchVisible == true)
+                    {
+                        _viewModel?.SearchViewModel?.ToggleReplaceCommand?.Execute(null);
+                    }
+                    else
+                    {
+                        _viewModel?.ShowSearchCommand?.Execute(null);
+                        _viewModel?.SearchViewModel?.ToggleReplaceCommand?.Execute(null);
+                        FocusSearchOverlay();
+                    }
                     e.Handled = true;
                     break;
 
@@ -209,8 +236,37 @@ public partial class ManuscriptView : UserControl
         else if (e.Key == Key.Escape)
         {
             // Hide search overlay
-            _viewModel?.HideSearchCommand?.Execute(null);
-            e.Handled = true;
+            if (_viewModel?.IsSearchVisible == true)
+            {
+                _viewModel?.HideSearchCommand?.Execute(null);
+                TextEditor.Focus();
+                e.Handled = true;
+            }
         }
+        else if (e.Key == Key.F3)
+        {
+            // F3/Shift+F3 for find next/previous (v0.1.3c)
+            if (_viewModel?.IsSearchVisible == true)
+            {
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                {
+                    _viewModel?.SearchViewModel?.FindPreviousCommand?.Execute(null);
+                }
+                else
+                {
+                    _viewModel?.SearchViewModel?.FindNextCommand?.Execute(null);
+                }
+                e.Handled = true;
+            }
+        }
+    }
+
+    private void FocusSearchOverlay()
+    {
+        // LOGIC: Defer focus until search overlay is visible
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            SearchOverlay?.FocusSearchBox();
+        }, Avalonia.Threading.DispatcherPriority.Background);
     }
 }

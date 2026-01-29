@@ -2,6 +2,7 @@ using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Services;
 using Lexichord.Modules.Editor.Services;
 using Lexichord.Modules.Editor.ViewModels;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -15,6 +16,9 @@ public class ManuscriptViewModelTests
 {
     private readonly Mock<IEditorService> _editorServiceMock;
     private readonly Mock<IEditorConfigurationService> _configServiceMock;
+    private readonly Mock<ISearchService> _searchServiceMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<ManuscriptViewModel> _logger;
     private readonly ManuscriptViewModel _sut;
 
@@ -22,12 +26,18 @@ public class ManuscriptViewModelTests
     {
         _editorServiceMock = new Mock<IEditorService>();
         _configServiceMock = new Mock<IEditorConfigurationService>();
+        _searchServiceMock = new Mock<ISearchService>();
+        _mediatorMock = new Mock<IMediator>();
         _configServiceMock.Setup(x => x.GetSettings()).Returns(new EditorSettings());
+        _loggerFactory = NullLoggerFactory.Instance;
         _logger = NullLogger<ManuscriptViewModel>.Instance;
         
         _sut = new ManuscriptViewModel(
             _editorServiceMock.Object,
             _configServiceMock.Object,
+            _searchServiceMock.Object,
+            _mediatorMock.Object,
+            _loggerFactory,
             _logger);
     }
 

@@ -6,6 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Services;
 using Lexichord.Abstractions.ViewModels;
+using Lexichord.Modules.Editor.Services;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Modules.Editor.ViewModels;
@@ -27,6 +29,9 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
 {
     private readonly IEditorService _editorService;
     private readonly IEditorConfigurationService _configService;
+    private readonly ISearchService _searchService;
+    private readonly IMediator _mediator;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<ManuscriptViewModel> _logger;
 
     private string _id = string.Empty;
@@ -41,12 +46,18 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
     public ManuscriptViewModel(
         IEditorService editorService,
         IEditorConfigurationService configService,
+        ISearchService searchService,
+        IMediator mediator,
+        ILoggerFactory loggerFactory,
         ILogger<ManuscriptViewModel> logger,
         ISaveDialogService? saveDialogService = null)
         : base(saveDialogService)
     {
         _editorService = editorService;
         _configService = configService;
+        _searchService = searchService;
+        _mediator = mediator;
+        _loggerFactory = loggerFactory;
         _logger = logger;
 
         // LOGIC: Subscribe to settings changes
@@ -165,11 +176,30 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
     private bool _isSearchVisible;
 
     /// <summary>
+    /// Gets the search overlay view model.
+    /// </summary>
+    public SearchOverlayViewModel? SearchViewModel { get; private set; }
+
+    /// <summary>
+    /// Gets the search service for editor attachment.
+    /// </summary>
+    public ISearchService SearchService => _searchService;
+
+    /// <summary>
     /// Command to show the search overlay.
     /// </summary>
     [RelayCommand]
     private void ShowSearch()
     {
+        // LOGIC: Create SearchViewModel lazily on first show
+        if (SearchViewModel is null)
+        {
+            var viewModelLogger = _loggerFactory.CreateLogger<SearchOverlayViewModel>();
+            SearchViewModel = new SearchOverlayViewModel(
+                _searchService, _mediator, viewModelLogger, DocumentId);
+            OnPropertyChanged(nameof(SearchViewModel));
+        }
+
         IsSearchVisible = true;
         _logger.LogDebug("Search overlay shown for {Title}", Title);
     }
@@ -181,6 +211,7 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
     private void HideSearch()
     {
         IsSearchVisible = false;
+        _searchService.ClearHighlights();
     }
 
     /// <summary>
