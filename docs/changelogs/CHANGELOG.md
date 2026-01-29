@@ -6,6 +6,30 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.0.8] - 2026-01-29 (In Progress)
+
+### The Hello World (Golden Skeleton)
+
+This release establishes the first feature module as a reference implementation for all future Lexichord modules. The Status Bar module demonstrates the complete module lifecycle and introduces the Shell Region system for decoupled UI composition.
+
+#### What's New
+
+- **Shell Region Infrastructure** — Modules can now contribute UI to host window regions (Top, Left, Center, Right, Bottom) via `IShellRegionView` without direct host dependencies.
+
+- **Status Bar Module** — The canonical "Golden Skeleton" reference implementation demonstrating proper module structure, service registration, and async initialization patterns.
+
+- **Placeholder Services** — Stub implementations for database health monitoring (`IHealthRepository`, `IHeartbeatService`) and vault status tracking (`IVaultStatusService`) to be completed in v0.0.8b/c.
+
+#### Why This Matters
+
+This work enables:
+
+1. **Module Development Pattern** — Future module developers have a complete working example to follow.
+2. **Decoupled UI** — Modules contribute views without knowing about the host layout.
+3. **End-to-End Validation** — Proves the module system works from discovery to rendering.
+
+---
+
 ## [v0.0.7] - 2026-01-28 (In Progress)
 
 ### The Event Bus (Communication)
@@ -191,21 +215,28 @@ This foundational work ensures:
 
 ## Version History
 
-| Version | Date       | Codename                       | Summary                                                 |
-| :------ | :--------- | :----------------------------- | :------------------------------------------------------ |
-| v0.0.7  | 2026-01-28 | The Event Bus (Communication)  | MediatR bootstrap, CQRS interfaces, handler discovery   |
-| v0.0.6  | 2026-01-28 | The Vault (Secure Storage)     | Secure secrets interface, metadata, exception hierarchy |
-| v0.0.5  | 2026-01-28 | The Memory (Data Layer)        | Docker orchestration, database connector, migrations    |
-| v0.0.4  | 2026-01-28 | The Module Protocol            | Module contract, metadata, loader, license gating       |
-| v0.0.3  | 2026-01-28 | The Nervous System             | Dependency Injection, Logging, Crash Handling, Config   |
-| v0.0.2  | 2026-01-28 | The Host Shell & UI Foundation | Avalonia bootstrap, window stub, theme infrastructure   |
-| v0.0.1  | 2026-01-28 | The Architecture Skeleton      | Modular Monolith foundation, test infrastructure, CI/CD |
+| Version | Date       | Codename                          | Summary                                                   |
+| :------ | :--------- | :-------------------------------- | :-------------------------------------------------------- |
+| v0.0.8  | 2026-01-29 | The Hello World (Golden Skeleton) | Shell regions, Status Bar module reference implementation |
+| v0.0.7  | 2026-01-28 | The Event Bus (Communication)     | MediatR bootstrap, CQRS interfaces, handler discovery     |
+| v0.0.6  | 2026-01-28 | The Vault (Secure Storage)        | Secure secrets interface, metadata, exception hierarchy   |
+| v0.0.5  | 2026-01-28 | The Memory (Data Layer)           | Docker orchestration, database connector, migrations      |
+| v0.0.4  | 2026-01-28 | The Module Protocol               | Module contract, metadata, loader, license gating         |
+| v0.0.3  | 2026-01-28 | The Nervous System                | Dependency Injection, Logging, Crash Handling, Config     |
+| v0.0.2  | 2026-01-28 | The Host Shell & UI Foundation    | Avalonia bootstrap, window stub, theme infrastructure     |
+| v0.0.1  | 2026-01-28 | The Architecture Skeleton         | Modular Monolith foundation, test infrastructure, CI/CD   |
 
 ---
 
 ## Changelog Format
 
 Each major version has detailed technical changelogs organized by sub-part:
+
+### v0.0.8 Sub-Parts
+
+| Document                        | Sub-Part | Title             |
+| :------------------------------ | :------- | :---------------- |
+| [LCS-CL-008a](./LCS-CL-008a.md) | v0.0.8a  | Status Bar Module |
 
 ### v0.0.7 Sub-Parts
 

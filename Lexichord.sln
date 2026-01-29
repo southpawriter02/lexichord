@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.Sandbox",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Infrastructure", "src\Lexichord.Infrastructure\Lexichord.Infrastructure.csproj", "{58D56A89-1359-4FE5-87A3-B10F084736EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.StatusBar", "src\Lexichord.Modules.StatusBar\Lexichord.Modules.StatusBar.csproj", "{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,18 @@ Global
 		{58D56A89-1359-4FE5-87A3-B10F084736EC}.Release|x64.Build.0 = Release|Any CPU
 		{58D56A89-1359-4FE5-87A3-B10F084736EC}.Release|x86.ActiveCfg = Release|Any CPU
 		{58D56A89-1359-4FE5-87A3-B10F084736EC}.Release|x86.Build.0 = Release|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Debug|x64.Build.0 = Debug|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Debug|x86.Build.0 = Debug|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Release|x64.ActiveCfg = Release|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Release|x64.Build.0 = Release|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Release|x86.ActiveCfg = Release|Any CPU
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,5 +126,6 @@ Global
 		{BB179C66-62D6-4346-9803-E04ED45FB124} = {5EB8835E-5D64-4528-8733-24550C1B1D74}
 		{7D51B924-D9BE-4F95-80F5-CBC515AC835B} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 		{58D56A89-1359-4FE5-87A3-B10F084736EC} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
+		{C011E0CB-0DC7-4552-B53C-3C67FCD6B764} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 	EndGlobalSection
 EndGlobal

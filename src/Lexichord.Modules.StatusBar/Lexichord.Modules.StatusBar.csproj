@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+    <!-- Module metadata -->
+    <AssemblyTitle>Lexichord Status Bar Module</AssemblyTitle>
+    <Description>System status bar displaying health, vault, and event status</Description>
+    <Version>0.0.8</Version>
+
+    <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
+    <OutputPath>$(SolutionDir)Modules\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia UI -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+
+    <!-- MVVM Support -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
+    <!-- DI Abstractions only (not the full container) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The ONLY project reference allowed for modules -->
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

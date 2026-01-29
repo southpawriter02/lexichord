@@ -129,6 +129,10 @@ public static class HostServices
         // v1.x: Will be replaced with real license validation
         services.AddSingleton<ILicenseContext, HardcodedLicenseContext>();
 
+        // LOGIC (v0.0.8a): Register shell region manager for module views
+        // Manages views contributed by modules to shell regions (Top, Left, Center, Right, Bottom)
+        services.AddSingleton<IShellRegionManager, ShellRegionManager>();
+
         // LOGIC: Register service locator for XAML-instantiated components
         // Marked as obsolete to discourage direct usage
         #pragma warning disable CS0618 // Intentionally using obsolete interface

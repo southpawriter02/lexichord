@@ -16,6 +16,7 @@ public partial class MainWindow : Window
 {
     private IWindowStateService? _windowStateService;
     private IThemeManager? _themeManager;
+    private IShellRegionManager? _shellRegionManager;
 
     /// <summary>
     /// Initializes a new instance of the MainWindow class.
@@ -56,6 +57,49 @@ public partial class MainWindow : Window
                 _ = RestoreWindowStateAsync();
             }
         }
+    }
+
+    /// <summary>
+    /// Gets or sets the shell region manager.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.0.8a): When set, initializes shell regions and populates
+    /// containers with module-contributed views.
+    /// </remarks>
+    public IShellRegionManager? ShellRegionManager
+    {
+        get => _shellRegionManager;
+        set
+        {
+            _shellRegionManager = value;
+            if (value is not null)
+            {
+                InitializeShellRegions();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initializes shell regions with module-contributed views.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: For v0.0.8a, this only handles the Bottom region.
+    /// The existing shell:StatusBar in XAML provides the base status bar,
+    /// and module views can supplement or replace it.
+    /// </remarks>
+    private void InitializeShellRegions()
+    {
+        if (_shellRegionManager is null)
+            return;
+
+        // Get views registered for the Bottom region
+        var bottomViews = _shellRegionManager.GetViews(ShellRegion.Bottom);
+
+        // TODO (v0.0.8a): For now, we log that views are available.
+        // Future: Replace the hardcoded StatusBar with dynamic ContentControl
+        // that hosts module-contributed views.
+        System.Diagnostics.Debug.WriteLine(
+            $"[ShellRegions] Found {bottomViews.Count} views for Bottom region");
     }
 
     /// <summary>

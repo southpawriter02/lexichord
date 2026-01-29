@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.StatusBar.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="800" d:DesignHeight="24"
+             x:Class="Lexichord.Modules.StatusBar.Views.StatusBarView"
+             x:DataType="vm:StatusBarViewModel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    STATUS BAR VIEW (v0.0.8a)
+    Module-contributed status bar displaying system health indicators.
+    
+    LOGIC: Three sections:
+    - Left: Database status indicator
+    - Center: Application uptime
+    - Right: Vault status indicator (clickable for API key entry)
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Status Panel Container -->
+        <Style Selector="Border.status-panel">
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Border.status-panel:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumHighBrush}"/>
+        </Style>
+
+        <!-- Status Label Text -->
+        <Style Selector="TextBlock.status-label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+        </Style>
+
+        <!-- Status Indicator Dot -->
+        <Style Selector="Ellipse.status-indicator">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Indicator Colors -->
+        <Style Selector="Ellipse.healthy">
+            <Setter Property="Fill" Value="#4CAF50"/>
+        </Style>
+        <Style Selector="Ellipse.warning">
+            <Setter Property="Fill" Value="#FF9800"/>
+        </Style>
+        <Style Selector="Ellipse.error">
+            <Setter Property="Fill" Value="#F44336"/>
+        </Style>
+        <Style Selector="Ellipse.unknown">
+            <Setter Property="Fill" Value="#9E9E9E"/>
+        </Style>
+
+        <!-- Uptime Text -->
+        <Style Selector="TextBlock.uptime-label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Opacity" Value="0.7"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,1,0,0"
+            Height="24">
+
+        <Grid ColumnDefinitions="Auto,*,Auto">
+
+            <!-- Left Section: Database Status -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="8,0,0,0">
+                <Border Classes="status-panel"
+                        ToolTip.Tip="{Binding DatabaseTooltip}">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Classes="status-indicator"
+                                 Classes.healthy="{Binding IsDatabaseHealthy}"
+                                 Classes.warning="{Binding IsDatabaseWarning}"
+                                 Classes.error="{Binding IsDatabaseError}"
+                                 Classes.unknown="{Binding IsDatabaseUnknown}"/>
+                        <TextBlock Classes="status-label"
+                                   Text="{Binding DatabaseStatusText}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Center Section: Uptime Display -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock Classes="uptime-label"
+                           Text="{Binding UptimeText}"
+                           ToolTip.Tip="Time since application started"/>
+            </StackPanel>
+
+            <!-- Right Section: Vault Status -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        Margin="0,0,8,0">
+                <Border Classes="status-panel"
+                        ToolTip.Tip="{Binding VaultTooltip}"
+                        PointerPressed="OnVaultStatusClicked">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Classes="status-indicator"
+                                 Classes.healthy="{Binding IsVaultReady}"
+                                 Classes.warning="{Binding IsVaultEmpty}"
+                                 Classes.error="{Binding IsVaultError}"
+                                 Classes.unknown="{Binding IsVaultUnknown}"/>
+                        <TextBlock Classes="status-label"
+                                   Text="{Binding VaultStatusText}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</UserControl>

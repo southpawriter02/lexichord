@@ -17,6 +17,7 @@
     <!-- Assertions & Mocking -->
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
 
     <!-- Code Coverage -->
     <PackageReference Include="coverlet.collector" Version="6.0.0">
@@ -56,6 +57,8 @@
     <ProjectReference Include="..\..\src\Lexichord.Infrastructure\Lexichord.Infrastructure.csproj" />
     <!-- v0.0.4d: Sandbox Module for testing -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.Sandbox\Lexichord.Modules.Sandbox.csproj" />
+    <!-- v0.0.8a: StatusBar Module for testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.StatusBar\Lexichord.Modules.StatusBar.csproj" />
   </ItemGroup>
 
   <ItemGroup>
