@@ -18,7 +18,9 @@ This release establishes the first feature module as a reference implementation 
 
 - **Status Bar Module** — The canonical "Golden Skeleton" reference implementation demonstrating proper module structure, service registration, and async initialization patterns.
 
-- **Placeholder Services** — Stub implementations for database health monitoring (`IHealthRepository`, `IHeartbeatService`) and vault status tracking (`IVaultStatusService`) to be completed in v0.0.8b/c.
+- **Database Health Monitoring** — SQLite-based health tracking with `HealthRepository` for uptime tracking and `HeartbeatService` for 60-second heartbeat recording. Includes staleness detection and `SystemHealthChangedEvent` for cross-module health updates.
+
+- **Vault Status Tracking** — Placeholder services for secure vault monitoring to be completed in v0.0.8c.
 
 #### Why This Matters
 
@@ -234,9 +236,10 @@ Each major version has detailed technical changelogs organized by sub-part:
 
 ### v0.0.8 Sub-Parts
 
-| Document                        | Sub-Part | Title             |
-| :------------------------------ | :------- | :---------------- |
-| [LCS-CL-008a](./LCS-CL-008a.md) | v0.0.8a  | Status Bar Module |
+| Document                        | Sub-Part | Title                 |
+| :------------------------------ | :------- | :-------------------- |
+| [LCS-CL-008a](./LCS-CL-008a.md) | v0.0.8a  | Status Bar Module     |
+| [LCS-CL-008b](./LCS-CL-008b.md) | v0.0.8b  | Database Health Check |
 
 ### v0.0.7 Sub-Parts
 

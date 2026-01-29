@@ -23,7 +23,16 @@ public partial class StatusBarViewModel : ObservableObject
     private readonly IHeartbeatService _heartbeatService;
     private readonly IVaultStatusService _vaultStatusService;
     private readonly ILogger<StatusBarViewModel> _logger;
-    private readonly DateTime _startTime = DateTime.UtcNow;
+    private readonly System.Timers.Timer _uptimeTimer;
+
+    /// <summary>
+    /// Threshold after which a stale heartbeat triggers a warning.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: If no heartbeat has been recorded for more than 2x the
+    /// heartbeat interval, something is likely wrong.
+    /// </remarks>
+    private static readonly TimeSpan HeartbeatStaleThreshold = TimeSpan.FromMinutes(2);
 
     public StatusBarViewModel(
         IHealthRepository healthRepository,
@@ -39,6 +48,12 @@ public partial class StatusBarViewModel : ObservableObject
         // Subscribe to status change events
         _heartbeatService.HealthChanged += OnHealthChanged;
         _vaultStatusService.StatusChanged += OnVaultStatusChanged;
+
+        // LOGIC: Update uptime display every second
+        _uptimeTimer = new System.Timers.Timer(1000);
+        _uptimeTimer.Elapsed += async (_, _) => await UpdateUptimeAsync();
+        _uptimeTimer.AutoReset = true;
+        _uptimeTimer.Start();
 
         // Initialize status
         _ = InitializeAsync();
@@ -117,6 +132,37 @@ public partial class StatusBarViewModel : ObservableObject
         await UpdateVaultStatusAsync();
     }
 
+    [RelayCommand]
+    private async Task RefreshDatabaseStatusAsync()
+    {
+        await UpdateDatabaseStatusAsync();
+    }
+
+    #endregion
+
+    #region Public Static Methods
+
+    /// <summary>
+    /// Formats a timespan as a human-readable uptime string.
+    /// </summary>
+    /// <param name="uptime">The uptime duration.</param>
+    /// <returns>Formatted string (e.g., "1d 2:30:45" or "0:00:30").</returns>
+    /// <remarks>
+    /// LOGIC: Uptime format varies by duration:
+    /// - Under 1 hour: "0:MM:SS"
+    /// - 1-24 hours: "H:MM:SS"
+    /// - 1+ days: "Nd H:MM:SS"
+    /// </remarks>
+    public static string FormatUptime(TimeSpan uptime)
+    {
+        if (uptime.TotalDays >= 1)
+        {
+            return $"{(int)uptime.TotalDays}d {uptime.Hours}:{uptime.Minutes:D2}:{uptime.Seconds:D2}";
+        }
+
+        return $"{(int)uptime.TotalHours}:{uptime.Minutes:D2}:{uptime.Seconds:D2}";
+    }
+
     #endregion
 
     #region Private Methods
@@ -127,6 +173,7 @@ public partial class StatusBarViewModel : ObservableObject
         {
             await UpdateDatabaseStatusAsync();
             await UpdateVaultStatusAsync();
+            await UpdateUptimeAsync();
         }
         catch (Exception ex)
         {
@@ -138,8 +185,25 @@ public partial class StatusBarViewModel : ObservableObject
     {
         try
         {
-            var isHealthy = await _healthRepository.IsHealthyAsync();
-            UpdateDatabaseIndicator(isHealthy);
+            var isHealthy = await _healthRepository.CheckHealthAsync();
+
+            // LOGIC: Also check heartbeat staleness
+            if (isHealthy)
+            {
+                var lastHeartbeat = _heartbeatService.LastHeartbeat;
+                if (lastHeartbeat.HasValue)
+                {
+                    var heartbeatAge = DateTime.UtcNow - lastHeartbeat.Value;
+                    if (heartbeatAge > HeartbeatStaleThreshold)
+                    {
+                        _logger.LogWarning("Heartbeat is stale: {Age}", heartbeatAge);
+                        UpdateDatabaseIndicator(isHealthy: false, isStale: true);
+                        return;
+                    }
+                }
+            }
+
+            UpdateDatabaseIndicator(isHealthy, isStale: false);
         }
         catch (Exception ex)
         {
@@ -164,12 +228,31 @@ public partial class StatusBarViewModel : ObservableObject
         }
     }
 
-    private void UpdateDatabaseIndicator(bool isHealthy)
+    private async Task UpdateUptimeAsync()
     {
-        if (isHealthy)
+        try
+        {
+            var uptime = await _healthRepository.GetSystemUptimeAsync();
+            UptimeText = $"Uptime: {FormatUptime(uptime)}";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Failed to update uptime");
+            UptimeText = "Uptime: --:--:--";
+        }
+    }
+
+    private void UpdateDatabaseIndicator(bool isHealthy, bool isStale = false)
+    {
+        if (isHealthy && !isStale)
         {
             SetDatabaseStatus(healthy: true, warning: false, error: false, unknown: false,
                 "DB OK", "Database connection is healthy");
+        }
+        else if (isStale)
+        {
+            SetDatabaseStatus(healthy: false, warning: true, error: false, unknown: false,
+                "DB Warning", "Heartbeat is stale - application may be unresponsive");
         }
         else
         {

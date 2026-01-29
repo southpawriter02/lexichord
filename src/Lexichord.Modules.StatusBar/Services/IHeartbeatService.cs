@@ -1,34 +1,58 @@
 namespace Lexichord.Modules.StatusBar.Services;
 
 /// <summary>
-/// Service for periodic health checks (heartbeat).
+/// Service for periodic heartbeat recording.
 /// </summary>
 /// <remarks>
-/// LOGIC: The heartbeat service periodically checks database health
-/// and updates the status bar indicator.
-/// Full implementation comes in v0.0.8b.
+/// LOGIC: The heartbeat service runs on a timer and periodically
+/// records timestamps to the database. This allows detection of:
+/// - Application hangs (heartbeat stops updating)
+/// - Background processing issues (timer not firing)
+/// - Database connectivity problems (update fails)
+///
+/// The service should be started during module initialization
+/// and stopped during application shutdown.
 /// </remarks>
-public interface IHeartbeatService
+public interface IHeartbeatService : IDisposable
 {
+    /// <summary>
+    /// Starts the heartbeat timer.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: After calling Start(), heartbeats will be recorded
+    /// at the configured interval. An initial heartbeat is recorded
+    /// immediately.
+    /// </remarks>
+    void Start();
+
+    /// <summary>
+    /// Stops the heartbeat timer.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Stops the timer but does not dispose resources.
+    /// The service can be restarted by calling Start() again.
+    /// </remarks>
+    void Stop();
+
+    /// <summary>
+    /// Gets whether the heartbeat service is currently running.
+    /// </summary>
+    bool IsRunning { get; }
+
     /// <summary>
     /// Gets the heartbeat interval.
     /// </summary>
     TimeSpan Interval { get; }
 
     /// <summary>
-    /// Gets whether the heartbeat service is running.
+    /// Gets the time of the last successful heartbeat recording.
     /// </summary>
-    bool IsRunning { get; }
+    DateTime? LastHeartbeat { get; }
 
     /// <summary>
-    /// Starts the heartbeat service.
+    /// Gets the number of consecutive heartbeat failures.
     /// </summary>
-    void Start();
-
-    /// <summary>
-    /// Stops the heartbeat service.
-    /// </summary>
-    void Stop();
+    int ConsecutiveFailures { get; }
 
     /// <summary>
     /// Event raised when health status changes.
