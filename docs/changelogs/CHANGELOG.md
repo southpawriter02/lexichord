@@ -51,13 +51,21 @@ This release focuses on performance optimizations to ensure smooth UI responsive
 
 - **Thread Marshaller Abstraction** — New `IThreadMarshaller` interface abstracts Avalonia's `Dispatcher` for testable thread-aware code. Methods for async invocation, fire-and-forget posting, and DEBUG-only thread assertions.
 
+- **Code Block Ignoring** — Markdown code blocks (fenced and inline) are now excluded from style linting, preventing false positives when code samples contain terms like "whitelist" or technical jargon. State machine detects fenced blocks (``` and ~~~), regex handles inline code spans.
+
+- **Frontmatter Ignoring** — YAML, TOML, and JSON frontmatter at the start of Markdown documents is now automatically excluded from style scanning. Supports UTF-8 BOM handling, Windows/Unix line endings, and unclosed frontmatter detection. Priority ordering ensures frontmatter is detected before code blocks.
+
+- **Content Filter Architecture** — New `IContentFilter` interface enables pluggable pre-scan content filtering. Binary-search-based match filtering ensures O(log n) performance for large documents.
+
 - **Module Version Update** — Style module version updated from 0.2.6 to 0.2.7.
 
 #### Sub-Part Changelogs
 
-| Version                          | Title            | Status      |
-| -------------------------------- | ---------------- | ----------- |
-| [v0.2.7a](v0.2.x/LCS-CL-027a.md) | Async Offloading | ✅ Complete |
+| Version                          | Title                | Status      |
+| -------------------------------- | -------------------- | ----------- |
+| [v0.2.7a](v0.2.x/LCS-CL-027a.md) | Async Offloading     | ✅ Complete |
+| [v0.2.7b](v0.2.x/LCS-CL-027b.md) | Code Block Ignoring  | ✅ Complete |
+| [v0.2.7c](v0.2.x/LCS-CL-027c.md) | Frontmatter Ignoring | ✅ Complete |
 
 ---
 

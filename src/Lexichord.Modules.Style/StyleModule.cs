@@ -129,7 +129,11 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.6d - Project linting service for scope filtering
         services.AddSingleton<IProjectLintingService, ProjectLintingService>();
 
-        // LOGIC: v0.2.7b - Content filter for code block detection
+        // LOGIC: v0.2.7c - Content filter for frontmatter detection (runs first, priority 100)
+        services.AddSingleton<IContentFilter, YamlFrontmatterFilter>();
+        services.AddSingleton<YamlFrontmatterFilter>();
+
+        // LOGIC: v0.2.7b - Content filter for code block detection (priority 200)
         services.AddSingleton<IContentFilter, MarkdownCodeBlockFilter>();
         services.AddSingleton<MarkdownCodeBlockFilter>();
     }

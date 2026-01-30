@@ -9,7 +9,7 @@ namespace Lexichord.Abstractions.Contracts.Linting;
 /// - Frontmatter contains metadata, not user content
 /// - Future: Could add HTML blocks, math blocks, etc.
 ///
-/// Version: v0.2.7b
+/// Version: v0.2.7c
 /// </remarks>
 public enum ExclusionReason
 {
@@ -36,9 +36,28 @@ public enum ExclusionReason
     /// </summary>
     /// <remarks>
     /// LOGIC: Document metadata at start of file.
-    /// Reserved for v0.2.7c implementation.
+    /// Implemented in v0.2.7c.
     /// </remarks>
     Frontmatter,
+
+    /// <summary>
+    /// TOML frontmatter (+++ delimited).
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Document metadata in TOML format (Hugo style).
+    /// Implemented in v0.2.7c.
+    /// </remarks>
+    TomlFrontmatter,
+
+    /// <summary>
+    /// JSON frontmatter ({ on first line).
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Document metadata in JSON format.
+    /// Less common but supported for completeness.
+    /// Implemented in v0.2.7c.
+    /// </remarks>
+    JsonFrontmatter,
 
     /// <summary>
     /// Indented code block (4+ spaces).

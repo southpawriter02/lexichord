@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-30 (v0.2.7a added)                                             |
+| **Last Updated** | 2026-01-30 (v0.2.7c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -115,6 +115,8 @@
 | `IProjectLintingService`     | v0.2.6d    | Modules.Style | Background project scanning           |
 | `IThreadMarshaller`          | v0.2.7a    | Abstractions  | UI thread dispatching                 |
 | `IContentFilter`             | v0.2.7b    | Modules.Style | Pre-scan content filtering            |
+| `YamlFrontmatterFilter`      | v0.2.7c    | Modules.Style | Frontmatter detection and exclusion   |
+| `YamlFrontmatterOptions`     | v0.2.7c    | Modules.Style | Frontmatter filter configuration      |
 
 ### 1.4 v0.3.x Fuzzy Engine Interfaces
 
