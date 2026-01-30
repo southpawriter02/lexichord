@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.Linting;
 using Lexichord.Abstractions.Events;
 using Lexichord.Modules.Style.ViewModels;
@@ -9,12 +10,13 @@ using Moq;
 namespace Lexichord.Tests.Unit.Modules.Style;
 
 /// <summary>
-/// Unit tests for ProblemsPanelViewModel (v0.2.6a).
+/// Unit tests for ProblemsPanelViewModel (v0.2.6b).
 /// </summary>
 [Trait("Category", "Unit")]
 public class ProblemsPanelViewModelTests : IDisposable
 {
     private readonly Mock<IViolationAggregator> _violationAggregatorMock = new();
+    private readonly Mock<IEditorNavigationService> _navigationServiceMock = new();
     private readonly Mock<ILogger<ProblemsPanelViewModel>> _loggerMock = new();
 
     public void Dispose()
@@ -31,6 +33,7 @@ public class ProblemsPanelViewModelTests : IDisposable
     {
         return new ProblemsPanelViewModel(
             _violationAggregatorMock.Object,
+            _navigationServiceMock.Object,
             _loggerMock.Object);
     }
 
@@ -112,7 +115,7 @@ public class ProblemsPanelViewModelTests : IDisposable
     public void Constructor_ThrowsArgumentNullException_WhenAggregatorIsNull()
     {
         // Act
-        var act = () => new ProblemsPanelViewModel(null!, _loggerMock.Object);
+        var act = () => new ProblemsPanelViewModel(null!, _navigationServiceMock.Object, _loggerMock.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -120,10 +123,21 @@ public class ProblemsPanelViewModelTests : IDisposable
     }
 
     [Fact]
+    public void Constructor_ThrowsArgumentNullException_WhenNavigationServiceIsNull()
+    {
+        // Act
+        var act = () => new ProblemsPanelViewModel(_violationAggregatorMock.Object, null!, _loggerMock.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("navigationService");
+    }
+
+    [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenLoggerIsNull()
     {
         // Act
-        var act = () => new ProblemsPanelViewModel(_violationAggregatorMock.Object, null!);
+        var act = () => new ProblemsPanelViewModel(_violationAggregatorMock.Object, _navigationServiceMock.Object, null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -368,6 +382,67 @@ public class ProblemsPanelViewModelTests : IDisposable
 
         // Assert
         viewModel.Should().BeAssignableTo<IProblemsPanelViewModel>();
+    }
+
+    #endregion
+
+    #region v0.2.6b Navigation Command Tests
+
+    [Fact]
+    public async Task NavigateToViolationCommand_CallsNavigationService()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var item = new ProblemItemViewModel(CreateViolation("doc-1", ViolationSeverity.Error, 5));
+
+        _navigationServiceMock
+            .Setup(x => x.NavigateToViolationAsync("doc-1", 5, 1, 4, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(NavigationResult.Succeeded("doc-1"));
+
+        // Act
+        await viewModel.NavigateToViolationCommand.ExecuteAsync(item);
+
+        // Assert
+        _navigationServiceMock.Verify(
+            x => x.NavigateToViolationAsync("doc-1", 5, 1, It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task NavigateToViolationCommand_RaisesNavigateToViolationRequestedEvent()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var item = new ProblemItemViewModel(CreateViolation("doc-1", ViolationSeverity.Error, 5));
+        IProblemItem? receivedItem = null;
+
+        viewModel.NavigateToViolationRequested += (s, e) => receivedItem = e;
+
+        _navigationServiceMock
+            .Setup(x => x.NavigateToViolationAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(NavigationResult.Succeeded("doc-1"));
+
+        // Act
+        await viewModel.NavigateToViolationCommand.ExecuteAsync(item);
+
+        // Assert
+        receivedItem.Should().NotBeNull();
+        receivedItem!.Line.Should().Be(5);
+    }
+
+    [Fact]
+    public async Task NavigateToViolationCommand_DoesNothing_WhenItemIsNull()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+
+        // Act
+        await viewModel.NavigateToViolationCommand.ExecuteAsync(null);
+
+        // Assert
+        _navigationServiceMock.Verify(
+            x => x.NavigateToViolationAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     #endregion

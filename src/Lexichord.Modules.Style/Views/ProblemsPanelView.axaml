@@ -15,13 +15,14 @@
     LOGIC: The Problems Panel shows violations from the linting engine.
     v0.2.6a implements CurrentFile mode only, showing violations for
     the active document.
+    v0.2.6b adds double-click navigation to jump to violation locations.
     
     Layout:
     - Header: Title, scope badge, and total counts
     - TreeView: Severity groups with collapsible items
     - Empty state: Message when no problems found
     
-    Version: v0.2.6a
+    Version: v0.2.6b
     -->
     
     <UserControl.Styles>
@@ -83,7 +84,8 @@
         <!-- Problem item template -->
         <DataTemplate DataType="vm:ProblemItemViewModel">
             <Border Classes="problem-item"
-                    ToolTip.Tip="{Binding ViolatingText}">
+                    ToolTip.Tip="{Binding ViolatingText}"
+                    DoubleTapped="OnProblemItemDoubleTapped">
                 <Grid ColumnDefinitions="Auto,*,Auto">
                     
                     <!-- Location -->

@@ -229,6 +229,23 @@ public interface IProblemsPanelViewModel : INotifyPropertyChanged, IDisposable
     /// Gets the identifier of the document currently being displayed.
     /// </summary>
     string? ActiveDocumentId { get; }
+
+    #region v0.2.6b Navigation Support
+
+    /// <summary>
+    /// Event raised when the user requests navigation to a violation.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Raised when user double-clicks a problem item.
+    /// Subscribers (typically the navigation service) handle the
+    /// actual navigation to the violation location.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    event EventHandler<IProblemItem>? NavigateToViolationRequested;
+
+    #endregion
 }
 
 #endregion
+

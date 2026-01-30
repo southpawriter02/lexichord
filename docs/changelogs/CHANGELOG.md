@@ -53,6 +53,8 @@ This release introduces **The Sentinel**, a Problems Panel sidebar providing cen
 
 - **Severity Grouping** — Violations organized into four severity groups with Unicode icons (⛔ Error, ⚠ Warning, ℹ Info, 💡 Hint). Groups are collapsible with expand/collapse state tracking.
 
+- **Navigation Sync** — Double-click any problem item to navigate directly to its location in the editor. The editor scrolls to the target line, positions the caret at the exact column, and applies a temporary highlight animation (2 second fade). Supports navigation within the active document.
+
 - **Dock Region Integration** — ProblemsPanelView registered in Right dock region alongside LexiconView.
 
 #### Sub-Part Changelogs
@@ -60,7 +62,7 @@ This release introduces **The Sentinel**, a Problems Panel sidebar providing cen
 | Version                          | Title          | Status      |
 | -------------------------------- | -------------- | ----------- |
 | [v0.2.6a](v0.2.x/LCS-CL-026a.md) | Problems Panel | ✅ Complete |
-| v0.2.6b                          | Navigation     | 🔜 Planned  |
+| [v0.2.6b](v0.2.x/LCS-CL-026b.md) | Navigation     | ✅ Complete |
 | v0.2.6c                          | Scorecard      | 🔜 Planned  |
 | v0.2.6d                          | Project Lint   | 🔜 Planned  |
 

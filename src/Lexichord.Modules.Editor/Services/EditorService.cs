@@ -167,6 +167,67 @@ public class EditorService : IEditorService
         return true;
     }
 
+    #region v0.2.6b Navigation Support
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Searches open documents by their unique ID.
+    /// IDs are typically the file path for saved documents or
+    /// "untitled:N" for unsaved documents.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    public IManuscriptViewModel? GetDocumentById(string documentId)
+    {
+        if (string.IsNullOrEmpty(documentId))
+        {
+            return null;
+        }
+
+        lock (_lock)
+        {
+            return _openDocuments.FirstOrDefault(d =>
+                string.Equals(d.DocumentId, documentId, StringComparison.Ordinal));
+        }
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Activates a document by ensuring it's the currently
+    /// displayed tab. This is a prerequisite for navigation.
+    ///
+    /// Current implementation: Always returns true since we don't
+    /// have direct access to the tab control here. The actual tab
+    /// activation would be handled by a region manager in a full
+    /// implementation. For v0.2.6b, this serves as a hook point.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    public Task<bool> ActivateDocumentAsync(IManuscriptViewModel document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+
+        // LOGIC: Verify document is in our open list
+        lock (_lock)
+        {
+            if (!_openDocuments.Contains(document))
+            {
+                _logger.LogWarning("Cannot activate document not in open list: {Title}", document.Title);
+                return Task.FromResult(false);
+            }
+        }
+
+        _logger.LogDebug("Activated document: {Title}", document.Title);
+
+        // LOGIC: In a full implementation, this would interact with
+        // IRegionManager to bring the document tab to the front.
+        // For v0.2.6b, the document is already accessible since we
+        // only support CurrentFile mode in the Problems Panel.
+        return Task.FromResult(true);
+    }
+
+    #endregion
+
     private ManuscriptViewModel CreateViewModel()
     {
         return ActivatorUtilities.CreateInstance<ManuscriptViewModel>(_serviceProvider, this);
@@ -191,3 +252,4 @@ public class EditorService : IEditorService
         return Encoding.UTF8;
     }
 }
+

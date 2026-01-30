@@ -375,6 +375,94 @@ public partial class ManuscriptViewModel : DocumentViewModelBase, IManuscriptVie
 
     #endregion
 
+    #region v0.2.6b Navigation Support
+
+    /// <summary>
+    /// Observable property for pending highlight requests.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: View binds to this to apply temporary highlight animation.
+    /// Set by HighlightSpanAsync, consumed and cleared by View.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    [ObservableProperty]
+    private HighlightRequest? _pendingHighlight;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Sets caret position and scrolls to the target line.
+    /// Uses UI thread dispatcher to ensure thread safety.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    public Task SetCaretPositionAsync(int line, int column)
+    {
+        _logger.LogDebug("SetCaretPositionAsync: {Line}:{Column}", line, column);
+
+        // LOGIC: Calculate offset from line/column
+        var offset = CalculateOffsetForLineAndColumn(line, column);
+
+        // LOGIC: Update caret position (triggers PropertyChanged for View binding)
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            CaretPosition = new CaretPosition(line, column, offset);
+            _logger.LogDebug("Caret positioned at {Line}:{Column} (offset {Offset})", line, column, offset);
+        });
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Sets a pending highlight request for the View to consume.
+    /// The View is responsible for rendering the highlight animation.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    public Task HighlightSpanAsync(int startOffset, int length, TimeSpan duration)
+    {
+        _logger.LogDebug(
+            "HighlightSpanAsync: StartOffset={StartOffset}, Length={Length}, Duration={Duration}ms",
+            startOffset, length, duration.TotalMilliseconds);
+
+        // LOGIC: Create highlight request for View to consume
+        var request = new HighlightRequest(startOffset, length, duration);
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            PendingHighlight = request;
+            _logger.LogDebug("Highlight request set for View consumption");
+        });
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Calculates the character offset for a given line and column.
+    /// </summary>
+    /// <param name="line">Target line (1-indexed).</param>
+    /// <param name="column">Target column (1-indexed).</param>
+    /// <returns>The 0-indexed character offset.</returns>
+    private int CalculateOffsetForLineAndColumn(int line, int column)
+    {
+        var lines = Content.Split('\n');
+        var offset = 0;
+
+        // LOGIC: Sum lengths of all lines before target line
+        for (var i = 0; i < line - 1 && i < lines.Length; i++)
+        {
+            offset += lines[i].Length + 1; // +1 for newline
+        }
+
+        // LOGIC: Add column offset (1-indexed, so subtract 1)
+        offset += Math.Max(0, column - 1);
+
+        return Math.Min(offset, Content.Length);
+    }
+
+    #endregion
+
     #region Private Methods
 
     private void OnSettingsChanged(object? sender, EditorSettingsChangedEventArgs e)

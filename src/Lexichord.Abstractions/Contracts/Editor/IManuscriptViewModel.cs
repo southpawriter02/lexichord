@@ -87,4 +87,42 @@ public interface IManuscriptViewModel : IDocumentTab
     /// </summary>
     /// <param name="text">Text to insert.</param>
     void InsertText(string text);
+
+    #region v0.2.6b Navigation Support
+
+    /// <summary>
+    /// Sets the caret position to the specified line and column.
+    /// </summary>
+    /// <param name="line">Target line number (1-indexed).</param>
+    /// <param name="column">Target column number (1-indexed).</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <remarks>
+    /// LOGIC: Scrolls the editor to show the target line and positions
+    /// the caret at the specified column. Async to allow UI thread
+    /// marshalling in implementations.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    Task SetCaretPositionAsync(int line, int column);
+
+    /// <summary>
+    /// Temporarily highlights a text span with a fade animation.
+    /// </summary>
+    /// <param name="startOffset">Starting character offset (0-indexed).</param>
+    /// <param name="length">Number of characters to highlight.</param>
+    /// <param name="duration">Duration of the highlight animation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <remarks>
+    /// LOGIC: Draws a temporary highlight over the specified text span
+    /// that fades out over the specified duration. Used to visually
+    /// indicate the navigation target to the user.
+    ///
+    /// Typical usage: 2 second duration with yellow/gold background.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    Task HighlightSpanAsync(int startOffset, int length, TimeSpan duration);
+
+    #endregion
 }
+

@@ -60,4 +60,35 @@ public interface IEditorService
     /// <param name="document">The document to close.</param>
     /// <returns>True if closed; false if cancelled.</returns>
     Task<bool> CloseDocumentAsync(IManuscriptViewModel document);
+
+    #region v0.2.6b Navigation Support
+
+    /// <summary>
+    /// Gets a document by its unique identifier.
+    /// </summary>
+    /// <param name="documentId">The document ID to search for.</param>
+    /// <returns>The document if found; null otherwise.</returns>
+    /// <remarks>
+    /// LOGIC: Supports navigation from Problems Panel where only
+    /// the document ID is available (not the file path).
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    IManuscriptViewModel? GetDocumentById(string documentId);
+
+    /// <summary>
+    /// Activates (brings to front) an open document tab.
+    /// </summary>
+    /// <param name="document">The document to activate.</param>
+    /// <returns>True if activation succeeded; false otherwise.</returns>
+    /// <remarks>
+    /// LOGIC: Used during navigation to ensure the target document
+    /// is visible before scrolling/highlighting.
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    Task<bool> ActivateDocumentAsync(IManuscriptViewModel document);
+
+    #endregion
 }
+

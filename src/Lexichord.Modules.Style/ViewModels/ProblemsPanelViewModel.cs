@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.Linting;
 using Lexichord.Abstractions.Events;
 using MediatR;
@@ -31,13 +33,14 @@ namespace Lexichord.Modules.Style.ViewModels;
 /// The orchestrator publishes from a background thread, so UI
 /// dispatch may be needed in the View layer.
 ///
-/// Version: v0.2.6a
+/// Version: v0.2.6b
 /// </remarks>
 public sealed partial class ProblemsPanelViewModel : ObservableObject,
     IProblemsPanelViewModel,
     INotificationHandler<LintingCompletedEvent>
 {
     private readonly IViolationAggregator _violationAggregator;
+    private readonly IEditorNavigationService _navigationService;
     private readonly ILogger<ProblemsPanelViewModel> _logger;
     private readonly ObservableCollection<IProblemGroup> _groups;
     private readonly Dictionary<ViolationSeverity, ProblemGroupViewModel> _groupsBySeverity;
@@ -96,22 +99,26 @@ public sealed partial class ProblemsPanelViewModel : ObservableObject,
     /// Initializes a new instance of the <see cref="ProblemsPanelViewModel"/> class.
     /// </summary>
     /// <param name="violationAggregator">The violation aggregator for accessing violations.</param>
+    /// <param name="navigationService">The navigation service for navigating to violations.</param>
     /// <param name="logger">The logger for diagnostics.</param>
     /// <exception cref="ArgumentNullException">Thrown when required dependencies are null.</exception>
     /// <remarks>
     /// LOGIC: Initializes empty groups for each severity level.
     /// Groups are pre-created so they appear in consistent order in the UI.
     ///
-    /// Version: v0.2.6a
+    /// Version: v0.2.6b
     /// </remarks>
     public ProblemsPanelViewModel(
         IViolationAggregator violationAggregator,
+        IEditorNavigationService navigationService,
         ILogger<ProblemsPanelViewModel> logger)
     {
         ArgumentNullException.ThrowIfNull(violationAggregator);
+        ArgumentNullException.ThrowIfNull(navigationService);
         ArgumentNullException.ThrowIfNull(logger);
 
         _violationAggregator = violationAggregator;
+        _navigationService = navigationService;
         _logger = logger;
 
         // LOGIC: Pre-create groups in severity order (Error first, Hint last)
@@ -263,6 +270,62 @@ public sealed partial class ProblemsPanelViewModel : ObservableObject,
         OnPropertyChanged(nameof(WarningCount));
         OnPropertyChanged(nameof(InfoCount));
         OnPropertyChanged(nameof(HintCount));
+    }
+
+    #endregion
+
+    #region v0.2.6b Navigation Support
+
+    /// <inheritdoc/>
+    public event EventHandler<IProblemItem>? NavigateToViolationRequested;
+
+    /// <summary>
+    /// Navigates to the specified problem item in the editor.
+    /// </summary>
+    /// <param name="item">The problem item to navigate to.</param>
+    /// <remarks>
+    /// LOGIC: Invoked via double-click on a problem item.
+    /// 1. Raises NavigateToViolationRequested event
+    /// 2. Calls IEditorNavigationService.NavigateToViolationAsync
+    /// 3. Logs result
+    ///
+    /// Version: v0.2.6b
+    /// </remarks>
+    [RelayCommand]
+    private async Task NavigateToViolation(IProblemItem? item)
+    {
+        if (item is null)
+        {
+            _logger.LogDebug("NavigateToViolation called with null item, ignoring");
+            return;
+        }
+
+        _logger.LogDebug(
+            "Navigating to violation {ViolationId} at {Line}:{Column} in document {DocumentId}",
+            item.Id, item.Line, item.Column, item.DocumentId);
+
+        // LOGIC: Raise event for external subscribers
+        NavigateToViolationRequested?.Invoke(this, item);
+
+        // LOGIC: Perform navigation via service
+        var result = await _navigationService.NavigateToViolationAsync(
+            item.DocumentId,
+            item.Line,
+            item.Column,
+            item.ViolatingText.Length);
+
+        if (result.Success)
+        {
+            _logger.LogInformation(
+                "Successfully navigated to violation {ViolationId} at {Line}:{Column}",
+                item.Id, item.Line, item.Column);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "Failed to navigate to violation {ViolationId}: {Error}",
+                item.Id, result.ErrorMessage);
+        }
     }
 
     #endregion

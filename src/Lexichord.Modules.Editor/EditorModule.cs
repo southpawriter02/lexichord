@@ -49,6 +49,9 @@ public class EditorModule : IModule
         // LOGIC: v0.1.4b - Register file service for atomic saves
         services.AddSingleton<IFileService, FileService>();
 
+        // LOGIC: v0.2.6b - Register navigation service for Problems Panel integration
+        services.AddSingleton<IEditorNavigationService, EditorNavigationService>();
+
         // LOGIC: Register views and view models as transient (new instance per document)
         services.AddTransient<ManuscriptViewModel>();
     }
