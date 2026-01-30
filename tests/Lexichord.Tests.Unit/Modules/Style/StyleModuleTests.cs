@@ -46,7 +46,7 @@ public class StyleModuleTests
         var module = new StyleModule();
 
         // Assert
-        module.Info.Version.Should().Be(new Version(0, 2, 5));
+        module.Info.Version.Should().Be(new Version(0, 2, 6));
     }
 
     [Fact]

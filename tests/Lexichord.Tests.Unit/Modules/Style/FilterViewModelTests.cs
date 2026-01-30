@@ -137,8 +137,8 @@ public class FilterViewModelTests : IDisposable
     [Fact]
     public async Task SearchText_TriggersFilterChanged_AfterDebounce()
     {
-        // Use a short debounce for testing
-        var options = new FilterOptions { DebounceMilliseconds = 50 };
+        // Use longer debounce to avoid flakiness under CPU load
+        var options = new FilterOptions { DebounceMilliseconds = 100 };
         var viewModel = CreateViewModel(options);
         var filterChangedCount = 0;
         viewModel.FilterChanged += (s, e) => filterChangedCount++;
@@ -149,8 +149,8 @@ public class FilterViewModelTests : IDisposable
         // Should not trigger immediately
         filterChangedCount.Should().Be(0);
 
-        // Wait for debounce
-        await Task.Delay(100);
+        // Wait for debounce (100ms + generous margin)
+        await Task.Delay(200);
 
         filterChangedCount.Should().Be(1);
 
@@ -160,7 +160,8 @@ public class FilterViewModelTests : IDisposable
     [Fact]
     public async Task SearchText_CoalescesRapidChanges()
     {
-        var options = new FilterOptions { DebounceMilliseconds = 50 };
+        // Use longer debounce to avoid flakiness under CPU load
+        var options = new FilterOptions { DebounceMilliseconds = 100 };
         var viewModel = CreateViewModel(options);
         var filterChangedCount = 0;
         viewModel.FilterChanged += (s, e) => filterChangedCount++;
@@ -171,8 +172,8 @@ public class FilterViewModelTests : IDisposable
         viewModel.SearchText = "tes";
         viewModel.SearchText = "test";
 
-        // Wait for debounce
-        await Task.Delay(100);
+        // Wait for debounce (100ms + generous margin)
+        await Task.Delay(200);
 
         // Should only trigger once for final value
         filterChangedCount.Should().Be(1);

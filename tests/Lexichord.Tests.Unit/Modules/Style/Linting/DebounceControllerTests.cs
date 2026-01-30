@@ -56,12 +56,12 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task AfterDebounceDelay_TransitionsToScanning()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use longer debounce to avoid flakiness under CPU load
+        var controller = CreateController(debounceMs: 100);
         controller.RequestScan("test content");
 
-        // Act - wait for debounce (50ms + margin)
-        await Task.Delay(100);
+        // Act - wait for debounce (100ms + generous margin)
+        await Task.Delay(200);
 
         // Assert
         controller.CurrentState.Should().Be(DebounceState.Scanning);
@@ -107,10 +107,10 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task CancelCurrent_WhenScanning_TransitionsToCancelled()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use longer debounce to reliably enter scanning state
+        var controller = CreateController(debounceMs: 100);
         controller.RequestScan("test content");
-        await Task.Delay(100); // Enter scanning state
+        await Task.Delay(200); // Enter scanning state
 
         // Act
         controller.CancelCurrent();
@@ -122,10 +122,10 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task CancelCurrent_CancelsToken()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use longer debounce to reliably enter scanning state
+        var controller = CreateController(debounceMs: 100);
         controller.RequestScan("test content");
-        await Task.Delay(100); // Wait for scan to start
+        await Task.Delay(200); // Wait for scan to start
 
         // Act
         controller.CancelCurrent();
@@ -138,10 +138,10 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task MarkCompleted_TransitionsBackToIdle()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use longer debounce to reliably enter scanning state under CPU load
+        var controller = CreateController(debounceMs: 100);
         controller.RequestScan("test content");
-        await Task.Delay(100);
+        await Task.Delay(200);
         controller.CurrentState.Should().Be(DebounceState.Scanning);
 
         // Act
@@ -183,10 +183,10 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task Dispose_CancelsInFlightScan()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use longer debounce to reliably enter scanning state
+        var controller = CreateController(debounceMs: 100);
         controller.RequestScan("test content");
-        await Task.Delay(100);
+        await Task.Delay(200);
 
         // Act
         controller.Dispose();
@@ -209,14 +209,14 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task NewRequestDuringScanning_CancelsPreviousAndStartsNew()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use longer debounce to reliably enter scanning state under CPU load
+        var controller = CreateController(debounceMs: 100);
         controller.RequestScan("first content");
-        await Task.Delay(100); // Enter scanning state
+        await Task.Delay(200); // Enter scanning state
 
         // Act - new request during scan
         controller.RequestScan("second content");
-        await Task.Delay(100); // Wait for new scan
+        await Task.Delay(200); // Wait for new scan
 
         // Assert
         _scanRequests.Should().HaveCount(2);

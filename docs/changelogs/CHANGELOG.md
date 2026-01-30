@@ -39,6 +39,33 @@ This release integrates the linting engine with the editor, providing visual fee
 
 ---
 
+## [v0.2.6] - 2026-01 (In Progress)
+
+### The Sentinel (Real-Time Feedback Sidebar)
+
+This release introduces **The Sentinel**, a Problems Panel sidebar providing centralized visibility into style violations during editing.
+
+#### What's New
+
+- **Problems Panel** — Sidebar view displaying style violations grouped by severity (Error, Warning, Info, Hint). Shows header with scope badge ("Current File"), severity count badges, loading indicator, and empty state. Collapsible groups with violation details (location, message, rule ID).
+
+- **Linting Event Integration** — Subscribes to `LintingCompletedEvent` via MediatR to receive real-time violation updates. Clears previous violations on new events, transforms aggregated violations to display items, and updates counts via PropertyChanged.
+
+- **Severity Grouping** — Violations organized into four severity groups with Unicode icons (⛔ Error, ⚠ Warning, ℹ Info, 💡 Hint). Groups are collapsible with expand/collapse state tracking.
+
+- **Dock Region Integration** — ProblemsPanelView registered in Right dock region alongside LexiconView.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title          | Status      |
+| -------------------------------- | -------------- | ----------- |
+| [v0.2.6a](v0.2.x/LCS-CL-026a.md) | Problems Panel | ✅ Complete |
+| v0.2.6b                          | Navigation     | 🔜 Planned  |
+| v0.2.6c                          | Scorecard      | 🔜 Planned  |
+| v0.2.6d                          | Project Lint   | 🔜 Planned  |
+
+---
+
 ## [v0.2.5] - 2026-01 (In Progress)
 
 ### The Librarian (Terminology Management)

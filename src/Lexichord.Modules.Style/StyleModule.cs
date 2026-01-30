@@ -33,7 +33,7 @@ public sealed class StyleModule : IModule
     public ModuleInfo Info => new(
         Id: "style",
         Name: "The Rulebook",
-        Version: new Version(0, 2, 5),
+        Version: new Version(0, 2, 6),
         Author: "Lexichord Team",
         Description: "Style and writing rules engine providing governed writing environments"
     );
@@ -111,6 +111,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.5d - Import/Export services
         services.AddSingleton<ITermImportService, TermImportService>();
         services.AddSingleton<ITermExportService, TermExportService>();
+
+        // LOGIC: v0.2.6a - Problems Panel components
+        services.AddTransient<ProblemsPanelViewModel>();
+        services.AddTransient<ProblemsPanelView>();
     }
 
     /// <inheritdoc/>
@@ -200,6 +204,14 @@ public sealed class StyleModule : IModule
                     "Lexicon",
                     sp => sp.GetRequiredService<LexiconView>());
                 _logger.LogDebug("Registered LexiconView in Right dock region");
+
+                // LOGIC: v0.2.6a - Register ProblemsPanel in Right dock region
+                await regionManager.RegisterToolAsync(
+                    ShellRegion.Right,
+                    "lexichord.problems",
+                    "Problems",
+                    sp => sp.GetRequiredService<ProblemsPanelView>());
+                _logger.LogDebug("Registered ProblemsPanelView in Right dock region");
             }
         }
         catch (Exception ex)

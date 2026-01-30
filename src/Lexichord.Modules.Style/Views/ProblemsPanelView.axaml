@@ -1,0 +1,242 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Style.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="350"
+             d:DesignHeight="450"
+             x:Class="Lexichord.Modules.Style.Views.ProblemsPanelView"
+             x:DataType="vm:ProblemsPanelViewModel">
+    
+    <!-- 
+    ProblemsPanelView: Displays style violations grouped by severity.
+    
+    LOGIC: The Problems Panel shows violations from the linting engine.
+    v0.2.6a implements CurrentFile mode only, showing violations for
+    the active document.
+    
+    Layout:
+    - Header: Title, scope badge, and total counts
+    - TreeView: Severity groups with collapsible items
+    - Empty state: Message when no problems found
+    
+    Version: v0.2.6a
+    -->
+    
+    <UserControl.Styles>
+        <!-- Group header style -->
+        <Style Selector="TreeViewItem.group > Border.header">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        
+        <!-- Problem item row style -->
+        <Style Selector="Border.problem-item">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="0,1"/>
+        </Style>
+        
+        <Style Selector="Border.problem-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+        </Style>
+        
+        <!-- Severity icon colors -->
+        <Style Selector="TextBlock.severity-error">
+            <Setter Property="Foreground" Value="#E51400"/>
+        </Style>
+        
+        <Style Selector="TextBlock.severity-warning">
+            <Setter Property="Foreground" Value="#FA6800"/>
+        </Style>
+        
+        <Style Selector="TextBlock.severity-info">
+            <Setter Property="Foreground" Value="#0078D7"/>
+        </Style>
+        
+        <Style Selector="TextBlock.severity-hint">
+            <Setter Property="Foreground" Value="#107C10"/>
+        </Style>
+        
+        <!-- Count badge styles -->
+        <Style Selector="Border.count-badge">
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Margin" Value="4,0"/>
+        </Style>
+        
+        <Style Selector="Border.count-badge.error">
+            <Setter Property="Background" Value="#E51400"/>
+        </Style>
+        
+        <Style Selector="Border.count-badge.warning">
+            <Setter Property="Background" Value="#FA6800"/>
+        </Style>
+        
+        <Style Selector="Border.count-badge.info">
+            <Setter Property="Background" Value="#0078D7"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <UserControl.DataTemplates>
+        <!-- Problem item template -->
+        <DataTemplate DataType="vm:ProblemItemViewModel">
+            <Border Classes="problem-item"
+                    ToolTip.Tip="{Binding ViolatingText}">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    
+                    <!-- Location -->
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Location}"
+                               FontFamily="Consolas, Menlo, monospace"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               Width="60"/>
+                    
+                    <!-- Message -->
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Message}"
+                               FontSize="12"
+                               TextTrimming="CharacterEllipsis"
+                               Margin="8,0"/>
+                    
+                    <!-- Rule ID -->
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding RuleId}"
+                               FontSize="10"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        
+        <!-- Problem group template -->
+        <DataTemplate DataType="vm:ProblemGroupViewModel">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="{Binding SeverityIcon}"
+                           FontSize="14"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding HeaderText}"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.DataTemplates>
+    
+    <Grid RowDefinitions="Auto,*">
+        
+        <!-- Header -->
+        <Border Grid.Row="0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="8">
+            <Grid RowDefinitions="Auto,Auto">
+                
+                <!-- Title and scope -->
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                    <TextBlock Text="Problems"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+                    
+                    <!-- Scope badge (CurrentFile only for v0.2.6a) -->
+                    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                            CornerRadius="4"
+                            Padding="6,2">
+                        <TextBlock Text="Current File"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    </Border>
+                    
+                    <!-- Loading indicator -->
+                    <ProgressBar IsIndeterminate="True"
+                                 IsVisible="{Binding IsLoading}"
+                                 Width="50"
+                                 Height="3"
+                                 VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Counts row -->
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            Margin="0,6,0,0">
+                    
+                    <!-- Error count -->
+                    <Border Classes="count-badge error"
+                            IsVisible="{Binding ErrorCount}">
+                        <TextBlock Text="{Binding ErrorCount, StringFormat='{}{0} errors'}"
+                                   FontSize="11"
+                                   Foreground="White"/>
+                    </Border>
+                    
+                    <!-- Warning count -->
+                    <Border Classes="count-badge warning"
+                            IsVisible="{Binding WarningCount}">
+                        <TextBlock Text="{Binding WarningCount, StringFormat='{}{0} warnings'}"
+                                   FontSize="11"
+                                   Foreground="White"/>
+                    </Border>
+                    
+                    <!-- Info count -->
+                    <Border Classes="count-badge info"
+                            IsVisible="{Binding InfoCount}">
+                        <TextBlock Text="{Binding InfoCount, StringFormat='{}{0} info'}"
+                                   FontSize="11"
+                                   Foreground="White"/>
+                    </Border>
+                    
+                    <!-- No problems message -->
+                    <TextBlock Text="No problems"
+                               FontSize="11"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               IsVisible="{Binding !TotalCount}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Problems tree -->
+        <TreeView Grid.Row="1"
+                  ItemsSource="{Binding Groups}"
+                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                  Margin="0,4,0,0">
+            
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Items}">
+                    <!-- Group header -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{Binding SeverityIcon}"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding HeaderText}"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        
+        <!-- Empty state -->
+        <StackPanel Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding !TotalCount}"
+                    Spacing="8">
+            <TextBlock Text="✓"
+                       FontSize="48"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="No problems found"
+                       FontSize="14"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Your document looks great!"
+                       FontSize="12"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
