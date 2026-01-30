@@ -153,7 +153,7 @@ public class ThreadMarshallerTests
         var marshaller = new TestThreadMarshaller();
 
         // Act & Assert
-        await Assert.ThrowsAsync<NullReferenceException>(
+        await Assert.ThrowsAsync<ArgumentNullException>(
             () => marshaller.InvokeOnUIThreadAsync((Action)null!));
     }
 
@@ -164,7 +164,7 @@ public class ThreadMarshallerTests
         var marshaller = new TestThreadMarshaller();
 
         // Act & Assert
-        await Assert.ThrowsAsync<NullReferenceException>(
+        await Assert.ThrowsAsync<ArgumentNullException>(
             () => marshaller.InvokeOnUIThreadAsync((Func<int>)null!));
     }
 
@@ -176,7 +176,7 @@ public class ThreadMarshallerTests
 
         // Act & Assert
         var act = () => marshaller.PostToUIThread(null!);
-        act.Should().Throw<NullReferenceException>();
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

@@ -25,6 +25,7 @@ internal class TestThreadMarshaller : IThreadMarshaller
     /// <inheritdoc/>
     public Task InvokeOnUIThreadAsync(Action action)
     {
+        ArgumentNullException.ThrowIfNull(action);
         action();
         return Task.CompletedTask;
     }
@@ -32,12 +33,14 @@ internal class TestThreadMarshaller : IThreadMarshaller
     /// <inheritdoc/>
     public Task<T> InvokeOnUIThreadAsync<T>(Func<T> func)
     {
+        ArgumentNullException.ThrowIfNull(func);
         return Task.FromResult(func());
     }
 
     /// <inheritdoc/>
     public void PostToUIThread(Action action)
     {
+        ArgumentNullException.ThrowIfNull(action);
         action();
     }
 
