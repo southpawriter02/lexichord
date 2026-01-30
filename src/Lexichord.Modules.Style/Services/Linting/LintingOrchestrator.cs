@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Linting;
+using Lexichord.Abstractions.Contracts.Threading;
 using Lexichord.Abstractions.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -19,12 +20,13 @@ namespace Lexichord.Modules.Style.Services.Linting;
 /// concurrent lint operations. Serves as the central hub for the
 /// reactive linting pipeline.
 ///
-/// Threading:
+/// Threading (v0.2.7a):
 /// - Subscribe/Unsubscribe are thread-safe via ConcurrentDictionary
-/// - Scans run on thread pool via IStyleEngine.AnalyzeAsync
+/// - Scans are offloaded to background threads via Task.Run
+/// - IThreadMarshaller ensures UI updates happen on the correct thread
 /// - Results are published to the observable stream
 ///
-/// Version: v0.2.3a
+/// Version: v0.2.7a
 /// </remarks>
 public sealed class LintingOrchestrator : ILintingOrchestrator
 {
@@ -33,6 +35,7 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
     private readonly SemaphoreSlim _scanSemaphore;
     private readonly IStyleEngine _styleEngine;
     private readonly IMediator _mediator;
+    private readonly IThreadMarshaller _threadMarshaller;
     private readonly ILogger<LintingOrchestrator> _logger;
     private readonly LintingOptions _options;
 
@@ -44,11 +47,13 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
     public LintingOrchestrator(
         IStyleEngine styleEngine,
         IMediator mediator,
+        IThreadMarshaller threadMarshaller,
         IOptions<LintingOptions> options,
         ILogger<LintingOrchestrator> logger)
     {
         _styleEngine = styleEngine ?? throw new ArgumentNullException(nameof(styleEngine));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _threadMarshaller = threadMarshaller ?? throw new ArgumentNullException(nameof(threadMarshaller));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options?.Value ?? new LintingOptions();
 
@@ -136,6 +141,13 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
     /// <summary>
     /// Executes a scan operation after debounce.
     /// </summary>
+    /// <remarks>
+    /// LOGIC: Wraps the core scan logic in Task.Run to ensure CPU-bound
+    /// regex scanning doesn't block the UI thread. This is the primary
+    /// async offloading point for the linting pipeline.
+    ///
+    /// Version: v0.2.7a
+    /// </remarks>
     private async Task ExecuteScanAsync(
         string documentId,
         string content,
@@ -144,7 +156,28 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
         if (!_subscriptions.TryGetValue(documentId, out var subscription))
             return;
 
-        await ExecuteScanCoreAsync(documentId, content, subscription, cancellationToken);
+        // LOGIC: Offload to background thread via Task.Run
+        // This ensures CPU-intensive regex scanning doesn't block UI
+        await Task.Run(async () =>
+        {
+            try
+            {
+                // LOGIC: Assert we're on a background thread (DEBUG only)
+                _threadMarshaller.AssertBackgroundThread(nameof(ExecuteScanAsync));
+
+                await ExecuteScanCoreAsync(documentId, content, subscription, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogDebug("Background scan cancelled for document: {DocumentId}", documentId);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Background scan failed for document: {DocumentId}", documentId);
+                throw;
+            }
+        }, cancellationToken);
     }
 
     /// <summary>

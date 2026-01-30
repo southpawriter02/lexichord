@@ -39,6 +39,28 @@ This release integrates the linting engine with the editor, providing visual fee
 
 ---
 
+## [v0.2.7] - 2026-01 (In Progress)
+
+### The Turbo (Performance Optimization)
+
+This release focuses on performance optimizations to ensure smooth UI responsiveness during intensive linting operations.
+
+#### What's New
+
+- **Async Offloading** — CPU-intensive regex scanning now runs on background threads via `Task.Run`, ensuring the UI never freezes during document analysis. Thread marshalling ensures violation updates are safely dispatched to the UI thread.
+
+- **Thread Marshaller Abstraction** — New `IThreadMarshaller` interface abstracts Avalonia's `Dispatcher` for testable thread-aware code. Methods for async invocation, fire-and-forget posting, and DEBUG-only thread assertions.
+
+- **Module Version Update** — Style module version updated from 0.2.6 to 0.2.7.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title            | Status      |
+| -------------------------------- | ---------------- | ----------- |
+| [v0.2.7a](v0.2.x/LCS-CL-027a.md) | Async Offloading | ✅ Complete |
+
+---
+
 ## [v0.2.6] - 2026-01 (In Progress)
 
 ### The Sentinel (Real-Time Feedback Sidebar)

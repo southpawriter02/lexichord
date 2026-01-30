@@ -2,6 +2,7 @@ using System.Reactive.Subjects;
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Linting;
+using Lexichord.Abstractions.Contracts.Threading;
 using Lexichord.Abstractions.Events;
 using Lexichord.Modules.Style.Services.Linting;
 using MediatR;
@@ -23,6 +24,7 @@ public class LintingOrchestratorTests : IDisposable
 {
     private readonly Mock<IStyleEngine> _styleEngineMock;
     private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IThreadMarshaller> _threadMarshallerMock;
     private readonly Mock<ILogger<LintingOrchestrator>> _loggerMock;
     private readonly IOptions<LintingOptions> _options;
     private readonly LintingOrchestrator _sut;
@@ -31,6 +33,7 @@ public class LintingOrchestratorTests : IDisposable
     {
         _styleEngineMock = new Mock<IStyleEngine>();
         _mediatorMock = new Mock<IMediator>();
+        _threadMarshallerMock = new Mock<IThreadMarshaller>();
         _loggerMock = new Mock<ILogger<LintingOrchestrator>>();
         _options = Options.Create(new LintingOptions
         {
@@ -38,9 +41,14 @@ public class LintingOrchestratorTests : IDisposable
             MaxConcurrentScans = 2
         });
 
+        // LOGIC: Configure thread marshaller mock to report never on UI thread
+        // This simulates calls coming from a background thread for tests
+        _threadMarshallerMock.Setup(x => x.IsOnUIThread).Returns(false);
+
         _sut = new LintingOrchestrator(
             _styleEngineMock.Object,
             _mediatorMock.Object,
+            _threadMarshallerMock.Object,
             _options,
             _loggerMock.Object);
     }
@@ -57,6 +65,7 @@ public class LintingOrchestratorTests : IDisposable
         var act = () => new LintingOrchestrator(
             null!,
             _mediatorMock.Object,
+            _threadMarshallerMock.Object,
             _options,
             _loggerMock.Object);
 
@@ -72,12 +81,29 @@ public class LintingOrchestratorTests : IDisposable
         var act = () => new LintingOrchestrator(
             _styleEngineMock.Object,
             null!,
+            _threadMarshallerMock.Object,
             _options,
             _loggerMock.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("mediator");
+    }
+
+    [Fact]
+    public void Constructor_ThrowsOnNullThreadMarshaller()
+    {
+        // Act
+        var act = () => new LintingOrchestrator(
+            _styleEngineMock.Object,
+            _mediatorMock.Object,
+            null!,
+            _options,
+            _loggerMock.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("threadMarshaller");
     }
 
     [Fact]

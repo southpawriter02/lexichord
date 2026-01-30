@@ -1,9 +1,11 @@
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Linting;
+using Lexichord.Abstractions.Contracts.Threading;
 using Lexichord.Abstractions.Layout;
 using Lexichord.Modules.Style.Data;
 using Lexichord.Modules.Style.Services;
 using Lexichord.Modules.Style.Services.Linting;
+using Lexichord.Modules.Style.Threading;
 using Lexichord.Modules.Style.ViewModels;
 using Lexichord.Modules.Style.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +35,7 @@ public sealed class StyleModule : IModule
     public ModuleInfo Info => new(
         Id: "style",
         Name: "The Rulebook",
-        Version: new Version(0, 2, 6),
+        Version: new Version(0, 2, 7),
         Author: "Lexichord Team",
         Description: "Style and writing rules engine providing governed writing environments"
     );
@@ -84,6 +86,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.3d - Violation aggregator with caching
         services.AddSingleton<IViolationAggregator, ViolationAggregator>();
+
+        // LOGIC: v0.2.7a - Thread marshaller for UI/background thread coordination
+        services.AddSingleton<IThreadMarshaller, AvaloniaThreadMarshaller>();
 
         // LOGIC: v0.2.3a - Reactive linting orchestrator
         services.AddSingleton<ILintingOrchestrator, LintingOrchestrator>();
