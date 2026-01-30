@@ -57,15 +57,18 @@ This release focuses on performance optimizations to ensure smooth UI responsive
 
 - **Content Filter Architecture** — New `IContentFilter` interface enables pluggable pre-scan content filtering. Binary-search-based match filtering ensures O(log n) performance for large documents.
 
+- **Large File Stress Testing** — Performance testing infrastructure validates linting on 5MB+ documents. Chunked scanning with viewport prioritization (<100ms viewport response), adaptive debounce monitoring (200ms-1000ms), synthetic test corpus generation, and comprehensive stress test suite.
+
 - **Module Version Update** — Style module version updated from 0.2.6 to 0.2.7.
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                | Status      |
-| -------------------------------- | -------------------- | ----------- |
-| [v0.2.7a](v0.2.x/LCS-CL-027a.md) | Async Offloading     | ✅ Complete |
-| [v0.2.7b](v0.2.x/LCS-CL-027b.md) | Code Block Ignoring  | ✅ Complete |
-| [v0.2.7c](v0.2.x/LCS-CL-027c.md) | Frontmatter Ignoring | ✅ Complete |
+| Version                          | Title                  | Status      |
+| -------------------------------- | ---------------------- | ----------- |
+| [v0.2.7a](v0.2.x/LCS-CL-027a.md) | Async Offloading       | ✅ Complete |
+| [v0.2.7b](v0.2.x/LCS-CL-027b.md) | Code Block Ignoring    | ✅ Complete |
+| [v0.2.7c](v0.2.x/LCS-CL-027c.md) | Frontmatter Ignoring   | ✅ Complete |
+| [v0.2.7d](v0.2.x/LCS-CL-027d.md) | Large File Stress Test | ✅ Complete |
 
 ---
 
