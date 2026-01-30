@@ -18,17 +18,20 @@ namespace Lexichord.Modules.Style.ViewModels;
 /// - Default sorting by Severity (desc) then Category (asc)
 /// - Selection handling with license-gated commands
 /// - Status bar text showing term counts and license tier
+/// - Real-time filtering via FilterViewModel (v0.2.5b)
 ///
 /// Commands are gated by license tier - WriterPro required for editing.
 ///
-/// Version: v0.2.5a
+/// Version: v0.2.5b
 /// </remarks>
 public partial class LexiconViewModel : ObservableObject, INotificationHandler<LexiconChangedEvent>, IDisposable
 {
     private readonly ITerminologyService _terminologyService;
+    private readonly ITermFilterService _filterService;
     private readonly ILicenseContext _licenseContext;
     private readonly IMediator _mediator;
     private readonly ILogger<LexiconViewModel> _logger;
+    private List<StyleTerm> _allTerms = new();
     private bool _isDisposed;
 
     /// <summary>
@@ -36,16 +39,25 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     /// </summary>
     public LexiconViewModel(
         ITerminologyService terminologyService,
+        ITermFilterService filterService,
+        FilterViewModel filterViewModel,
         ILicenseContext licenseContext,
         IMediator mediator,
         ILogger<LexiconViewModel> logger)
     {
         _terminologyService = terminologyService ?? throw new ArgumentNullException(nameof(terminologyService));
+        _filterService = filterService ?? throw new ArgumentNullException(nameof(filterService));
+        FilterViewModel = filterViewModel ?? throw new ArgumentNullException(nameof(filterViewModel));
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         FilteredTerms = new ObservableCollection<StyleTermRowViewModel>();
+
+        // LOGIC: v0.2.5b - Subscribe to filter changes
+        FilterViewModel.FilterChanged += OnFilterChanged;
+
+        _logger.LogDebug("LexiconViewModel initialized with filter support");
     }
 
     #region Properties
@@ -54,6 +66,14 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     /// Gets the collection of terms displayed in the grid.
     /// </summary>
     public ObservableCollection<StyleTermRowViewModel> FilteredTerms { get; }
+
+    /// <summary>
+    /// Gets the FilterViewModel for binding to FilterBar.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.2.5b - Exposes filter controls for the UI.
+    /// </remarks>
+    public FilterViewModel FilterViewModel { get; }
 
     /// <summary>
     /// Gets or sets the currently selected term.
@@ -72,10 +92,19 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     private bool _isLoading;
 
     /// <summary>
-    /// Gets the total number of terms.
+    /// Gets the total number of terms (before filtering).
     /// </summary>
     [ObservableProperty]
     private int _totalCount;
+
+    /// <summary>
+    /// Gets the number of terms after filtering.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.2.5b - Shows filtered count in status bar.
+    /// </remarks>
+    [ObservableProperty]
+    private int _filteredCount;
 
     /// <summary>
     /// Gets whether editing is allowed based on license tier.
@@ -208,23 +237,23 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
             _logger.LogDebug("Loading terminology from service");
 
             var terms = await _terminologyService.GetAllAsync();
-            var termList = terms.ToList();
+            _allTerms = terms.ToList();
 
-            // LOGIC: Apply default sort - Severity (desc) then Category (asc)
-            var sorted = termList
-                .Select(t => new StyleTermRowViewModel(t))
-                .OrderBy(t => t.SeveritySortOrder)
-                .ThenBy(t => t.Category, StringComparer.OrdinalIgnoreCase)
+            TotalCount = _allTerms.Count;
+
+            // LOGIC: v0.2.5b - Update available filter options from loaded terms
+            var categories = _allTerms
+                .Select(t => t.Category)
+                .Where(c => !string.IsNullOrEmpty(c))
+                .Distinct()
                 .ToList();
 
-            FilteredTerms.Clear();
-            foreach (var term in sorted)
-            {
-                FilteredTerms.Add(term);
-            }
+            var severities = new[] { "Error", "Warning", "Suggestion", "Info" };
 
-            TotalCount = FilteredTerms.Count;
-            OnPropertyChanged(nameof(StatusText));
+            FilterViewModel.UpdateAvailableOptions(categories!, severities);
+
+            // LOGIC: Apply current filters
+            ApplyFilters();
 
             _logger.LogInformation("Loaded {Count} terms into Lexicon grid", TotalCount);
         }
@@ -236,6 +265,50 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
         {
             IsLoading = false;
         }
+    }
+
+    #endregion
+
+    #region Filtering
+
+    /// <summary>
+    /// Handler for FilterViewModel.FilterChanged event.
+    /// </summary>
+    private void OnFilterChanged(object? sender, EventArgs e)
+    {
+        _logger.LogDebug("Filter changed, re-applying filters");
+        ApplyFilters();
+    }
+
+    /// <summary>
+    /// Applies current filter criteria to the term list.
+    /// </summary>
+    private void ApplyFilters()
+    {
+        if (_isDisposed) return;
+
+        var criteria = FilterViewModel.GetCriteria();
+
+        // LOGIC: Apply filter service
+        var filtered = _filterService.Filter(_allTerms, criteria);
+
+        // LOGIC: Apply default sort - Severity (desc) then Category (asc)
+        var sorted = filtered
+            .Select(t => new StyleTermRowViewModel(t))
+            .OrderBy(t => t.SeveritySortOrder)
+            .ThenBy(t => t.Category, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        FilteredTerms.Clear();
+        foreach (var term in sorted)
+        {
+            FilteredTerms.Add(term);
+        }
+
+        FilteredCount = FilteredTerms.Count;
+        OnPropertyChanged(nameof(StatusText));
+
+        _logger.LogDebug("Applied filters: {FilteredCount}/{TotalCount} terms displayed", FilteredCount, TotalCount);
     }
 
     #endregion
@@ -258,6 +331,13 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     private string GenerateStatusText()
     {
         var tierText = CanEdit ? LicenseTierName : $"{LicenseTierName} (Read-Only)";
+
+        // LOGIC: v0.2.5b - Show filtered count if different from total
+        if (FilterViewModel.HasActiveFilters && FilteredCount != TotalCount)
+        {
+            return $"{FilteredCount} of {TotalCount} terms • {tierText}";
+        }
+
         return $"{TotalCount} terms • {tierText}";
     }
 
@@ -277,7 +357,12 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     {
         if (_isDisposed) return;
         _isDisposed = true;
+
+        // LOGIC: v0.2.5b - Unsubscribe from filter changes
+        FilterViewModel.FilterChanged -= OnFilterChanged;
+
         FilteredTerms.Clear();
+        _allTerms.Clear();
         GC.SuppressFinalize(this);
     }
 

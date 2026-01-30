@@ -91,6 +91,15 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.4a - Violation color provider for editor integration
         services.AddSingleton<IViolationColorProvider, ViolationColorProvider>();
 
+        // LOGIC: v0.2.5b - Configure filter options
+        services.Configure<FilterOptions>(options => { });
+
+        // LOGIC: v0.2.5b - Term filter service for grid filtering
+        services.AddSingleton<ITermFilterService, TermFilterService>();
+
+        // LOGIC: v0.2.5b - Filter ViewModel for filter bar UI
+        services.AddTransient<FilterViewModel>();
+
         // LOGIC: v0.2.5a - Lexicon grid view components
         services.AddTransient<LexiconViewModel>();
         services.AddTransient<LexiconView>();

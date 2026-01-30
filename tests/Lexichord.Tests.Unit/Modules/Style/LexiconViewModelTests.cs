@@ -4,29 +4,56 @@ using Lexichord.Abstractions.Entities;
 using Lexichord.Modules.Style.ViewModels;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Lexichord.Tests.Unit.Modules.Style;
 
 /// <summary>
-/// Unit tests for LexiconViewModel (v0.2.5a).
+/// Unit tests for LexiconViewModel (v0.2.5b).
 /// </summary>
 [Trait("Category", "Unit")]
-public class LexiconViewModelTests
+public class LexiconViewModelTests : IDisposable
 {
     private readonly Mock<ITerminologyService> _terminologyServiceMock = new();
+    private readonly Mock<ITermFilterService> _filterServiceMock = new();
     private readonly Mock<ILicenseContext> _licenseContextMock = new();
     private readonly Mock<IMediator> _mediatorMock = new();
     private readonly Mock<ILogger<LexiconViewModel>> _loggerMock = new();
+    private readonly Mock<ILogger<FilterViewModel>> _filterLoggerMock = new();
+
+    public LexiconViewModelTests()
+    {
+        // LOGIC: v0.2.5b - Configure filter service to pass through all terms by default
+        _filterServiceMock
+            .Setup(x => x.Filter(It.IsAny<IEnumerable<StyleTerm>>(), It.IsAny<FilterCriteria>()))
+            .Returns((IEnumerable<StyleTerm> terms, FilterCriteria _) => terms);
+    }
+
+    private FilterViewModel CreateFilterViewModel()
+    {
+        return new FilterViewModel(
+            _filterServiceMock.Object,
+            Options.Create(new FilterOptions()),
+            _filterLoggerMock.Object);
+    }
 
     private LexiconViewModel CreateViewModel()
     {
         return new LexiconViewModel(
             _terminologyServiceMock.Object,
+            _filterServiceMock.Object,
+            CreateFilterViewModel(),
             _licenseContextMock.Object,
             _mediatorMock.Object,
             _loggerMock.Object);
     }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
+
 
     private static StyleTerm CreateTerm(
         string term = "Test",
