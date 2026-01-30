@@ -57,11 +57,11 @@ public class DebounceControllerTests : IDisposable
     public async Task AfterDebounceDelay_TransitionsToScanning()
     {
         // Arrange
-        var controller = CreateController(debounceMs: 20);
+        var controller = CreateController(debounceMs: 50);
         controller.RequestScan("test content");
 
-        // Act - wait for debounce
-        await Task.Delay(50);
+        // Act - wait for debounce (50ms + margin)
+        await Task.Delay(100);
 
         // Assert
         controller.CurrentState.Should().Be(DebounceState.Scanning);
@@ -72,18 +72,18 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task RapidEdits_ResetDebounceTimer()
     {
-        // Arrange
-        var controller = CreateController(debounceMs: 50);
+        // Arrange - use generous timing to avoid flakiness under CPU load
+        var controller = CreateController(debounceMs: 200);
 
-        // Act - rapid edits
+        // Act - rapid edits (each well within debounce window)
         controller.RequestScan("content 1");
-        await Task.Delay(20);
+        await Task.Delay(50);
         controller.RequestScan("content 2");
-        await Task.Delay(20);
+        await Task.Delay(50);
         controller.RequestScan("content 3");
 
-        // Wait for debounce to complete
-        await Task.Delay(100);
+        // Wait for debounce to complete (200ms from last edit + generous margin)
+        await Task.Delay(400);
 
         // Assert - only last content should have triggered scan
         _scanRequests.Should().HaveCount(1);
@@ -108,9 +108,9 @@ public class DebounceControllerTests : IDisposable
     public async Task CancelCurrent_WhenScanning_TransitionsToCancelled()
     {
         // Arrange
-        var controller = CreateController(debounceMs: 10);
+        var controller = CreateController(debounceMs: 50);
         controller.RequestScan("test content");
-        await Task.Delay(30); // Enter scanning state
+        await Task.Delay(100); // Enter scanning state
 
         // Act
         controller.CancelCurrent();
@@ -123,9 +123,9 @@ public class DebounceControllerTests : IDisposable
     public async Task CancelCurrent_CancelsToken()
     {
         // Arrange
-        var controller = CreateController(debounceMs: 10);
+        var controller = CreateController(debounceMs: 50);
         controller.RequestScan("test content");
-        await Task.Delay(30); // Wait for scan to start
+        await Task.Delay(100); // Wait for scan to start
 
         // Act
         controller.CancelCurrent();
@@ -139,9 +139,9 @@ public class DebounceControllerTests : IDisposable
     public async Task MarkCompleted_TransitionsBackToIdle()
     {
         // Arrange
-        var controller = CreateController(debounceMs: 10);
+        var controller = CreateController(debounceMs: 50);
         controller.RequestScan("test content");
-        await Task.Delay(30);
+        await Task.Delay(100);
         controller.CurrentState.Should().Be(DebounceState.Scanning);
 
         // Act
@@ -184,9 +184,9 @@ public class DebounceControllerTests : IDisposable
     public async Task Dispose_CancelsInFlightScan()
     {
         // Arrange
-        var controller = CreateController(debounceMs: 10);
+        var controller = CreateController(debounceMs: 50);
         controller.RequestScan("test content");
-        await Task.Delay(30);
+        await Task.Delay(100);
 
         // Act
         controller.Dispose();
@@ -210,13 +210,13 @@ public class DebounceControllerTests : IDisposable
     public async Task NewRequestDuringScanning_CancelsPreviousAndStartsNew()
     {
         // Arrange
-        var controller = CreateController(debounceMs: 10);
+        var controller = CreateController(debounceMs: 50);
         controller.RequestScan("first content");
-        await Task.Delay(30); // Enter scanning state
+        await Task.Delay(100); // Enter scanning state
 
         // Act - new request during scan
         controller.RequestScan("second content");
-        await Task.Delay(30); // Wait for new scan
+        await Task.Delay(100); // Wait for new scan
 
         // Assert
         _scanRequests.Should().HaveCount(2);

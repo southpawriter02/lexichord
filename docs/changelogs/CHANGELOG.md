@@ -26,6 +26,8 @@ This release integrates the linting engine with the editor, providing visual fee
 
 - **Hover Tooltips** — Contextual tooltips that appear when hovering over style violations. Displays rule name, message, and optional recommendation. Supports multi-violation navigation when violations overlap, and can be triggered via keyboard shortcuts (Ctrl+K, Ctrl+I).
 
+- **Context Menu Quick-Fixes** — Right-click on style violations or press Ctrl+. to see available fixes. Selecting a fix applies the suggested replacement with full undo support. Works with overlapping violations, showing all available fixes in the menu.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -33,6 +35,7 @@ This release integrates the linting engine with the editor, providing visual fee
 | [v0.2.4a](v0.2.x/LCS-CL-024a.md) | Rendering Transformer        | ✅ Complete |
 | [v0.2.4b](v0.2.x/LCS-CL-024b.md) | Theme-Aware Underline Colors | ✅ Complete |
 | [v0.2.4c](v0.2.x/LCS-CL-024c.md) | Hover Tooltips               | ✅ Complete |
+| [v0.2.4d](v0.2.x/LCS-CL-024d.md) | Context Menu Quick-Fixes     | ✅ Complete |
 
 ---
 

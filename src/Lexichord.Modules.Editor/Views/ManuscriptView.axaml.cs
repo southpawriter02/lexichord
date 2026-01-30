@@ -5,6 +5,7 @@ using AvaloniaEdit.Highlighting;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.Linting;
 using Lexichord.Modules.Editor.Services;
+using Lexichord.Modules.Editor.Services.QuickFix;
 using Lexichord.Modules.Editor.Services.Tooltip;
 using Lexichord.Modules.Editor.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -23,12 +24,15 @@ namespace Lexichord.Modules.Editor.Views;
 /// - Syntax highlighting application (v0.1.3b)
 /// - Ctrl+Scroll zoom (v0.1.3d)
 /// - Violation hover tooltips (v0.2.4c)
+/// - Context menu quick-fixes (v0.2.4d)
 /// </remarks>
 public partial class ManuscriptView : UserControl
 {
     private ManuscriptViewModel? _viewModel;
     private EditorConfigurationService? _configService;
     private ViolationTooltipService? _tooltipService;
+    private QuickFixService? _quickFixService;
+    private ContextMenuIntegration? _contextMenuIntegration;
     private bool _isUpdatingFromViewModel;
     private bool _isUpdatingFromEditor;
 
@@ -368,5 +372,62 @@ public partial class ManuscriptView : UserControl
     {
         _tooltipService?.Dispose();
         _tooltipService = null;
+    }
+
+    /// <summary>
+    /// Initializes the quick-fix service for this editor.
+    /// </summary>
+    /// <param name="violationProvider">The violation provider.</param>
+    /// <param name="quickFixLogger">Logger for QuickFixService.</param>
+    /// <param name="contextMenuLogger">Logger for ContextMenuIntegration.</param>
+    /// <param name="onQuickFixApplied">Callback when a fix is applied (for re-linting).</param>
+    /// <remarks>
+    /// LOGIC: v0.2.4d - Enables context menu quick-fixes for style violations.
+    /// The service attaches to the TextArea and shows a context menu
+    /// with available fixes when right-clicking or pressing Ctrl+.
+    /// </remarks>
+    public void InitializeQuickFixService(
+        IViolationProvider violationProvider,
+        ILogger<QuickFixService> quickFixLogger,
+        ILogger<ContextMenuIntegration> contextMenuLogger,
+        Action? onQuickFixApplied = null)
+    {
+        CleanupQuickFixService();
+
+        _quickFixService = new QuickFixService(violationProvider, quickFixLogger);
+        _contextMenuIntegration = new ContextMenuIntegration(_quickFixService, contextMenuLogger);
+
+        _contextMenuIntegration.AttachToTextArea(TextEditor.TextArea);
+        _contextMenuIntegration.RegisterKeyboardShortcuts(TextEditor.TextArea);
+
+        // LOGIC: Wire up apply fix callback to use editor's document
+        _contextMenuIntegration.ApplyFixRequested += (fix, _) =>
+        {
+            // LOGIC: Use editor's document Replace for undo support
+            TextEditor.Document.Replace(fix.StartOffset, fix.Length, fix.ReplacementText);
+
+            // LOGIC: Notify that fix was applied (for re-linting)
+            _quickFixService.ApplyQuickFix(fix, (start, length, text) =>
+            {
+                // Already applied above, this just raises the event
+            });
+
+            onQuickFixApplied?.Invoke();
+        };
+    }
+
+    /// <summary>
+    /// Cleans up the quick-fix service.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.2.4d - Disposes of the quick-fix service to prevent leaks.
+    /// Called when document is closed or view is unloaded.
+    /// </remarks>
+    public void CleanupQuickFixService()
+    {
+        _contextMenuIntegration?.Dispose();
+        _contextMenuIntegration = null;
+        _quickFixService?.Dispose();
+        _quickFixService = null;
     }
 }
