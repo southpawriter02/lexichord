@@ -41,6 +41,7 @@ public sealed class StyleModule : IModule
     /// - IStyleEngine: Maintains active sheet state, thread-safe analysis
     /// - IStyleSheetLoader: Caches compiled patterns, expensive to create
     /// - IStyleConfigurationWatcher: Holds OS file watcher resources
+    /// - IScannerService: Shared pattern cache, expensive to recreate (v0.2.3c)
     /// </remarks>
     public void RegisterServices(IServiceCollection services)
     {
@@ -70,6 +71,13 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.3a - Configure linting options
         services.Configure<LintingOptions>(options => { });
+
+        // LOGIC: v0.2.3b - Linting configuration as service
+        services.AddSingleton<ILintingConfiguration>(sp =>
+            sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<LintingOptions>>().Value);
+
+        // LOGIC: v0.2.3c - Pattern matching engine with caching
+        services.AddSingleton<IScannerService, ScannerService>();
 
         // LOGIC: v0.2.3a - Reactive linting orchestrator
         services.AddSingleton<ILintingOrchestrator, LintingOrchestrator>();

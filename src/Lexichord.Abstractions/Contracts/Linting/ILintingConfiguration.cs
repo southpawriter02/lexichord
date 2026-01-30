@@ -8,7 +8,7 @@ namespace Lexichord.Abstractions.Contracts.Linting;
 /// custom values and future support for per-document or workspace
 /// configuration overrides.
 ///
-/// Version: v0.2.3b
+/// Version: v0.2.3c
 /// </remarks>
 public interface ILintingConfiguration
 {
@@ -37,4 +37,41 @@ public interface ILintingConfiguration
     /// LOGIC: Master switch for disabling all background linting.
     /// </remarks>
     bool Enabled { get; }
+
+    /// <summary>
+    /// Maximum number of compiled patterns to cache.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: LRU cache for compiled regex patterns.
+    /// Larger cache improves hit ratio but uses more memory.
+    /// Range: 100-2000, Default: 500
+    ///
+    /// Version: v0.2.3c
+    /// </remarks>
+    int PatternCacheMaxSize { get; }
+
+    /// <summary>
+    /// Timeout in milliseconds for pattern matching operations.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: ReDoS protection - aborts patterns that take too long.
+    /// If a pattern times out, it returns empty matches.
+    /// Range: 50-1000ms, Default: 100ms
+    ///
+    /// Version: v0.2.3c
+    /// </remarks>
+    int PatternTimeoutMilliseconds { get; }
+
+    /// <summary>
+    /// Whether to perform complexity analysis on regex patterns.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Optional heuristic check for known ReDoS patterns.
+    /// When enabled, dangerous patterns are flagged before execution.
+    /// Default: true
+    ///
+    /// Version: v0.2.3c
+    /// </remarks>
+    bool UseComplexityAnalysis { get; }
 }
+

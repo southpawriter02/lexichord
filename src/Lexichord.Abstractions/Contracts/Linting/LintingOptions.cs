@@ -8,10 +8,11 @@ namespace Lexichord.Abstractions.Contracts.Linting;
 /// - Debouncing prevents excessive re-scans during rapid edits
 /// - Concurrency limits prevent resource exhaustion
 /// - Timeout prevents runaway regex patterns
+/// - Pattern caching improves performance (v0.2.3c)
 ///
-/// Version: v0.2.3a
+/// Version: v0.2.3c
 /// </remarks>
-public sealed record LintingOptions
+public sealed record LintingOptions : ILintingConfiguration
 {
     /// <summary>
     /// Debounce delay in milliseconds between content changes and scan trigger.
@@ -61,4 +62,41 @@ public sealed record LintingOptions
     /// Useful for performance-sensitive situations or user preference.
     /// </remarks>
     public bool Enabled { get; init; } = true;
+
+    /// <summary>
+    /// Maximum number of compiled patterns to cache.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: LRU cache for compiled regex patterns.
+    /// Larger cache improves hit ratio but uses more memory.
+    /// Range: 100-2000, Default: 500
+    ///
+    /// Version: v0.2.3c
+    /// </remarks>
+    public int PatternCacheMaxSize { get; init; } = 500;
+
+    /// <summary>
+    /// Timeout in milliseconds for pattern matching operations.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: ReDoS protection - aborts patterns that take too long.
+    /// If a pattern times out, it returns empty matches.
+    /// Range: 50-1000ms, Default: 100ms
+    ///
+    /// Version: v0.2.3c
+    /// </remarks>
+    public int PatternTimeoutMilliseconds { get; init; } = 100;
+
+    /// <summary>
+    /// Whether to perform complexity analysis on regex patterns.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Optional heuristic check for known ReDoS patterns.
+    /// When enabled, dangerous patterns are flagged before execution.
+    /// Default: true
+    ///
+    /// Version: v0.2.3c
+    /// </remarks>
+    public bool UseComplexityAnalysis { get; init; } = true;
 }
+
