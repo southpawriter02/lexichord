@@ -45,6 +45,10 @@
 
     <!-- v0.2.3a: System.Reactive for reactive linting pipeline -->
     <PackageReference Include="System.Reactive" Version="6.0.1" />
+
+    <!-- v0.2.5d: Import/Export support -->
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="ClosedXML" Version="0.102.3" />
   </ItemGroup>
 
   <ItemGroup>

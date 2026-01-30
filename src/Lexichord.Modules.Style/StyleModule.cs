@@ -107,6 +107,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.5c - Term editor dialog components
         services.AddTransient<TermEditorViewModel>();
         services.AddSingleton<ITermEditorDialogService, TermEditorDialogService>();
+
+        // LOGIC: v0.2.5d - Import/Export services
+        services.AddSingleton<ITermImportService, TermImportService>();
+        services.AddSingleton<ITermExportService, TermExportService>();
     }
 
     /// <inheritdoc/>
