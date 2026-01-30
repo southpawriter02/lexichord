@@ -3,6 +3,7 @@ using Lexichord.Abstractions.Contracts.Linting;
 using Lexichord.Abstractions.Contracts.Threading;
 using Lexichord.Abstractions.Layout;
 using Lexichord.Modules.Style.Data;
+using Lexichord.Modules.Style.Filters;
 using Lexichord.Modules.Style.Services;
 using Lexichord.Modules.Style.Services.Linting;
 using Lexichord.Modules.Style.Threading;
@@ -127,6 +128,10 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.6d - Project linting service for scope filtering
         services.AddSingleton<IProjectLintingService, ProjectLintingService>();
+
+        // LOGIC: v0.2.7b - Content filter for code block detection
+        services.AddSingleton<IContentFilter, MarkdownCodeBlockFilter>();
+        services.AddSingleton<MarkdownCodeBlockFilter>();
     }
 
     /// <inheritdoc/>
