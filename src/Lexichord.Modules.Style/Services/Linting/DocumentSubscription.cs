@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Linting;
 
@@ -10,21 +9,21 @@ namespace Lexichord.Modules.Style.Services.Linting;
 /// </summary>
 /// <remarks>
 /// LOGIC: Encapsulates per-document reactive subscription lifecycle:
-/// - Content stream subscription with debouncing
-/// - State management
+/// - Content stream subscription with debouncing via DebounceController
+/// - State management delegated to the controller
 /// - Cancellation of in-flight scans on new content
 /// - Cleanup on disposal
 ///
-/// Version: v0.2.3a
+/// Version: v0.2.3b
 /// </remarks>
 internal sealed class DocumentSubscription : IDisposable
 {
     private readonly string _documentId;
     private readonly string? _filePath;
     private readonly CompositeDisposable _disposables = new();
+    private readonly DebounceController _debounceController;
     private readonly object _stateLock = new();
 
-    private CancellationTokenSource? _currentScanCts;
     private DocumentLintState _state;
     private bool _disposed;
 
@@ -51,28 +50,31 @@ internal sealed class DocumentSubscription : IDisposable
             FilePath = filePath
         };
 
-        // LOGIC: Subscribe to content stream with debouncing
-        var subscription = contentStream
-            .Throttle(TimeSpan.FromMilliseconds(options.DebounceMilliseconds))
-            .Subscribe(content =>
+        // LOGIC: Create debounce controller with callback wrapper
+        _debounceController = new DebounceController(
+            options.DebounceMilliseconds,
+            (content, ct) =>
             {
                 if (_disposed) return;
 
-                // LOGIC: Cancel any in-flight scan
-                CancelCurrentScan();
-
-                // LOGIC: Update state to pending then analyzing
+                // LOGIC: Update state to analyzing
                 lock (_stateLock)
                 {
                     _state = _state.CreatePending().StartAnalyzing();
                 }
 
-                // LOGIC: Create new cancellation token for this scan
-                _currentScanCts = new CancellationTokenSource();
-
-                // LOGIC: Request scan (orchestrator will handle actual scanning)
-                onScanRequested(documentId, content, _currentScanCts.Token);
+                // LOGIC: Forward to orchestrator
+                onScanRequested(documentId, content, ct);
             });
+
+        _disposables.Add(_debounceController);
+
+        // LOGIC: Subscribe to content stream and forward to controller
+        var subscription = contentStream.Subscribe(content =>
+        {
+            if (_disposed) return;
+            _debounceController.RequestScan(content);
+        });
 
         _disposables.Add(subscription);
     }
@@ -92,6 +94,11 @@ internal sealed class DocumentSubscription : IDisposable
     }
 
     /// <summary>
+    /// Gets the current debounce state from the controller.
+    /// </summary>
+    public DebounceState DebounceState => _debounceController.CurrentState;
+
+    /// <summary>
     /// Updates the state after a successful scan completion.
     /// </summary>
     /// <param name="violations">The violations found.</param>
@@ -102,6 +109,7 @@ internal sealed class DocumentSubscription : IDisposable
         {
             _state = _state.CompleteWith(violations, timestamp);
         }
+        _debounceController.MarkCompleted();
     }
 
     /// <summary>
@@ -113,6 +121,7 @@ internal sealed class DocumentSubscription : IDisposable
         {
             _state = _state.CancelToIdle();
         }
+        _debounceController.MarkCancelled();
     }
 
     /// <summary>
@@ -120,9 +129,7 @@ internal sealed class DocumentSubscription : IDisposable
     /// </summary>
     public void CancelCurrentScan()
     {
-        _currentScanCts?.Cancel();
-        _currentScanCts?.Dispose();
-        _currentScanCts = null;
+        _debounceController.CancelCurrent();
     }
 
     /// <inheritdoc />
@@ -131,7 +138,7 @@ internal sealed class DocumentSubscription : IDisposable
         if (_disposed) return;
         _disposed = true;
 
-        CancelCurrentScan();
         _disposables.Dispose();
     }
 }
+

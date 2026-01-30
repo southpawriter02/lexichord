@@ -48,6 +48,7 @@ This release introduces **The Critic**, a reactive linting engine that provides 
 | Version                          | Title             | Status      |
 | -------------------------------- | ----------------- | ----------- |
 | [v0.2.3a](v0.2.x/LCS-CL-023a.md) | Reactive Pipeline | ✅ Complete |
+| [v0.2.3b](v0.2.x/LCS-CL-023b.md) | Debounce Logic    | ✅ Complete |
 
 ---
 
