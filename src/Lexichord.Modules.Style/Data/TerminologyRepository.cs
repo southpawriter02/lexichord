@@ -340,6 +340,27 @@ public class TerminologyRepository : ITerminologyRepository
     }
 
     /// <inheritdoc />
+    public async Task<IEnumerable<StyleTerm>> GetBySeverityAsync(
+        string severity,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(severity))
+            throw new ArgumentException("Severity cannot be empty", nameof(severity));
+
+        await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+        const string sql = @"
+            SELECT * FROM ""style_terms"" 
+            WHERE ""Severity"" = @Severity 
+            ORDER BY ""Term""";
+
+        var command = new DapperCommandDefinition(sql, new { Severity = severity }, cancellationToken: cancellationToken);
+        var terms = await connection.QueryAsync<StyleTerm>(command);
+
+        _logger.LogDebug("GetBySeverity '{Severity}': {Count} terms", severity, terms.Count());
+        return terms;
+    }
+
+    /// <inheritdoc />
     public async Task<IEnumerable<StyleTerm>> SearchAsync(
         string searchTerm,
         CancellationToken cancellationToken = default)

@@ -50,6 +50,16 @@ public interface ITerminologyRepository : IGenericRepository<StyleTerm, Guid>
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets all terms with a specific severity level.
+    /// </summary>
+    /// <param name="severity">Severity to filter by (case-sensitive).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Terms matching the severity.</returns>
+    Task<IEnumerable<StyleTerm>> GetBySeverityAsync(
+        string severity,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Searches terms using fuzzy matching (trigram similarity).
     /// </summary>
     /// <param name="searchTerm">Search query.</param>

@@ -44,6 +44,28 @@ public record StyleWatcherErrorEvent(
 ) : DomainEventBase, INotification;
 
 /// <summary>
+/// Published when the terminology lexicon is modified (create, update, delete, reactivate).
+/// </summary>
+/// <remarks>
+/// LOGIC: Enables cache invalidation and UI updates when terms change.
+/// Handler failures are logged but do not fail the main operation.
+///
+/// Version: v0.2.2d
+/// </remarks>
+/// <param name="ChangeType">The type of change that occurred.</param>
+/// <param name="TermId">The unique identifier of the affected term.</param>
+/// <param name="TermPattern">The pattern of the affected term (for logging).</param>
+/// <param name="Category">The category of the affected term.</param>
+/// <param name="AffectedCount">Number of items affected (usually 1).</param>
+public sealed record LexiconChangedEvent(
+    LexiconChangeType ChangeType,
+    Guid TermId,
+    string? TermPattern = null,
+    string? Category = null,
+    int AffectedCount = 1
+) : DomainEventBase, INotification;
+
+/// <summary>
 /// Indicates what triggered a style sheet reload.
 /// </summary>
 public enum StyleReloadSource

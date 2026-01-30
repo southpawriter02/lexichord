@@ -675,3 +675,142 @@ public sealed class StyleWatcherErrorEventArgs : EventArgs
 }
 
 #endregion
+
+#region Terminology CRUD Types
+
+/// <summary>
+/// Represents the result of an operation that can succeed or fail.
+/// </summary>
+/// <typeparam name="T">The type of the value on success.</typeparam>
+/// <remarks>
+/// LOGIC: Provides a functional approach to error handling without exceptions.
+/// Enables railway-oriented programming for service layer operations.
+/// </remarks>
+public sealed record Result<T>
+{
+    /// <summary>
+    /// Gets whether the operation succeeded.
+    /// </summary>
+    public bool IsSuccess { get; }
+
+    /// <summary>
+    /// Gets whether the operation failed.
+    /// </summary>
+    public bool IsFailure => !IsSuccess;
+
+    /// <summary>
+    /// Gets the success value. Throws if the result is a failure.
+    /// </summary>
+    public T Value => IsSuccess
+        ? _value!
+        : throw new InvalidOperationException("Cannot access value of a failed result.");
+
+    /// <summary>
+    /// Gets the error message when the operation failed.
+    /// </summary>
+    public string? Error { get; }
+
+    private readonly T? _value;
+
+    private Result(bool isSuccess, T? value, string? error)
+    {
+        IsSuccess = isSuccess;
+        _value = value;
+        Error = error;
+    }
+
+    /// <summary>
+    /// Creates a successful result with the specified value.
+    /// </summary>
+    public static Result<T> Success(T value) => new(true, value, null);
+
+    /// <summary>
+    /// Creates a failed result with the specified error message.
+    /// </summary>
+    public static Result<T> Failure(string error) => new(false, default, error);
+}
+
+/// <summary>
+/// Types of changes to the lexicon.
+/// </summary>
+/// <remarks>
+/// LOGIC: Used in LexiconChangedEvent to indicate what type of
+/// modification occurred, enabling event handlers to respond appropriately.
+/// </remarks>
+public enum LexiconChangeType
+{
+    /// <summary>A new term was added to the lexicon.</summary>
+    Created = 0,
+
+    /// <summary>An existing term was modified.</summary>
+    Updated = 1,
+
+    /// <summary>A term was soft-deleted (deactivated).</summary>
+    Deleted = 2,
+
+    /// <summary>A previously deleted term was reactivated.</summary>
+    Reactivated = 3
+}
+
+/// <summary>
+/// Command for creating a new terminology entry.
+/// </summary>
+/// <param name="Term">The term pattern to match (literal or regex).</param>
+/// <param name="Replacement">Optional suggested replacement text.</param>
+/// <param name="Category">Rule category for organization.</param>
+/// <param name="Severity">Violation severity level.</param>
+/// <param name="Notes">Optional notes about the term.</param>
+/// <param name="StyleSheetId">The style sheet this term belongs to.</param>
+/// <remarks>
+/// LOGIC: Immutable command record ensures thread-safety and clear intent.
+/// All validation is performed by the service layer.
+/// </remarks>
+public sealed record CreateTermCommand(
+    string Term,
+    string? Replacement = null,
+    string Category = "General",
+    string Severity = "Suggestion",
+    string? Notes = null,
+    Guid? StyleSheetId = null);
+
+/// <summary>
+/// Command for updating an existing terminology entry.
+/// </summary>
+/// <param name="Id">The unique identifier of the term to update.</param>
+/// <param name="Term">The updated term pattern.</param>
+/// <param name="Replacement">Optional updated replacement text.</param>
+/// <param name="Category">Updated rule category.</param>
+/// <param name="Severity">Updated violation severity level.</param>
+/// <param name="Notes">Optional updated notes.</param>
+/// <remarks>
+/// LOGIC: All fields are required to ensure explicit update intent.
+/// Partial updates should fetch the current state first.
+/// </remarks>
+public sealed record UpdateTermCommand(
+    Guid Id,
+    string Term,
+    string? Replacement = null,
+    string Category = "General",
+    string Severity = "Suggestion",
+    string? Notes = null);
+
+/// <summary>
+/// Statistics about the terminology database.
+/// </summary>
+/// <param name="TotalCount">Total number of terms (active and inactive).</param>
+/// <param name="ActiveCount">Number of active terms.</param>
+/// <param name="InactiveCount">Number of inactive (soft-deleted) terms.</param>
+/// <param name="CategoryCounts">Breakdown of terms by category.</param>
+/// <param name="SeverityCounts">Breakdown of terms by severity.</param>
+/// <remarks>
+/// LOGIC: Provides aggregated view of the lexicon for dashboard display
+/// and monitoring purposes.
+/// </remarks>
+public sealed record TermStatistics(
+    int TotalCount,
+    int ActiveCount,
+    int InactiveCount,
+    IReadOnlyDictionary<string, int> CategoryCounts,
+    IReadOnlyDictionary<string, int> SeverityCounts);
+
+#endregion

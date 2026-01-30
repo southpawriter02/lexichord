@@ -62,6 +62,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.2c - Terminology seeder with embedded defaults
         services.AddSingleton<ITerminologySeeder, TerminologySeeder>();
+
+        // LOGIC: v0.2.2d - Terminology CRUD service with validation and events
+        services.AddSingleton<ITerminologyService, TerminologyService>();
     }
 
     /// <inheritdoc/>

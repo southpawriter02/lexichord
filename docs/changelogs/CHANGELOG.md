@@ -24,6 +24,8 @@ This release introduces **The Lexicon**, a persistent database for managing styl
 | -------------------------------- | ---------------------- | ----------- |
 | [v0.2.2a](v0.2.x/LCS-CL-022a.md) | Style Schema Migration | ✅ Complete |
 | [v0.2.2b](v0.2.x/LCS-CL-022b.md) | Repository Layer       | ✅ Complete |
+| [v0.2.2c](v0.2.x/LCS-CL-022c.md) | Terminology Seeding    | ✅ Complete |
+| [v0.2.2d](v0.2.x/LCS-CL-022d.md) | CRUD Service           | ✅ Complete |
 
 ---
 
