@@ -79,6 +79,9 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.3c - Pattern matching engine with caching
         services.AddSingleton<IScannerService, ScannerService>();
 
+        // LOGIC: v0.2.3d - Violation aggregator with caching
+        services.AddSingleton<IViolationAggregator, ViolationAggregator>();
+
         // LOGIC: v0.2.3a - Reactive linting orchestrator
         services.AddSingleton<ILintingOrchestrator, LintingOrchestrator>();
     }

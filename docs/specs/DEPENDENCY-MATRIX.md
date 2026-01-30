@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-29 (v0.1.4d added)                                             |
+| **Last Updated** | 2026-01-30 (v0.2.3d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -97,8 +97,10 @@
 | `StyleTerm`                  | v0.2.2a    | Abstractions  | Term entity model                  |
 | `ILintingOrchestrator`       | v0.2.3a    | Modules.Style | Reactive linting coordinator       |
 | `ILintingConfiguration`      | v0.2.3b    | Modules.Style | Debounce and settings              |
-| `IStyleScanner`              | v0.2.3c    | Modules.Style | Regex pattern matching             |
-| `IViolationAggregator`       | v0.2.3d    | Modules.Style | Result aggregation                 |
+| `IScannerService`            | v0.2.3c    | Modules.Style | Regex pattern matching             |
+| `IViolationAggregator`       | v0.2.3d    | Modules.Style | Match-to-violation transformation  |
+| `ScanMatch`                  | v0.2.3d    | Abstractions  | Scanner output bridge record       |
+| `AggregatedStyleViolation`   | v0.2.3d    | Abstractions  | Enriched violation with positions  |
 | `IViolationProvider`         | v0.2.4a    | Modules.Style | Violation data for renderer        |
 | `IViolationColorProvider`    | v0.2.4b    | Modules.Style | Theme-aware colors                 |
 | `IViolationTooltipService`   | v0.2.4c    | Modules.Style | Hover tooltip display              |

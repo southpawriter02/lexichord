@@ -43,13 +43,16 @@ This release introduces **The Critic**, a reactive linting engine that provides 
 
 - **Domain Contracts** — Immutable records for linting configuration (`LintingOptions`), per-document state tracking (`DocumentLintState`), and operation results (`LintResult`) with factory methods.
 
+- **Violation Aggregator** — Transforms raw scanner matches into user-facing violations with line/column positions, deduplication (higher severity wins), sorting by document position, and per-document caching for efficient query support.
+
 #### Sub-Part Changelogs
 
-| Version                          | Title             | Status      |
-| -------------------------------- | ----------------- | ----------- |
-| [v0.2.3a](v0.2.x/LCS-CL-023a.md) | Reactive Pipeline | ✅ Complete |
-| [v0.2.3b](v0.2.x/LCS-CL-023b.md) | Debounce Logic    | ✅ Complete |
-| [v0.2.3c](v0.2.x/LCS-CL-023c.md) | Scanner (Regex)   | ✅ Complete |
+| Version                          | Title                | Status      |
+| -------------------------------- | -------------------- | ----------- |
+| [v0.2.3a](v0.2.x/LCS-CL-023a.md) | Reactive Pipeline    | ✅ Complete |
+| [v0.2.3b](v0.2.x/LCS-CL-023b.md) | Debounce Logic       | ✅ Complete |
+| [v0.2.3c](v0.2.x/LCS-CL-023c.md) | Scanner (Regex)      | ✅ Complete |
+| [v0.2.3d](v0.2.x/LCS-CL-023d.md) | Violation Aggregator | ✅ Complete |
 
 ---
 

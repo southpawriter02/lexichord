@@ -98,5 +98,18 @@ public sealed record LintingOptions : ILintingConfiguration
     /// Version: v0.2.3c
     /// </remarks>
     public bool UseComplexityAnalysis { get; init; } = true;
+
+    /// <summary>
+    /// Maximum number of violations to report per document.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Prevents memory exhaustion on very noisy documents.
+    /// Violations beyond this limit are silently dropped after sorting
+    /// by position, ensuring the most prominent issues are reported.
+    /// Range: 100-10000, Default: 1000
+    ///
+    /// Version: v0.2.3d
+    /// </remarks>
+    public int MaxViolationsPerDocument { get; init; } = 1000;
 }
 
