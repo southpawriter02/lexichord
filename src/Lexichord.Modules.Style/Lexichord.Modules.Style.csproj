@@ -4,11 +4,12 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
     <!-- Module metadata -->
     <AssemblyTitle>Lexichord Style Module</AssemblyTitle>
     <Description>The Rulebook - Style and writing rules engine</Description>
-    <Version>0.2.1</Version>
+    <Version>0.2.5</Version>
 
     <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
     <OutputPath>$(SolutionDir)Modules\</OutputPath>
@@ -17,6 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- v0.2.5a: Avalonia UI for LexiconView -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
+
+    <!-- v0.2.5a: MVVM Support -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
     <!-- YamlDotNet for YAML deserialization (v0.2.1c) -->
     <PackageReference Include="YamlDotNet" Version="15.1.6" />
 

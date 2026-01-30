@@ -46,7 +46,7 @@ public class StyleModuleTests
         var module = new StyleModule();
 
         // Assert
-        module.Info.Version.Should().Be(new Version(0, 2, 1));
+        module.Info.Version.Should().Be(new Version(0, 2, 5));
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class StyleModuleTests
     }
 
     [Fact]
-    public void RegisterServices_AllServicesAreSingletons()
+    public void RegisterServices_CoreServicesAreSingletons()
     {
         // Arrange
         var module = new StyleModule();
@@ -129,9 +129,12 @@ public class StyleModuleTests
 
         // Assert
         // LOGIC: Filter to only Lexichord services (exclude framework services from AddMemoryCache)
+        // ViewModels and Views are transient by design; core services should be singletons
         var lexichordServices = services.Where(sd =>
-            sd.ServiceType.FullName?.StartsWith("Lexichord") == true ||
-            sd.ImplementationType?.FullName?.StartsWith("Lexichord") == true);
+            (sd.ServiceType.FullName?.StartsWith("Lexichord") == true ||
+             sd.ImplementationType?.FullName?.StartsWith("Lexichord") == true) &&
+            !sd.ServiceType.Name.EndsWith("ViewModel") &&
+            !sd.ServiceType.Name.EndsWith("View"));
 
         lexichordServices.Should().OnlyContain(sd => sd.Lifetime == ServiceLifetime.Singleton);
     }

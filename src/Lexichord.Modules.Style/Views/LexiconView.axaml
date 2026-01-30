@@ -1,0 +1,159 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Style.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="400" d:DesignHeight="500"
+             x:Class="Lexichord.Modules.Style.Views.LexiconView"
+             x:DataType="vm:LexiconViewModel">
+    
+    <!-- 
+    LexiconView: Terminology Grid View (v0.2.5a)
+    Displays style terms in a sortable DataGrid with toolbar and status bar.
+    -->
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" 
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="8,4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Command="{Binding AddTermCommand}"
+                        IsEnabled="{Binding CanEdit}"
+                        ToolTip.Tip="Add new term (WriterPro required)">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" 
+                                  Width="16" Height="16"/>
+                        <TextBlock Text="Add" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Command="{Binding EditSelectedCommand}"
+                        ToolTip.Tip="Edit selected term">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Data="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" 
+                                  Width="16" Height="16"/>
+                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Command="{Binding DeleteSelectedCommand}"
+                        ToolTip.Tip="Delete selected term">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" 
+                                  Width="16" Height="16"/>
+                        <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Separator Width="1" Margin="4,0"/>
+                
+                <Button Command="{Binding ToggleActiveCommand}"
+                        ToolTip.Tip="Toggle active state">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6Z" 
+                                  Width="16" Height="16"/>
+                        <TextBlock Text="Toggle" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                Padding="8,4">
+            <TextBlock Text="{Binding StatusText}" 
+                       FontSize="12"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- Loading Indicator -->
+        <ProgressBar DockPanel.Dock="Top"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsLoading}"
+                     Height="2"/>
+
+        <!-- DataGrid -->
+        <DataGrid ItemsSource="{Binding FilteredTerms}"
+                  SelectedItem="{Binding SelectedTerm}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  GridLinesVisibility="Horizontal"
+                  SelectionMode="Single"
+                  Name="TermsGrid">
+            
+            <DataGrid.Columns>
+                <!-- Term Pattern -->
+                <DataGridTextColumn Header="Pattern" 
+                                    Binding="{Binding Term}"
+                                    Width="*"
+                                    MinWidth="100"/>
+                
+                <!-- Replacement -->
+                <DataGridTextColumn Header="Replacement" 
+                                    Binding="{Binding Replacement}"
+                                    Width="*"
+                                    MinWidth="100"/>
+                
+                <!-- Category -->
+                <DataGridTextColumn Header="Category" 
+                                    Binding="{Binding Category}"
+                                    Width="100"/>
+                
+                <!-- Severity Badge -->
+                <DataGridTemplateColumn Header="Severity" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:StyleTermRowViewModel">
+                            <Border Background="{Binding SeverityColor}"
+                                    CornerRadius="4"
+                                    Padding="6,2"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Severity}"
+                                           Foreground="White"
+                                           FontSize="11"
+                                           FontWeight="SemiBold"/>
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <!-- Active Status -->
+                <DataGridTemplateColumn Header="Active" Width="60">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:StyleTermRowViewModel">
+                            <PathIcon Data="{Binding ActiveIcon}"
+                                      Foreground="{Binding ActiveColor}"
+                                      Width="16" Height="16"
+                                      HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+            
+            <!-- Context Menu -->
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Edit" 
+                              Command="{Binding EditSelectedCommand}"
+                              InputGesture="Enter"/>
+                    <MenuItem Header="Delete" 
+                              Command="{Binding DeleteSelectedCommand}"
+                              InputGesture="Delete"/>
+                    <Separator/>
+                    <MenuItem Header="Toggle Active" 
+                              Command="{Binding ToggleActiveCommand}"/>
+                    <MenuItem Header="Copy Pattern" 
+                              Command="{Binding CopyPatternCommand}"
+                              InputGesture="Ctrl+C"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

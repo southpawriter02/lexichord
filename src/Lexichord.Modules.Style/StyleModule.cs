@@ -1,8 +1,11 @@
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Linting;
+using Lexichord.Abstractions.Layout;
 using Lexichord.Modules.Style.Data;
 using Lexichord.Modules.Style.Services;
 using Lexichord.Modules.Style.Services.Linting;
+using Lexichord.Modules.Style.ViewModels;
+using Lexichord.Modules.Style.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -30,7 +33,7 @@ public sealed class StyleModule : IModule
     public ModuleInfo Info => new(
         Id: "style",
         Name: "The Rulebook",
-        Version: new Version(0, 2, 1),
+        Version: new Version(0, 2, 5),
         Author: "Lexichord Team",
         Description: "Style and writing rules engine providing governed writing environments"
     );
@@ -87,6 +90,10 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.4a - Violation color provider for editor integration
         services.AddSingleton<IViolationColorProvider, ViolationColorProvider>();
+
+        // LOGIC: v0.2.5a - Lexicon grid view components
+        services.AddTransient<LexiconViewModel>();
+        services.AddTransient<LexiconView>();
     }
 
     /// <inheritdoc/>
@@ -164,6 +171,18 @@ public sealed class StyleModule : IModule
             else
             {
                 _logger.LogDebug("No workspace open, skipping style watcher initialization");
+            }
+
+            // LOGIC: v0.2.5a - Register LexiconView in Right dock region
+            var regionManager = provider.GetService<IRegionManager>();
+            if (regionManager is not null)
+            {
+                await regionManager.RegisterToolAsync(
+                    ShellRegion.Right,
+                    "lexichord.lexicon",
+                    "Lexicon",
+                    sp => sp.GetRequiredService<LexiconView>());
+                _logger.LogDebug("Registered LexiconView in Right dock region");
             }
         }
         catch (Exception ex)

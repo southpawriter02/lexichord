@@ -39,6 +39,30 @@ This release integrates the linting engine with the editor, providing visual fee
 
 ---
 
+## [v0.2.5] - 2026-01 (In Progress)
+
+### The Librarian (Terminology Management)
+
+This release introduces **The Librarian**, a grid-based UI for managing style terminology with license-gated editing.
+
+#### What's New
+
+- **Terminology Grid View** — Avalonia DataGrid for viewing and managing style terms. Supports sorting by severity and category, row selection, and context menu operations.
+
+- **License-Gated Editing** — Edit, delete, and toggle active commands require WriterPro tier or higher. Copy Pattern is available to all tiers. Status bar displays current license tier with read-only indicator for lower tiers.
+
+- **Default Sorting** — Terms are sorted by severity (Error → Warning → Suggestion → Info) then by category alphabetically, prioritizing the most critical issues.
+
+- **Dock Region Integration** — LexiconView is registered in the Right dock region, accessible alongside the document editor.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                 | Status      |
+| -------------------------------- | --------------------- | ----------- |
+| [v0.2.5a](v0.2.x/LCS-CL-025a.md) | Terminology Grid View | ✅ Complete |
+
+---
+
 ## [v0.2.2] - 2026-01 (In Progress)
 
 ### The Lexicon (Terminology Database)
