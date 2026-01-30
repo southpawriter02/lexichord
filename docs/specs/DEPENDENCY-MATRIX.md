@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-30 (v0.2.3d added)                                             |
+| **Last Updated** | 2026-01-30 (v0.2.4a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -101,8 +101,10 @@
 | `IViolationAggregator`       | v0.2.3d    | Modules.Style | Match-to-violation transformation  |
 | `ScanMatch`                  | v0.2.3d    | Abstractions  | Scanner output bridge record       |
 | `AggregatedStyleViolation`   | v0.2.3d    | Abstractions  | Enriched violation with positions  |
-| `IViolationProvider`         | v0.2.4a    | Modules.Style | Violation data for renderer        |
-| `IViolationColorProvider`    | v0.2.4b    | Modules.Style | Theme-aware colors                 |
+| `IViolationProvider`         | v0.2.4a    | Abstractions  | Violation data for renderer        |
+| `IViolationColorProvider`    | v0.2.4a    | Abstractions  | Severity-to-color mapping          |
+| `UnderlineSegment`           | v0.2.4a    | Abstractions  | Wavy underline segment data        |
+| `ViolationsChangedEventArgs` | v0.2.4a    | Abstractions  | Violation change notification      |
 | `IViolationTooltipService`   | v0.2.4c    | Modules.Style | Hover tooltip display              |
 | `IQuickFixService`           | v0.2.4d    | Modules.Style | Context menu fixes                 |
 | `ITerminologyImporter`       | v0.2.5d    | Modules.Style | CSV/Excel import                   |

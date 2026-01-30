@@ -84,6 +84,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.3a - Reactive linting orchestrator
         services.AddSingleton<ILintingOrchestrator, LintingOrchestrator>();
+
+        // LOGIC: v0.2.4a - Violation color provider for editor integration
+        services.AddSingleton<IViolationColorProvider, ViolationColorProvider>();
     }
 
     /// <inheritdoc/>

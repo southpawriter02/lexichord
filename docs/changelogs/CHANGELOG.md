@@ -6,6 +6,30 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.2.4] - 2026-01 (In Progress)
+
+### Red Pen (Editor Integration)
+
+This release integrates the linting engine with the editor, providing visual feedback for style violations.
+
+#### What's New
+
+- **Style Violation Renderer** — DocumentColorizingTransformer that identifies violations within visible lines and registers underline segments for rendering. Subscribes to violation changes and invalidates the view for real-time updates.
+
+- **Wavy Underline Renderer** — AvaloniaEdit IBackgroundRenderer that draws wavy underlines using quadratic bezier curves. Supports severity-based colors (red for errors, yellow for warnings, blue for info, gray for hints).
+
+- **Violation Provider** — Thread-safe bridge between the linting pipeline and editor rendering. Maintains current violations per document with change notification events for efficient UI updates.
+
+- **Violation Color Provider** — Maps violation severity to underline colors following IDE conventions (matching VS Code/Roslyn color schemes).
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                 | Status      |
+| -------------------------------- | --------------------- | ----------- |
+| [v0.2.4a](v0.2.x/LCS-CL-024a.md) | Rendering Transformer | ✅ Complete |
+
+---
+
 ## [v0.2.2] - 2026-01 (In Progress)
 
 ### The Lexicon (Terminology Database)
