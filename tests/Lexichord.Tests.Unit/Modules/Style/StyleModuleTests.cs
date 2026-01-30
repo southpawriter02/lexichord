@@ -129,12 +129,13 @@ public class StyleModuleTests
 
         // Assert
         // LOGIC: Filter to only Lexichord services (exclude framework services from AddMemoryCache)
-        // ViewModels and Views are transient by design; core services should be singletons
+        // ViewModels, Views, and Widgets are transient by design; core services should be singletons
         var lexichordServices = services.Where(sd =>
             (sd.ServiceType.FullName?.StartsWith("Lexichord") == true ||
              sd.ImplementationType?.FullName?.StartsWith("Lexichord") == true) &&
             !sd.ServiceType.Name.EndsWith("ViewModel") &&
-            !sd.ServiceType.Name.EndsWith("View"));
+            !sd.ServiceType.Name.EndsWith("View") &&
+            !sd.ServiceType.Name.EndsWith("Widget"));
 
         lexichordServices.Should().OnlyContain(sd => sd.Lifetime == ServiceLifetime.Singleton);
     }

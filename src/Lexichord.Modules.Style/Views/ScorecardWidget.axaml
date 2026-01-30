@@ -1,0 +1,168 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Style.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="350"
+             d:DesignHeight="80"
+             x:Class="Lexichord.Modules.Style.Views.ScorecardWidget"
+             x:DataType="vm:ScorecardViewModel">
+    
+    <!-- 
+    ScorecardWidget: Displays compliance score with gamification elements.
+    
+    LOGIC: Shows a compact scorecard with:
+    - Score percentage in a colored circle
+    - Letter grade badge
+    - Violation count icons (error/warning/info)
+    - Trend indicator arrow
+    
+    Layout: Horizontal arrangement fitting in the Problems Panel header.
+    
+    Version: v0.2.6c
+    -->
+    
+    <UserControl.Styles>
+        <!-- Grade badge styles -->
+        <Style Selector="Border.grade-badge">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Margin" Value="4,0"/>
+        </Style>
+        
+        <!-- Count icon styles -->
+        <Style Selector="StackPanel.count-item">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="2"/>
+            <Setter Property="Margin" Value="6,0"/>
+        </Style>
+        
+        <Style Selector="TextBlock.count-icon">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="TextBlock.count-value">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Trend indicator -->
+        <Style Selector="TextBlock.trend-icon">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="8,0,0,0"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+            CornerRadius="6"
+            Padding="12,8"
+            Margin="8,4">
+        
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+            
+            <!-- Score Circle -->
+            <Border Grid.Column="0"
+                    Width="48"
+                    Height="48"
+                    CornerRadius="24"
+                    BorderThickness="3"
+                    Background="Transparent"
+                    ToolTip.Tip="Compliance Score">
+                <Border.BorderBrush>
+                    <SolidColorBrush Color="{Binding ScoreColor}"/>
+                </Border.BorderBrush>
+                <TextBlock Text="{Binding ComplianceScoreDisplay}"
+                           FontSize="13"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    <TextBlock.Foreground>
+                        <SolidColorBrush Color="{Binding ScoreColor}"/>
+                    </TextBlock.Foreground>
+                </TextBlock>
+            </Border>
+            
+            <!-- Grade Badge -->
+            <Border Grid.Column="1"
+                    Classes="grade-badge"
+                    ToolTip.Tip="Letter Grade">
+                <Border.Background>
+                    <SolidColorBrush Color="{Binding ScoreColor}"/>
+                </Border.Background>
+                <TextBlock Text="{Binding ScoreGrade}"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
+            
+            <!-- Violation Counts -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="8,0">
+                
+                <!-- Errors -->
+                <StackPanel Classes="count-item"
+                            IsVisible="{Binding TotalErrors}"
+                            ToolTip.Tip="Errors">
+                    <TextBlock Text="⛔"
+                               Classes="count-icon"
+                               Foreground="#E51400"/>
+                    <TextBlock Text="{Binding TotalErrors}"
+                               Classes="count-value"
+                               Foreground="#E51400"/>
+                </StackPanel>
+                
+                <!-- Warnings -->
+                <StackPanel Classes="count-item"
+                            IsVisible="{Binding TotalWarnings}"
+                            ToolTip.Tip="Warnings">
+                    <TextBlock Text="⚠"
+                               Classes="count-icon"
+                               Foreground="#FA6800"/>
+                    <TextBlock Text="{Binding TotalWarnings}"
+                               Classes="count-value"
+                               Foreground="#FA6800"/>
+                </StackPanel>
+                
+                <!-- Info -->
+                <StackPanel Classes="count-item"
+                            IsVisible="{Binding TotalInfo}"
+                            ToolTip.Tip="Info">
+                    <TextBlock Text="ℹ"
+                               Classes="count-icon"
+                               Foreground="#0078D7"/>
+                    <TextBlock Text="{Binding TotalInfo}"
+                               Classes="count-value"
+                               Foreground="#0078D7"/>
+                </StackPanel>
+                
+                <!-- Perfect score message -->
+                <TextBlock Text="Perfect!"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="#22C55E"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding !TotalCount}"/>
+            </StackPanel>
+            
+            <!-- Trend Indicator -->
+            <TextBlock Grid.Column="3"
+                       Text="{Binding TrendIcon}"
+                       Classes="trend-icon"
+                       ToolTip.Tip="{Binding Trend}">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{Binding TrendColor}"/>
+                </TextBlock.Foreground>
+            </TextBlock>
+        </Grid>
+    </Border>
+</UserControl>

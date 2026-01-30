@@ -115,6 +115,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.6a - Problems Panel components
         services.AddTransient<ProblemsPanelViewModel>();
         services.AddTransient<ProblemsPanelView>();
+
+        // LOGIC: v0.2.6c - Scorecard Widget components
+        services.AddTransient<IScorecardViewModel, ScorecardViewModel>();
+        services.AddTransient<ScorecardWidget>();
     }
 
     /// <inheritdoc/>
