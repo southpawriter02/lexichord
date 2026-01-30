@@ -17,6 +17,7 @@ public class LexiconViewModelTests : IDisposable
 {
     private readonly Mock<ITerminologyService> _terminologyServiceMock = new();
     private readonly Mock<ITermFilterService> _filterServiceMock = new();
+    private readonly Mock<ITermEditorDialogService> _editorDialogServiceMock = new();
     private readonly Mock<ILicenseContext> _licenseContextMock = new();
     private readonly Mock<IMediator> _mediatorMock = new();
     private readonly Mock<ILogger<LexiconViewModel>> _loggerMock = new();
@@ -43,6 +44,7 @@ public class LexiconViewModelTests : IDisposable
         return new LexiconViewModel(
             _terminologyServiceMock.Object,
             _filterServiceMock.Object,
+            _editorDialogServiceMock.Object,
             CreateFilterViewModel(),
             _licenseContextMock.Object,
             _mediatorMock.Object,

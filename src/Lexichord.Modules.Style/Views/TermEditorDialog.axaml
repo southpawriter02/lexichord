@@ -1,0 +1,168 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Lexichord.Modules.Style.ViewModels"
+        xmlns:contracts="using:Lexichord.Abstractions.Contracts"
+        mc:Ignorable="d"
+        d:DesignWidth="450" d:DesignHeight="600"
+        x:Class="Lexichord.Modules.Style.Views.TermEditorDialog"
+        x:DataType="vm:TermEditorViewModel"
+        Title="{Binding DialogTitle}"
+        Width="450" Height="600"
+        MinWidth="400" MinHeight="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        ShowInTaskbar="False">
+    
+    <!-- 
+    TermEditorDialog: Modal Dialog for Adding/Editing Style Terms (v0.2.5c)
+    
+    LOGIC: Provides a form for creating or editing terminology entries.
+    Features:
+    - Real-time pattern validation
+    - Pattern testing against sample text
+    - Dirty state tracking
+    - WriterPro license required (enforced by service layer)
+    -->
+
+    <DockPanel Margin="16">
+        <!-- Header -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{Binding DialogTitle}"
+                   FontSize="18"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,16"/>
+
+        <!-- Footer Buttons -->
+        <StackPanel DockPanel.Dock="Bottom" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,16,0,0">
+            <Button Content="Cancel" 
+                    Command="{Binding CancelCommand}"
+                    MinWidth="80"/>
+            <Button Content="Save" 
+                    Command="{Binding SaveCommand}"
+                    Classes="accent"
+                    MinWidth="80"/>
+        </StackPanel>
+
+        <!-- Main Content -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="12">
+                
+                <!-- Pattern Field (Required) -->
+                <StackPanel>
+                    <TextBlock Text="Pattern *" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Pattern, Mode=TwoWay}"
+                             Watermark="Enter term or regex pattern..."
+                             Name="PatternTextBox"/>
+                    <TextBlock Text="{Binding ValidationError}"
+                               Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                               FontSize="12"
+                               IsVisible="{Binding HasValidationError}"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Recommendation Field -->
+                <StackPanel>
+                    <TextBlock Text="Recommendation" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Recommendation, Mode=TwoWay}"
+                             Watermark="Suggested replacement text..."
+                             AcceptsReturn="False"/>
+                </StackPanel>
+
+                <!-- Category and Severity Row -->
+                <Grid ColumnDefinitions="*,16,*">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Category *" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding Category, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Severity" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Severities}"
+                                  SelectedItem="{Binding Severity, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Match Case Toggle -->
+                <CheckBox Content="Match case (case-sensitive)"
+                          IsChecked="{Binding MatchCase, Mode=TwoWay}"/>
+
+                <!-- Active Toggle -->
+                <CheckBox Content="Active (include in analysis)"
+                          IsChecked="{Binding IsActive, Mode=TwoWay}"/>
+
+                <!-- Notes Field -->
+                <StackPanel>
+                    <TextBlock Text="Notes" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Notes, Mode=TwoWay}"
+                             Watermark="Optional notes or rationale..."
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             Height="60"/>
+                </StackPanel>
+
+                <!-- Pattern Test Section -->
+                <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                        CornerRadius="4"
+                        Padding="12"
+                        Margin="0,8,0,0">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Test Pattern" FontWeight="SemiBold"/>
+                        
+                        <TextBox Text="{Binding SampleText, Mode=TwoWay}"
+                                 Watermark="Enter sample text to test the pattern..."
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 Height="80"/>
+                        
+                        <!-- Test Results -->
+                        <StackPanel IsVisible="{Binding TestResult, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Data="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"
+                                          Width="16" Height="16"
+                                          Foreground="Green"
+                                          IsVisible="{Binding TestResult.IsValid}"/>
+                                <PathIcon Data="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"
+                                          Width="16" Height="16"
+                                          Foreground="Red"
+                                          IsVisible="{Binding TestResult.IsValid, Converter={x:Static BoolConverters.Not}}"/>
+                                <TextBlock Text="{Binding TestResult.Matches.Count, StringFormat='{}{0} match(es) found'}"
+                                           IsVisible="{Binding TestResult.IsValid}"/>
+                                <TextBlock Text="{Binding TestResult.Error}"
+                                           Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                                           IsVisible="{Binding TestResult.IsValid, Converter={x:Static BoolConverters.Not}}"/>
+                            </StackPanel>
+                            
+                            <!-- Match List -->
+                            <ItemsControl ItemsSource="{Binding TestResult.Matches}"
+                                          IsVisible="{Binding TestResult.IsValid}"
+                                          Margin="0,4,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="contracts:PatternMatch">
+                                        <Border Background="{DynamicResource SystemAccentColorLight3}"
+                                                CornerRadius="2"
+                                                Padding="4,2"
+                                                Margin="0,2">
+                                            <TextBlock Text="{Binding MatchedText}"
+                                                       FontFamily="Consolas, monospace"
+                                                       FontSize="12"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

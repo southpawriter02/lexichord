@@ -28,6 +28,7 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
 {
     private readonly ITerminologyService _terminologyService;
     private readonly ITermFilterService _filterService;
+    private readonly ITermEditorDialogService _editorDialogService;
     private readonly ILicenseContext _licenseContext;
     private readonly IMediator _mediator;
     private readonly ILogger<LexiconViewModel> _logger;
@@ -40,6 +41,7 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     public LexiconViewModel(
         ITerminologyService terminologyService,
         ITermFilterService filterService,
+        ITermEditorDialogService editorDialogService,
         FilterViewModel filterViewModel,
         ILicenseContext licenseContext,
         IMediator mediator,
@@ -47,6 +49,7 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     {
         _terminologyService = terminologyService ?? throw new ArgumentNullException(nameof(terminologyService));
         _filterService = filterService ?? throw new ArgumentNullException(nameof(filterService));
+        _editorDialogService = editorDialogService ?? throw new ArgumentNullException(nameof(editorDialogService));
         FilterViewModel = filterViewModel ?? throw new ArgumentNullException(nameof(filterViewModel));
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -137,8 +140,13 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
         if (SelectedTerm is null) return;
 
         _logger.LogDebug("Opening edit dialog for term {TermId}", SelectedTerm.Id);
-        // TODO: v0.2.5c - Open TermEditorDialog
-        await Task.CompletedTask;
+        
+        // v0.2.5c - Get the underlying StyleTerm from the row ViewModel
+        var term = await _terminologyService.GetByIdAsync(SelectedTerm.Id);
+        if (term is not null)
+        {
+            await _editorDialogService.ShowEditDialogAsync(term);
+        }
     }
 
     /// <summary>
@@ -213,8 +221,7 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
         }
 
         _logger.LogDebug("Opening add term dialog");
-        // TODO: v0.2.5c - Open TermEditorDialog in create mode
-        await Task.CompletedTask;
+        await _editorDialogService.ShowAddDialogAsync();
     }
 
     private bool CanEditSelected() => SelectedTerm is not null && CanEdit;

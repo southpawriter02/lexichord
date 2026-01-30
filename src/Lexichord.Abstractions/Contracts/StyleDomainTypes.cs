@@ -771,6 +771,7 @@ public sealed record CreateTermCommand(
     string Category = "General",
     string Severity = "Suggestion",
     string? Notes = null,
+    bool MatchCase = false,
     Guid? StyleSheetId = null);
 
 /// <summary>
@@ -792,7 +793,8 @@ public sealed record UpdateTermCommand(
     string? Replacement = null,
     string Category = "General",
     string Severity = "Suggestion",
-    string? Notes = null);
+    string? Notes = null,
+    bool MatchCase = false);
 
 /// <summary>
 /// Statistics about the terminology database.
@@ -812,5 +814,64 @@ public sealed record TermStatistics(
     int InactiveCount,
     IReadOnlyDictionary<string, int> CategoryCounts,
     IReadOnlyDictionary<string, int> SeverityCounts);
+
+#endregion
+
+#region Pattern Testing (v0.2.5c)
+
+/// <summary>
+/// Result of testing a pattern against sample text.
+/// </summary>
+/// <param name="IsValid">Whether the pattern is valid and could be tested.</param>
+/// <param name="Matches">List of matches found in the sample text.</param>
+/// <param name="Error">Error message if the pattern is invalid.</param>
+/// <param name="TimedOut">Whether the pattern matching timed out (ReDoS protection).</param>
+/// <remarks>
+/// LOGIC: Used by the Term Editor Dialog to provide real-time feedback
+/// when testing patterns against sample text.
+/// 
+/// Version: v0.2.5c
+/// </remarks>
+public sealed record PatternTestResult(
+    bool IsValid,
+    IReadOnlyList<PatternMatch> Matches,
+    string? Error = null,
+    bool TimedOut = false)
+{
+    /// <summary>
+    /// Creates a successful test result with matches.
+    /// </summary>
+    public static PatternTestResult Success(IReadOnlyList<PatternMatch> matches) =>
+        new(true, matches);
+
+    /// <summary>
+    /// Creates a failed test result with an error message.
+    /// </summary>
+    public static PatternTestResult Failure(string error) =>
+        new(false, Array.Empty<PatternMatch>(), error);
+
+    /// <summary>
+    /// Creates a timed-out test result.
+    /// </summary>
+    public static PatternTestResult Timeout() =>
+        new(false, Array.Empty<PatternMatch>(), "Pattern matching timed out (pattern may be too complex)", true);
+}
+
+/// <summary>
+/// Represents a single pattern match in sample text.
+/// </summary>
+/// <param name="Start">Starting character offset (0-indexed).</param>
+/// <param name="Length">Length of the matched text.</param>
+/// <param name="MatchedText">The actual text that was matched.</param>
+/// <remarks>
+/// LOGIC: Simple record for UI display of matched regions.
+/// Used with TermEditorViewModel pattern testing feature.
+/// 
+/// Version: v0.2.5c
+/// </remarks>
+public sealed record PatternMatch(
+    int Start,
+    int Length,
+    string MatchedText);
 
 #endregion

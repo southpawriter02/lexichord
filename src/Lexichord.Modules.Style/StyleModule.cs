@@ -103,6 +103,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.5a - Lexicon grid view components
         services.AddTransient<LexiconViewModel>();
         services.AddTransient<LexiconView>();
+
+        // LOGIC: v0.2.5c - Term editor dialog components
+        services.AddTransient<TermEditorViewModel>();
+        services.AddSingleton<ITermEditorDialogService, TermEditorDialogService>();
     }
 
     /// <inheritdoc/>

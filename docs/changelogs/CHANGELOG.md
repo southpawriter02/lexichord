@@ -51,6 +51,8 @@ This release introduces **The Librarian**, a grid-based UI for managing style te
 
 - **Search & Filter** — Real-time filtering with debounced search (300ms) across term, replacement, and notes fields. Includes inactive term toggle, category dropdown, and severity dropdown. All filters apply as AND logic.
 
+- **Term Editor Dialog** — Modal dialog for adding and editing terminology rules. Features real-time regex validation, pattern testing against sample text, MatchCase toggle for case-sensitive matching, and dirty state tracking.
+
 - **License-Gated Editing** — Edit, delete, and toggle active commands require WriterPro tier or higher. Copy Pattern is available to all tiers. Status bar displays current license tier with read-only indicator for lower tiers.
 
 - **Default Sorting** — Terms are sorted by severity (Error → Warning → Suggestion → Info) then by category alphabetically, prioritizing the most critical issues.
@@ -63,6 +65,7 @@ This release introduces **The Librarian**, a grid-based UI for managing style te
 | -------------------------------- | --------------------- | ----------- |
 | [v0.2.5a](v0.2.x/LCS-CL-025a.md) | Terminology Grid View | ✅ Complete |
 | [v0.2.5b](v0.2.x/LCS-CL-025b.md) | Search & Filter       | ✅ Complete |
+| [v0.2.5c](v0.2.x/LCS-CL-025c.md) | Term Editor Dialog    | ✅ Complete |
 
 ---
 

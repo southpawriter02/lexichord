@@ -68,6 +68,15 @@ public record StyleTerm
     public bool IsActive { get; init; } = true;
 
     /// <summary>
+    /// Whether pattern matching is case-sensitive.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.2.5c - Added to support case-sensitive/insensitive matching.
+    /// Default is false (case-insensitive) for typical terminology matching.
+    /// </remarks>
+    public bool MatchCase { get; init; } = false;
+
+    /// <summary>
     /// Optional notes or rationale for this term.
     /// </summary>
     public string? Notes { get; init; }
