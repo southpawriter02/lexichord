@@ -142,9 +142,9 @@ public class TerminologyRepository : ITerminologyRepository
 
         const string sql = @"
             INSERT INTO ""style_terms"" 
-            (""Id"", ""StyleSheetId"", ""Term"", ""Replacement"", ""Category"", ""Severity"", ""IsActive"", ""Notes"", ""CreatedAt"", ""UpdatedAt"")
+            (""Id"", ""StyleSheetId"", ""Term"", ""Replacement"", ""Category"", ""Severity"", ""IsActive"", ""Notes"", ""FuzzyEnabled"", ""FuzzyThreshold"", ""CreatedAt"", ""UpdatedAt"")
             VALUES 
-            (@Id, @StyleSheetId, @Term, @Replacement, @Category, @Severity, @IsActive, @Notes, @CreatedAt, @UpdatedAt)";
+            (@Id, @StyleSheetId, @Term, @Replacement, @Category, @Severity, @IsActive, @Notes, @FuzzyEnabled, @FuzzyThreshold, @CreatedAt, @UpdatedAt)";
 
         var command = new DapperCommandDefinition(sql, entity, cancellationToken: cancellationToken);
         await connection.ExecuteAsync(command);
@@ -166,9 +166,9 @@ public class TerminologyRepository : ITerminologyRepository
 
         const string sql = @"
             INSERT INTO ""style_terms"" 
-            (""Id"", ""StyleSheetId"", ""Term"", ""Replacement"", ""Category"", ""Severity"", ""IsActive"", ""Notes"", ""CreatedAt"", ""UpdatedAt"")
+            (""Id"", ""StyleSheetId"", ""Term"", ""Replacement"", ""Category"", ""Severity"", ""IsActive"", ""Notes"", ""FuzzyEnabled"", ""FuzzyThreshold"", ""CreatedAt"", ""UpdatedAt"")
             VALUES 
-            (@Id, @StyleSheetId, @Term, @Replacement, @Category, @Severity, @IsActive, @Notes, @CreatedAt, @UpdatedAt)";
+            (@Id, @StyleSheetId, @Term, @Replacement, @Category, @Severity, @IsActive, @Notes, @FuzzyEnabled, @FuzzyThreshold, @CreatedAt, @UpdatedAt)";
 
         var count = await connection.ExecuteAsync(sql, entityList);
 
@@ -192,6 +192,8 @@ public class TerminologyRepository : ITerminologyRepository
                 ""Severity"" = @Severity,
                 ""IsActive"" = @IsActive,
                 ""Notes"" = @Notes,
+                ""FuzzyEnabled"" = @FuzzyEnabled,
+                ""FuzzyThreshold"" = @FuzzyThreshold,
                 ""UpdatedAt"" = @UpdatedAt
             WHERE ""Id"" = @Id";
 
@@ -314,6 +316,40 @@ public class TerminologyRepository : ITerminologyRepository
         return termSet;
     }
 
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<StyleTerm>> GetFuzzyEnabledTermsAsync(CancellationToken cancellationToken = default)
+    {
+        // LOGIC: Try cache first for sub-millisecond response
+        if (_cache.TryGetValue(_cacheOptions.FuzzyTermsCacheKey, out IReadOnlyList<StyleTerm>? cachedTerms))
+        {
+            _logger.LogDebug("Cache hit for fuzzy terms: {Count} terms", cachedTerms!.Count);
+            return cachedTerms;
+        }
+
+        // LOGIC: Cache miss - fetch from database
+        _logger.LogDebug("Cache miss for fuzzy terms, fetching from database");
+
+        await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+        const string sql = @"
+            SELECT * FROM ""style_terms"" 
+            WHERE ""FuzzyEnabled"" = TRUE AND ""IsActive"" = TRUE
+            ORDER BY ""Term""";
+
+        var command = new DapperCommandDefinition(sql, cancellationToken: cancellationToken);
+        var terms = await connection.QueryAsync<StyleTerm>(command);
+        var termList = terms.ToList().AsReadOnly();
+
+        // LOGIC: Cache with 5-minute sliding expiration (fuzzy terms are less frequently accessed)
+        var cacheOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(_cacheOptions.MaxCacheDurationMinutes));
+
+        _cache.Set(_cacheOptions.FuzzyTermsCacheKey, termList, cacheOptions);
+        _logger.LogDebug("Cached {Count} fuzzy-enabled terms", termList.Count);
+
+        return termList;
+    }
+
     #endregion
 
     #region Filtered Queries (ITerminologyRepository)
@@ -398,8 +434,16 @@ public class TerminologyRepository : ITerminologyRepository
     public Task InvalidateCacheAsync(CancellationToken cancellationToken = default)
     {
         _cache.Remove(_cacheOptions.ActiveTermsCacheKey);
-        _logger.LogDebug("Cache invalidated for active terms");
+        _cache.Remove(_cacheOptions.FuzzyTermsCacheKey);
+        _logger.LogDebug("Cache invalidated for active terms and fuzzy terms");
         return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public void InvalidateFuzzyTermsCache()
+    {
+        _cache.Remove(_cacheOptions.FuzzyTermsCacheKey);
+        _logger.LogDebug("Cache invalidated for fuzzy terms");
     }
 
     #endregion

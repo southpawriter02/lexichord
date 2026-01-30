@@ -75,6 +75,31 @@ public interface ITerminologyRepository : IGenericRepository<StyleTerm, Guid>
 
     #endregion
 
+    #region Fuzzy Matching
+
+    /// <summary>
+    /// Gets all terms that have fuzzy matching enabled.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Read-only list of fuzzy-enabled style terms.</returns>
+    /// <remarks>
+    /// LOGIC: Returns all terms where FuzzyEnabled is true.
+    /// Results are cached with sliding expiration for performance.
+    /// Use for fuzzy string matching in document analysis.
+    /// </remarks>
+    Task<IReadOnlyList<StyleTerm>> GetFuzzyEnabledTermsAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Explicitly invalidates the fuzzy terms cache.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: The fuzzy terms cache is automatically invalidated on write operations.
+    /// This method is for explicit cache refresh scenarios (e.g., after bulk operations).
+    /// </remarks>
+    void InvalidateFuzzyTermsCache();
+
+    #endregion
+
     #region Cache Management
 
     /// <summary>

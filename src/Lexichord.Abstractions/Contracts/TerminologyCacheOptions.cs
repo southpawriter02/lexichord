@@ -24,6 +24,11 @@ public record TerminologyCacheOptions
     public string ActiveTermsCacheKey { get; init; } = "Terminology:ActiveTerms";
 
     /// <summary>
+    /// Cache key for the fuzzy-enabled terms list.
+    /// </summary>
+    public string FuzzyTermsCacheKey { get; init; } = "Terminology:FuzzyTerms";
+
+    /// <summary>
     /// Sliding expiration duration in minutes.
     /// </summary>
     /// <remarks>

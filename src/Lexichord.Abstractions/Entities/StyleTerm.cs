@@ -77,6 +77,29 @@ public record StyleTerm
     public bool MatchCase { get; init; } = false;
 
     /// <summary>
+    /// Whether this term supports fuzzy (approximate) matching.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.1b - Added to support fuzzy matching for terms that may have
+    /// variations (typos, alternate spellings). When enabled, the analysis engine
+    /// uses similarity matching instead of exact pattern matching.
+    /// Default is false to preserve existing exact-match behavior.
+    /// </remarks>
+    public bool FuzzyEnabled { get; init; } = false;
+
+    /// <summary>
+    /// Similarity threshold for fuzzy matching (0.50-1.00).
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.1b - Controls how similar a word must be to trigger a match.
+    /// Higher values require closer matches (1.00 = exact match only).
+    /// Lower values allow more variation (0.50 = 50% similarity).
+    /// Default is 0.80 (80% similarity) as a sensible balance.
+    /// Only used when FuzzyEnabled is true.
+    /// </remarks>
+    public double FuzzyThreshold { get; init; } = 0.80;
+
+    /// <summary>
     /// Optional notes or rationale for this term.
     /// </summary>
     public string? Notes { get; init; }

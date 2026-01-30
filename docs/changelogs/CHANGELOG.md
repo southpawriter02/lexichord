@@ -53,12 +53,18 @@ This release introduces fuzzy string matching to detect typos and variations of 
 
 - **Threshold-Based Matching** — `IsMatch()` convenience method combines ratio calculation with threshold comparison. Threshold specified as decimal (0.0 to 1.0).
 
+- **Fuzzy Term Properties** — `StyleTerm` entity now includes `FuzzyEnabled` and `FuzzyThreshold` properties for per-term fuzzy matching configuration. Default threshold is 80%.
+
+- **Fuzzy Repository Methods** — `ITerminologyRepository` extended with `GetFuzzyEnabledTermsAsync()` for cached fuzzy term retrieval and `InvalidateFuzzyTermsCache()` for explicit cache control.
+
+- **Inclusive Language Defaults** — Seeder includes 5 fuzzy-enabled terms for inclusive language (whitelist→allowlist, blacklist→denylist, master→main, slave→replica, sanity check→confidence check).
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                 | Status      |
 | --------------------------------------- | --------------------- | ----------- |
 | [v0.3.1a](v0.3.x/v0.3.1/LCS-CL-031a.md) | Algorithm Integration | ✅ Complete |
-| v0.3.1b                                 | Repository Update     | 🔲 Planned  |
+| [v0.3.1b](v0.3.x/v0.3.1/LCS-CL-031b.md) | Repository Update     | ✅ Complete |
 | v0.3.1c                                 | The Fuzzy Scanner     | 🔲 Planned  |
 | v0.3.1d                                 | License Gating        | 🔲 Planned  |
 

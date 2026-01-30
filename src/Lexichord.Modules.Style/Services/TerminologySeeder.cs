@@ -714,6 +714,75 @@ public sealed class TerminologySeeder : ITerminologySeeder
             Notes = "Microsoft Manual of Style: Common grammar error"
         });
 
+        // ============================================================
+        // FUZZY MATCHING TERMS (~5 terms)
+        // These terms have FuzzyEnabled=true for approximate matching
+        // ============================================================
+        terms.Add(new StyleTerm
+        {
+            Id = Guid.NewGuid(),
+            StyleSheetId = DefaultStyleSheetId,
+            Term = "whitelist",
+            Replacement = "allowlist",
+            Category = "Terminology",
+            Severity = "Suggestion",
+            Notes = "Inclusive language: Use allowlist instead of whitelist",
+            FuzzyEnabled = true,
+            FuzzyThreshold = 0.85
+        });
+
+        terms.Add(new StyleTerm
+        {
+            Id = Guid.NewGuid(),
+            StyleSheetId = DefaultStyleSheetId,
+            Term = "blacklist",
+            Replacement = "denylist",
+            Category = "Terminology",
+            Severity = "Suggestion",
+            Notes = "Inclusive language: Use denylist instead of blacklist",
+            FuzzyEnabled = true,
+            FuzzyThreshold = 0.85
+        });
+
+        terms.Add(new StyleTerm
+        {
+            Id = Guid.NewGuid(),
+            StyleSheetId = DefaultStyleSheetId,
+            Term = "master",
+            Replacement = "main",
+            Category = "Terminology",
+            Severity = "Suggestion",
+            Notes = "Inclusive language: Use main instead of master (for branches)",
+            FuzzyEnabled = true,
+            FuzzyThreshold = 0.90
+        });
+
+        terms.Add(new StyleTerm
+        {
+            Id = Guid.NewGuid(),
+            StyleSheetId = DefaultStyleSheetId,
+            Term = "slave",
+            Replacement = "replica",
+            Category = "Terminology",
+            Severity = "Suggestion",
+            Notes = "Inclusive language: Use replica instead of slave (for databases)",
+            FuzzyEnabled = true,
+            FuzzyThreshold = 0.90
+        });
+
+        terms.Add(new StyleTerm
+        {
+            Id = Guid.NewGuid(),
+            StyleSheetId = DefaultStyleSheetId,
+            Term = "sanity check",
+            Replacement = "confidence check",
+            Category = "Terminology",
+            Severity = "Suggestion",
+            Notes = "Inclusive language: Use confidence check instead of sanity check",
+            FuzzyEnabled = true,
+            FuzzyThreshold = 0.80
+        });
+
         return terms.AsReadOnly();
     }
 }
