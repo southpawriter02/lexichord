@@ -49,6 +49,9 @@
     <!-- v0.2.5d: Import/Export support -->
     <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="ClosedXML" Version="0.102.3" />
+
+    <!-- v0.3.1a: Fuzzy string matching -->
+    <PackageReference Include="FuzzySharp" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>

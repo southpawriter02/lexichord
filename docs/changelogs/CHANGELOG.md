@@ -39,6 +39,31 @@ This release integrates the linting engine with the editor, providing visual fee
 
 ---
 
+## [v0.3.1] - 2026-01 (In Progress)
+
+### The Fuzzy Engine (Advanced Matching)
+
+This release introduces fuzzy string matching to detect typos and variations of forbidden terminology.
+
+#### What's New
+
+- **Fuzzy Match Service** — New `IFuzzyMatchService` provides Levenshtein distance-based string matching using FuzzySharp. Normalized inputs (trimmed, lowercase) ensure consistent matching. Thread-safe and stateless.
+
+- **Similarity Calculation** — `CalculateRatio()` returns 0-100 similarity percentage. `CalculatePartialRatio()` finds best substring matches for pattern detection within longer text.
+
+- **Threshold-Based Matching** — `IsMatch()` convenience method combines ratio calculation with threshold comparison. Threshold specified as decimal (0.0 to 1.0).
+
+#### Sub-Part Changelogs
+
+| Version                                 | Title                 | Status      |
+| --------------------------------------- | --------------------- | ----------- |
+| [v0.3.1a](v0.3.x/v0.3.1/LCS-CL-031a.md) | Algorithm Integration | ✅ Complete |
+| v0.3.1b                                 | Repository Update     | 🔲 Planned  |
+| v0.3.1c                                 | The Fuzzy Scanner     | 🔲 Planned  |
+| v0.3.1d                                 | License Gating        | 🔲 Planned  |
+
+---
+
 ## [v0.2.7] - 2026-01 (In Progress)
 
 ### The Turbo (Performance Optimization)

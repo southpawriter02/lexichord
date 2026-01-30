@@ -60,6 +60,9 @@ public sealed class StyleModule : IModule
         // LOGIC: File system watcher for live reload
         services.AddSingleton<IStyleConfigurationWatcher, FileSystemStyleWatcher>();
 
+        // LOGIC: v0.3.1a - Fuzzy matching service (stateless, thread-safe)
+        services.AddSingleton<IFuzzyMatchService, FuzzyMatchService>();
+
         // LOGIC: v0.2.2b - Memory cache for terminology lookups
         services.AddMemoryCache();
 
