@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lexichord.Modules.Editor.ViewModels"
+             x:Class="Lexichord.Modules.Editor.Views.ViolationTooltipView"
+             x:DataType="vm:ViolationTooltipViewModel"
+             MaxWidth="450"
+             MinWidth="250">
+
+    <UserControl.Styles>
+        <!-- LOGIC: Card-like appearance with severity-colored border -->
+        <Style Selector="Border.tooltip-container">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}" />
+            <Setter Property="BorderThickness" Value="1,1,1,4" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Effect">
+                <DropShadowEffect BlurRadius="8" Opacity="0.3" OffsetY="2" />
+            </Setter>
+        </Style>
+
+        <Style Selector="TextBlock.rule-name">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+
+        <Style Selector="TextBlock.message">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+
+        <Style Selector="Border.recommendation">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeLowBrush}" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+
+        <Style Selector="TextBlock.recommendation-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="Margin" Value="0,0,0,2" />
+        </Style>
+
+        <Style Selector="TextBlock.recommendation-text">
+            <Setter Property="FontFamily" Value="{DynamicResource MonospaceFontFamily}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="StackPanel.nav-panel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+
+        <Style Selector="Button.nav-button">
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="MinWidth" Value="24" />
+            <Setter Property="MinHeight" Value="24" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </UserControl.Styles>
+
+    <!-- LOGIC: Main tooltip container with severity-colored left border -->
+    <Border x:Name="TooltipContainer"
+            Classes="tooltip-container"
+            BorderBrush="{Binding BorderColor}">
+
+        <StackPanel Spacing="4">
+
+            <!-- Header: Icon + Rule Name -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <!-- Severity Icon -->
+                <PathIcon x:Name="SeverityIcon"
+                          Width="16" Height="16"
+                          Foreground="{Binding BorderColor}"
+                          Data="{Binding IconPath}" />
+
+                <!-- Rule Name -->
+                <TextBlock x:Name="RuleNameText"
+                           Classes="rule-name"
+                           Text="{Binding RuleName}" />
+            </StackPanel>
+
+            <!-- Message -->
+            <TextBlock x:Name="MessageText"
+                       Classes="message"
+                       Text="{Binding Message}" />
+
+            <!-- Recommendation (if present) -->
+            <Border x:Name="RecommendationContainer"
+                    Classes="recommendation"
+                    IsVisible="{Binding HasRecommendation}">
+                <StackPanel>
+                    <TextBlock Classes="recommendation-label"
+                               Text="Suggestion:" />
+                    <TextBlock x:Name="RecommendationText"
+                               Classes="recommendation-text"
+                               Text="{Binding Recommendation}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Explanation (if present) -->
+            <TextBlock x:Name="ExplanationText"
+                       Classes="message"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       FontStyle="Italic"
+                       Text="{Binding Explanation}"
+                       IsVisible="{Binding HasExplanation}"
+                       Margin="0,4,0,0" />
+
+            <!-- Navigation (for multiple violations) -->
+            <StackPanel x:Name="NavigationPanel"
+                        Classes="nav-panel"
+                        IsVisible="{Binding HasMultiple}">
+
+                <TextBlock VerticalAlignment="Center"
+                           Margin="0,0,8,0"
+                           FontSize="11"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                    <Run Text="{Binding CurrentIndex}" />
+                    <Run Text=" of " />
+                    <Run Text="{Binding TotalCount}" />
+                </TextBlock>
+
+                <Button Classes="nav-button"
+                        Command="{Binding NavigatePreviousCommand}"
+                        ToolTip.Tip="Previous issue">
+                    <PathIcon Data="M15.41,7.41L14,6L8,12L14,18L15.41,16.59L10.83,12L15.41,7.41Z"
+                              Width="12" Height="12" />
+                </Button>
+
+                <Button Classes="nav-button"
+                        Command="{Binding NavigateNextCommand}"
+                        ToolTip.Tip="Next issue">
+                    <PathIcon Data="M8.59,16.59L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.59Z"
+                              Width="12" Height="12" />
+                </Button>
+            </StackPanel>
+
+        </StackPanel>
+    </Border>
+</UserControl>

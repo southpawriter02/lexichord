@@ -278,6 +278,91 @@ public sealed class ViolationProviderTests : IDisposable
 
     #endregion
 
+    #region GetViolationsAtOffset Tests (v0.2.4c)
+
+    [Fact]
+    public void GetViolationsAtOffset_NoViolations_ReturnsEmptyList()
+    {
+        var result = _sut.GetViolationsAtOffset(50);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetViolationsAtOffset_SingleMatch_ReturnsSingleViolation()
+    {
+        var violation = CreateViolation("v1", 10, 5);
+        _sut.UpdateViolations([violation]);
+
+        var result = _sut.GetViolationsAtOffset(12);
+
+        Assert.Single(result);
+        Assert.Equal("v1", result[0].Id);
+    }
+
+    [Fact]
+    public void GetViolationsAtOffset_MultipleOverlapping_ReturnsAllMatches()
+    {
+        // LOGIC: Two violations that overlap at offset 15
+        var violations = new List<AggregatedStyleViolation>
+        {
+            CreateViolation("v1", 10, 10), // 10-20
+            CreateViolation("v2", 15, 10)  // 15-25
+        };
+        _sut.UpdateViolations(violations);
+
+        var result = _sut.GetViolationsAtOffset(17);
+
+        Assert.Equal(2, result.Count);
+        Assert.Contains(result, v => v.Id == "v1");
+        Assert.Contains(result, v => v.Id == "v2");
+    }
+
+    [Fact]
+    public void GetViolationsAtOffset_NoMatch_ReturnsEmptyList()
+    {
+        var violation = CreateViolation("v1", 10, 5);
+        _sut.UpdateViolations([violation]);
+
+        var result = _sut.GetViolationsAtOffset(50);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetViolationsAtOffset_AtBoundary_Start_Included()
+    {
+        var violation = CreateViolation("v1", 10, 5);
+        _sut.UpdateViolations([violation]);
+
+        // Offset 10 should be included (start is inclusive)
+        var result = _sut.GetViolationsAtOffset(10);
+
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void GetViolationsAtOffset_AtBoundary_End_Excluded()
+    {
+        var violation = CreateViolation("v1", 10, 5);
+        _sut.UpdateViolations([violation]);
+
+        // Offset 15 should NOT be included (end is exclusive)
+        var result = _sut.GetViolationsAtOffset(15);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetViolationsAtOffset_AfterDispose_Throws()
+    {
+        _sut.Dispose();
+
+        Assert.Throws<ObjectDisposedException>(() => _sut.GetViolationsAtOffset(10));
+    }
+
+    #endregion
+
     #region Helpers
 
     private static List<AggregatedStyleViolation> CreateTestViolations(int count)
@@ -312,3 +397,4 @@ public sealed class ViolationProviderTests : IDisposable
 
     #endregion
 }
+

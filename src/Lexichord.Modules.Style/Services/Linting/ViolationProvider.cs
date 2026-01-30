@@ -130,6 +130,28 @@ public sealed class ViolationProvider : IViolationProvider
     }
 
     /// <inheritdoc />
+    public IReadOnlyList<AggregatedStyleViolation> GetViolationsAtOffset(int offset)
+    {
+        ThrowIfDisposed();
+
+        // LOGIC: Get snapshot under lock, then filter without lock
+        IReadOnlyList<AggregatedStyleViolation> snapshot;
+        lock (_lock)
+        {
+            snapshot = _violations;
+        }
+
+        var result = snapshot.Where(v => v.ContainsOffset(offset)).ToList();
+
+        _logger.LogDebug(
+            "Query violations at offset {Offset}: {Count} found",
+            offset,
+            result.Count);
+
+        return result;
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         if (_disposed)

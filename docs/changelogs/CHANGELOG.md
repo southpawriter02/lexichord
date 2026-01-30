@@ -24,12 +24,15 @@ This release integrates the linting engine with the editor, providing visual fee
 
 - **Violation Color Provider** — Maps violation severity to theme-aware underline colors following IDE conventions (matching VS Code/Roslyn color schemes). Provides background colors, tooltip borders, and Material Design severity icons.
 
+- **Hover Tooltips** — Contextual tooltips that appear when hovering over style violations. Displays rule name, message, and optional recommendation. Supports multi-violation navigation when violations overlap, and can be triggered via keyboard shortcuts (Ctrl+K, Ctrl+I).
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
 | -------------------------------- | ---------------------------- | ----------- |
 | [v0.2.4a](v0.2.x/LCS-CL-024a.md) | Rendering Transformer        | ✅ Complete |
 | [v0.2.4b](v0.2.x/LCS-CL-024b.md) | Theme-Aware Underline Colors | ✅ Complete |
+| [v0.2.4c](v0.2.x/LCS-CL-024c.md) | Hover Tooltips               | ✅ Complete |
 
 ---
 

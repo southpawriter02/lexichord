@@ -90,4 +90,17 @@ public interface IViolationProvider : IDisposable
     /// Returns the first match if multiple violations overlap the offset.
     /// </remarks>
     AggregatedStyleViolation? GetViolationAt(int offset);
+
+    /// <summary>
+    /// Gets all violations at a specific document offset.
+    /// </summary>
+    /// <param name="offset">Character offset (0-indexed).</param>
+    /// <returns>All violations containing the offset.</returns>
+    /// <remarks>
+    /// LOGIC: Used by ViolationTooltipService to display multiple
+    /// overlapping violations with navigation support.
+    ///
+    /// Version: v0.2.4c
+    /// </remarks>
+    IReadOnlyList<AggregatedStyleViolation> GetViolationsAtOffset(int offset);
 }

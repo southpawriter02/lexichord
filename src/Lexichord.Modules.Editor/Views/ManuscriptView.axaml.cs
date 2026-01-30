@@ -3,8 +3,11 @@ using Avalonia.Input;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using Lexichord.Abstractions.Contracts.Editor;
+using Lexichord.Abstractions.Contracts.Linting;
 using Lexichord.Modules.Editor.Services;
+using Lexichord.Modules.Editor.Services.Tooltip;
 using Lexichord.Modules.Editor.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Modules.Editor.Views;
 
@@ -19,11 +22,13 @@ namespace Lexichord.Modules.Editor.Views;
 /// - Keyboard shortcuts (Ctrl+S, Ctrl+F, Ctrl+0, Ctrl++/-, etc.)
 /// - Syntax highlighting application (v0.1.3b)
 /// - Ctrl+Scroll zoom (v0.1.3d)
+/// - Violation hover tooltips (v0.2.4c)
 /// </remarks>
 public partial class ManuscriptView : UserControl
 {
     private ManuscriptViewModel? _viewModel;
     private EditorConfigurationService? _configService;
+    private ViolationTooltipService? _tooltipService;
     private bool _isUpdatingFromViewModel;
     private bool _isUpdatingFromEditor;
 
@@ -323,5 +328,45 @@ public partial class ManuscriptView : UserControl
             _configService?.ApplySettings(TextEditor);
             e.Handled = true;
         }
+    }
+
+    /// <summary>
+    /// Initializes the tooltip service for this editor.
+    /// </summary>
+    /// <param name="violationProvider">The violation provider.</param>
+    /// <param name="colorProvider">The color provider for severity colors.</param>
+    /// <param name="logger">Logger for diagnostics.</param>
+    /// <remarks>
+    /// LOGIC: v0.2.4c - Enables hover tooltips for style violations.
+    /// The tooltip service attaches to the TextArea and shows violation
+    /// details when hovering over underlined text.
+    /// </remarks>
+    public void InitializeTooltipService(
+        IViolationProvider violationProvider,
+        IViolationColorProvider colorProvider,
+        ILogger<ViolationTooltipService> logger)
+    {
+        CleanupTooltipService();
+
+        _tooltipService = new ViolationTooltipService(
+            violationProvider,
+            colorProvider,
+            logger);
+
+        _tooltipService.AttachToTextArea(TextEditor.TextArea);
+        _tooltipService.RegisterKeyboardShortcuts(TextEditor.TextArea);
+    }
+
+    /// <summary>
+    /// Cleans up the tooltip service.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.2.4c - Disposes of the tooltip service to prevent leaks.
+    /// Called when document is closed or view is unloaded.
+    /// </remarks>
+    public void CleanupTooltipService()
+    {
+        _tooltipService?.Dispose();
+        _tooltipService = null;
     }
 }
