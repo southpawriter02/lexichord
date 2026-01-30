@@ -16,21 +16,27 @@ namespace Lexichord.Modules.Editor.Services.Rendering;
 /// Drawing Algorithm:
 /// - For each segment, calculate the baseline position
 /// - Draw a sine wave using quadratic bezier curves
-/// - Wave parameters: 1.5px amplitude, 4px wavelength
+/// - Wave parameters: 2px amplitude, 4px wavelength, 1.5px thickness
 ///
-/// Layer: KnownLayer.Text - renders below the actual text
+/// Performance Optimizations:
+/// - Pens are cached by color to avoid repeated allocations
+/// - Geometry is built per-frame (frozen for rendering efficiency)
+/// - Segments are sorted by severity for proper z-ordering (errors on top)
 ///
-/// Version: v0.2.4a
+/// Layer: KnownLayer.Background - renders below the actual text
+///
+/// Version: v0.2.4b - Enhanced with pen caching, severity sorting, and updated wave parameters
 /// </remarks>
 public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
 {
     private readonly List<UnderlineSegment> _segments = [];
+    private readonly Dictionary<Color, Pen> _penCache = new();
     private readonly object _lock = new();
 
     /// <summary>
     /// Wave amplitude in pixels (half the peak-to-peak height).
     /// </summary>
-    private const double WaveAmplitude = 1.5;
+    private const double WaveAmplitude = 2.0;
 
     /// <summary>
     /// Wave period in pixels (distance for one complete wave cycle).
@@ -40,14 +46,14 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
     /// <summary>
     /// Underline thickness in pixels.
     /// </summary>
-    private const double UnderlineThickness = 1.0;
+    private const double UnderlineThickness = 1.5;
 
     /// <inheritdoc />
     /// <remarks>
-    /// LOGIC: Render on the Text layer so underlines appear below text
-    /// but above background highlights.
+    /// LOGIC: Render on the Background layer so underlines appear
+    /// below text but above the editor background.
     /// </remarks>
-    public KnownLayer Layer => KnownLayer.Text;
+    public KnownLayer Layer => KnownLayer.Background;
 
     /// <summary>
     /// Clears all underline segments.
@@ -95,14 +101,18 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
         if (textView.Document is null)
             return;
 
-        // LOGIC: Get snapshot of segments
+        // LOGIC: Get snapshot of segments, sorted by severity (info first, errors last = on top)
         List<UnderlineSegment> snapshot;
         lock (_lock)
         {
             if (_segments.Count == 0)
                 return;
 
-            snapshot = _segments.ToList();
+            // LOGIC: Sort by severity to ensure proper z-ordering
+            // Lower severity draws first (underneath), higher severity draws last (on top)
+            snapshot = _segments
+                .OrderBy(s => GetSeverityOrder(s.Color))
+                .ToList();
         }
 
         var documentLength = textView.Document.TextLength;
@@ -116,6 +126,32 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
             // LOGIC: Get visual positions for the segment
             DrawWavyUnderline(textView, drawingContext, segment);
         }
+    }
+
+    /// <summary>
+    /// Gets the sort order for a color based on its assumed severity.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: We determine severity order by comparing colors to known values.
+    /// Hint (Gray) = 0, Info (Blue) = 1, Warning (Orange) = 2, Error (Red) = 3
+    /// This ensures errors draw on top.
+    /// </remarks>
+    private static int GetSeverityOrder(UnderlineColor color)
+    {
+        // Check if it's an error color (red-ish)
+        if (color.R > 200 && color.G < 100 && color.B < 100)
+            return 3; // Error - on top
+
+        // Check if it's a warning color (orange-ish)
+        if (color.R > 200 && color.G > 100 && color.B < 100)
+            return 2; // Warning
+
+        // Check if it's an info color (blue-ish)
+        if (color.B > 150)
+            return 1; // Info
+
+        // Default: Hint (gray)
+        return 0;
     }
 
     /// <summary>
@@ -151,7 +187,7 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
                 new SimpleSegment(clippedStart, clippedEnd - clippedStart));
 
             // LOGIC: Convert UnderlineColor to Avalonia.Media.Color
-            var color = Color.FromRgb(segment.Color.R, segment.Color.G, segment.Color.B);
+            var color = Color.FromArgb(segment.Color.A, segment.Color.R, segment.Color.G, segment.Color.B);
 
             foreach (var rect in rects)
             {
@@ -163,7 +199,7 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
     /// <summary>
     /// Draws a wavy line under a rectangle.
     /// </summary>
-    private static void DrawWavyLine(
+    private void DrawWavyLine(
         DrawingContext drawingContext,
         Rect rect,
         Color color)
@@ -177,8 +213,8 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
         if (width < 2)
             return; // Too small to draw
 
-        // LOGIC: Create pen for drawing
-        var pen = new Pen(new SolidColorBrush(color), UnderlineThickness);
+        // LOGIC: Get or create cached pen for this color
+        var pen = GetOrCreatePen(color);
 
         // LOGIC: Build the wavy path using quadratic bezier curves
         var geometry = new StreamGeometry();
@@ -189,24 +225,24 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
             // LOGIC: Draw wave segments using quadratic beziers
             // Each wave period consists of two bezier curves (up-down)
             var x = startX;
+            var halfWave = WavePeriod / 2;
             var waveUp = true;
 
             while (x < endX)
             {
-                var controlX = x + WavePeriod / 4;
-                var endSegmentX = Math.Min(x + WavePeriod / 2, endX);
+                var nextX = Math.Min(x + halfWave, endX);
+                var midX = (x + nextX) / 2;
 
+                // Control point at peak or trough
                 var controlY = waveUp
                     ? baseline - WaveAmplitude
                     : baseline + WaveAmplitude;
 
-                var endY = baseline;
-
                 context.QuadraticBezierTo(
-                    new Point(controlX, controlY),
-                    new Point(endSegmentX, endY));
+                    new Point(midX, controlY),
+                    new Point(nextX, baseline));
 
-                x = endSegmentX;
+                x = nextX;
                 waveUp = !waveUp;
             }
 
@@ -214,6 +250,29 @@ public sealed class WavyUnderlineBackgroundRenderer : IBackgroundRenderer
         }
 
         drawingContext.DrawGeometry(null, pen, geometry);
+    }
+
+    /// <summary>
+    /// Gets or creates a cached pen for the specified color.
+    /// </summary>
+    /// <param name="color">The pen color.</param>
+    /// <returns>Cached or new Pen instance.</returns>
+    /// <remarks>
+    /// LOGIC: Pens are cached by color to avoid creating new objects
+    /// on every draw call. Cache is small (typically 3-4 colors) so no
+    /// eviction is needed.
+    /// </remarks>
+    private Pen GetOrCreatePen(Color color)
+    {
+        if (_penCache.TryGetValue(color, out var cachedPen))
+            return cachedPen;
+
+        var brush = new SolidColorBrush(color);
+        var pen = new Pen(brush, UnderlineThickness, lineCap: PenLineCap.Round);
+
+        _penCache[color] = pen;
+
+        return pen;
     }
 
     /// <summary>

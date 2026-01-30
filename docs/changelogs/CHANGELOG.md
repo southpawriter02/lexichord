@@ -18,15 +18,18 @@ This release integrates the linting engine with the editor, providing visual fee
 
 - **Wavy Underline Renderer** — AvaloniaEdit IBackgroundRenderer that draws wavy underlines using quadratic bezier curves. Supports severity-based colors (red for errors, yellow for warnings, blue for info, gray for hints).
 
+- **Theme-Aware Underline Colors** — Underlines automatically adapt to light and dark themes with distinct color palettes optimized for visibility. Light theme uses high-contrast colors on white; dark theme uses softer tones that remain visible without being harsh. Includes pen caching for performance and severity-based z-ordering (errors always draw on top).
+
 - **Violation Provider** — Thread-safe bridge between the linting pipeline and editor rendering. Maintains current violations per document with change notification events for efficient UI updates.
 
-- **Violation Color Provider** — Maps violation severity to underline colors following IDE conventions (matching VS Code/Roslyn color schemes).
+- **Violation Color Provider** — Maps violation severity to theme-aware underline colors following IDE conventions (matching VS Code/Roslyn color schemes). Provides background colors, tooltip borders, and Material Design severity icons.
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                 | Status      |
-| -------------------------------- | --------------------- | ----------- |
-| [v0.2.4a](v0.2.x/LCS-CL-024a.md) | Rendering Transformer | ✅ Complete |
+| Version                          | Title                        | Status      |
+| -------------------------------- | ---------------------------- | ----------- |
+| [v0.2.4a](v0.2.x/LCS-CL-024a.md) | Rendering Transformer        | ✅ Complete |
+| [v0.2.4b](v0.2.x/LCS-CL-024b.md) | Theme-Aware Underline Colors | ✅ Complete |
 
 ---
 

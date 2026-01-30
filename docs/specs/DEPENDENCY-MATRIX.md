@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-30 (v0.2.4a added)                                             |
+| **Last Updated** | 2026-01-30 (v0.2.4b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -81,40 +81,40 @@
 
 ### 1.3 v0.2.x Governance Interfaces
 
-| Interface                    | Defined In | Module        | Purpose                            |
-| :--------------------------- | :--------- | :------------ | :--------------------------------- |
-| `IStyleEngine`               | v0.2.1a    | Modules.Style | Core style analysis                |
-| `IStyleSheetLoader`          | v0.2.1c    | Modules.Style | YAML stylesheet loading            |
-| `IStyleConfigurationWatcher` | v0.2.1d    | Modules.Style | Live file reload                   |
-| `StyleRule`                  | v0.2.1b    | Abstractions  | Rule definition record             |
-| `StyleSheet`                 | v0.2.1b    | Abstractions  | Aggregate rule container           |
-| `RuleCategory`               | v0.2.1b    | Abstractions  | Terminology/Formatting/Syntax enum |
-| `ViolationSeverity`          | v0.2.1b    | Abstractions  | Error/Warning/Info/Hint enum       |
-| `StyleViolation`             | v0.2.1b    | Abstractions  | Violation result record            |
-| `ITerminologyRepository`     | v0.2.2b    | Modules.Style | Cached DB access for terms         |
-| `ITerminologySeeder`         | v0.2.2c    | Modules.Style | Bootstrap seed data                |
-| `ITerminologyService`        | v0.2.2d    | Modules.Style | CRUD with events                   |
-| `StyleTerm`                  | v0.2.2a    | Abstractions  | Term entity model                  |
-| `ILintingOrchestrator`       | v0.2.3a    | Modules.Style | Reactive linting coordinator       |
-| `ILintingConfiguration`      | v0.2.3b    | Modules.Style | Debounce and settings              |
-| `IScannerService`            | v0.2.3c    | Modules.Style | Regex pattern matching             |
-| `IViolationAggregator`       | v0.2.3d    | Modules.Style | Match-to-violation transformation  |
-| `ScanMatch`                  | v0.2.3d    | Abstractions  | Scanner output bridge record       |
-| `AggregatedStyleViolation`   | v0.2.3d    | Abstractions  | Enriched violation with positions  |
-| `IViolationProvider`         | v0.2.4a    | Abstractions  | Violation data for renderer        |
-| `IViolationColorProvider`    | v0.2.4a    | Abstractions  | Severity-to-color mapping          |
-| `UnderlineSegment`           | v0.2.4a    | Abstractions  | Wavy underline segment data        |
-| `ViolationsChangedEventArgs` | v0.2.4a    | Abstractions  | Violation change notification      |
-| `IViolationTooltipService`   | v0.2.4c    | Modules.Style | Hover tooltip display              |
-| `IQuickFixService`           | v0.2.4d    | Modules.Style | Context menu fixes                 |
-| `ITerminologyImporter`       | v0.2.5d    | Modules.Style | CSV/Excel import                   |
-| `ITerminologyExporter`       | v0.2.5d    | Modules.Style | JSON export                        |
-| `IProblemsPanelViewModel`    | v0.2.6a    | Modules.Style | Problems panel state               |
-| `IEditorNavigationService`   | v0.2.6b    | Abstractions  | Cross-document navigation          |
-| `IScorecardViewModel`        | v0.2.6c    | Modules.Style | Compliance score widget            |
-| `IProjectLintingService`     | v0.2.6d    | Modules.Style | Background project scanning        |
-| `IThreadMarshaller`          | v0.2.7a    | Abstractions  | UI thread dispatching              |
-| `IContentFilter`             | v0.2.7b    | Modules.Style | Pre-scan content filtering         |
+| Interface                    | Defined In | Module        | Purpose                               |
+| :--------------------------- | :--------- | :------------ | :------------------------------------ |
+| `IStyleEngine`               | v0.2.1a    | Modules.Style | Core style analysis                   |
+| `IStyleSheetLoader`          | v0.2.1c    | Modules.Style | YAML stylesheet loading               |
+| `IStyleConfigurationWatcher` | v0.2.1d    | Modules.Style | Live file reload                      |
+| `StyleRule`                  | v0.2.1b    | Abstractions  | Rule definition record                |
+| `StyleSheet`                 | v0.2.1b    | Abstractions  | Aggregate rule container              |
+| `RuleCategory`               | v0.2.1b    | Abstractions  | Terminology/Formatting/Syntax enum    |
+| `ViolationSeverity`          | v0.2.1b    | Abstractions  | Error/Warning/Info/Hint enum          |
+| `StyleViolation`             | v0.2.1b    | Abstractions  | Violation result record               |
+| `ITerminologyRepository`     | v0.2.2b    | Modules.Style | Cached DB access for terms            |
+| `ITerminologySeeder`         | v0.2.2c    | Modules.Style | Bootstrap seed data                   |
+| `ITerminologyService`        | v0.2.2d    | Modules.Style | CRUD with events                      |
+| `StyleTerm`                  | v0.2.2a    | Abstractions  | Term entity model                     |
+| `ILintingOrchestrator`       | v0.2.3a    | Modules.Style | Reactive linting coordinator          |
+| `ILintingConfiguration`      | v0.2.3b    | Modules.Style | Debounce and settings                 |
+| `IScannerService`            | v0.2.3c    | Modules.Style | Regex pattern matching                |
+| `IViolationAggregator`       | v0.2.3d    | Modules.Style | Match-to-violation transformation     |
+| `ScanMatch`                  | v0.2.3d    | Abstractions  | Scanner output bridge record          |
+| `AggregatedStyleViolation`   | v0.2.3d    | Abstractions  | Enriched violation with positions     |
+| `IViolationProvider`         | v0.2.4a    | Abstractions  | Violation data for renderer           |
+| `IViolationColorProvider`    | v0.2.4b    | Abstractions  | Theme-aware severity-to-color mapping |
+| `UnderlineSegment`           | v0.2.4a    | Abstractions  | Wavy underline segment data           |
+| `ViolationsChangedEventArgs` | v0.2.4a    | Abstractions  | Violation change notification         |
+| `IViolationTooltipService`   | v0.2.4c    | Modules.Style | Hover tooltip display                 |
+| `IQuickFixService`           | v0.2.4d    | Modules.Style | Context menu fixes                    |
+| `ITerminologyImporter`       | v0.2.5d    | Modules.Style | CSV/Excel import                      |
+| `ITerminologyExporter`       | v0.2.5d    | Modules.Style | JSON export                           |
+| `IProblemsPanelViewModel`    | v0.2.6a    | Modules.Style | Problems panel state                  |
+| `IEditorNavigationService`   | v0.2.6b    | Abstractions  | Cross-document navigation             |
+| `IScorecardViewModel`        | v0.2.6c    | Modules.Style | Compliance score widget               |
+| `IProjectLintingService`     | v0.2.6d    | Modules.Style | Background project scanning           |
+| `IThreadMarshaller`          | v0.2.7a    | Abstractions  | UI thread dispatching                 |
+| `IContentFilter`             | v0.2.7b    | Modules.Style | Pre-scan content filtering            |
 
 ### 1.4 v0.3.x Fuzzy Engine Interfaces
 

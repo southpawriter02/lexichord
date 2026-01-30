@@ -8,7 +8,7 @@ namespace Lexichord.Abstractions.Contracts.Linting;
 /// is UI-agnostic, so we use this simple struct instead of Avalonia.Media.Color.
 /// The rendering layer converts this to the appropriate platform color type.
 ///
-/// Version: v0.2.4a
+/// Version: v0.2.4b - Added theme-aware color palettes
 /// </remarks>
 /// <param name="R">Red component (0-255).</param>
 /// <param name="G">Green component (0-255).</param>
@@ -16,17 +16,75 @@ namespace Lexichord.Abstractions.Contracts.Linting;
 /// <param name="A">Alpha component (0-255, 255 = fully opaque).</param>
 public readonly record struct UnderlineColor(byte R, byte G, byte B, byte A = 255)
 {
-    /// <summary>Standard red for errors.</summary>
-    public static UnderlineColor ErrorRed => new(0xE5, 0x14, 0x00);
+    // ========================================
+    // Light Theme Colors (high contrast on white)
+    // ========================================
 
-    /// <summary>Standard yellow/orange for warnings.</summary>
-    public static UnderlineColor WarningYellow => new(0xFF, 0xC0, 0x00);
+    /// <summary>Light theme error red (#E51400).</summary>
+    public static UnderlineColor LightError => new(0xE5, 0x14, 0x00);
 
-    /// <summary>Standard blue for info.</summary>
-    public static UnderlineColor InfoBlue => new(0x1E, 0x90, 0xFF);
+    /// <summary>Light theme warning orange (#F0A30A).</summary>
+    public static UnderlineColor LightWarning => new(0xF0, 0xA3, 0x0A);
 
-    /// <summary>Standard gray for hints.</summary>
-    public static UnderlineColor HintGray => new(0xA0, 0xA0, 0xA0);
+    /// <summary>Light theme info blue (#0078D4).</summary>
+    public static UnderlineColor LightInfo => new(0x00, 0x78, 0xD4);
+
+    /// <summary>Light theme hint gray (#808080).</summary>
+    public static UnderlineColor LightHint => new(0x80, 0x80, 0x80);
+
+    // ========================================
+    // Dark Theme Colors (softer on dark backgrounds)
+    // ========================================
+
+    /// <summary>Dark theme error salmon red (#FF6B6B).</summary>
+    public static UnderlineColor DarkError => new(0xFF, 0x6B, 0x6B);
+
+    /// <summary>Dark theme warning light orange (#FFB347).</summary>
+    public static UnderlineColor DarkWarning => new(0xFF, 0xB3, 0x47);
+
+    /// <summary>Dark theme info light blue (#4FC3F7).</summary>
+    public static UnderlineColor DarkInfo => new(0x4F, 0xC3, 0xF7);
+
+    /// <summary>Dark theme hint light gray (#B0B0B0).</summary>
+    public static UnderlineColor DarkHint => new(0xB0, 0xB0, 0xB0);
+
+    // ========================================
+    // Semi-transparent Background Colors
+    // ========================================
+
+    /// <summary>Light theme error background (12% opacity).</summary>
+    public static UnderlineColor LightErrorBackground => new(0xE5, 0x14, 0x00, 0x20);
+
+    /// <summary>Light theme warning background (12% opacity).</summary>
+    public static UnderlineColor LightWarningBackground => new(0xF0, 0xA3, 0x0A, 0x20);
+
+    /// <summary>Light theme info background (12% opacity).</summary>
+    public static UnderlineColor LightInfoBackground => new(0x00, 0x78, 0xD4, 0x20);
+
+    /// <summary>Dark theme error background (19% opacity).</summary>
+    public static UnderlineColor DarkErrorBackground => new(0xFF, 0x6B, 0x6B, 0x30);
+
+    /// <summary>Dark theme warning background (19% opacity).</summary>
+    public static UnderlineColor DarkWarningBackground => new(0xFF, 0xB3, 0x47, 0x30);
+
+    /// <summary>Dark theme info background (19% opacity).</summary>
+    public static UnderlineColor DarkInfoBackground => new(0x4F, 0xC3, 0xF7, 0x30);
+
+    // ========================================
+    // Legacy Aliases (for backward compatibility)
+    // ========================================
+
+    /// <summary>Standard red for errors (alias for LightError).</summary>
+    public static UnderlineColor ErrorRed => LightError;
+
+    /// <summary>Standard yellow/orange for warnings (alias for LightWarning).</summary>
+    public static UnderlineColor WarningYellow => LightWarning;
+
+    /// <summary>Standard blue for info (alias for LightInfo).</summary>
+    public static UnderlineColor InfoBlue => LightInfo;
+
+    /// <summary>Standard gray for hints (alias for LightHint).</summary>
+    public static UnderlineColor HintGray => LightHint;
 }
 
 /// <summary>
