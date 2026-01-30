@@ -1,6 +1,8 @@
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Linting;
 using Lexichord.Modules.Style.Data;
 using Lexichord.Modules.Style.Services;
+using Lexichord.Modules.Style.Services.Linting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -65,6 +67,12 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.2d - Terminology CRUD service with validation and events
         services.AddSingleton<ITerminologyService, TerminologyService>();
+
+        // LOGIC: v0.2.3a - Configure linting options
+        services.Configure<LintingOptions>(options => { });
+
+        // LOGIC: v0.2.3a - Reactive linting orchestrator
+        services.AddSingleton<ILintingOrchestrator, LintingOrchestrator>();
     }
 
     /// <inheritdoc/>

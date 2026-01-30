@@ -50,6 +50,9 @@
 
     <!-- v0.1.1a: Dock.Avalonia for layout testing -->
     <PackageReference Include="Dock.Model.Avalonia" Version="$(DockAvaloniaVersion)" />
+
+    <!-- v0.2.3a: System.Reactive for linting pipeline testing -->
+    <PackageReference Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>

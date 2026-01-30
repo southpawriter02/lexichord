@@ -24,6 +24,9 @@
 
     <!-- v0.1.1d: CommunityToolkit.Mvvm (required for DocumentViewModelBase) -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
+    <!-- v0.2.3a: System.Reactive (required for IObservable<T> in linting) -->
+    <PackageReference Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
 
   <!-- Allow unit tests to access internal types -->

@@ -29,6 +29,28 @@ This release introduces **The Lexicon**, a persistent database for managing styl
 
 ---
 
+## [v0.2.3] - 2026-01 (In Progress)
+
+### The Critic (Linter Engine)
+
+This release introduces **The Critic**, a reactive linting engine that provides real-time document analysis.
+
+#### What's New
+
+- **Reactive Pipeline** — System.Reactive-based infrastructure for debounced, concurrent document linting. Documents subscribe to the orchestrator and receive throttled analysis with configurable debounce (300ms default) and concurrency limits (2 concurrent scans default).
+
+- **Linting Orchestrator** — Central hub managing document subscriptions, coordinating scans with IStyleEngine, and publishing results via observable stream and MediatR domain events.
+
+- **Domain Contracts** — Immutable records for linting configuration (`LintingOptions`), per-document state tracking (`DocumentLintState`), and operation results (`LintResult`) with factory methods.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title             | Status      |
+| -------------------------------- | ----------------- | ----------- |
+| [v0.2.3a](v0.2.x/LCS-CL-023a.md) | Reactive Pipeline | ✅ Complete |
+
+---
+
 ## [v0.2.1] - 2026-01 (In Progress)
 
 ### The Rulebook (Style Module)

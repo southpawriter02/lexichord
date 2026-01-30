@@ -34,6 +34,9 @@
 
     <!-- MediatR for events -->
     <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
+
+    <!-- v0.2.3a: System.Reactive for reactive linting pipeline -->
+    <PackageReference Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
