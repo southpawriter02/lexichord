@@ -34,6 +34,7 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
     private readonly Subject<LintResult> _resultsSubject = new();
     private readonly SemaphoreSlim _scanSemaphore;
     private readonly IStyleEngine _styleEngine;
+    private readonly IFuzzyScanner _fuzzyScanner;
     private readonly IMediator _mediator;
     private readonly IThreadMarshaller _threadMarshaller;
     private readonly ILogger<LintingOrchestrator> _logger;
@@ -46,12 +47,14 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
     /// </summary>
     public LintingOrchestrator(
         IStyleEngine styleEngine,
+        IFuzzyScanner fuzzyScanner,
         IMediator mediator,
         IThreadMarshaller threadMarshaller,
         IOptions<LintingOptions> options,
         ILogger<LintingOrchestrator> logger)
     {
         _styleEngine = styleEngine ?? throw new ArgumentNullException(nameof(styleEngine));
+        _fuzzyScanner = fuzzyScanner ?? throw new ArgumentNullException(nameof(fuzzyScanner));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _threadMarshaller = threadMarshaller ?? throw new ArgumentNullException(nameof(threadMarshaller));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -206,20 +209,36 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
 
                 _logger.LogDebug("Starting lint scan for document: {DocumentId}", documentId);
 
-                // LOGIC: Execute the actual analysis
-                var violations = await _styleEngine.AnalyzeAsync(content, cancellationToken);
+                // LOGIC: Execute regex-based analysis
+                var regexViolations = await _styleEngine.AnalyzeAsync(content, cancellationToken);
+
+                // LOGIC: v0.3.1c - Extract regex-flagged words to prevent double-counting
+                var regexFlaggedWords = new HashSet<string>(
+                    regexViolations.Select(v => v.MatchedText.ToLowerInvariant()),
+                    StringComparer.OrdinalIgnoreCase);
+
+                // LOGIC: v0.3.1c - Execute fuzzy scanning after regex scan
+                var fuzzyViolations = await _fuzzyScanner.ScanAsync(
+                    content,
+                    regexFlaggedWords,
+                    cancellationToken);
+
+                // LOGIC: v0.3.1c - Aggregate results from both scans
+                var allViolations = regexViolations.Concat(fuzzyViolations).ToList();
 
                 stopwatch.Stop();
 
-                result = LintResult.Success(documentId, violations, stopwatch.Elapsed);
+                result = LintResult.Success(documentId, allViolations, stopwatch.Elapsed);
 
                 // LOGIC: Update subscription state
-                subscription.CompleteWith(violations, DateTimeOffset.UtcNow);
+                subscription.CompleteWith(allViolations, DateTimeOffset.UtcNow);
 
                 _logger.LogDebug(
-                    "Lint completed for {DocumentId}: {ViolationCount} violations in {Duration}ms",
+                    "Lint completed for {DocumentId}: {ViolationCount} violations ({RegexCount} regex, {FuzzyCount} fuzzy) in {Duration}ms",
                     documentId,
-                    violations.Count,
+                    allViolations.Count,
+                    regexViolations.Count,
+                    fuzzyViolations.Count,
                     stopwatch.ElapsedMilliseconds);
             }
             finally

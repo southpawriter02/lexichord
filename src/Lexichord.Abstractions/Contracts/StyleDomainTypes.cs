@@ -399,7 +399,9 @@ public sealed record StyleViolation(
     int EndColumn,
     string MatchedText,
     string? Suggestion,
-    ViolationSeverity Severity)
+    ViolationSeverity Severity,
+    bool IsFuzzyMatch = false,
+    int? FuzzyRatio = null)
 {
     /// <summary>
     /// Gets the length of the violating text.

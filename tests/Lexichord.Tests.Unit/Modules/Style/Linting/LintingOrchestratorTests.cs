@@ -23,6 +23,7 @@ namespace Lexichord.Tests.Unit.Modules.Style.Linting;
 public class LintingOrchestratorTests : IDisposable
 {
     private readonly Mock<IStyleEngine> _styleEngineMock;
+    private readonly Mock<IFuzzyScanner> _fuzzyScannerMock;
     private readonly Mock<IMediator> _mediatorMock;
     private readonly Mock<IThreadMarshaller> _threadMarshallerMock;
     private readonly Mock<ILogger<LintingOrchestrator>> _loggerMock;
@@ -32,6 +33,7 @@ public class LintingOrchestratorTests : IDisposable
     public LintingOrchestratorTests()
     {
         _styleEngineMock = new Mock<IStyleEngine>();
+        _fuzzyScannerMock = new Mock<IFuzzyScanner>();
         _mediatorMock = new Mock<IMediator>();
         _threadMarshallerMock = new Mock<IThreadMarshaller>();
         _loggerMock = new Mock<ILogger<LintingOrchestrator>>();
@@ -45,8 +47,14 @@ public class LintingOrchestratorTests : IDisposable
         // This simulates calls coming from a background thread for tests
         _threadMarshallerMock.Setup(x => x.IsOnUIThread).Returns(false);
 
+        // LOGIC: v0.3.1c - Configure fuzzy scanner mock to return empty by default
+        _fuzzyScannerMock
+            .Setup(x => x.ScanAsync(It.IsAny<string>(), It.IsAny<IReadOnlySet<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<StyleViolation>());
+
         _sut = new LintingOrchestrator(
             _styleEngineMock.Object,
+            _fuzzyScannerMock.Object,
             _mediatorMock.Object,
             _threadMarshallerMock.Object,
             _options,
@@ -64,6 +72,7 @@ public class LintingOrchestratorTests : IDisposable
         // Act
         var act = () => new LintingOrchestrator(
             null!,
+            _fuzzyScannerMock.Object,
             _mediatorMock.Object,
             _threadMarshallerMock.Object,
             _options,
@@ -80,6 +89,7 @@ public class LintingOrchestratorTests : IDisposable
         // Act
         var act = () => new LintingOrchestrator(
             _styleEngineMock.Object,
+            _fuzzyScannerMock.Object,
             null!,
             _threadMarshallerMock.Object,
             _options,
@@ -96,6 +106,7 @@ public class LintingOrchestratorTests : IDisposable
         // Act
         var act = () => new LintingOrchestrator(
             _styleEngineMock.Object,
+            _fuzzyScannerMock.Object,
             _mediatorMock.Object,
             null!,
             _options,

@@ -63,6 +63,12 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.1a - Fuzzy matching service (stateless, thread-safe)
         services.AddSingleton<IFuzzyMatchService, FuzzyMatchService>();
 
+        // LOGIC: v0.3.1c - Document tokenizer for text processing
+        services.AddSingleton<IDocumentTokenizer, DocumentTokenizer>();
+
+        // LOGIC: v0.3.1c - Fuzzy scanner for terminology matching
+        services.AddSingleton<IFuzzyScanner, FuzzyScanner>();
+
         // LOGIC: v0.2.2b - Memory cache for terminology lookups
         services.AddMemoryCache();
 

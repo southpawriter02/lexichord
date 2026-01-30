@@ -59,13 +59,17 @@ This release introduces fuzzy string matching to detect typos and variations of 
 
 - **Inclusive Language Defaults** — Seeder includes 5 fuzzy-enabled terms for inclusive language (whitelist→allowlist, blacklist→denylist, master→main, slave→replica, sanity check→confidence check).
 
+- **Fuzzy Scanner** — New `IFuzzyScanner` service scans documents for approximate terminology matches. Tokenizes text preserving hyphenated words, applies per-term thresholds, and prevents double-counting of exact matches. Requires Writer Pro license.
+
+- **StyleViolation Fuzzy Metadata** — `StyleViolation` now includes `IsFuzzyMatch` flag and `FuzzyRatio` percentage for fuzzy match identification.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                 | Status      |
 | --------------------------------------- | --------------------- | ----------- |
 | [v0.3.1a](v0.3.x/v0.3.1/LCS-CL-031a.md) | Algorithm Integration | ✅ Complete |
 | [v0.3.1b](v0.3.x/v0.3.1/LCS-CL-031b.md) | Repository Update     | ✅ Complete |
-| v0.3.1c                                 | The Fuzzy Scanner     | 🔲 Planned  |
+| [v0.3.1c](LCS-CL-031c.md)               | The Fuzzy Scanner     | ✅ Complete |
 | v0.3.1d                                 | License Gating        | 🔲 Planned  |
 
 ---
