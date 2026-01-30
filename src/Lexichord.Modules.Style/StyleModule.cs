@@ -4,6 +4,7 @@ using Lexichord.Abstractions.Layout;
 using Lexichord.Modules.Style.Data;
 using Lexichord.Modules.Style.Services;
 using Lexichord.Modules.Style.Services.Linting;
+using Lexichord.Modules.Style.Threading;
 using Lexichord.Modules.Style.ViewModels;
 using Lexichord.Modules.Style.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,7 @@ public sealed class StyleModule : IModule
     public ModuleInfo Info => new(
         Id: "style",
         Name: "The Rulebook",
-        Version: new Version(0, 2, 6),
+        Version: new Version(0, 2, 7),
         Author: "Lexichord Team",
         Description: "Style and writing rules engine providing governed writing environments"
     );
@@ -122,6 +123,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.2.6d - Project linting service for scope filtering
         services.AddSingleton<IProjectLintingService, ProjectLintingService>();
+
+        // LOGIC: v0.2.7a - Thread marshaller for async offloading
+        services.AddSingleton<IThreadMarshaller, AvaloniaThreadMarshaller>();
     }
 
     /// <inheritdoc/>

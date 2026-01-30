@@ -6,6 +6,27 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.2.7] - 2026-01 (In Progress)
+
+### Polish (Performance & Edge Cases)
+
+This release hardens the linting system for production use, ensuring UI responsiveness, accurate content filtering, and large file support.
+
+#### What's New
+
+- **Async Offloading** — `IThreadMarshaller` abstraction ensures all regex scanning executes on background threads via `Task.Run`, with results marshalled back to the UI thread via `Dispatcher.UIThread.InvokeAsync`. Debug-only assertions verify correct thread context. Zero UI thread blocking during scans.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title            | Status      |
+| -------------------------------- | ---------------- | ----------- |
+| [v0.2.7a](v0.2.x/LCS-CL-027a.md) | Async Offloading | ✅ Complete |
+| v0.2.7b                           | Code Block Ignoring | 🔲 Pending |
+| v0.2.7c                           | Frontmatter Ignoring | 🔲 Pending |
+| v0.2.7d                           | Large File Stress Test | 🔲 Pending |
+
+---
+
 ## [v0.2.4] - 2026-01 (In Progress)
 
 ### Red Pen (Editor Integration)
@@ -664,6 +685,7 @@ This foundational work ensures:
 
 | Version | Date       | Codename                          | Summary                                                    |
 | :------ | :--------- | :-------------------------------- | :--------------------------------------------------------- |
+| v0.2.7  | 2026-01-30 | Polish (Performance & Edge Cases) | Async offloading, thread marshalling, UI responsiveness    |
 | v0.1.5  | 2026-01-29 | The Conductor's Baton (Commands)  | Command Registry, command execution and discovery          |
 | v0.1.2  | 2026-01-28 | The Explorer (Project Management) | Workspace service, file system watcher, project context    |
 | v0.1.1  | 2026-01-28 | The Layout Engine (Docking)       | Dock.Avalonia integration, region injection, serialization |
@@ -775,5 +797,11 @@ Each major version has detailed technical changelogs organized by sub-part:
 | [LCS-CL-001b](./LCS-CL-001b.md) | v0.0.1b  | Dependency Graph Enforcement    |
 | [LCS-CL-001c](./LCS-CL-001c.md) | v0.0.1c  | Test Suite Foundation           |
 | [LCS-CL-001d](./LCS-CL-001d.md) | v0.0.1d  | Continuous Integration Pipeline |
+
+### v0.2.7 Sub-Parts
+
+| Document                               | Sub-Part | Title              |
+| :------------------------------------- | :------- | :----------------- |
+| [LCS-CL-027a](./v0.2.x/LCS-CL-027a.md) | v0.2.7a  | Async Offloading   |
 
 Individual sub-part changelogs provide implementation-level detail for developers.
