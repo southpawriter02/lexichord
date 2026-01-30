@@ -86,5 +86,17 @@ public interface ILintingConfiguration
     /// Version: v0.2.3d
     /// </remarks>
     int MaxViolationsPerDocument { get; }
+
+    /// <summary>
+    /// File extensions to scan during project-wide linting.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Only files with these extensions are scanned in project scope.
+    /// Include the leading dot (e.g., ".md", ".txt").
+    /// Default: [".md", ".txt"]
+    ///
+    /// Version: v0.2.6d
+    /// </remarks>
+    IReadOnlyList<string> TargetExtensions { get; }
 }
 

@@ -119,6 +119,9 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.6c - Scorecard Widget components
         services.AddTransient<IScorecardViewModel, ScorecardViewModel>();
         services.AddTransient<ScorecardWidget>();
+
+        // LOGIC: v0.2.6d - Project linting service for scope filtering
+        services.AddSingleton<IProjectLintingService, ProjectLintingService>();
     }
 
     /// <inheritdoc/>

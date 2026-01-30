@@ -66,7 +66,7 @@ This release introduces **The Sentinel**, a Problems Panel sidebar providing cen
 | [v0.2.6a](v0.2.x/LCS-CL-026a.md) | Problems Panel | ✅ Complete |
 | [v0.2.6b](v0.2.x/LCS-CL-026b.md) | Navigation     | ✅ Complete |
 | [v0.2.6c](v0.2.x/LCS-CL-026c.md) | Scorecard      | ✅ Complete |
-| v0.2.6d                          | Project Lint   | 🔜 Planned  |
+| [v0.2.6d](v0.2.x/LCS-CL-026d.md) | Filter Scope   | ✅ Complete |
 
 ---
 
