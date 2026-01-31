@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.3.6b added)                                             |
+| **Last Updated** | 2026-01-31 (v0.3.6d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -188,6 +188,13 @@
 | `IConflictResolver`             | v0.3.6b    | Abstractions  | Configuration conflict resolution           |
 | `ConfigurationConflict`         | v0.3.6b    | Abstractions  | Record for detected conflicts               |
 | `ConflictResolver`              | v0.3.6b    | Modules.Style | Implementation with project-wins semantics  |
+| `IProjectConfigurationWriter`   | v0.3.6c    | Abstractions  | Project configuration writing               |
+| `OverrideAction`                | v0.3.6c    | Abstractions  | Enum: IgnoreRule, ExcludeTerm actions       |
+| `ProjectConfigurationWriter`    | v0.3.6c    | Modules.Style | Implementation with YAML serialization      |
+| `OverrideMenuViewModel`         | v0.3.6c    | Modules.Style | Context menu actions for overrides          |
+| `IIgnorePatternService`         | v0.3.6d    | Abstractions  | Glob-based .lexichordignore support         |
+| `PatternsReloadedEventArgs`     | v0.3.6d    | Abstractions  | Event args for pattern reloads              |
+| `IgnorePatternService`          | v0.3.6d    | Modules.Style | Implementation with FileSystemGlobbing      |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 

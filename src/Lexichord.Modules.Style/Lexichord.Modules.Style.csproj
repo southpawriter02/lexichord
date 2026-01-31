@@ -53,6 +53,9 @@
 
     <!-- v0.3.1a: Fuzzy string matching -->
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
+
+    <!-- v0.3.6d: Glob pattern matching for .lexichordignore -->
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

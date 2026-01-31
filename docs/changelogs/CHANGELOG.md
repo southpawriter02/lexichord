@@ -194,6 +194,8 @@ This release introduces project-level configuration management with hierarchical
 
 - **Override UI Infrastructure** — New `IProjectConfigurationWriter` enables users to ignore rules and exclude terms via project configuration. Atomic YAML writes prevent file corruption. `OverrideMenuViewModel` provides license-gated commands for context menu integration.
 
+- **Ignored Files** — New `IIgnorePatternService` enables `.lexichordignore` files with glob pattern support (`*.log`, `build/**`, `**/temp/**`). Negation patterns (`!important.log`) un-ignore specific files. License-gated limits (Core: 5 patterns, Writer Pro: unlimited). Hot-reload via FileSystemWatcher with 100ms debounce.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                 | Status      |
@@ -201,6 +203,7 @@ This release introduces project-level configuration management with hierarchical
 | [v0.3.6a](v0.3.x/v0.3.6/LCS-CL-036a.md) | Layered Configuration | ✅ Complete |
 | [v0.3.6b](v0.3.x/v0.3.6/LCS-CL-036b.md) | Conflict Resolution   | ✅ Complete |
 | [v0.3.6c](v0.3.x/v0.3.6/LCS-CL-036c.md) | Override UI           | ✅ Complete |
+| [v0.3.6d](v0.3.x/v0.3.6/LCS-CL-036d.md) | Ignored Files         | ✅ Complete |
 
 ---
 

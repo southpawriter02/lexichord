@@ -37,6 +37,7 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
     private readonly IFuzzyScanner _fuzzyScanner;
     private readonly IMediator _mediator;
     private readonly IThreadMarshaller _threadMarshaller;
+    private readonly IIgnorePatternService? _ignorePatternService;
     private readonly ILogger<LintingOrchestrator> _logger;
     private readonly LintingOptions _options;
 
@@ -51,7 +52,8 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
         IMediator mediator,
         IThreadMarshaller threadMarshaller,
         IOptions<LintingOptions> options,
-        ILogger<LintingOrchestrator> logger)
+        ILogger<LintingOrchestrator> logger,
+        IIgnorePatternService? ignorePatternService = null)
     {
         _styleEngine = styleEngine ?? throw new ArgumentNullException(nameof(styleEngine));
         _fuzzyScanner = fuzzyScanner ?? throw new ArgumentNullException(nameof(fuzzyScanner));
@@ -59,6 +61,7 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
         _threadMarshaller = threadMarshaller ?? throw new ArgumentNullException(nameof(threadMarshaller));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options?.Value ?? new LintingOptions();
+        _ignorePatternService = ignorePatternService;
 
         _scanSemaphore = new SemaphoreSlim(_options.MaxConcurrentScans);
 
@@ -85,6 +88,13 @@ public sealed class LintingOrchestrator : ILintingOrchestrator
 
         if (_disposed)
             throw new ObjectDisposedException(nameof(LintingOrchestrator));
+
+        // LOGIC: v0.3.6d - Check if file is ignored before subscribing
+        if (_ignorePatternService?.IsIgnored(filePath) == true)
+        {
+            _logger.LogDebug("Skipping subscription for ignored file: {FilePath}", filePath);
+            return System.Reactive.Disposables.Disposable.Empty;
+        }
 
         // LOGIC: Remove existing subscription if present
         Unsubscribe(documentId);

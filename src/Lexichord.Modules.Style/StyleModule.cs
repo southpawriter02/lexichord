@@ -197,6 +197,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.3.6c - Override menu ViewModel for context menu actions
         services.AddTransient<OverrideMenuViewModel>();
+
+        // LOGIC: v0.3.6d - Ignore pattern service for .lexichordignore support
+        services.AddSingleton<IIgnorePatternService, IgnorePatternService>();
     }
 
     /// <inheritdoc/>
