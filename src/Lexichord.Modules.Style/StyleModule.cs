@@ -191,6 +191,12 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.3.6b - Conflict resolver for hierarchical configuration
         services.AddSingleton<IConflictResolver, ConflictResolver>();
+
+        // LOGIC: v0.3.6c - Project configuration writer for override UI
+        services.AddSingleton<IProjectConfigurationWriter, ProjectConfigurationWriter>();
+
+        // LOGIC: v0.3.6c - Override menu ViewModel for context menu actions
+        services.AddTransient<OverrideMenuViewModel>();
     }
 
     /// <inheritdoc/>

@@ -192,12 +192,15 @@ This release introduces project-level configuration management with hierarchical
 
 - **Conflict Resolution** — New `IConflictResolver` detects and logs configuration conflicts between layers. Project-wins semantics ensure higher-priority sources always override. Term override logic handles exclusions vs additions with repository fallback. Rule ignore patterns support wildcards (`PASSIVE-*`, `*-WARNINGS`).
 
+- **Override UI Infrastructure** — New `IProjectConfigurationWriter` enables users to ignore rules and exclude terms via project configuration. Atomic YAML writes prevent file corruption. `OverrideMenuViewModel` provides license-gated commands for context menu integration.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                 | Status      |
 | --------------------------------------- | --------------------- | ----------- |
 | [v0.3.6a](v0.3.x/v0.3.6/LCS-CL-036a.md) | Layered Configuration | ✅ Complete |
 | [v0.3.6b](v0.3.x/v0.3.6/LCS-CL-036b.md) | Conflict Resolution   | ✅ Complete |
+| [v0.3.6c](v0.3.x/v0.3.6/LCS-CL-036c.md) | Override UI           | ✅ Complete |
 
 ---
 
