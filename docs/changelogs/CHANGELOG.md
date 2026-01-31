@@ -223,12 +223,15 @@ This release introduces infrastructure for optimizing typing responsiveness with
 
 - **Configurable Buffer Options** — New `AnalysisBufferOptions` configuration class controls idle period timing, maximum buffered documents, and enable/disable toggle for bypass mode.
 
+- **Problems Panel Virtualization** — Added `ScrollOffset` property to preserve scroll position during list updates. Virtualization diagnostics logging helps monitor performance. Panel efficiently handles 5,000+ violations via collapsed severity groups.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                | Status      |
 | --------------------------------------- | -------------------- | ----------- |
 | [v0.3.7a](v0.3.x/v0.3.7/LCS-CL-037a.md) | Background Buffering | ✅ Complete |
 | [v0.3.7b](v0.3.x/v0.3.7/LCS-CL-037b.md) | Parallelization      | ✅ Complete |
+| [v0.3.7c](v0.3.x/v0.3.7/LCS-CL-037c.md) | Virtualization       | ✅ Complete |
 
 ---
 

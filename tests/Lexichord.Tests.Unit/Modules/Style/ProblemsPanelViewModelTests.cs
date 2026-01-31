@@ -386,6 +386,76 @@ public class ProblemsPanelViewModelTests : IDisposable
 
     #endregion
 
+    #region v0.3.7c Virtualization Tests
+
+    [Fact]
+    public void ScrollOffset_DefaultsToZero()
+    {
+        // Act
+        var viewModel = CreateViewModel();
+
+        // Assert
+        viewModel.ScrollOffset.Should().Be(0);
+    }
+
+    [Fact]
+    public void ScrollOffset_CanBeSetAndRetrieved()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+
+        // Act
+        viewModel.ScrollOffset = 150.5;
+
+        // Assert
+        viewModel.ScrollOffset.Should().Be(150.5);
+    }
+
+    [Fact]
+    public void ScrollOffset_RaisesPropertyChanged()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var changedProperties = new List<string>();
+        viewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName != null)
+                changedProperties.Add(e.PropertyName);
+        };
+
+        // Act
+        viewModel.ScrollOffset = 100.0;
+
+        // Assert
+        changedProperties.Should().Contain(nameof(ProblemsPanelViewModel.ScrollOffset));
+    }
+
+    [Fact]
+    public async Task Handle_WithLargeViolationCount_CompletesSuccessfully()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var violations = Enumerable.Range(0, 5000)
+            .Select(i => CreateViolation(
+                severity: (ViolationSeverity)(i % 4),
+                line: i + 1))
+            .ToList();
+
+        _violationAggregatorMock
+            .Setup(x => x.GetViolations("doc-1"))
+            .Returns(violations);
+
+        var lintEvent = CreateLintingEvent("doc-1");
+
+        // Act
+        await viewModel.Handle(lintEvent, CancellationToken.None);
+
+        // Assert
+        viewModel.TotalCount.Should().Be(5000);
+    }
+
+    #endregion
+
     #region IProblemsPanelViewModel Interface Tests
 
     [Fact]

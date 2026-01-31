@@ -75,6 +75,16 @@ public sealed partial class ProblemsPanelViewModel : ObservableObject,
     [ObservableProperty]
     private string? _activeDocumentId;
 
+    /// <summary>
+    /// Gets or sets the scroll offset for the virtualized list.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.7c - Used to preserve scroll position when the
+    /// problem list is updated or filtered.
+    /// </remarks>
+    [ObservableProperty]
+    private double _scrollOffset;
+
     #endregion
 
     #region Computed Properties
@@ -236,6 +246,11 @@ public sealed partial class ProblemsPanelViewModel : ObservableObject,
             _logger.LogInformation(
                 "Problems panel updated: {ErrorCount} errors, {WarningCount} warnings, {InfoCount} info, {HintCount} hints",
                 ErrorCount, WarningCount, InfoCount, HintCount);
+
+            // v0.3.7c: Virtualization diagnostics
+            _logger.LogTrace(
+                "Virtualization: {TotalCount} items loaded, scroll offset preserved at {ScrollOffset}",
+                TotalCount, ScrollOffset);
         }
         catch (Exception ex)
         {

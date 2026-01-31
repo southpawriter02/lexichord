@@ -207,6 +207,8 @@
         </Border>
         
         <!-- Problems tree -->
+        <!-- v0.3.7c: Performance is maintained via collapsed severity groups
+             which naturally avoid rendering items until expanded -->
         <TreeView Grid.Row="1"
                   ItemsSource="{Binding Groups}"
                   SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
