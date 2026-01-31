@@ -24,6 +24,7 @@
 
     <!-- v0.2.5a: MVVM Support -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc6.1" />
 
     <!-- YamlDotNet for YAML deserialization (v0.2.1c) -->
     <PackageReference Include="YamlDotNet" Version="15.1.6" />

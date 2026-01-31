@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-30 (v0.3.4c added)                                             |
+| **Last Updated** | 2026-01-30 (v0.3.5a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -154,6 +154,21 @@
 | `WeakWordCategory`      | v0.3.4c    | Abstractions | Weak word classification enum                  |
 | `WeakWordMatch`         | v0.3.4c    | Abstractions | Detected weak word match record                |
 | `WeakWordStats`         | v0.3.4c    | Abstractions | Aggregate statistics for weak word analysis    |
+
+### 1.9 v0.3.5 Resonance Dashboard Interfaces
+
+| Interface                   | Defined In | Module        | Purpose                                   |
+| :-------------------------- | :--------- | :------------ | :---------------------------------------- |
+| `IChartDataService`         | v0.3.5a    | Abstractions  | Chart data aggregation with caching       |
+| `ResonanceChartData`        | v0.3.5a    | Abstractions  | Chart data transfer record                |
+| `ResonanceDataPoint`        | v0.3.5a    | Abstractions  | Single axis data point record             |
+| `IResonanceAxisProvider`    | v0.3.5a    | Abstractions  | Axis configuration provider               |
+| `ResonanceAxisDefinition`   | v0.3.5a    | Abstractions  | Axis metadata with normalization          |
+| `ChartDataUpdatedEventArgs` | v0.3.5a    | Abstractions  | Event args for chart data updates         |
+| `ChartThemeConfiguration`   | v0.3.5a    | Modules.Style | Light/Dark chart color palettes           |
+| `ChartColors`               | v0.3.5a    | Modules.Style | Chart color record                        |
+| `DefaultAxisProvider`       | v0.3.5a    | Modules.Style | Default 6-axis spider chart configuration |
+| `ChartDataService`          | v0.3.5a    | Modules.Style | Aggregates metrics from upstream services |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 

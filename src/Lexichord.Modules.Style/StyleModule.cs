@@ -131,6 +131,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.4c - Weak word scanner (adverbs, weasel words, fillers)
         services.AddSingleton<IWeakWordScanner, WeakWordScanner>();
 
+        // LOGIC: v0.3.5a - Chart data aggregation service
+        services.AddSingleton<IChartDataService, ChartDataService>();
+        services.AddSingleton<IResonanceAxisProvider, DefaultAxisProvider>();
+
         // LOGIC: v0.2.5b - Filter ViewModel for filter bar UI
         services.AddTransient<FilterViewModel>();
 

@@ -139,6 +139,33 @@ This release introduces Voice Profiles for context-aware style enforcement based
 
 ---
 
+## [v0.3.5] - 2026-01 (In Progress)
+
+### The Resonance Dashboard (Writing Metrics Visualization)
+
+This release introduces the charting infrastructure for visualizing writing metrics in a spider chart format.
+
+#### What's New
+
+- **Chart Data Service** — New `IChartDataService` aggregates metrics from readability, passive voice, and weak word services into normalized 0-100 scale data points. Thread-safe caching with event notification on recomputation.
+
+- **Axis Configuration** — New `IResonanceAxisProvider` and `DefaultAxisProvider` define 6 axes for the spider chart: Readability (Flesch Reading Ease), Clarity (Passive Voice%), Precision (Weak Word%), Accessibility (FK Grade), Density (Words/Sentence), and Flow (Sentence Variance).
+
+- **Normalization Logic** — `ResonanceAxisDefinition` record handles value normalization with clamping, configurable ranges, and inverted scales for metrics where "lower is better" (passive voice, weak words, grade level).
+
+- **Theme Configuration** — `ChartThemeConfiguration` provides light and dark color palettes for chart rendering, integrated with Lexichord's theme system.
+
+- **LiveCharts2 Integration** — New dependency on `LiveChartsCore.SkiaSharpView.Avalonia` (2.0.0-rc6.1) for high-performance Avalonia-native charting. Registered in `StyleModule`.
+
+#### Sub-Part Changelogs
+
+| Version                                 | Title                   | Status      |
+| --------------------------------------- | ----------------------- | ----------- |
+| [v0.3.5a](v0.3.x/v0.3.5/LCS-CL-035a.md) | Charting Infrastructure | ✅ Complete |
+| v0.3.5b                                 | Chart UI Control        | 🔲 Planned  |
+
+---
+
 ## [v0.2.7] - 2026-01 (In Progress)
 
 ### The Turbo (Performance Optimization)
