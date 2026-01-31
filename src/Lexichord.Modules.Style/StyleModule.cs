@@ -188,6 +188,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.3.6a - Layered configuration provider for hierarchical settings
         services.AddSingleton<ILayeredConfigurationProvider, LayeredConfigurationProvider>();
+
+        // LOGIC: v0.3.6b - Conflict resolver for hierarchical configuration
+        services.AddSingleton<IConflictResolver, ConflictResolver>();
     }
 
     /// <inheritdoc/>

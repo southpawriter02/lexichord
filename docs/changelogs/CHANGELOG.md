@@ -190,11 +190,14 @@ This release introduces project-level configuration management with hierarchical
 
 - **Security Safeguards** — 100KB file size limit prevents denial-of-service via oversized config files. Graceful YAML parse error handling with fallback to defaults.
 
+- **Conflict Resolution** — New `IConflictResolver` detects and logs configuration conflicts between layers. Project-wins semantics ensure higher-priority sources always override. Term override logic handles exclusions vs additions with repository fallback. Rule ignore patterns support wildcards (`PASSIVE-*`, `*-WARNINGS`).
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                 | Status      |
 | --------------------------------------- | --------------------- | ----------- |
 | [v0.3.6a](v0.3.x/v0.3.6/LCS-CL-036a.md) | Layered Configuration | ✅ Complete |
+| [v0.3.6b](v0.3.x/v0.3.6/LCS-CL-036b.md) | Conflict Resolution   | ✅ Complete |
 
 ---
 

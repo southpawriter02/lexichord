@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.3.6a added)                                             |
+| **Last Updated** | 2026-01-31 (v0.3.6b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -185,6 +185,9 @@
 | `ILayeredConfigurationProvider` | v0.3.6a    | Abstractions  | Hierarchical configuration access           |
 | `ConfigurationChangedEventArgs` | v0.3.6a    | Abstractions  | Event args for configuration changes        |
 | `LayeredConfigurationProvider`  | v0.3.6a    | Modules.Style | Implementation with merge logic and caching |
+| `IConflictResolver`             | v0.3.6b    | Abstractions  | Configuration conflict resolution           |
+| `ConfigurationConflict`         | v0.3.6b    | Abstractions  | Record for detected conflicts               |
+| `ConflictResolver`              | v0.3.6b    | Modules.Style | Implementation with project-wins semantics  |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 
