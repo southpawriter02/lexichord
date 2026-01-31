@@ -50,12 +50,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.10.4e | Graph Renderer | Force-directed visualization engine | 10 |
-| v0.10.4f | Path Finder | Find paths between entities | 6 |
-| v0.10.4g | Query Language | CKVS-QL structured query parser | 10 |
-| v0.10.4h | Semantic Search | Vector-based entity search | 8 |
-| v0.10.4i | Graph Export | Export visualizations to images | 4 |
-| v0.10.4j | Search UI | Unified search interface | 6 |
+| v0.10.4a | Graph Renderer | Force-directed visualization engine | 10 |
+| v0.10.4b | Path Finder | Find paths between entities | 6 |
+| v0.10.4c | Query Language | CKVS-QL structured query parser | 10 |
+| v0.10.4d | Semantic Search | Vector-based entity search | 8 |
+| v0.10.4e | Graph Export | Export visualizations to images | 4 |
+| v0.10.4f | Search UI | Unified search interface | 6 |
 | **Total** | | | **44 hours** |
 
 ### 2.2 Key Interfaces

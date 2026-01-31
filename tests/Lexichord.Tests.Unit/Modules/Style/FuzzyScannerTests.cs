@@ -305,6 +305,160 @@ public class FuzzyScannerTests
 
     #endregion
 
+    #region v0.3.8a Scanner Accuracy Tests
+
+    /// <summary>
+    /// Verifies scanner correctly identifies matches when multiple similar terms exist.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.8a - When multiple terms are configured, the scanner should
+    /// match each token against all terms and report all that exceed threshold.
+    /// </remarks>
+    [Fact]
+    public async Task ScanAsync_MultipleTerms_MatchesCorrectTerm()
+    {
+        // Arrange - Token "whitelst" should match "whitelist" but not "blocklist"
+        _tokenizerMock.Setup(x => x.TokenizeWithPositions(It.IsAny<string>()))
+            .Returns(new List<DocumentToken> { new("whitelst", 0, 8) });
+
+        var whitelistTerm = CreateFuzzyTerm("whitelist", 0.80);
+        var blocklistTerm = CreateFuzzyTerm("blocklist", 0.80);
+
+        _terminologyRepositoryMock.Setup(x => x.GetFuzzyEnabledTermsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<StyleTerm> { whitelistTerm, blocklistTerm });
+
+        // LOGIC: "whitelst" matches "whitelist" (high ratio) but not "blocklist"
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("whitelst", "whitelist", 80)).Returns(true);
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("whitelst", "blocklist", 80)).Returns(false);
+        _fuzzyMatchServiceMock.Setup(x => x.CalculateRatio("whitelst", "whitelist")).Returns(88);
+
+        // Act
+        var result = await _sut.ScanAsync("whitelst", new HashSet<string>());
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].Rule.Name.Should().Contain("whitelist");
+    }
+
+    /// <summary>
+    /// Verifies scanner matches multiple terms for the same token when applicable.
+    /// </summary>
+    [Fact]
+    public async Task ScanAsync_TokenMatchesMultipleTerms_ReportsAllMatches()
+    {
+        // Arrange - Token "listt" could potentially match both "list" and "lists"
+        _tokenizerMock.Setup(x => x.TokenizeWithPositions(It.IsAny<string>()))
+            .Returns(new List<DocumentToken> { new("listt", 0, 5) });
+
+        var listTerm = CreateFuzzyTerm("list", 0.80);
+        var listsTerm = CreateFuzzyTerm("lists", 0.80);
+
+        _terminologyRepositoryMock.Setup(x => x.GetFuzzyEnabledTermsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<StyleTerm> { listTerm, listsTerm });
+
+        // Both terms match the token
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("listt", "list", 80)).Returns(true);
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("listt", "lists", 80)).Returns(true);
+        _fuzzyMatchServiceMock.Setup(x => x.CalculateRatio("listt", "list")).Returns(80);
+        _fuzzyMatchServiceMock.Setup(x => x.CalculateRatio("listt", "lists")).Returns(80);
+
+        // Act
+        var result = await _sut.ScanAsync("listt", new HashSet<string>());
+
+        // Assert
+        result.Should().HaveCount(2, "token matches two different terms");
+    }
+
+    /// <summary>
+    /// Verifies position calculation accuracy with multi-line content.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.8a - Position accuracy is critical for editor navigation.
+    /// </remarks>
+    [Fact]
+    public async Task ScanAsync_MultiLineContent_PositionCalculatedCorrectly()
+    {
+        // Arrange - Token on line 3, column 5
+        // Line 1: "First line\n" (11 chars, offset 0-10)
+        // Line 2: "Second line\n" (12 chars, offset 11-22)
+        // Line 3: "    helo world" (token at offset 27-31)
+        const string content = "First line\nSecond line\n    helo world";
+        _tokenizerMock.Setup(x => x.TokenizeWithPositions(It.IsAny<string>()))
+            .Returns(new List<DocumentToken> { new("helo", 27, 31) });
+
+        var term = CreateFuzzyTerm("hello", 0.80);
+        _terminologyRepositoryMock.Setup(x => x.GetFuzzyEnabledTermsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<StyleTerm> { term });
+
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("helo", "hello", 80)).Returns(true);
+        _fuzzyMatchServiceMock.Setup(x => x.CalculateRatio("helo", "hello")).Returns(85);
+
+        // Act
+        var result = await _sut.ScanAsync(content, new HashSet<string>());
+
+        // Assert
+        result.Should().HaveCount(1);
+        var violation = result[0];
+        violation.StartLine.Should().Be(3, "token is on third line");
+        violation.StartColumn.Should().Be(5, "token starts at column 5 (after 4 spaces)");
+    }
+
+    /// <summary>
+    /// Verifies that FuzzyRatio in violation matches the calculated ratio.
+    /// </summary>
+    [Fact]
+    public async Task ScanAsync_ViolationFuzzyRatio_MatchesCalculatedRatio()
+    {
+        // Arrange
+        const int expectedRatio = 92;
+        _tokenizerMock.Setup(x => x.TokenizeWithPositions(It.IsAny<string>()))
+            .Returns(new List<DocumentToken> { new("terminolgy", 0, 10) });
+
+        var term = CreateFuzzyTerm("terminology", 0.80);
+        _terminologyRepositoryMock.Setup(x => x.GetFuzzyEnabledTermsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<StyleTerm> { term });
+
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("terminolgy", "terminology", 80)).Returns(true);
+        _fuzzyMatchServiceMock.Setup(x => x.CalculateRatio("terminolgy", "terminology")).Returns(expectedRatio);
+
+        // Act
+        var result = await _sut.ScanAsync("terminolgy", new HashSet<string>());
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].FuzzyRatio.Should().Be(expectedRatio, "ratio should match calculated value exactly");
+    }
+
+    /// <summary>
+    /// Verifies matched text extraction is accurate.
+    /// </summary>
+    [Fact]
+    public async Task ScanAsync_MatchedText_ExtractedCorrectly()
+    {
+        // Arrange
+        const string content = "The whitelst should work";
+        _tokenizerMock.Setup(x => x.TokenizeWithPositions(It.IsAny<string>()))
+            .Returns(new List<DocumentToken> { new("whitelst", 4, 12) });
+
+        var term = CreateFuzzyTerm("whitelist", 0.80);
+        _terminologyRepositoryMock.Setup(x => x.GetFuzzyEnabledTermsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<StyleTerm> { term });
+
+        _fuzzyMatchServiceMock.Setup(x => x.IsMatch("whitelst", "whitelist", 80)).Returns(true);
+        _fuzzyMatchServiceMock.Setup(x => x.CalculateRatio("whitelst", "whitelist")).Returns(88);
+
+        // Act
+        var result = await _sut.ScanAsync(content, new HashSet<string>());
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].MatchedText.Should().Be("whitelst", "matched text extracted from content");
+        result[0].StartOffset.Should().Be(4);
+        result[0].EndOffset.Should().Be(12);
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private void SetupScanScenario(

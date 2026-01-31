@@ -48,12 +48,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.10.3e | Disambiguation Service | Handle uncertain entity matches | 6 |
-| v0.10.3f | Duplicate Detector | Find potential duplicate entities | 8 |
-| v0.10.3g | Entity Merger | Merge entities preserving relationships | 8 |
-| v0.10.3h | Resolution Learning | Learn from user disambiguation choices | 6 |
-| v0.10.3i | Bulk Resolution UI | Review and resolve duplicates at scale | 6 |
-| v0.10.3j | Resolution Audit | Track all resolution decisions | 4 |
+| v0.10.3a | Disambiguation Service | Handle uncertain entity matches | 6 |
+| v0.10.3b | Duplicate Detector | Find potential duplicate entities | 8 |
+| v0.10.3c | Entity Merger | Merge entities preserving relationships | 8 |
+| v0.10.3d | Resolution Learning | Learn from user disambiguation choices | 6 |
+| v0.10.3e | Bulk Resolution UI | Review and resolve duplicates at scale | 6 |
+| v0.10.3f | Resolution Audit | Track all resolution decisions | 4 |
 | **Total** | | | **38 hours** |
 
 ### 2.2 Key Interfaces

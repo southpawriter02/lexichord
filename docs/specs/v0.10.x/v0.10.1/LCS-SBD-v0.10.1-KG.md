@@ -51,12 +51,12 @@ This brings Git-like version control semantics to the knowledge layer.
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.10.1e | Version Store | Persist graph versions and deltas | 8 |
-| v0.10.1f | Change Tracking | Capture mutations as versioned changes | 6 |
-| v0.10.1g | Time-Travel Queries | Query graph at historical timestamps | 8 |
-| v0.10.1h | Snapshot Manager | Create and restore full snapshots | 6 |
-| v0.10.1i | Branch/Merge | Support graph branching and merging | 10 |
-| v0.10.1j | Version History UI | Visualize changes and diffs | 6 |
+| v0.10.1a | Version Store | Persist graph versions and deltas | 8 |
+| v0.10.1b | Change Tracking | Capture mutations as versioned changes | 6 |
+| v0.10.1c | Time-Travel Queries | Query graph at historical timestamps | 8 |
+| v0.10.1d | Snapshot Manager | Create and restore full snapshots | 6 |
+| v0.10.1e | Branch/Merge | Support graph branching and merging | 10 |
+| v0.10.1f | Version History UI | Visualize changes and diffs | 6 |
 | **Total** | | | **44 hours** |
 
 ### 2.2 Key Interfaces

@@ -50,12 +50,12 @@ Examples:
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.10.2e | Inference Rule Language | DSL for defining inference rules | 8 |
-| v0.10.2f | Rule Compiler | Parse and compile rules to executable form | 6 |
-| v0.10.2g | Forward Chainer | Execute rules to derive new facts | 10 |
-| v0.10.2h | Incremental Inference | Recompute only affected derivations | 8 |
-| v0.10.2i | Provenance Tracker | Track derivation chains for explanations | 6 |
-| v0.10.2j | Inference UI | Configure rules and view derived facts | 5 |
+| v0.10.2a | Inference Rule Language | DSL for defining inference rules | 8 |
+| v0.10.2b | Rule Compiler | Parse and compile rules to executable form | 6 |
+| v0.10.2c | Forward Chainer | Execute rules to derive new facts | 10 |
+| v0.10.2d | Incremental Inference | Recompute only affected derivations | 8 |
+| v0.10.2e | Provenance Tracker | Track derivation chains for explanations | 6 |
+| v0.10.2f | Inference UI | Configure rules and view derived facts | 5 |
 | **Total** | | | **43 hours** |
 
 ### 2.2 Key Interfaces

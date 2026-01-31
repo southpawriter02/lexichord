@@ -50,12 +50,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.10.5e | Format Parsers | Parse OWL, RDF, Turtle, JSON-LD | 10 |
-| v0.10.5f | Schema Mapper | Map external schemas to CKVS | 8 |
-| v0.10.5g | Import Engine | Import with merge/replace logic | 8 |
-| v0.10.5h | Export Engine | Export to standard formats | 8 |
-| v0.10.5i | Validation Layer | Validate imports against CKVS rules | 6 |
-| v0.10.5j | Import/Export UI | User interface for operations | 5 |
+| v0.10.5a | Format Parsers | Parse OWL, RDF, Turtle, JSON-LD | 10 |
+| v0.10.5b | Schema Mapper | Map external schemas to CKVS | 8 |
+| v0.10.5c | Import Engine | Import with merge/replace logic | 8 |
+| v0.10.5d | Export Engine | Export to standard formats | 8 |
+| v0.10.5e | Validation Layer | Validate imports against CKVS rules | 6 |
+| v0.10.5f | Import/Export UI | User interface for operations | 5 |
 | **Total** | | | **45 hours** |
 
 ### 2.2 Key Interfaces

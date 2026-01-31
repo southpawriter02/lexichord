@@ -39,6 +39,30 @@ This release integrates the linting engine with the editor, providing visual fee
 
 ---
 
+## [v0.3.8] - 2026-01 (In Progress)
+
+### The Hardening (Unit Testing)
+
+This release introduces comprehensive unit testing to verify algorithm accuracy and prevent regressions.
+
+#### What's New
+
+- **Fuzzy Algorithm Accuracy Tests** — 20 tests verifying Levenshtein distance calculations including symmetry, edge cases, known distance values, and Unicode handling.
+
+- **Threshold Behavior Tests** — 14 tests covering boundary precision, threshold sweep at 0-100%, and partial ratio matching behavior.
+
+- **Typo Detection Pattern Tests** — 22 tests validating real-world typo detection including substitution, transposition, omission, insertion, and common misspelling patterns.
+
+- **Scanner Accuracy Tests** — 5 new tests for multi-term scanning, position calculation, and ratio reporting accuracy.
+
+#### Sub-Part Changelogs
+
+| Version                                    | Title            | Status      |
+| ------------------------------------------ | ---------------- | ----------- |
+| [v0.3.8a](v0.3.x/v0.3.8/LCS-CL-v0.3.8a.md) | Fuzzy Test Suite | ✅ Complete |
+
+---
+
 ## [v0.3.1] - 2026-01 (In Progress)
 
 ### The Fuzzy Engine (Advanced Matching)
