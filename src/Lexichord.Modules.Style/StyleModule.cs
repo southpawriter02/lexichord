@@ -200,6 +200,10 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.3.6d - Ignore pattern service for .lexichordignore support
         services.AddSingleton<IIgnorePatternService, IgnorePatternService>();
+
+        // LOGIC: v0.3.7a - Analysis buffer for request debouncing
+        services.Configure<AnalysisBufferOptions>(options => { });
+        services.AddSingleton<IAnalysisBuffer, AnalysisBuffer>();
     }
 
     /// <inheritdoc/>

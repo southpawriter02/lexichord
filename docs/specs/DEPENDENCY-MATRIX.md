@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.3.6d added)                                             |
+| **Last Updated** | 2026-01-31 (v0.3.7a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -195,6 +195,15 @@
 | `IIgnorePatternService`         | v0.3.6d    | Abstractions  | Glob-based .lexichordignore support         |
 | `PatternsReloadedEventArgs`     | v0.3.6d    | Abstractions  | Event args for pattern reloads              |
 | `IgnorePatternService`          | v0.3.6d    | Modules.Style | Implementation with FileSystemGlobbing      |
+
+### 1.11 v0.3.7 Performance Tuning Interfaces
+
+| Interface               | Defined In | Module        | Purpose                                    |
+| :---------------------- | :--------- | :------------ | :----------------------------------------- |
+| `AnalysisRequest`       | v0.3.7a    | Abstractions  | Document analysis request with snapshot    |
+| `AnalysisBufferOptions` | v0.3.7a    | Abstractions  | Buffer configuration (idle period, limits) |
+| `IAnalysisBuffer`       | v0.3.7a    | Abstractions  | Reactive request debouncing and buffering  |
+| `AnalysisBuffer`        | v0.3.7a    | Modules.Style | System.Reactive GroupBy+Throttle impl      |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 

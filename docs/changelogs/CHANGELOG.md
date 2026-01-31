@@ -207,6 +207,28 @@ This release introduces project-level configuration management with hierarchical
 
 ---
 
+## [v0.3.7] - 2026-01 (In Progress)
+
+### The Performance Tuning (Async Pipelines)
+
+This release introduces infrastructure for optimizing typing responsiveness with reactive request buffering.
+
+#### What's New
+
+- **Analysis Request Buffering** — New `IAnalysisBuffer` service debounces document analysis requests using System.Reactive. Per-document debouncing ensures rapid edits only trigger analysis after a configurable idle period (default 300ms). Latest-wins semantics automatically discard intermediate requests.
+
+- **Snapshot Semantics** — New `AnalysisRequest` record captures document content at request time with associated cancellation token. Immutable design ensures thread-safe sharing across the async pipeline.
+
+- **Configurable Buffer Options** — New `AnalysisBufferOptions` configuration class controls idle period timing, maximum buffered documents, and enable/disable toggle for bypass mode.
+
+#### Sub-Part Changelogs
+
+| Version                                 | Title                | Status      |
+| --------------------------------------- | -------------------- | ----------- |
+| [v0.3.7a](v0.3.x/v0.3.7/LCS-CL-037a.md) | Background Buffering | ✅ Complete |
+
+---
+
 ## [v0.2.7] - 2026-01 (In Progress)
 
 ### The Turbo (Performance Optimization)
