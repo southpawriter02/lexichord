@@ -53,6 +53,9 @@
 
     <!-- v0.2.3a: System.Reactive for linting pipeline testing -->
     <PackageReference Include="System.Reactive" Version="6.0.1" />
+
+    <!-- v0.3.8d: BenchmarkDotNet for performance profiling -->
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
   </ItemGroup>
 
   <ItemGroup>

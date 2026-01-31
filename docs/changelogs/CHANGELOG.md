@@ -69,6 +69,8 @@ This release introduces comprehensive unit testing to verify algorithm accuracy 
 
 - **LabeledSentenceCorpus Test Fixture** — Reusable corpus with 8 categories (ClearPassive, ClearActive, LinkingVerb, AdjectiveComplement, ProgressiveActive, GetPassive, ModalPassive, EdgeCase) for accuracy testing.
 
+- **Performance Benchmark Baseline** — BenchmarkDotNet integration with benchmarks for Readability, Fuzzy Scanning, Voice Analysis, and Full Pipeline operations. Includes 32 CI threshold tests with 10% regression tolerance and throughput validation.
+
 #### Sub-Part Changelogs
 
 | Version                                    | Title                    | Status      |
@@ -76,6 +78,7 @@ This release introduces comprehensive unit testing to verify algorithm accuracy 
 | [v0.3.8a](v0.3.x/v0.3.8/LCS-CL-v0.3.8a.md) | Fuzzy Test Suite         | ✅ Complete |
 | [v0.3.8b](v0.3.x/v0.3.8/LCS-CL-v0.3.8b.md) | Readability Test Suite   | ✅ Complete |
 | [v0.3.8c](v0.3.x/v0.3.8/LCS-CL-v0.3.8c.md) | Passive Voice Test Suite | ✅ Complete |
+| [v0.3.8d](v0.3.x/v0.3.8/LCS-CL-v0.3.8d.md) | Benchmark Baseline       | ✅ Complete |
 
 ---
 

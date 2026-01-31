@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "version": "v0.3.8d",
+    "createdAt": "2026-01-31T23:23:00Z",
+    "machine": "baseline-reference",
+    "notes": "Default baseline from LCS-DES-v0.3.8d specification"
+  },
+  "readability": {
+    "words1K": 20,
+    "words10K": 200,
+    "words50K": 1000,
+    "maxMemoryMB": 50.0
+  },
+  "fuzzyScanning": {
+    "words1K": 50,
+    "words10K": 500,
+    "words50K": 2500,
+    "maxMemoryMB": 100.0
+  },
+  "voiceAnalysis": {
+    "words1K": 30,
+    "words10K": 300,
+    "words50K": 1500,
+    "maxMemoryMB": 75.0
+  },
+  "fullPipeline": {
+    "words1K": 100,
+    "words10K": 1000,
+    "words50K": 5000,
+    "maxMemoryMB": 200.0
+  },
+  "regressionThreshold": 0.10
+}

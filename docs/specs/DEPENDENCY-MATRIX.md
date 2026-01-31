@@ -857,7 +857,7 @@
 | `Microsoft.ML.Tokenizers`                  | 0.22.x  | v0.4.4c       | Tiktoken tokenizer for OpenAI        |
 | `Polly.Extensions.Http`                    | 3.x     | v0.4.4b       | HTTP retry policy extensions         |
 | `Microsoft.Data.Sqlite`                    | 9.x     | v0.4.8d       | SQLite cache storage                 |
-| `BenchmarkDotNet`                          | 0.14.x  | v0.4.8c       | Performance benchmarks               |
+| `BenchmarkDotNet`                          | 0.14.x  | v0.3.8d       | Performance benchmarks               |
 | `Testcontainers.PostgreSql`                | 3.x     | v0.4.8b       | Integration test containers          |
 | `coverlet.collector`                       | 6.x     | v0.4.8a       | Code coverage reporting              |
 | `RichardSzalay.MockHttp`                   | 7.x     | v0.4.8a       | HTTP mocking for unit tests          |
@@ -1378,108 +1378,108 @@ graph TB
 
 ### 5.1 v0.10.1-KG Knowledge Graph Versioning Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IGraphVersionService` | v0.10.1-KG-a | Modules.CKVS.Versioning | Graph version management and history |
-| `IVersionStore` | v0.10.1-KG-a | Modules.CKVS.Versioning | Version persistence layer |
-| `GraphVersion` | v0.10.1-KG-a | Abstractions | Version metadata record |
-| `GraphVersionRef` | v0.10.1-KG-a | Abstractions | Version reference (ID/timestamp/tag) |
-| `GraphChangeStats` | v0.10.1-KG-a | Abstractions | Version change statistics |
-| `IChangeTracker` | v0.10.1-KG-b | Modules.CKVS.Versioning | Mutation change capture |
-| `GraphChange` | v0.10.1-KG-b | Abstractions | Individual change record |
-| `GraphChangeType` | v0.10.1-KG-b | Abstractions | Create/Update/Delete enum |
-| `GraphElementType` | v0.10.1-KG-b | Abstractions | Entity/Relationship/Claim/Axiom enum |
-| `ITimeTravelQueryService` | v0.10.1-KG-c | Modules.CKVS.Versioning | Historical state queries |
-| `IGraphSnapshot` | v0.10.1-KG-c | Abstractions | Point-in-time graph state |
-| `ISnapshotManager` | v0.10.1-KG-d | Modules.CKVS.Versioning | Named snapshot management |
-| `GraphSnapshot` | v0.10.1-KG-d | Abstractions | Snapshot metadata record |
-| `IGraphBranchService` | v0.10.1-KG-e | Modules.CKVS.Versioning | Branch/merge operations |
-| `GraphBranch` | v0.10.1-KG-e | Abstractions | Branch metadata record |
-| `MergeResult` | v0.10.1-KG-e | Abstractions | Merge outcome with conflicts |
-| `MergeConflict` | v0.10.1-KG-e | Abstractions | Conflict detail record |
-| `MergeStatus` | v0.10.1-KG-e | Abstractions | Success/Conflict/NothingToMerge enum |
+| Interface                 | Defined In   | Module                  | Purpose                              |
+| :------------------------ | :----------- | :---------------------- | :----------------------------------- |
+| `IGraphVersionService`    | v0.10.1-KG-a | Modules.CKVS.Versioning | Graph version management and history |
+| `IVersionStore`           | v0.10.1-KG-a | Modules.CKVS.Versioning | Version persistence layer            |
+| `GraphVersion`            | v0.10.1-KG-a | Abstractions            | Version metadata record              |
+| `GraphVersionRef`         | v0.10.1-KG-a | Abstractions            | Version reference (ID/timestamp/tag) |
+| `GraphChangeStats`        | v0.10.1-KG-a | Abstractions            | Version change statistics            |
+| `IChangeTracker`          | v0.10.1-KG-b | Modules.CKVS.Versioning | Mutation change capture              |
+| `GraphChange`             | v0.10.1-KG-b | Abstractions            | Individual change record             |
+| `GraphChangeType`         | v0.10.1-KG-b | Abstractions            | Create/Update/Delete enum            |
+| `GraphElementType`        | v0.10.1-KG-b | Abstractions            | Entity/Relationship/Claim/Axiom enum |
+| `ITimeTravelQueryService` | v0.10.1-KG-c | Modules.CKVS.Versioning | Historical state queries             |
+| `IGraphSnapshot`          | v0.10.1-KG-c | Abstractions            | Point-in-time graph state            |
+| `ISnapshotManager`        | v0.10.1-KG-d | Modules.CKVS.Versioning | Named snapshot management            |
+| `GraphSnapshot`           | v0.10.1-KG-d | Abstractions            | Snapshot metadata record             |
+| `IGraphBranchService`     | v0.10.1-KG-e | Modules.CKVS.Versioning | Branch/merge operations              |
+| `GraphBranch`             | v0.10.1-KG-e | Abstractions            | Branch metadata record               |
+| `MergeResult`             | v0.10.1-KG-e | Abstractions            | Merge outcome with conflicts         |
+| `MergeConflict`           | v0.10.1-KG-e | Abstractions            | Conflict detail record               |
+| `MergeStatus`             | v0.10.1-KG-e | Abstractions            | Success/Conflict/NothingToMerge enum |
 
 ### 5.2 v0.10.2-KG Inference Engine Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IInferenceEngine` | v0.10.2-KG-c | Modules.CKVS.Inference | Core inference execution |
-| `InferenceResult` | v0.10.2-KG-c | Abstractions | Inference execution result |
-| `DerivedFact` | v0.10.2-KG-c | Abstractions | Inferred fact record |
-| `DerivedFactType` | v0.10.2-KG-c | Abstractions | Relationship/Property/Claim enum |
-| `InferenceRule` | v0.10.2-KG-a | Abstractions | Rule definition record |
-| `InferenceRuleScope` | v0.10.2-KG-a | Abstractions | Workspace/Project/Global enum |
-| `IInferenceRuleParser` | v0.10.2-KG-a | Modules.CKVS.Inference | Rule DSL parsing |
-| `IRuleCompiler` | v0.10.2-KG-b | Modules.CKVS.Inference | Rule compilation |
-| `CompiledRule` | v0.10.2-KG-b | Abstractions | Executable rule form |
-| `IForwardChainer` | v0.10.2-KG-c | Modules.CKVS.Inference | Forward-chaining execution |
-| `IWorkingMemory` | v0.10.2-KG-c | Modules.CKVS.Inference | Fact working memory |
-| `IAgenda` | v0.10.2-KG-c | Modules.CKVS.Inference | Rule activation queue |
-| `IIncrementalInferenceManager` | v0.10.2-KG-d | Modules.CKVS.Inference | Incremental re-inference |
-| `IProvenanceTracker` | v0.10.2-KG-e | Modules.CKVS.Inference | Derivation chain tracking |
-| `DerivationExplanation` | v0.10.2-KG-e | Abstractions | Explanation for derived fact |
-| `DerivationPremise` | v0.10.2-KG-e | Abstractions | Premise in derivation chain |
-| `InferenceOptions` | v0.10.2-KG-c | Abstractions | Inference execution options |
+| Interface                      | Defined In   | Module                 | Purpose                          |
+| :----------------------------- | :----------- | :--------------------- | :------------------------------- |
+| `IInferenceEngine`             | v0.10.2-KG-c | Modules.CKVS.Inference | Core inference execution         |
+| `InferenceResult`              | v0.10.2-KG-c | Abstractions           | Inference execution result       |
+| `DerivedFact`                  | v0.10.2-KG-c | Abstractions           | Inferred fact record             |
+| `DerivedFactType`              | v0.10.2-KG-c | Abstractions           | Relationship/Property/Claim enum |
+| `InferenceRule`                | v0.10.2-KG-a | Abstractions           | Rule definition record           |
+| `InferenceRuleScope`           | v0.10.2-KG-a | Abstractions           | Workspace/Project/Global enum    |
+| `IInferenceRuleParser`         | v0.10.2-KG-a | Modules.CKVS.Inference | Rule DSL parsing                 |
+| `IRuleCompiler`                | v0.10.2-KG-b | Modules.CKVS.Inference | Rule compilation                 |
+| `CompiledRule`                 | v0.10.2-KG-b | Abstractions           | Executable rule form             |
+| `IForwardChainer`              | v0.10.2-KG-c | Modules.CKVS.Inference | Forward-chaining execution       |
+| `IWorkingMemory`               | v0.10.2-KG-c | Modules.CKVS.Inference | Fact working memory              |
+| `IAgenda`                      | v0.10.2-KG-c | Modules.CKVS.Inference | Rule activation queue            |
+| `IIncrementalInferenceManager` | v0.10.2-KG-d | Modules.CKVS.Inference | Incremental re-inference         |
+| `IProvenanceTracker`           | v0.10.2-KG-e | Modules.CKVS.Inference | Derivation chain tracking        |
+| `DerivationExplanation`        | v0.10.2-KG-e | Abstractions           | Explanation for derived fact     |
+| `DerivationPremise`            | v0.10.2-KG-e | Abstractions           | Premise in derivation chain      |
+| `InferenceOptions`             | v0.10.2-KG-c | Abstractions           | Inference execution options      |
 
 ### 5.3 v0.10.3-KG Entity Resolution Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IDisambiguationService` | v0.10.3-KG-a | Modules.CKVS.Resolution | Entity disambiguation |
-| `DisambiguationResult` | v0.10.3-KG-a | Abstractions | Disambiguation candidates |
-| `DisambiguationCandidate` | v0.10.3-KG-a | Abstractions | Match candidate record |
-| `IDuplicateDetector` | v0.10.3-KG-b | Modules.CKVS.Resolution | Duplicate entity detection |
-| `DuplicateScanResult` | v0.10.3-KG-b | Abstractions | Scan result with groups |
-| `DuplicateGroup` | v0.10.3-KG-b | Abstractions | Group of duplicate entities |
-| `IEntityMerger` | v0.10.3-KG-c | Modules.CKVS.Resolution | Entity merge operations |
-| `MergePreview` | v0.10.3-KG-c | Abstractions | Merge preview result |
-| `EntityMergeResult` | v0.10.3-KG-c | Abstractions | Merge execution result |
-| `IResolutionLearningService` | v0.10.3-KG-d | Modules.CKVS.Resolution | Learning from user choices |
-| `ResolutionFeedback` | v0.10.3-KG-d | Abstractions | User feedback record |
-| `IResolutionAuditService` | v0.10.3-KG-f | Modules.CKVS.Resolution | Resolution audit trail |
-| `ResolutionAuditEntry` | v0.10.3-KG-f | Abstractions | Audit entry record |
+| Interface                    | Defined In   | Module                  | Purpose                     |
+| :--------------------------- | :----------- | :---------------------- | :-------------------------- |
+| `IDisambiguationService`     | v0.10.3-KG-a | Modules.CKVS.Resolution | Entity disambiguation       |
+| `DisambiguationResult`       | v0.10.3-KG-a | Abstractions            | Disambiguation candidates   |
+| `DisambiguationCandidate`    | v0.10.3-KG-a | Abstractions            | Match candidate record      |
+| `IDuplicateDetector`         | v0.10.3-KG-b | Modules.CKVS.Resolution | Duplicate entity detection  |
+| `DuplicateScanResult`        | v0.10.3-KG-b | Abstractions            | Scan result with groups     |
+| `DuplicateGroup`             | v0.10.3-KG-b | Abstractions            | Group of duplicate entities |
+| `IEntityMerger`              | v0.10.3-KG-c | Modules.CKVS.Resolution | Entity merge operations     |
+| `MergePreview`               | v0.10.3-KG-c | Abstractions            | Merge preview result        |
+| `EntityMergeResult`          | v0.10.3-KG-c | Abstractions            | Merge execution result      |
+| `IResolutionLearningService` | v0.10.3-KG-d | Modules.CKVS.Resolution | Learning from user choices  |
+| `ResolutionFeedback`         | v0.10.3-KG-d | Abstractions            | User feedback record        |
+| `IResolutionAuditService`    | v0.10.3-KG-f | Modules.CKVS.Resolution | Resolution audit trail      |
+| `ResolutionAuditEntry`       | v0.10.3-KG-f | Abstractions            | Audit entry record          |
 
 ### 5.4 v0.10.4-KG Graph Visualization & Search Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IGraphRenderer` | v0.10.4-KG-a | Modules.CKVS.Visualization | Graph visualization |
-| `GraphVisualization` | v0.10.4-KG-a | Abstractions | Visualization data |
-| `VisualNode` | v0.10.4-KG-a | Abstractions | Node rendering data |
-| `VisualEdge` | v0.10.4-KG-a | Abstractions | Edge rendering data |
-| `LayoutAlgorithm` | v0.10.4-KG-a | Abstractions | Layout algorithm enum |
-| `IPathFinder` | v0.10.4-KG-b | Modules.CKVS.Visualization | Path finding between entities |
-| `GraphPath` | v0.10.4-KG-b | Abstractions | Path result record |
-| `PathFindingOptions` | v0.10.4-KG-b | Abstractions | Path search options |
-| `IGraphQueryService` | v0.10.4-KG-c | Modules.CKVS.Visualization | CKVS-QL query execution |
-| `QueryResult` | v0.10.4-KG-c | Abstractions | Query result container |
-| `ISemanticGraphSearch` | v0.10.4-KG-d | Modules.CKVS.Visualization | Semantic search over graph |
-| `SemanticSearchResult` | v0.10.4-KG-d | Abstractions | Semantic search results |
-| `IGraphExporter` | v0.10.4-KG-e | Modules.CKVS.Visualization | Export to SVG/PNG/PDF |
-| `ExportFormat` | v0.10.4-KG-e | Abstractions | SVG/PNG/PDF/JSON enum |
-| `ExportOptions` | v0.10.4-KG-e | Abstractions | Export configuration |
+| Interface              | Defined In   | Module                     | Purpose                       |
+| :--------------------- | :----------- | :------------------------- | :---------------------------- |
+| `IGraphRenderer`       | v0.10.4-KG-a | Modules.CKVS.Visualization | Graph visualization           |
+| `GraphVisualization`   | v0.10.4-KG-a | Abstractions               | Visualization data            |
+| `VisualNode`           | v0.10.4-KG-a | Abstractions               | Node rendering data           |
+| `VisualEdge`           | v0.10.4-KG-a | Abstractions               | Edge rendering data           |
+| `LayoutAlgorithm`      | v0.10.4-KG-a | Abstractions               | Layout algorithm enum         |
+| `IPathFinder`          | v0.10.4-KG-b | Modules.CKVS.Visualization | Path finding between entities |
+| `GraphPath`            | v0.10.4-KG-b | Abstractions               | Path result record            |
+| `PathFindingOptions`   | v0.10.4-KG-b | Abstractions               | Path search options           |
+| `IGraphQueryService`   | v0.10.4-KG-c | Modules.CKVS.Visualization | CKVS-QL query execution       |
+| `QueryResult`          | v0.10.4-KG-c | Abstractions               | Query result container        |
+| `ISemanticGraphSearch` | v0.10.4-KG-d | Modules.CKVS.Visualization | Semantic search over graph    |
+| `SemanticSearchResult` | v0.10.4-KG-d | Abstractions               | Semantic search results       |
+| `IGraphExporter`       | v0.10.4-KG-e | Modules.CKVS.Visualization | Export to SVG/PNG/PDF         |
+| `ExportFormat`         | v0.10.4-KG-e | Abstractions               | SVG/PNG/PDF/JSON enum         |
+| `ExportOptions`        | v0.10.4-KG-e | Abstractions               | Export configuration          |
 
 ### 5.5 v0.10.5-KG Knowledge Import/Export Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IKnowledgeImporter` | v0.10.5-KG-c | Modules.CKVS.Interop | Knowledge import |
-| `ImportPreview` | v0.10.5-KG-c | Abstractions | Import preview result |
-| `ImportResult` | v0.10.5-KG-c | Abstractions | Import execution result |
-| `ImportFormat` | v0.10.5-KG-a | Abstractions | OWL/RDF/Turtle/JSON-LD enum |
-| `ImportOptions` | v0.10.5-KG-c | Abstractions | Import configuration |
-| `ImportMode` | v0.10.5-KG-c | Abstractions | Merge/Replace/Append enum |
-| `IFormatParser` | v0.10.5-KG-a | Modules.CKVS.Interop | Format-specific parsing |
-| `ParsedKnowledge` | v0.10.5-KG-a | Abstractions | Parsed knowledge container |
-| `ISchemaMappingService` | v0.10.5-KG-b | Modules.CKVS.Interop | Schema mapping |
-| `SchemaMapping` | v0.10.5-KG-b | Abstractions | Mapping configuration |
-| `TypeMapping` | v0.10.5-KG-b | Abstractions | Type mapping record |
-| `PropertyMapping` | v0.10.5-KG-b | Abstractions | Property mapping record |
-| `IKnowledgeExporter` | v0.10.5-KG-d | Modules.CKVS.Interop | Knowledge export |
-| `ExportResult` | v0.10.5-KG-d | Abstractions | Export execution result |
-| `IImportValidator` | v0.10.5-KG-e | Modules.CKVS.Interop | Import validation |
-| `ValidationResult` | v0.10.5-KG-e | Abstractions | Validation outcome |
-| `ImportValidationError` | v0.10.5-KG-e | Abstractions | Validation error detail |
+| Interface               | Defined In   | Module               | Purpose                     |
+| :---------------------- | :----------- | :------------------- | :-------------------------- |
+| `IKnowledgeImporter`    | v0.10.5-KG-c | Modules.CKVS.Interop | Knowledge import            |
+| `ImportPreview`         | v0.10.5-KG-c | Abstractions         | Import preview result       |
+| `ImportResult`          | v0.10.5-KG-c | Abstractions         | Import execution result     |
+| `ImportFormat`          | v0.10.5-KG-a | Abstractions         | OWL/RDF/Turtle/JSON-LD enum |
+| `ImportOptions`         | v0.10.5-KG-c | Abstractions         | Import configuration        |
+| `ImportMode`            | v0.10.5-KG-c | Abstractions         | Merge/Replace/Append enum   |
+| `IFormatParser`         | v0.10.5-KG-a | Modules.CKVS.Interop | Format-specific parsing     |
+| `ParsedKnowledge`       | v0.10.5-KG-a | Abstractions         | Parsed knowledge container  |
+| `ISchemaMappingService` | v0.10.5-KG-b | Modules.CKVS.Interop | Schema mapping              |
+| `SchemaMapping`         | v0.10.5-KG-b | Abstractions         | Mapping configuration       |
+| `TypeMapping`           | v0.10.5-KG-b | Abstractions         | Type mapping record         |
+| `PropertyMapping`       | v0.10.5-KG-b | Abstractions         | Property mapping record     |
+| `IKnowledgeExporter`    | v0.10.5-KG-d | Modules.CKVS.Interop | Knowledge export            |
+| `ExportResult`          | v0.10.5-KG-d | Abstractions         | Export execution result     |
+| `IImportValidator`      | v0.10.5-KG-e | Modules.CKVS.Interop | Import validation           |
+| `ValidationResult`      | v0.10.5-KG-e | Abstractions         | Validation outcome          |
+| `ImportValidationError` | v0.10.5-KG-e | Abstractions         | Validation error detail     |
 
 ---
 
@@ -1523,13 +1523,13 @@ v0.10.5-KG (Import/Export)
 
 ### 6.2 v0.10.x Feature Gates
 
-| Version | Feature Gate | License Tier |
-| :--- | :--- | :--- |
-| v0.10.1-KG | `FeatureFlags.CKVS.GraphVersioning` | Teams (basic), Enterprise (branching) |
-| v0.10.2-KG | `FeatureFlags.CKVS.InferenceEngine` | Teams (built-in rules), Enterprise (custom) |
-| v0.10.3-KG | `FeatureFlags.CKVS.EntityResolution` | WriterPro (basic), Teams (full) |
+| Version    | Feature Gate                           | License Tier                                              |
+| :--------- | :------------------------------------- | :-------------------------------------------------------- |
+| v0.10.1-KG | `FeatureFlags.CKVS.GraphVersioning`    | Teams (basic), Enterprise (branching)                     |
+| v0.10.2-KG | `FeatureFlags.CKVS.InferenceEngine`    | Teams (built-in rules), Enterprise (custom)               |
+| v0.10.3-KG | `FeatureFlags.CKVS.EntityResolution`   | WriterPro (basic), Teams (full)                           |
 | v0.10.4-KG | `FeatureFlags.CKVS.GraphVisualization` | WriterPro (basic), Teams (CKVS-QL), Enterprise (semantic) |
-| v0.10.5-KG | `FeatureFlags.CKVS.KnowledgeInterop` | Teams |
+| v0.10.5-KG | `FeatureFlags.CKVS.KnowledgeInterop`   | Teams                                                     |
 
 ---
 
@@ -1615,112 +1615,112 @@ v0.10.5-KG (Import/Export)
 
 ### 8.1 v0.11.1-SEC Access Control & Authorization Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `Permission` | v0.11.1-SEC-a | Abstractions | Flags-based permission enum |
-| `Role` | v0.11.1-SEC-a | Abstractions | Role definition record |
-| `RoleType` | v0.11.1-SEC-a | Abstractions | Global/EntityType/Workspace/Custom enum |
-| `BuiltInRoles` | v0.11.1-SEC-a | Security | Pre-defined Viewer/Contributor/Editor/Admin roles |
-| `PolicyRule` | v0.11.1-SEC-a | Abstractions | ABAC policy rule record |
-| `PolicyEffect` | v0.11.1-SEC-a | Abstractions | Allow/Deny enum |
-| `IAuthorizationService` | v0.11.1-SEC-b | Modules.Security | Core permission evaluation |
-| `AuthorizationRequest` | v0.11.1-SEC-b | Abstractions | Authorization request record |
-| `AuthorizationResult` | v0.11.1-SEC-b | Abstractions | Authorization outcome record |
-| `DenialReason` | v0.11.1-SEC-b | Abstractions | Permission denial reason enum |
-| `EntityAcl` | v0.11.1-SEC-c | Abstractions | Entity access control list |
-| `AclEntry` | v0.11.1-SEC-c | Abstractions | ACL entry record |
-| `PrincipalType` | v0.11.1-SEC-c | Abstractions | User/Role/Team/ServiceAccount enum |
-| `AccessLevel` | v0.11.1-SEC-c | Abstractions | None/Read/Write/Full/Inherit enum |
-| `IRoleManagementService` | v0.11.1-SEC-d | Modules.Security | Role CRUD operations |
-| `IPermissionInheritanceService` | v0.11.1-SEC-e | Modules.Security | Permission inheritance resolver |
-| `IAccessControlViewModel` | v0.11.1-SEC-f | Modules.Security | Access control UI |
+| Interface                       | Defined In    | Module           | Purpose                                           |
+| :------------------------------ | :------------ | :--------------- | :------------------------------------------------ |
+| `Permission`                    | v0.11.1-SEC-a | Abstractions     | Flags-based permission enum                       |
+| `Role`                          | v0.11.1-SEC-a | Abstractions     | Role definition record                            |
+| `RoleType`                      | v0.11.1-SEC-a | Abstractions     | Global/EntityType/Workspace/Custom enum           |
+| `BuiltInRoles`                  | v0.11.1-SEC-a | Security         | Pre-defined Viewer/Contributor/Editor/Admin roles |
+| `PolicyRule`                    | v0.11.1-SEC-a | Abstractions     | ABAC policy rule record                           |
+| `PolicyEffect`                  | v0.11.1-SEC-a | Abstractions     | Allow/Deny enum                                   |
+| `IAuthorizationService`         | v0.11.1-SEC-b | Modules.Security | Core permission evaluation                        |
+| `AuthorizationRequest`          | v0.11.1-SEC-b | Abstractions     | Authorization request record                      |
+| `AuthorizationResult`           | v0.11.1-SEC-b | Abstractions     | Authorization outcome record                      |
+| `DenialReason`                  | v0.11.1-SEC-b | Abstractions     | Permission denial reason enum                     |
+| `EntityAcl`                     | v0.11.1-SEC-c | Abstractions     | Entity access control list                        |
+| `AclEntry`                      | v0.11.1-SEC-c | Abstractions     | ACL entry record                                  |
+| `PrincipalType`                 | v0.11.1-SEC-c | Abstractions     | User/Role/Team/ServiceAccount enum                |
+| `AccessLevel`                   | v0.11.1-SEC-c | Abstractions     | None/Read/Write/Full/Inherit enum                 |
+| `IRoleManagementService`        | v0.11.1-SEC-d | Modules.Security | Role CRUD operations                              |
+| `IPermissionInheritanceService` | v0.11.1-SEC-e | Modules.Security | Permission inheritance resolver                   |
+| `IAccessControlViewModel`       | v0.11.1-SEC-f | Modules.Security | Access control UI                                 |
 
 ### 8.2 v0.11.2-SEC Security Audit Logging Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `AuditEvent` | v0.11.2-SEC-a | Abstractions | Audit event record |
-| `AuditEventType` | v0.11.2-SEC-a | Abstractions | Login/Permission/Entity/etc. event types |
-| `AuditEventCategory` | v0.11.2-SEC-a | Abstractions | Auth/DataAccess/Config/etc. categories |
-| `AuditSeverity` | v0.11.2-SEC-a | Abstractions | Debug/Info/Warning/Error/Critical enum |
-| `AuditOutcome` | v0.11.2-SEC-a | Abstractions | Success/Failure/Partial/Unknown enum |
-| `IAuditLogger` | v0.11.2-SEC-b | Modules.Security | High-performance audit logging |
-| `IAuditQueryService` | v0.11.2-SEC-b | Modules.Security | Audit event querying |
-| `AuditQuery` | v0.11.2-SEC-b | Abstractions | Query filter record |
-| `AuditQueryResult` | v0.11.2-SEC-b | Abstractions | Query result record |
-| `IntegrityVerificationResult` | v0.11.2-SEC-c | Abstractions | Hash chain verification |
-| `IntegrityViolation` | v0.11.2-SEC-c | Abstractions | Integrity violation detail |
-| `ISecurityAlertService` | v0.11.2-SEC-d | Modules.Security | Real-time security alerts |
-| `AlertRule` | v0.11.2-SEC-d | Abstractions | Alert rule configuration |
-| `SecurityAlert` | v0.11.2-SEC-d | Abstractions | Alert instance record |
-| `AlertSeverity` | v0.11.2-SEC-d | Abstractions | Low/Medium/High/Critical enum |
-| `IRetentionManager` | v0.11.2-SEC-e | Modules.Security | Log lifecycle management |
-| `IAuditQueryViewModel` | v0.11.2-SEC-f | Modules.Security | Audit query UI |
+| Interface                     | Defined In    | Module           | Purpose                                  |
+| :---------------------------- | :------------ | :--------------- | :--------------------------------------- |
+| `AuditEvent`                  | v0.11.2-SEC-a | Abstractions     | Audit event record                       |
+| `AuditEventType`              | v0.11.2-SEC-a | Abstractions     | Login/Permission/Entity/etc. event types |
+| `AuditEventCategory`          | v0.11.2-SEC-a | Abstractions     | Auth/DataAccess/Config/etc. categories   |
+| `AuditSeverity`               | v0.11.2-SEC-a | Abstractions     | Debug/Info/Warning/Error/Critical enum   |
+| `AuditOutcome`                | v0.11.2-SEC-a | Abstractions     | Success/Failure/Partial/Unknown enum     |
+| `IAuditLogger`                | v0.11.2-SEC-b | Modules.Security | High-performance audit logging           |
+| `IAuditQueryService`          | v0.11.2-SEC-b | Modules.Security | Audit event querying                     |
+| `AuditQuery`                  | v0.11.2-SEC-b | Abstractions     | Query filter record                      |
+| `AuditQueryResult`            | v0.11.2-SEC-b | Abstractions     | Query result record                      |
+| `IntegrityVerificationResult` | v0.11.2-SEC-c | Abstractions     | Hash chain verification                  |
+| `IntegrityViolation`          | v0.11.2-SEC-c | Abstractions     | Integrity violation detail               |
+| `ISecurityAlertService`       | v0.11.2-SEC-d | Modules.Security | Real-time security alerts                |
+| `AlertRule`                   | v0.11.2-SEC-d | Abstractions     | Alert rule configuration                 |
+| `SecurityAlert`               | v0.11.2-SEC-d | Abstractions     | Alert instance record                    |
+| `AlertSeverity`               | v0.11.2-SEC-d | Abstractions     | Low/Medium/High/Critical enum            |
+| `IRetentionManager`           | v0.11.2-SEC-e | Modules.Security | Log lifecycle management                 |
+| `IAuditQueryViewModel`        | v0.11.2-SEC-f | Modules.Security | Audit query UI                           |
 
 ### 8.3 v0.11.3-SEC Data Protection & Encryption Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `DataClassification` | v0.11.3-SEC-a | Abstractions | Public/Internal/Confidential/Restricted/Secret enum |
-| `PropertyClassification` | v0.11.3-SEC-a | Abstractions | Property sensitivity classification |
-| `IDataClassificationService` | v0.11.3-SEC-a | Modules.Security | Data classification management |
-| `IEncryptionService` | v0.11.3-SEC-b | Modules.Security | Core encryption/decryption |
-| `EncryptedData` | v0.11.3-SEC-b | Abstractions | Encrypted data container |
-| `EncryptionContext` | v0.11.3-SEC-b | Abstractions | Encryption context/AAD |
-| `IKeyManagementService` | v0.11.3-SEC-c | Modules.Security | Key storage and rotation |
-| `EncryptionKey` | v0.11.3-SEC-c | Abstractions | Encryption key metadata |
-| `KeyStatus` | v0.11.3-SEC-c | Abstractions | Pending/Active/Decrypt/Retired/Compromised enum |
-| `KeyRotationResult` | v0.11.3-SEC-c | Abstractions | Key rotation outcome |
-| `IFieldEncryptionService` | v0.11.3-SEC-d | Modules.Security | Field-level encryption |
-| `FieldEncryptionStatus` | v0.11.3-SEC-d | Abstractions | Field encryption state |
-| `IDataMaskingService` | v0.11.3-SEC-e | Modules.Security | Dynamic data masking |
-| `MaskingType` | v0.11.3-SEC-e | Abstractions | Full/Partial/Email/Phone/etc. enum |
-| `ISecureExportService` | v0.11.3-SEC-f | Modules.Security | Encrypted export with key escrow |
+| Interface                    | Defined In    | Module           | Purpose                                             |
+| :--------------------------- | :------------ | :--------------- | :-------------------------------------------------- |
+| `DataClassification`         | v0.11.3-SEC-a | Abstractions     | Public/Internal/Confidential/Restricted/Secret enum |
+| `PropertyClassification`     | v0.11.3-SEC-a | Abstractions     | Property sensitivity classification                 |
+| `IDataClassificationService` | v0.11.3-SEC-a | Modules.Security | Data classification management                      |
+| `IEncryptionService`         | v0.11.3-SEC-b | Modules.Security | Core encryption/decryption                          |
+| `EncryptedData`              | v0.11.3-SEC-b | Abstractions     | Encrypted data container                            |
+| `EncryptionContext`          | v0.11.3-SEC-b | Abstractions     | Encryption context/AAD                              |
+| `IKeyManagementService`      | v0.11.3-SEC-c | Modules.Security | Key storage and rotation                            |
+| `EncryptionKey`              | v0.11.3-SEC-c | Abstractions     | Encryption key metadata                             |
+| `KeyStatus`                  | v0.11.3-SEC-c | Abstractions     | Pending/Active/Decrypt/Retired/Compromised enum     |
+| `KeyRotationResult`          | v0.11.3-SEC-c | Abstractions     | Key rotation outcome                                |
+| `IFieldEncryptionService`    | v0.11.3-SEC-d | Modules.Security | Field-level encryption                              |
+| `FieldEncryptionStatus`      | v0.11.3-SEC-d | Abstractions     | Field encryption state                              |
+| `IDataMaskingService`        | v0.11.3-SEC-e | Modules.Security | Dynamic data masking                                |
+| `MaskingType`                | v0.11.3-SEC-e | Abstractions     | Full/Partial/Email/Phone/etc. enum                  |
+| `ISecureExportService`       | v0.11.3-SEC-f | Modules.Security | Encrypted export with key escrow                    |
 
 ### 8.4 v0.11.4-SEC Input Security & Validation Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IQuerySanitizer` | v0.11.4-SEC-a | Modules.Security | CKVS-QL injection prevention |
-| `SanitizedQuery` | v0.11.4-SEC-a | Abstractions | Sanitized query result |
-| `ParameterizedQuery` | v0.11.4-SEC-a | Abstractions | Parameterized query container |
-| `QueryValidationResult` | v0.11.4-SEC-a | Abstractions | Query structure validation |
-| `IInputSchemaValidator` | v0.11.4-SEC-b | Modules.Security | Schema validation |
-| `ValidationResult` | v0.11.4-SEC-b | Abstractions | Validation outcome |
-| `ValidationError` | v0.11.4-SEC-b | Abstractions | Validation error detail |
-| `IContentScanner` | v0.11.4-SEC-c | Modules.Security | Malicious content detection |
-| `ScanResult` | v0.11.4-SEC-c | Abstractions | Content scan result |
-| `DetectedThreat` | v0.11.4-SEC-c | Abstractions | Detected threat detail |
-| `ThreatType` | v0.11.4-SEC-c | Abstractions | Injection/XSS/Malware/etc. enum |
-| `IRateLimiter` | v0.11.4-SEC-d | Modules.Security | Request rate limiting |
-| `RateLimitResult` | v0.11.4-SEC-d | Abstractions | Rate limit check result |
-| `RateLimitPolicy` | v0.11.4-SEC-d | Abstractions | Rate limit configuration |
-| `IInputNormalizer` | v0.11.4-SEC-e | Modules.Security | Input sanitization |
-| `IErrorSanitizer` | v0.11.4-SEC-f | Modules.Security | Error response sanitization |
+| Interface               | Defined In    | Module           | Purpose                         |
+| :---------------------- | :------------ | :--------------- | :------------------------------ |
+| `IQuerySanitizer`       | v0.11.4-SEC-a | Modules.Security | CKVS-QL injection prevention    |
+| `SanitizedQuery`        | v0.11.4-SEC-a | Abstractions     | Sanitized query result          |
+| `ParameterizedQuery`    | v0.11.4-SEC-a | Abstractions     | Parameterized query container   |
+| `QueryValidationResult` | v0.11.4-SEC-a | Abstractions     | Query structure validation      |
+| `IInputSchemaValidator` | v0.11.4-SEC-b | Modules.Security | Schema validation               |
+| `ValidationResult`      | v0.11.4-SEC-b | Abstractions     | Validation outcome              |
+| `ValidationError`       | v0.11.4-SEC-b | Abstractions     | Validation error detail         |
+| `IContentScanner`       | v0.11.4-SEC-c | Modules.Security | Malicious content detection     |
+| `ScanResult`            | v0.11.4-SEC-c | Abstractions     | Content scan result             |
+| `DetectedThreat`        | v0.11.4-SEC-c | Abstractions     | Detected threat detail          |
+| `ThreatType`            | v0.11.4-SEC-c | Abstractions     | Injection/XSS/Malware/etc. enum |
+| `IRateLimiter`          | v0.11.4-SEC-d | Modules.Security | Request rate limiting           |
+| `RateLimitResult`       | v0.11.4-SEC-d | Abstractions     | Rate limit check result         |
+| `RateLimitPolicy`       | v0.11.4-SEC-d | Abstractions     | Rate limit configuration        |
+| `IInputNormalizer`      | v0.11.4-SEC-e | Modules.Security | Input sanitization              |
+| `IErrorSanitizer`       | v0.11.4-SEC-f | Modules.Security | Error response sanitization     |
 
 ### 8.5 v0.11.5-SEC API Security Gateway Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IApiKeyService` | v0.11.5-SEC-a | Modules.Security | API key management |
-| `ApiKeyCreationResult` | v0.11.5-SEC-a | Abstractions | Key creation result |
-| `ApiKeyValidationResult` | v0.11.5-SEC-a | Abstractions | Key validation result |
-| `ApiKeyInfo` | v0.11.5-SEC-a | Abstractions | API key metadata |
-| `ApiScope` | v0.11.5-SEC-a | Abstractions | API permission scopes |
-| `ApiKeyQuota` | v0.11.5-SEC-a | Abstractions | API key quota configuration |
-| `IOAuthService` | v0.11.5-SEC-b | Modules.Security | OAuth 2.0 / OIDC |
-| `TokenResponse` | v0.11.5-SEC-b | Abstractions | OAuth token response |
-| `TokenValidationResult` | v0.11.5-SEC-b | Abstractions | Token validation result |
-| `IRequestSigningService` | v0.11.5-SEC-c | Modules.Security | Request signature verification |
-| `SignedRequest` | v0.11.5-SEC-c | Abstractions | Signed request data |
-| `SignatureVerificationResult` | v0.11.5-SEC-c | Abstractions | Signature verification result |
-| `IApiVersioningService` | v0.11.5-SEC-d | Modules.Security | API version management |
-| `ApiVersion` | v0.11.5-SEC-d | Abstractions | API version record |
-| `DeprecationInfo` | v0.11.5-SEC-d | Abstractions | Version deprecation info |
-| `IApiAnalyticsService` | v0.11.5-SEC-e | Modules.Security | API usage analytics |
-| `ApiRequestMetrics` | v0.11.5-SEC-e | Abstractions | Request metrics record |
-| `ApiUsageStats` | v0.11.5-SEC-e | Abstractions | Usage statistics |
-| `IGatewayMiddleware` | v0.11.5-SEC-f | Modules.Security | Request pipeline integration |
+| Interface                     | Defined In    | Module           | Purpose                        |
+| :---------------------------- | :------------ | :--------------- | :----------------------------- |
+| `IApiKeyService`              | v0.11.5-SEC-a | Modules.Security | API key management             |
+| `ApiKeyCreationResult`        | v0.11.5-SEC-a | Abstractions     | Key creation result            |
+| `ApiKeyValidationResult`      | v0.11.5-SEC-a | Abstractions     | Key validation result          |
+| `ApiKeyInfo`                  | v0.11.5-SEC-a | Abstractions     | API key metadata               |
+| `ApiScope`                    | v0.11.5-SEC-a | Abstractions     | API permission scopes          |
+| `ApiKeyQuota`                 | v0.11.5-SEC-a | Abstractions     | API key quota configuration    |
+| `IOAuthService`               | v0.11.5-SEC-b | Modules.Security | OAuth 2.0 / OIDC               |
+| `TokenResponse`               | v0.11.5-SEC-b | Abstractions     | OAuth token response           |
+| `TokenValidationResult`       | v0.11.5-SEC-b | Abstractions     | Token validation result        |
+| `IRequestSigningService`      | v0.11.5-SEC-c | Modules.Security | Request signature verification |
+| `SignedRequest`               | v0.11.5-SEC-c | Abstractions     | Signed request data            |
+| `SignatureVerificationResult` | v0.11.5-SEC-c | Abstractions     | Signature verification result  |
+| `IApiVersioningService`       | v0.11.5-SEC-d | Modules.Security | API version management         |
+| `ApiVersion`                  | v0.11.5-SEC-d | Abstractions     | API version record             |
+| `DeprecationInfo`             | v0.11.5-SEC-d | Abstractions     | Version deprecation info       |
+| `IApiAnalyticsService`        | v0.11.5-SEC-e | Modules.Security | API usage analytics            |
+| `ApiRequestMetrics`           | v0.11.5-SEC-e | Abstractions     | Request metrics record         |
+| `ApiUsageStats`               | v0.11.5-SEC-e | Abstractions     | Usage statistics               |
+| `IGatewayMiddleware`          | v0.11.5-SEC-f | Modules.Security | Request pipeline integration   |
 
 ---
 
@@ -1764,13 +1764,13 @@ v0.11.5-SEC (API Gateway)
 
 ### 9.2 v0.11.x Feature Gates
 
-| Version | Feature Gate | License Tier |
-| :--- | :--- | :--- |
-| v0.11.1-SEC | `FeatureFlags.Security.AccessControl` | Core (none), WriterPro (basic roles), Teams (RBAC), Enterprise (ABAC) |
-| v0.11.2-SEC | `FeatureFlags.Security.AuditLogging` | Core (7 days), WriterPro (30 days), Teams (1 year + alerts), Enterprise (unlimited + SIEM) |
-| v0.11.3-SEC | `FeatureFlags.Security.DataProtection` | Core (DB-level), WriterPro (masking), Teams (field encryption), Enterprise (HSM) |
-| v0.11.4-SEC | `FeatureFlags.Security.InputSecurity` | Core (basic), WriterPro (scanning), Teams (rate limits), Enterprise (threat detection) |
-| v0.11.5-SEC | `FeatureFlags.Security.ApiGateway` | Core (none), WriterPro (2 keys), Teams (keys + OAuth), Enterprise (full + SLA) |
+| Version     | Feature Gate                           | License Tier                                                                               |
+| :---------- | :------------------------------------- | :----------------------------------------------------------------------------------------- |
+| v0.11.1-SEC | `FeatureFlags.Security.AccessControl`  | Core (none), WriterPro (basic roles), Teams (RBAC), Enterprise (ABAC)                      |
+| v0.11.2-SEC | `FeatureFlags.Security.AuditLogging`   | Core (7 days), WriterPro (30 days), Teams (1 year + alerts), Enterprise (unlimited + SIEM) |
+| v0.11.3-SEC | `FeatureFlags.Security.DataProtection` | Core (DB-level), WriterPro (masking), Teams (field encryption), Enterprise (HSM)           |
+| v0.11.4-SEC | `FeatureFlags.Security.InputSecurity`  | Core (basic), WriterPro (scanning), Teams (rate limits), Enterprise (threat detection)     |
+| v0.11.5-SEC | `FeatureFlags.Security.ApiGateway`     | Core (none), WriterPro (2 keys), Teams (keys + OAuth), Enterprise (full + SLA)             |
 
 ---
 
@@ -1865,96 +1865,96 @@ v0.11.5-SEC (API Gateway)
 
 ### 11.1 v0.12.1-AGT Agent Definition Model Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IAgent` | v0.12.1-AGT-a | Abstractions | Core agent contract |
-| `AgentId` | v0.12.1-AGT-a | Abstractions | Immutable agent identifier |
-| `AgentManifest` | v0.12.1-AGT-a | Abstractions | Agent capabilities/requirements declaration |
-| `AgentState` | v0.12.1-AGT-a | Abstractions | Agent operational state enum |
-| `AgentType` | v0.12.1-AGT-a | Abstractions | Task/Conversational/Reactive/Autonomous/Supervisor enum |
-| `ShutdownReason` | v0.12.1-AGT-a | Abstractions | Agent termination reason enum |
-| `AgentCapability` | v0.12.1-AGT-b | Abstractions | Capability declaration record |
-| `CapabilityCategory` | v0.12.1-AGT-b | Abstractions | TextGeneration/Analysis/Code/etc. enum |
-| `CapabilityQuery` | v0.12.1-AGT-b | Abstractions | Capability search query |
-| `AgentRequirements` | v0.12.1-AGT-c | Abstractions | LLM/memory/tool requirements |
-| `LLMRequirements` | v0.12.1-AGT-c | Abstractions | LLM-specific requirements |
-| `AgentConstraints` | v0.12.1-AGT-c | Abstractions | Behavioral limits |
-| `IAgentRegistry` | v0.12.1-AGT-d | Modules.Agents.Core | Agent registration and discovery |
-| `AgentFactory` | v0.12.1-AGT-d | Abstractions | Agent creation delegate |
-| `AgentRegistration` | v0.12.1-AGT-d | Abstractions | Registration result |
-| `AgentSearchQuery` | v0.12.1-AGT-d | Abstractions | Agent search parameters |
-| `IAgentValidator` | v0.12.1-AGT-e | Modules.Agents.Core | Manifest/behavior validation |
-| `ValidationResult` | v0.12.1-AGT-e | Abstractions | Validation outcome |
+| Interface            | Defined In    | Module              | Purpose                                                 |
+| :------------------- | :------------ | :------------------ | :------------------------------------------------------ |
+| `IAgent`             | v0.12.1-AGT-a | Abstractions        | Core agent contract                                     |
+| `AgentId`            | v0.12.1-AGT-a | Abstractions        | Immutable agent identifier                              |
+| `AgentManifest`      | v0.12.1-AGT-a | Abstractions        | Agent capabilities/requirements declaration             |
+| `AgentState`         | v0.12.1-AGT-a | Abstractions        | Agent operational state enum                            |
+| `AgentType`          | v0.12.1-AGT-a | Abstractions        | Task/Conversational/Reactive/Autonomous/Supervisor enum |
+| `ShutdownReason`     | v0.12.1-AGT-a | Abstractions        | Agent termination reason enum                           |
+| `AgentCapability`    | v0.12.1-AGT-b | Abstractions        | Capability declaration record                           |
+| `CapabilityCategory` | v0.12.1-AGT-b | Abstractions        | TextGeneration/Analysis/Code/etc. enum                  |
+| `CapabilityQuery`    | v0.12.1-AGT-b | Abstractions        | Capability search query                                 |
+| `AgentRequirements`  | v0.12.1-AGT-c | Abstractions        | LLM/memory/tool requirements                            |
+| `LLMRequirements`    | v0.12.1-AGT-c | Abstractions        | LLM-specific requirements                               |
+| `AgentConstraints`   | v0.12.1-AGT-c | Abstractions        | Behavioral limits                                       |
+| `IAgentRegistry`     | v0.12.1-AGT-d | Modules.Agents.Core | Agent registration and discovery                        |
+| `AgentFactory`       | v0.12.1-AGT-d | Abstractions        | Agent creation delegate                                 |
+| `AgentRegistration`  | v0.12.1-AGT-d | Abstractions        | Registration result                                     |
+| `AgentSearchQuery`   | v0.12.1-AGT-d | Abstractions        | Agent search parameters                                 |
+| `IAgentValidator`    | v0.12.1-AGT-e | Modules.Agents.Core | Manifest/behavior validation                            |
+| `ValidationResult`   | v0.12.1-AGT-e | Abstractions        | Validation outcome                                      |
 
 ### 11.2 v0.12.2-AGT Agent Lifecycle Manager Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IAgentLifecycleManager` | v0.12.2-AGT-a | Modules.Agents.Core | Agent spawn/terminate/observe |
-| `SpawnRequest` | v0.12.2-AGT-a | Abstractions | Agent spawn parameters |
-| `AgentSpawnOptions` | v0.12.2-AGT-a | Abstractions | Restart policy, limits, isolation |
-| `RestartPolicy` | v0.12.2-AGT-a | Abstractions | Never/OnFailure/Always/OnCrash enum |
-| `IsolationLevel` | v0.12.2-AGT-a | Abstractions | Shared/Isolated/Sandboxed enum |
-| `ResourceLimits` | v0.12.2-AGT-a | Abstractions | Concurrent/token/memory limits |
-| `AgentInstance` | v0.12.2-AGT-a | Abstractions | Running agent instance |
-| `IAgentMonitor` | v0.12.2-AGT-b | Modules.Agents.Core | Health checks and metrics |
-| `AgentHealthStatus` | v0.12.2-AGT-c | Abstractions | Health state and issues |
-| `HealthState` | v0.12.2-AGT-c | Abstractions | Healthy/Degraded/Unhealthy/Unknown enum |
-| `AgentMetrics` | v0.12.2-AGT-b | Abstractions | Request/latency/token metrics |
-| `AgentLifecycleEvent` | v0.12.2-AGT-a | Abstractions | Lifecycle state changes |
-| `TerminationReason` | v0.12.2-AGT-d | Abstractions | Termination cause enum |
+| Interface                | Defined In    | Module              | Purpose                                 |
+| :----------------------- | :------------ | :------------------ | :-------------------------------------- |
+| `IAgentLifecycleManager` | v0.12.2-AGT-a | Modules.Agents.Core | Agent spawn/terminate/observe           |
+| `SpawnRequest`           | v0.12.2-AGT-a | Abstractions        | Agent spawn parameters                  |
+| `AgentSpawnOptions`      | v0.12.2-AGT-a | Abstractions        | Restart policy, limits, isolation       |
+| `RestartPolicy`          | v0.12.2-AGT-a | Abstractions        | Never/OnFailure/Always/OnCrash enum     |
+| `IsolationLevel`         | v0.12.2-AGT-a | Abstractions        | Shared/Isolated/Sandboxed enum          |
+| `ResourceLimits`         | v0.12.2-AGT-a | Abstractions        | Concurrent/token/memory limits          |
+| `AgentInstance`          | v0.12.2-AGT-a | Abstractions        | Running agent instance                  |
+| `IAgentMonitor`          | v0.12.2-AGT-b | Modules.Agents.Core | Health checks and metrics               |
+| `AgentHealthStatus`      | v0.12.2-AGT-c | Abstractions        | Health state and issues                 |
+| `HealthState`            | v0.12.2-AGT-c | Abstractions        | Healthy/Degraded/Unhealthy/Unknown enum |
+| `AgentMetrics`           | v0.12.2-AGT-b | Abstractions        | Request/latency/token metrics           |
+| `AgentLifecycleEvent`    | v0.12.2-AGT-a | Abstractions        | Lifecycle state changes                 |
+| `TerminationReason`      | v0.12.2-AGT-d | Abstractions        | Termination cause enum                  |
 
 ### 11.3 v0.12.3-AGT Agent Communication Bus Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IAgentMessageBus` | v0.12.3-AGT-a | Modules.Agents.Core | Inter-agent messaging |
-| `AgentMessage` | v0.12.3-AGT-a | Abstractions | Message record |
-| `MessageId` | v0.12.3-AGT-a | Abstractions | Unique message identifier |
-| `MessagePriority` | v0.12.3-AGT-a | Abstractions | Low/Normal/High/Critical enum |
-| `AgentEvent` | v0.12.3-AGT-b | Abstractions | Published event record |
-| `AgentEventFilter` | v0.12.3-AGT-b | Abstractions | Event subscription filter |
-| `AgentSelector` | v0.12.3-AGT-d | Abstractions | Target agent selector |
-| `IMessageRouter` | v0.12.3-AGT-e | Modules.Agents.Core | Message routing |
-| `RouteDefinition` | v0.12.3-AGT-e | Abstractions | Route configuration |
-| `RoutingStrategy` | v0.12.3-AGT-e | Abstractions | First/RoundRobin/LeastBusy/Broadcast/Random enum |
+| Interface          | Defined In    | Module              | Purpose                                          |
+| :----------------- | :------------ | :------------------ | :----------------------------------------------- |
+| `IAgentMessageBus` | v0.12.3-AGT-a | Modules.Agents.Core | Inter-agent messaging                            |
+| `AgentMessage`     | v0.12.3-AGT-a | Abstractions        | Message record                                   |
+| `MessageId`        | v0.12.3-AGT-a | Abstractions        | Unique message identifier                        |
+| `MessagePriority`  | v0.12.3-AGT-a | Abstractions        | Low/Normal/High/Critical enum                    |
+| `AgentEvent`       | v0.12.3-AGT-b | Abstractions        | Published event record                           |
+| `AgentEventFilter` | v0.12.3-AGT-b | Abstractions        | Event subscription filter                        |
+| `AgentSelector`    | v0.12.3-AGT-d | Abstractions        | Target agent selector                            |
+| `IMessageRouter`   | v0.12.3-AGT-e | Modules.Agents.Core | Message routing                                  |
+| `RouteDefinition`  | v0.12.3-AGT-e | Abstractions        | Route configuration                              |
+| `RoutingStrategy`  | v0.12.3-AGT-e | Abstractions        | First/RoundRobin/LeastBusy/Broadcast/Random enum |
 
 ### 11.4 v0.12.4-AGT Agent Memory & Context Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IAgentMemory` | v0.12.4-AGT-a | Modules.Agents.Core | Unified memory access |
-| `IWorkingMemory` | v0.12.4-AGT-a | Modules.Agents.Core | Session-scoped memory |
-| `IWorkingMemoryScope` | v0.12.4-AGT-a | Abstractions | Scoped memory container |
-| `ILongTermMemory` | v0.12.4-AGT-b | Modules.Agents.Core | Persistent semantic memory |
-| `MemoryEntry` | v0.12.4-AGT-b | Abstractions | Stored memory record |
-| `MemoryType` | v0.12.4-AGT-b | Abstractions | Fact/Event/Insight/Preference/Correction/Conversation enum |
-| `MemoryQuery` | v0.12.4-AGT-d | Abstractions | Memory retrieval query |
-| `IContextWindow` | v0.12.4-AGT-c | Modules.Agents.Core | LLM context management |
-| `ContextItem` | v0.12.4-AGT-c | Abstractions | Context window item |
-| `ContextItemType` | v0.12.4-AGT-c | Abstractions | SystemPrompt/UserMessage/etc. enum |
-| `CompactionStrategy` | v0.12.4-AGT-c | Abstractions | RemoveOldest/RemoveLowPriority/Summarize/Selective enum |
-| `MemorySnapshot` | v0.12.4-AGT-e | Abstractions | Memory state snapshot |
+| Interface             | Defined In    | Module              | Purpose                                                    |
+| :-------------------- | :------------ | :------------------ | :--------------------------------------------------------- |
+| `IAgentMemory`        | v0.12.4-AGT-a | Modules.Agents.Core | Unified memory access                                      |
+| `IWorkingMemory`      | v0.12.4-AGT-a | Modules.Agents.Core | Session-scoped memory                                      |
+| `IWorkingMemoryScope` | v0.12.4-AGT-a | Abstractions        | Scoped memory container                                    |
+| `ILongTermMemory`     | v0.12.4-AGT-b | Modules.Agents.Core | Persistent semantic memory                                 |
+| `MemoryEntry`         | v0.12.4-AGT-b | Abstractions        | Stored memory record                                       |
+| `MemoryType`          | v0.12.4-AGT-b | Abstractions        | Fact/Event/Insight/Preference/Correction/Conversation enum |
+| `MemoryQuery`         | v0.12.4-AGT-d | Abstractions        | Memory retrieval query                                     |
+| `IContextWindow`      | v0.12.4-AGT-c | Modules.Agents.Core | LLM context management                                     |
+| `ContextItem`         | v0.12.4-AGT-c | Abstractions        | Context window item                                        |
+| `ContextItemType`     | v0.12.4-AGT-c | Abstractions        | SystemPrompt/UserMessage/etc. enum                         |
+| `CompactionStrategy`  | v0.12.4-AGT-c | Abstractions        | RemoveOldest/RemoveLowPriority/Summarize/Selective enum    |
+| `MemorySnapshot`      | v0.12.4-AGT-e | Abstractions        | Memory state snapshot                                      |
 
 ### 11.5 v0.12.5-AGT Agent Tool System Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `ITool` | v0.12.5-AGT-a | Abstractions | Tool execution contract |
-| `ToolDefinition` | v0.12.5-AGT-a | Abstractions | Tool schema/parameters |
-| `ToolCategory` | v0.12.5-AGT-a | Abstractions | FileSystem/Network/Database/etc. enum |
-| `ToolParameter` | v0.12.5-AGT-a | Abstractions | Tool parameter definition |
-| `ToolParameterType` | v0.12.5-AGT-a | Abstractions | String/Integer/Number/Boolean/Array/Object enum |
-| `ToolConstraints` | v0.12.5-AGT-a | Abstractions | Execution limits |
-| `IToolRegistry` | v0.12.5-AGT-b | Modules.Agents.Core | Tool registration/discovery |
-| `ToolRegistration` | v0.12.5-AGT-b | Abstractions | Registration result |
-| `IToolExecutor` | v0.12.5-AGT-c | Modules.Agents.Core | Tool execution |
-| `ToolInput` | v0.12.5-AGT-c | Abstractions | Tool execution input |
-| `ToolExecutionOptions` | v0.12.5-AGT-c | Abstractions | Timeout, isolation, confirmation |
-| `ToolResult` | v0.12.5-AGT-e | Abstractions | Execution result |
-| `ToolResultMetadata` | v0.12.5-AGT-e | Abstractions | Side effects, affected resources |
-| `IToolSandbox` | v0.12.5-AGT-d | Modules.Agents.Core | Sandboxed execution |
-| `SandboxOptions` | v0.12.5-AGT-d | Abstractions | Allowed paths/hosts/limits |
+| Interface              | Defined In    | Module              | Purpose                                         |
+| :--------------------- | :------------ | :------------------ | :---------------------------------------------- |
+| `ITool`                | v0.12.5-AGT-a | Abstractions        | Tool execution contract                         |
+| `ToolDefinition`       | v0.12.5-AGT-a | Abstractions        | Tool schema/parameters                          |
+| `ToolCategory`         | v0.12.5-AGT-a | Abstractions        | FileSystem/Network/Database/etc. enum           |
+| `ToolParameter`        | v0.12.5-AGT-a | Abstractions        | Tool parameter definition                       |
+| `ToolParameterType`    | v0.12.5-AGT-a | Abstractions        | String/Integer/Number/Boolean/Array/Object enum |
+| `ToolConstraints`      | v0.12.5-AGT-a | Abstractions        | Execution limits                                |
+| `IToolRegistry`        | v0.12.5-AGT-b | Modules.Agents.Core | Tool registration/discovery                     |
+| `ToolRegistration`     | v0.12.5-AGT-b | Abstractions        | Registration result                             |
+| `IToolExecutor`        | v0.12.5-AGT-c | Modules.Agents.Core | Tool execution                                  |
+| `ToolInput`            | v0.12.5-AGT-c | Abstractions        | Tool execution input                            |
+| `ToolExecutionOptions` | v0.12.5-AGT-c | Abstractions        | Timeout, isolation, confirmation                |
+| `ToolResult`           | v0.12.5-AGT-e | Abstractions        | Execution result                                |
+| `ToolResultMetadata`   | v0.12.5-AGT-e | Abstractions        | Side effects, affected resources                |
+| `IToolSandbox`         | v0.12.5-AGT-d | Modules.Agents.Core | Sandboxed execution                             |
+| `SandboxOptions`       | v0.12.5-AGT-d | Abstractions        | Allowed paths/hosts/limits                      |
 
 ---
 
@@ -1996,13 +1996,13 @@ v0.12.5-AGT (Tool System)
 
 ### 12.2 v0.12.x Feature Gates
 
-| Version | Feature Gate | License Tier |
-| :--- | :--- | :--- |
-| v0.12.1-AGT | `FeatureFlags.Agents.Definition` | Core (3 built-in), WriterPro (+2 custom), Teams (+10 + sharing), Enterprise (unlimited) |
-| v0.12.2-AGT | `FeatureFlags.Agents.Lifecycle` | Core (2 concurrent), WriterPro (5), Teams (20 + hierarchies), Enterprise (unlimited + isolation) |
+| Version     | Feature Gate                        | License Tier                                                                                                     |
+| :---------- | :---------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| v0.12.1-AGT | `FeatureFlags.Agents.Definition`    | Core (3 built-in), WriterPro (+2 custom), Teams (+10 + sharing), Enterprise (unlimited)                          |
+| v0.12.2-AGT | `FeatureFlags.Agents.Lifecycle`     | Core (2 concurrent), WriterPro (5), Teams (20 + hierarchies), Enterprise (unlimited + isolation)                 |
 | v0.12.3-AGT | `FeatureFlags.Agents.Communication` | Core (direct only), WriterPro (+pub/sub 5 topics), Teams (+broadcast + routing), Enterprise (+sagas + unlimited) |
-| v0.12.4-AGT | `FeatureFlags.Agents.Memory` | Core (working only), WriterPro (+100MB long-term), Teams (+1GB + semantic), Enterprise (unlimited + retention) |
-| v0.12.5-AGT | `FeatureFlags.Agents.Tools` | Core (5 built-in), WriterPro (+10 custom), Teams (+50 + sandbox), Enterprise (unlimited + custom sandboxes) |
+| v0.12.4-AGT | `FeatureFlags.Agents.Memory`        | Core (working only), WriterPro (+100MB long-term), Teams (+1GB + semantic), Enterprise (unlimited + retention)   |
+| v0.12.5-AGT | `FeatureFlags.Agents.Tools`         | Core (5 built-in), WriterPro (+10 custom), Teams (+50 + sandbox), Enterprise (unlimited + custom sandboxes)      |
 
 ---
 
@@ -2102,98 +2102,98 @@ v0.12.5-AGT (Tool System)
 
 ### 14.1 v0.13.1-ORC Task Decomposition Engine Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `ITaskDecomposer` | v0.13.1-ORC-a | Modules.Orchestration | Intent parsing and task decomposition |
-| `DecompositionRequest` | v0.13.1-ORC-a | Abstractions | Decomposition request parameters |
-| `DecompositionOptions` | v0.13.1-ORC-a | Abstractions | Max depth/tasks, strategy preferences |
-| `DecompositionResult` | v0.13.1-ORC-a | Abstractions | Task graph with confidence score |
-| `TaskGraph` | v0.13.1-ORC-b | Abstractions | DAG of tasks with dependencies |
-| `TaskNode` | v0.13.1-ORC-b | Abstractions | Single task in decomposition graph |
-| `TaskNodeId` | v0.13.1-ORC-b | Abstractions | Task node identifier |
-| `TaskType` | v0.13.1-ORC-b | Abstractions | Research/Generation/Analysis/etc. enum |
-| `TaskPriority` | v0.13.1-ORC-b | Abstractions | Low/Normal/High/Critical enum |
-| `TaskObjective` | v0.13.1-ORC-b | Abstractions | Goal and success criteria |
-| `TaskEdge` | v0.13.1-ORC-c | Abstractions | Dependency edge in graph |
-| `EdgeType` | v0.13.1-ORC-c | Abstractions | Dependency/DataFlow/Conditional/Parallel enum |
-| `ComplexityEstimate` | v0.13.1-ORC-d | Abstractions | Token/time/agent estimates |
-| `DecompositionStrategy` | v0.13.1-ORC-e | Abstractions | Sequential/Parallel/Hierarchical/Pipeline/MapReduce/Iterative/Adaptive enum |
+| Interface               | Defined In    | Module                | Purpose                                                                     |
+| :---------------------- | :------------ | :-------------------- | :-------------------------------------------------------------------------- |
+| `ITaskDecomposer`       | v0.13.1-ORC-a | Modules.Orchestration | Intent parsing and task decomposition                                       |
+| `DecompositionRequest`  | v0.13.1-ORC-a | Abstractions          | Decomposition request parameters                                            |
+| `DecompositionOptions`  | v0.13.1-ORC-a | Abstractions          | Max depth/tasks, strategy preferences                                       |
+| `DecompositionResult`   | v0.13.1-ORC-a | Abstractions          | Task graph with confidence score                                            |
+| `TaskGraph`             | v0.13.1-ORC-b | Abstractions          | DAG of tasks with dependencies                                              |
+| `TaskNode`              | v0.13.1-ORC-b | Abstractions          | Single task in decomposition graph                                          |
+| `TaskNodeId`            | v0.13.1-ORC-b | Abstractions          | Task node identifier                                                        |
+| `TaskType`              | v0.13.1-ORC-b | Abstractions          | Research/Generation/Analysis/etc. enum                                      |
+| `TaskPriority`          | v0.13.1-ORC-b | Abstractions          | Low/Normal/High/Critical enum                                               |
+| `TaskObjective`         | v0.13.1-ORC-b | Abstractions          | Goal and success criteria                                                   |
+| `TaskEdge`              | v0.13.1-ORC-c | Abstractions          | Dependency edge in graph                                                    |
+| `EdgeType`              | v0.13.1-ORC-c | Abstractions          | Dependency/DataFlow/Conditional/Parallel enum                               |
+| `ComplexityEstimate`    | v0.13.1-ORC-d | Abstractions          | Token/time/agent estimates                                                  |
+| `DecompositionStrategy` | v0.13.1-ORC-e | Abstractions          | Sequential/Parallel/Hierarchical/Pipeline/MapReduce/Iterative/Adaptive enum |
 
 ### 14.2 v0.13.2-ORC Agent Selection & Dispatch Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IAgentDispatcher` | v0.13.2-ORC-a | Modules.Orchestration | Agent selection and dispatch |
-| `DispatchOptions` | v0.13.2-ORC-a | Abstractions | Strategy, concurrency limits |
-| `SelectionStrategy` | v0.13.2-ORC-a | Abstractions | BestMatch/LeastBusy/BestPerformer/RoundRobin/Cheapest/Fastest/Balanced enum |
-| `DispatchPlan` | v0.13.2-ORC-d | Abstractions | Task-to-agent assignments |
-| `TaskAssignment` | v0.13.2-ORC-d | Abstractions | Single task assignment |
-| `AgentCandidate` | v0.13.2-ORC-a | Abstractions | Candidate agent with scores |
-| `ICapabilityMatcher` | v0.13.2-ORC-a | Modules.Orchestration | Task-to-capability matching |
-| `MatchResult` | v0.13.2-ORC-a | Abstractions | Matching candidates list |
-| `IAgentPerformanceTracker` | v0.13.2-ORC-c | Modules.Orchestration | Performance tracking |
-| `ExecutionOutcome` | v0.13.2-ORC-c | Abstractions | Task execution outcome |
-| `AgentPerformanceProfile` | v0.13.2-ORC-c | Abstractions | Agent performance stats |
-| `ILoadBalancer` | v0.13.2-ORC-b | Modules.Orchestration | Agent load management |
+| Interface                  | Defined In    | Module                | Purpose                                                                     |
+| :------------------------- | :------------ | :-------------------- | :-------------------------------------------------------------------------- |
+| `IAgentDispatcher`         | v0.13.2-ORC-a | Modules.Orchestration | Agent selection and dispatch                                                |
+| `DispatchOptions`          | v0.13.2-ORC-a | Abstractions          | Strategy, concurrency limits                                                |
+| `SelectionStrategy`        | v0.13.2-ORC-a | Abstractions          | BestMatch/LeastBusy/BestPerformer/RoundRobin/Cheapest/Fastest/Balanced enum |
+| `DispatchPlan`             | v0.13.2-ORC-d | Abstractions          | Task-to-agent assignments                                                   |
+| `TaskAssignment`           | v0.13.2-ORC-d | Abstractions          | Single task assignment                                                      |
+| `AgentCandidate`           | v0.13.2-ORC-a | Abstractions          | Candidate agent with scores                                                 |
+| `ICapabilityMatcher`       | v0.13.2-ORC-a | Modules.Orchestration | Task-to-capability matching                                                 |
+| `MatchResult`              | v0.13.2-ORC-a | Abstractions          | Matching candidates list                                                    |
+| `IAgentPerformanceTracker` | v0.13.2-ORC-c | Modules.Orchestration | Performance tracking                                                        |
+| `ExecutionOutcome`         | v0.13.2-ORC-c | Abstractions          | Task execution outcome                                                      |
+| `AgentPerformanceProfile`  | v0.13.2-ORC-c | Abstractions          | Agent performance stats                                                     |
+| `ILoadBalancer`            | v0.13.2-ORC-b | Modules.Orchestration | Agent load management                                                       |
 
 ### 14.3 v0.13.3-ORC Execution Coordinator Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IExecutionCoordinator` | v0.13.3-ORC-a | Modules.Orchestration | Task graph execution |
-| `ExecutionId` | v0.13.3-ORC-a | Abstractions | Execution identifier |
-| `ExecutionOptions` | v0.13.3-ORC-a | Abstractions | Concurrency, checkpoints, failure policy |
-| `FailurePolicy` | v0.13.3-ORC-d | Abstractions | Retry/skip/reassign configuration |
-| `FailureAction` | v0.13.3-ORC-d | Abstractions | Retry/Skip/Reassign/Pause/Abort/Fallback enum |
-| `Execution` | v0.13.3-ORC-a | Abstractions | Execution state record |
-| `ExecutionState` | v0.13.3-ORC-a | Abstractions | Pending/Running/Paused/WaitingForHuman/Completed/Failed/Cancelled enum |
-| `ExecutionProgress` | v0.13.3-ORC-e | Abstractions | Progress tracking |
-| `TaskExecution` | v0.13.3-ORC-a | Abstractions | Single task execution state |
-| `TaskExecutionState` | v0.13.3-ORC-a | Abstractions | Pending/Queued/Running/Completed/Failed/Skipped/Cancelled enum |
-| `TaskOutput` | v0.13.3-ORC-a | Abstractions | Task execution output |
-| `ICheckpointManager` | v0.13.3-ORC-b | Modules.Orchestration | Checkpoint create/restore |
-| `ExecutionCheckpoint` | v0.13.3-ORC-b | Abstractions | Checkpoint state snapshot |
-| `ExecutionEvent` | v0.13.3-ORC-e | Abstractions | Base execution event |
+| Interface               | Defined In    | Module                | Purpose                                                                |
+| :---------------------- | :------------ | :-------------------- | :--------------------------------------------------------------------- |
+| `IExecutionCoordinator` | v0.13.3-ORC-a | Modules.Orchestration | Task graph execution                                                   |
+| `ExecutionId`           | v0.13.3-ORC-a | Abstractions          | Execution identifier                                                   |
+| `ExecutionOptions`      | v0.13.3-ORC-a | Abstractions          | Concurrency, checkpoints, failure policy                               |
+| `FailurePolicy`         | v0.13.3-ORC-d | Abstractions          | Retry/skip/reassign configuration                                      |
+| `FailureAction`         | v0.13.3-ORC-d | Abstractions          | Retry/Skip/Reassign/Pause/Abort/Fallback enum                          |
+| `Execution`             | v0.13.3-ORC-a | Abstractions          | Execution state record                                                 |
+| `ExecutionState`        | v0.13.3-ORC-a | Abstractions          | Pending/Running/Paused/WaitingForHuman/Completed/Failed/Cancelled enum |
+| `ExecutionProgress`     | v0.13.3-ORC-e | Abstractions          | Progress tracking                                                      |
+| `TaskExecution`         | v0.13.3-ORC-a | Abstractions          | Single task execution state                                            |
+| `TaskExecutionState`    | v0.13.3-ORC-a | Abstractions          | Pending/Queued/Running/Completed/Failed/Skipped/Cancelled enum         |
+| `TaskOutput`            | v0.13.3-ORC-a | Abstractions          | Task execution output                                                  |
+| `ICheckpointManager`    | v0.13.3-ORC-b | Modules.Orchestration | Checkpoint create/restore                                              |
+| `ExecutionCheckpoint`   | v0.13.3-ORC-b | Abstractions          | Checkpoint state snapshot                                              |
+| `ExecutionEvent`        | v0.13.3-ORC-e | Abstractions          | Base execution event                                                   |
 
 ### 14.4 v0.13.4-ORC Result Aggregation & Synthesis Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IResultAggregator` | v0.13.4-ORC-a | Modules.Orchestration | Result aggregation and synthesis |
-| `AggregationOptions` | v0.13.4-ORC-a | Abstractions | Conflict strategy, quality threshold |
-| `ConflictResolutionStrategy` | v0.13.4-ORC-b | Abstractions | BestQuality/MostRecent/Consensus/Manual/Merge enum |
-| `AggregationResult` | v0.13.4-ORC-a | Abstractions | Aggregated chunks and conflicts |
-| `OutputChunk` | v0.13.4-ORC-a | Abstractions | Single output with provenance |
-| `ChunkProvenance` | v0.13.4-ORC-a | Abstractions | Output source tracking |
-| `Conflict` | v0.13.4-ORC-b | Abstractions | Detected conflict |
-| `ConflictType` | v0.13.4-ORC-b | Abstractions | Factual/Stylistic/Structural/Terminology/Overlap/Gap enum |
-| `ConflictSeverity` | v0.13.4-ORC-b | Abstractions | Low/Medium/High/Critical enum |
-| `ConflictResolution` | v0.13.4-ORC-b | Abstractions | Resolution outcome |
-| `IQualityAssessor` | v0.13.4-ORC-c | Modules.Orchestration | Quality assessment |
-| `QualityAssessment` | v0.13.4-ORC-c | Abstractions | Multi-dimensional quality scores |
-| `QualityDimension` | v0.13.4-ORC-c | Abstractions | Completeness/Accuracy/Consistency/Style/Clarity/Structure enum |
-| `ISynthesisEngine` | v0.13.4-ORC-d | Modules.Orchestration | Final output synthesis |
-| `SynthesisStrategy` | v0.13.4-ORC-d | Abstractions | Concatenate/Interleave/Intelligent/Template enum |
-| `SynthesisResult` | v0.13.4-ORC-d | Abstractions | Synthesized output |
+| Interface                    | Defined In    | Module                | Purpose                                                        |
+| :--------------------------- | :------------ | :-------------------- | :------------------------------------------------------------- |
+| `IResultAggregator`          | v0.13.4-ORC-a | Modules.Orchestration | Result aggregation and synthesis                               |
+| `AggregationOptions`         | v0.13.4-ORC-a | Abstractions          | Conflict strategy, quality threshold                           |
+| `ConflictResolutionStrategy` | v0.13.4-ORC-b | Abstractions          | BestQuality/MostRecent/Consensus/Manual/Merge enum             |
+| `AggregationResult`          | v0.13.4-ORC-a | Abstractions          | Aggregated chunks and conflicts                                |
+| `OutputChunk`                | v0.13.4-ORC-a | Abstractions          | Single output with provenance                                  |
+| `ChunkProvenance`            | v0.13.4-ORC-a | Abstractions          | Output source tracking                                         |
+| `Conflict`                   | v0.13.4-ORC-b | Abstractions          | Detected conflict                                              |
+| `ConflictType`               | v0.13.4-ORC-b | Abstractions          | Factual/Stylistic/Structural/Terminology/Overlap/Gap enum      |
+| `ConflictSeverity`           | v0.13.4-ORC-b | Abstractions          | Low/Medium/High/Critical enum                                  |
+| `ConflictResolution`         | v0.13.4-ORC-b | Abstractions          | Resolution outcome                                             |
+| `IQualityAssessor`           | v0.13.4-ORC-c | Modules.Orchestration | Quality assessment                                             |
+| `QualityAssessment`          | v0.13.4-ORC-c | Abstractions          | Multi-dimensional quality scores                               |
+| `QualityDimension`           | v0.13.4-ORC-c | Abstractions          | Completeness/Accuracy/Consistency/Style/Clarity/Structure enum |
+| `ISynthesisEngine`           | v0.13.4-ORC-d | Modules.Orchestration | Final output synthesis                                         |
+| `SynthesisStrategy`          | v0.13.4-ORC-d | Abstractions          | Concatenate/Interleave/Intelligent/Template enum               |
+| `SynthesisResult`            | v0.13.4-ORC-d | Abstractions          | Synthesized output                                             |
 
 ### 14.5 v0.13.5-ORC Orchestration Patterns & Templates Interfaces
 
-| Interface | Defined In | Module | Purpose |
-| :--- | :--- | :--- | :--- |
-| `IPatternLibrary` | v0.13.5-ORC-a | Modules.Orchestration | Pattern management |
-| `OrchestrationPattern` | v0.13.5-ORC-a | Abstractions | Reusable pattern definition |
-| `PatternCategory` | v0.13.5-ORC-a | Abstractions | Documentation/Research/Analysis/Transformation/Review/Publishing/Custom enum |
-| `TaskGraphTemplate` | v0.13.5-ORC-a | Abstractions | Parameterized task graph |
-| `TaskNodeTemplate` | v0.13.5-ORC-a | Abstractions | Template node with placeholders |
-| `IEnsembleTemplates` | v0.13.5-ORC-b | Modules.Orchestration | Ensemble instantiation |
-| `EnsembleTemplate` | v0.13.5-ORC-b | Abstractions | Pre-built ensemble configuration |
-| `AgentRole` | v0.13.5-ORC-b | Abstractions | Role in ensemble |
-| `Ensemble` | v0.13.5-ORC-b | Abstractions | Configured agent ensemble |
-| `EnsembleState` | v0.13.5-ORC-b | Abstractions | Inactive/Activating/Ready/Working/Paused enum |
-| `IWorkflowDesigner` | v0.13.5-ORC-c | Modules.Orchestration | Visual workflow design |
-| `WorkflowDefinition` | v0.13.5-ORC-d | Abstractions | Saved workflow |
-| `WorkflowTrigger` | v0.13.5-ORC-d | Abstractions | Trigger configuration |
-| `TriggerType` | v0.13.5-ORC-d | Abstractions | Manual/Scheduled/Event/Webhook enum |
+| Interface              | Defined In    | Module                | Purpose                                                                      |
+| :--------------------- | :------------ | :-------------------- | :--------------------------------------------------------------------------- |
+| `IPatternLibrary`      | v0.13.5-ORC-a | Modules.Orchestration | Pattern management                                                           |
+| `OrchestrationPattern` | v0.13.5-ORC-a | Abstractions          | Reusable pattern definition                                                  |
+| `PatternCategory`      | v0.13.5-ORC-a | Abstractions          | Documentation/Research/Analysis/Transformation/Review/Publishing/Custom enum |
+| `TaskGraphTemplate`    | v0.13.5-ORC-a | Abstractions          | Parameterized task graph                                                     |
+| `TaskNodeTemplate`     | v0.13.5-ORC-a | Abstractions          | Template node with placeholders                                              |
+| `IEnsembleTemplates`   | v0.13.5-ORC-b | Modules.Orchestration | Ensemble instantiation                                                       |
+| `EnsembleTemplate`     | v0.13.5-ORC-b | Abstractions          | Pre-built ensemble configuration                                             |
+| `AgentRole`            | v0.13.5-ORC-b | Abstractions          | Role in ensemble                                                             |
+| `Ensemble`             | v0.13.5-ORC-b | Abstractions          | Configured agent ensemble                                                    |
+| `EnsembleState`        | v0.13.5-ORC-b | Abstractions          | Inactive/Activating/Ready/Working/Paused enum                                |
+| `IWorkflowDesigner`    | v0.13.5-ORC-c | Modules.Orchestration | Visual workflow design                                                       |
+| `WorkflowDefinition`   | v0.13.5-ORC-d | Abstractions          | Saved workflow                                                               |
+| `WorkflowTrigger`      | v0.13.5-ORC-d | Abstractions          | Trigger configuration                                                        |
+| `TriggerType`          | v0.13.5-ORC-d | Abstractions          | Manual/Scheduled/Event/Webhook enum                                          |
 
 ---
 
@@ -2236,13 +2236,13 @@ v0.13.5-ORC (Patterns & Templates)
 
 ### 15.2 v0.13.x Feature Gates
 
-| Version | Feature Gate | License Tier |
-| :--- | :--- | :--- |
-| v0.13.1-ORC | `FeatureFlags.Orchestration.Decomposition` | Core (sequential, 5 tasks), WriterPro (+parallel, 15), Teams (+all strategies, 50), Enterprise (unlimited) |
-| v0.13.2-ORC | `FeatureFlags.Orchestration.Selection` | Core (manual), WriterPro (auto, 3 strategies), Teams (+performance tracking), Enterprise (+custom + API) |
-| v0.13.3-ORC | `FeatureFlags.Orchestration.Execution` | Core (sequential), WriterPro (+3 parallel, checkpoints), Teams (+full concurrency), Enterprise (+distributed) |
-| v0.13.4-ORC | `FeatureFlags.Orchestration.Aggregation` | Core (concatenate), WriterPro (+conflict detection), Teams (+auto resolution), Enterprise (+AI synthesis) |
-| v0.13.5-ORC | `FeatureFlags.Orchestration.Patterns` | Core (3 patterns), WriterPro (+5 custom), Teams (+ensembles + designer), Enterprise (+marketplace) |
+| Version     | Feature Gate                               | License Tier                                                                                                  |
+| :---------- | :----------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| v0.13.1-ORC | `FeatureFlags.Orchestration.Decomposition` | Core (sequential, 5 tasks), WriterPro (+parallel, 15), Teams (+all strategies, 50), Enterprise (unlimited)    |
+| v0.13.2-ORC | `FeatureFlags.Orchestration.Selection`     | Core (manual), WriterPro (auto, 3 strategies), Teams (+performance tracking), Enterprise (+custom + API)      |
+| v0.13.3-ORC | `FeatureFlags.Orchestration.Execution`     | Core (sequential), WriterPro (+3 parallel, checkpoints), Teams (+full concurrency), Enterprise (+distributed) |
+| v0.13.4-ORC | `FeatureFlags.Orchestration.Aggregation`   | Core (concatenate), WriterPro (+conflict detection), Teams (+auto resolution), Enterprise (+AI synthesis)     |
+| v0.13.5-ORC | `FeatureFlags.Orchestration.Patterns`      | Core (3 patterns), WriterPro (+5 custom), Teams (+ensembles + designer), Enterprise (+marketplace)            |
 
 ---
 
