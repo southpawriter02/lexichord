@@ -1,0 +1,86 @@
+// <copyright file="FeatureCodes.cs" company="Lexichord">
+// Copyright (c) Lexichord. All rights reserved.
+// </copyright>
+
+namespace Lexichord.Abstractions.Constants;
+
+/// <summary>
+/// Constants for feature codes used in license gating throughout Lexichord.
+/// </summary>
+/// <remarks>
+/// LOGIC: v0.3.1d - Feature codes provide granular control over feature enablement.
+/// These codes are used with <see cref="Contracts.ILicenseContext.IsFeatureEnabled"/> to
+/// check if specific features are available to the current license.
+///
+/// Feature Code Naming Convention:
+/// - Format: {module}.{feature}
+/// - Module: The primary module that owns the feature
+/// - Feature: The specific feature within that module
+///
+/// Usage:
+/// <code>
+/// if (!licenseContext.IsFeatureEnabled(FeatureCodes.FuzzyMatching))
+/// {
+///     // Show upgrade prompt or disable feature UI
+/// }
+/// </code>
+///
+/// Design Decisions:
+/// - Codes are dot-separated for readability and namespace-like organization
+/// - All codes are compile-time constants for performance and IntelliSense support
+/// - New feature codes should be documented with their required tier
+/// </remarks>
+public static class FeatureCodes
+{
+    #region Fuzzy Engine Features (v0.3.1)
+
+    /// <summary>
+    /// The Fuzzy Matching feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Levenshtein-based fuzzy matching algorithm.
+    /// This feature enables approximate string matching for terminology detection.
+    /// </remarks>
+    public const string FuzzyMatching = "Feature.FuzzyMatching";
+
+    /// <summary>
+    /// The Fuzzy Scanning feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the fuzzy document scanner.
+    /// When enabled, documents are scanned for approximate terminology matches
+    /// in addition to exact regex matches.
+    /// </remarks>
+    public const string FuzzyScanning = "Feature.FuzzyScanning";
+
+    /// <summary>
+    /// The Fuzzy Threshold Configuration feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to per-term fuzzy threshold configuration.
+    /// Users can customize the match sensitivity for individual terminology entries.
+    /// </remarks>
+    public const string FuzzyThresholdConfig = "Feature.FuzzyThresholdConfig";
+
+    #endregion
+
+    #region Feature Code Utilities
+
+    /// <summary>
+    /// Gets all fuzzy-related feature codes.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Used for bulk feature checks in UI to determine if any fuzzy features are enabled.
+    /// </remarks>
+    public static readonly string[] FuzzyFeatures =
+    [
+        FuzzyMatching,
+        FuzzyScanning,
+        FuzzyThresholdConfig
+    ];
+
+    #endregion
+}

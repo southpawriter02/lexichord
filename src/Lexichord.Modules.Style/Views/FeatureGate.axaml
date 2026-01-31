@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="200" d:DesignHeight="40"
+             x:Class="Lexichord.Modules.Style.Views.FeatureGate"
+             x:Name="Root">
+    
+    <!-- 
+    FeatureGate: License-Gated Content Wrapper (v0.3.1d)
+    Wraps content and displays lock overlay when feature requires higher license tier.
+    
+    Usage:
+    <views:FeatureGate FeatureCode="Feature.FuzzyMatching">
+        <CheckBox Content="Enable Fuzzy Matching" />
+    </views:FeatureGate>
+    -->
+
+    <Grid>
+        <!-- Wrapped Content -->
+        <ContentPresenter Content="{Binding #Root.Content}"
+                          IsEnabled="{Binding #Root.IsFeatureEnabled}"
+                          Opacity="{Binding #Root.ContentOpacity}"/>
+        
+        <!-- Lock Overlay - shown when feature is disabled -->
+        <Border Background="#80000000"
+                IsVisible="{Binding #Root.ShowLockOverlay}"
+                CornerRadius="4"
+                Cursor="Hand"
+                PointerPressed="OnLockOverlayClicked">
+            <Border.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+            </Border.Transitions>
+            
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="4">
+                <!-- Lock Icon -->
+                <PathIcon Data="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"
+                          Width="24" Height="24"
+                          Foreground="#FFD700"/>
+                
+                <!-- Upgrade Text (only shown if space permits) -->
+                <TextBlock Text="Upgrade to unlock"
+                           FontSize="10"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           IsVisible="{Binding #Root.ShowUpgradeText}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

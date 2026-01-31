@@ -127,7 +127,25 @@ public partial class LexiconViewModel : ObservableObject, INotificationHandler<L
     /// </summary>
     public string StatusText => GenerateStatusText();
 
+    /// <summary>
+    /// Gets whether fuzzy matching features are enabled.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.1d - Fuzzy matching requires Writer Pro tier.
+    /// </remarks>
+    public bool IsFuzzyEnabled => _licenseContext.IsFeatureEnabled(
+        Lexichord.Abstractions.Constants.FeatureCodes.FuzzyMatching);
+
+    /// <summary>
+    /// Gets whether to show the fuzzy upgrade banner.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.1d - Show banner when fuzzy matching is not enabled.
+    /// </remarks>
+    public bool ShowFuzzyUpgradeBanner => !IsFuzzyEnabled;
+
     #endregion
+
 
     #region Commands
 

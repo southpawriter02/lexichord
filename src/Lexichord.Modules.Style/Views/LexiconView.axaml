@@ -15,6 +15,12 @@
     -->
 
     <DockPanel>
+        <!-- License Restriction Banner (v0.3.1d) -->
+        <local:LicenseRestrictionBanner DockPanel.Dock="Top"
+                                         FeatureCode="FUZZY_MATCHING"
+                                         Message="Fuzzy matching requires Writer Pro"
+                                         IsVisible="{Binding ShowFuzzyUpgradeBanner}"/>
+                                         
         <!-- Toolbar -->
         <Border DockPanel.Dock="Top" 
                 BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
@@ -140,6 +146,19 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                
+                <!-- Fuzzy Match Column (v0.3.1d - Writer Pro) -->
+                <DataGridTemplateColumn Header="Fuzzy" Width="60">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:StyleTermRowViewModel">
+                            <TextBlock Text="{Binding FuzzyStatusText}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="11"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
             
             <!-- Context Menu -->

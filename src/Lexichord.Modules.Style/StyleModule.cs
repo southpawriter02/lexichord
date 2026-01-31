@@ -66,6 +66,9 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.1c - Document tokenizer for text processing
         services.AddSingleton<IDocumentTokenizer, DocumentTokenizer>();
 
+        // LOGIC: v0.3.3a - Sentence tokenizer for readability analysis
+        services.AddSingleton<ISentenceTokenizer, SentenceTokenizer>();
+
         // LOGIC: v0.3.1c - Fuzzy scanner for terminology matching
         services.AddSingleton<IFuzzyScanner, FuzzyScanner>();
 
@@ -162,6 +165,13 @@ public sealed class StyleModule : IModule
     {
         _logger = provider.GetRequiredService<ILogger<StyleModule>>();
         _logger.LogInformation("Initializing Style module v{Version} (The Rulebook)", Info.Version);
+
+        // LOGIC: v0.3.1d - Initialize license-gated UI controls with license context
+        var licenseContext = provider.GetRequiredService<ILicenseContext>();
+        FeatureGate.Initialize(licenseContext);
+        UpgradePromptDialog.Initialize(licenseContext);
+        _logger.LogDebug("Initialized license-gated UI controls");
+
 
         try
         {

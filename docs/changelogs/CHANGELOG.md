@@ -70,7 +70,7 @@ This release introduces fuzzy string matching to detect typos and variations of 
 | [v0.3.1a](v0.3.x/v0.3.1/LCS-CL-031a.md) | Algorithm Integration | ✅ Complete |
 | [v0.3.1b](v0.3.x/v0.3.1/LCS-CL-031b.md) | Repository Update     | ✅ Complete |
 | [v0.3.1c](LCS-CL-031c.md)               | The Fuzzy Scanner     | ✅ Complete |
-| v0.3.1d                                 | License Gating        | 🔲 Planned  |
+| [v0.3.1d](LCS-CL-031d.md)               | License Gating        | ✅ Complete |
 
 ---
 

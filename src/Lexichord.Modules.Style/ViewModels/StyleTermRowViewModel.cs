@@ -57,7 +57,21 @@ public partial class StyleTermRowViewModel : ObservableObject
     /// <summary>Gets the underlying StyleTerm entity.</summary>
     public StyleTerm Entity => _term;
 
+    /// <summary>Gets whether fuzzy matching is enabled for this term.</summary>
+    /// <remarks>v0.3.1d - Writer Pro feature</remarks>
+    public bool FuzzyEnabled => _term.FuzzyEnabled;
+
+    /// <summary>Gets the fuzzy match threshold (0.0-1.0).</summary>
+    /// <remarks>v0.3.1d - Writer Pro feature</remarks>
+    public double FuzzyThreshold => _term.FuzzyThreshold;
+
+    /// <summary>Gets a display string for the fuzzy status.</summary>
+    /// <remarks>v0.3.1d - Shows "80%" or "Off" in the grid</remarks>
+    public string FuzzyStatusText => FuzzyEnabled ? $"{FuzzyThreshold * 100:0}%" : "Off";
+
+
     #endregion
+
 
     #region Severity Badge Helpers
 

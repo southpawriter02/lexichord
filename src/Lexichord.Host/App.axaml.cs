@@ -102,6 +102,14 @@ public partial class App : Application
             // This allows modules to resolve services from the container
             moduleLoader.InitializeModulesAsync(_serviceProvider).GetAwaiter().GetResult();
 
+            // LOGIC (v0.3.1d): Initialize license gate value converter for XAML bindings
+            // This must happen after DI container is built so the converter can access ILicenseContext
+            Converters.LicenseGateValueConverter.Initialize(_serviceProvider);
+            Log.Debug("LicenseGateValueConverter initialized for XAML license gates");
+
+
+
+
             Log.Information("Creating MainWindow...");
             // Create main window with injected services
             desktop.MainWindow = CreateMainWindow();
