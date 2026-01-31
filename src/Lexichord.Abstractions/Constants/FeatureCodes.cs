@@ -111,4 +111,19 @@ public static class FeatureCodes
     public const string CustomProfiles = "Feature.CustomProfiles";
 
     #endregion
+
+    #region Resonance Dashboard Features (v0.3.5)
+
+    /// <summary>
+    /// The Resonance Dashboard feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Resonance Dashboard spider chart visualization.
+    /// This feature provides a 6-axis chart showing writing style metrics
+    /// compared against target values from the active Voice Profile.
+    /// </remarks>
+    public const string ResonanceDashboard = "Feature.ResonanceDashboard";
+
+    #endregion
 }

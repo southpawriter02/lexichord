@@ -1,0 +1,199 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Style.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="400"
+             d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Style.Views.ResonanceDashboardView"
+             x:DataType="vm:ResonanceDashboardViewModel">
+    
+    <!-- 
+    ResonanceDashboardView: Spider chart visualization of writing metrics.
+    
+    LOGIC: Displays a 6-axis polar chart showing:
+    - Current metric values (blue polygon)
+    - Target values from voice profile (green dashed overlay)
+    
+    Features:
+    - Toggle for target overlay visibility
+    - Active profile name display
+    - Loading indicator
+    - License gating with upgrade prompt
+    
+    Version: v0.3.5b
+    License: Writer Pro tier
+    -->
+    
+    <UserControl.Styles>
+        <!-- Header text style -->
+        <Style Selector="TextBlock.Header">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+        </Style>
+        
+        <!-- Profile name style -->
+        <Style Selector="TextBlock.ProfileName">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+        
+        <!-- Toggle button style -->
+        <Style Selector="ToggleButton.OverlayToggle">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        
+        <!-- Unlicensed overlay -->
+        <Style Selector="Border.UnlicensedOverlay">
+            <Setter Property="Background" Value="#80000000"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        
+        <!-- No data message -->
+        <Style Selector="TextBlock.NoDataMessage">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <!-- Main container -->
+    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+            CornerRadius="8"
+            Padding="12"
+            Margin="8">
+        
+        <Grid RowDefinitions="Auto,*,Auto">
+            
+            <!-- Row 0: Header with profile name and toggle -->
+            <Grid Grid.Row="0" 
+                  ColumnDefinitions="*,Auto"
+                  Margin="0,0,0,8">
+                
+                <!-- Title and profile -->
+                <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="2">
+                    <TextBlock Text="Resonance"
+                               Classes="Header"/>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Profile:"
+                                   Classes="ProfileName"/>
+                        <TextBlock Text="{Binding ActiveProfileName}"
+                                   Classes="ProfileName"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <!-- Target overlay toggle -->
+                <ToggleButton Grid.Column="1"
+                              Classes="OverlayToggle"
+                              IsChecked="{Binding ShowTargetOverlay}"
+                              Command="{Binding ToggleTargetOverlayCommand}"
+                              ToolTip.Tip="Show/hide target overlay from voice profile">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="🎯"/>
+                        <TextBlock Text="Target"/>
+                    </StackPanel>
+                </ToggleButton>
+            </Grid>
+            
+            <!-- Row 1: Spider Chart -->
+            <Grid Grid.Row="1" MinHeight="280">
+                
+                <!-- Polar Chart (LiveCharts2) -->
+                <lvc:PolarChart Series="{Binding Series}"
+                                AngleAxes="{Binding AngleAxes}"
+                                RadiusAxes="{Binding RadiusAxes}"
+                                InitialRotation="-90"
+                                IsVisible="{Binding HasData}"/>
+                
+                <!-- No data message -->
+                <TextBlock Text="No metrics available. Start analyzing text to see your writing resonance."
+                           Classes="NoDataMessage"
+                           TextWrapping="Wrap"
+                           MaxWidth="200"
+                           IsVisible="{Binding !HasData}"/>
+                
+                <!-- Loading indicator -->
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            IsVisible="{Binding IsLoading}">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="100"/>
+                    <TextBlock Text="Loading..."
+                               HorizontalAlignment="Center"
+                               FontSize="11"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                </StackPanel>
+            </Grid>
+            
+            <!-- Row 2: Legend -->
+            <StackPanel Grid.Row="2" 
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="16"
+                        Margin="0,8,0,0">
+                
+                <!-- Current values legend -->
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Border Width="12" Height="12"
+                            CornerRadius="2"
+                            Background="#4A9EFF"
+                            VerticalAlignment="Center"/>
+                    <TextBlock Text="Current"
+                               FontSize="11"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                </StackPanel>
+                
+                <!-- Target values legend -->
+                <StackPanel Orientation="Horizontal" 
+                            Spacing="4"
+                            IsVisible="{Binding ShowTargetOverlay}">
+                    <Border Width="12" Height="12"
+                            CornerRadius="2"
+                            Background="#22C55E"
+                            BorderBrush="#22C55E"
+                            BorderThickness="1"
+                            VerticalAlignment="Center"/>
+                    <TextBlock Text="Target"
+                               FontSize="11"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                </StackPanel>
+            </StackPanel>
+            
+            <!-- Unlicensed Overlay -->
+            <Border Grid.RowSpan="3"
+                    Classes="UnlicensedOverlay"
+                    IsVisible="{Binding !IsLicensed}">
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="12">
+                    <TextBlock Text="🔒"
+                               FontSize="32"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Resonance Dashboard"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Upgrade to Writer Pro to visualize your writing metrics"
+                               FontSize="12"
+                               Foreground="#CCCCCC"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="200"
+                               TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

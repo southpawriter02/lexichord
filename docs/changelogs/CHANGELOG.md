@@ -157,12 +157,14 @@ This release introduces the charting infrastructure for visualizing writing metr
 
 - **LiveCharts2 Integration** — New dependency on `LiveChartsCore.SkiaSharpView.Avalonia` (2.0.0-rc6.1) for high-performance Avalonia-native charting. Registered in `StyleModule`.
 
+- **Spider Chart with Target Overlay** — New `ResonanceDashboardView` displays writing metrics on an interactive polar chart. Features current values (solid fill) and target overlay (dashed line) based on active Voice Profile. Includes `ISpiderChartSeriesBuilder` for theme-aware series construction and `ITargetOverlayService` for profile-based target computation with caching.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                   | Status      |
 | --------------------------------------- | ----------------------- | ----------- |
 | [v0.3.5a](v0.3.x/v0.3.5/LCS-CL-035a.md) | Charting Infrastructure | ✅ Complete |
-| v0.3.5b                                 | Chart UI Control        | 🔲 Planned  |
+| [v0.3.5b](v0.3.x/v0.3.5/LCS-CL-035b.md) | Spider Chart            | ✅ Complete |
 
 ---
 

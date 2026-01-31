@@ -135,6 +135,12 @@ public sealed class StyleModule : IModule
         services.AddSingleton<IChartDataService, ChartDataService>();
         services.AddSingleton<IResonanceAxisProvider, DefaultAxisProvider>();
 
+        // LOGIC: v0.3.5b - Spider chart series builder (stateless, thread-safe)
+        services.AddSingleton<ISpiderChartSeriesBuilder, SpiderChartSeriesBuilder>();
+
+        // LOGIC: v0.3.5b - Target overlay computation service with caching
+        services.AddSingleton<ITargetOverlayService, TargetOverlayService>();
+
         // LOGIC: v0.2.5b - Filter ViewModel for filter bar UI
         services.AddTransient<FilterViewModel>();
 
@@ -161,6 +167,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.3d - Readability HUD Widget components
         services.AddSingleton<IReadabilityHudViewModel, ReadabilityHudViewModel>();
         services.AddTransient<ReadabilityHudWidget>();
+
+        // LOGIC: v0.3.5b - Resonance Dashboard components
+        services.AddTransient<IResonanceDashboardViewModel, ResonanceDashboardViewModel>();
+        services.AddTransient<ResonanceDashboardView>();
 
         // LOGIC: v0.2.6d - Project linting service for scope filtering
         services.AddSingleton<IProjectLintingService, ProjectLintingService>();
