@@ -41,10 +41,12 @@ public class StatusBarModule : IModule
         // Views - Transient because each request gets a new instance
         services.AddTransient<StatusBarView>();
         services.AddTransient<ApiKeyDialog>();
+        services.AddTransient<ProfileSelectorWidget>();  // v0.3.4d
 
         // ViewModels - Transient to match their views
         services.AddTransient<StatusBarViewModel>();
         services.AddTransient<ApiKeyDialogViewModel>();
+        services.AddTransient<ProfileSelectorViewModel>();  // v0.3.4d
 
         // Services - Singleton for shared state
         services.AddSingleton<IHealthRepository, HealthRepository>();

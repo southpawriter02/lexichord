@@ -38,11 +38,13 @@ public partial class StatusBarViewModel : ObservableObject
         IHealthRepository healthRepository,
         IHeartbeatService heartbeatService,
         IVaultStatusService vaultStatusService,
+        ProfileSelectorViewModel profileSelector,  // v0.3.4d
         ILogger<StatusBarViewModel> logger)
     {
         _healthRepository = healthRepository;
         _heartbeatService = heartbeatService;
         _vaultStatusService = vaultStatusService;
+        ProfileSelector = profileSelector;  // v0.3.4d
         _logger = logger;
 
         // Subscribe to status change events
@@ -121,6 +123,12 @@ public partial class StatusBarViewModel : ObservableObject
     /// Gets the logger for dialog ViewModels.
     /// </summary>
     public ILogger<StatusBarViewModel> Logger => _logger;
+
+    /// <summary>
+    /// Gets the ViewModel for the voice profile selector widget.
+    /// </summary>
+    /// <remarks>LOGIC: v0.3.4d - Exposed for XAML binding in StatusBarView.</remarks>
+    public ProfileSelectorViewModel ProfileSelector { get; }
 
     #endregion
 

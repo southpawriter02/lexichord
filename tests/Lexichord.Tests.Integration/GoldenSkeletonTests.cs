@@ -80,6 +80,10 @@ public class GoldenSkeletonTests : IAsyncLifetime
         // In production, this is registered by the Host during startup
         services.AddSingleton<ISecureVault, StubSecureVault>();
 
+        // LOGIC: v0.3.4d - Add stub IVoiceProfileService for ProfileSelectorViewModel
+        // This is normally registered by the Style module
+        services.AddSingleton<IVoiceProfileService, StubVoiceProfileService>();
+
         // Add StatusBar module services
         _statusBarModule = new StatusBarModule();
         _statusBarModule.RegisterServices(services);
@@ -478,3 +482,115 @@ internal sealed class StubSecureVault : ISecureVault
         }
     }
 }
+
+/// <summary>
+/// Stub IVoiceProfileService implementation for integration tests.
+/// </summary>
+/// <remarks>
+/// LOGIC: v0.3.4d - This stub provides a minimal IVoiceProfileService implementation
+/// that returns test profiles for testing ProfileSelectorViewModel integration.
+/// </remarks>
+internal sealed class StubVoiceProfileService : IVoiceProfileService
+{
+    // Test profiles - using inline definitions since BuiltInProfiles is internal to Style module
+    private static readonly VoiceProfile TechnicalProfile = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+        Name = "Technical",
+        Description = "Technical writing style",
+        TargetGradeLevel = 12.0,
+        GradeLevelTolerance = 2.0,
+        MaxSentenceLength = 25,
+        AllowPassiveVoice = true,
+        MaxPassiveVoicePercentage = 20.0,
+        FlagAdverbs = true,
+        FlagWeaselWords = true,
+        SortOrder = 0,
+        IsBuiltIn = true
+    };
+
+    private static readonly VoiceProfile MarketingProfile = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+        Name = "Marketing",
+        Description = "Marketing writing style",
+        TargetGradeLevel = 8.0,
+        GradeLevelTolerance = 1.5,
+        MaxSentenceLength = 20,
+        AllowPassiveVoice = false,
+        MaxPassiveVoicePercentage = 0.0,
+        FlagAdverbs = true,
+        FlagWeaselWords = true,
+        SortOrder = 1,
+        IsBuiltIn = true
+    };
+
+    private Guid _activeProfileId = TechnicalProfile.Id;
+
+    public Task<VoiceProfile> GetActiveProfileAsync(CancellationToken ct = default)
+    {
+        return Task.FromResult(GetProfileById(_activeProfileId) ?? TechnicalProfile);
+    }
+
+    public Task<IReadOnlyList<VoiceProfile>> GetAllProfilesAsync(CancellationToken ct = default)
+    {
+        IReadOnlyList<VoiceProfile> profiles = [TechnicalProfile, MarketingProfile];
+        return Task.FromResult(profiles);
+    }
+
+    public Task<VoiceProfile?> GetProfileAsync(Guid id, CancellationToken ct = default)
+    {
+        return Task.FromResult(GetProfileById(id));
+    }
+
+    public Task<VoiceProfile?> GetProfileByNameAsync(string name, CancellationToken ct = default)
+    {
+        var profile = name.ToLowerInvariant() switch
+        {
+            "technical" => TechnicalProfile,
+            "marketing" => MarketingProfile,
+            _ => null
+        };
+        return Task.FromResult<VoiceProfile?>(profile);
+    }
+
+    public Task SetActiveProfileAsync(Guid profileId, CancellationToken ct = default)
+    {
+        if (GetProfileById(profileId) is null)
+        {
+            throw new ArgumentException($"Profile not found: {profileId}", nameof(profileId));
+        }
+        _activeProfileId = profileId;
+        return Task.CompletedTask;
+    }
+
+    public Task<VoiceProfile> CreateProfileAsync(VoiceProfile profile, CancellationToken ct = default)
+    {
+        throw new NotSupportedException("Stub does not support creating profiles");
+    }
+
+    public Task UpdateProfileAsync(VoiceProfile profile, CancellationToken ct = default)
+    {
+        throw new NotSupportedException("Stub does not support updating profiles");
+    }
+
+    public Task DeleteProfileAsync(Guid id, CancellationToken ct = default)
+    {
+        throw new NotSupportedException("Stub does not support deleting profiles");
+    }
+
+    public Task ResetToDefaultAsync(CancellationToken ct = default)
+    {
+        _activeProfileId = TechnicalProfile.Id;
+        return Task.CompletedTask;
+    }
+
+    private static VoiceProfile? GetProfileById(Guid id)
+    {
+        if (id == TechnicalProfile.Id) return TechnicalProfile;
+        if (id == MarketingProfile.Id) return MarketingProfile;
+        return null;
+    }
+}
+
+

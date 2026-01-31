@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lexichord.Modules.StatusBar.ViewModels"
+             xmlns:views="using:Lexichord.Modules.StatusBar.Views"
              mc:Ignorable="d"
              d:DesignWidth="800" d:DesignHeight="24"
              x:Class="Lexichord.Modules.StatusBar.Views.StatusBarView"
@@ -109,6 +110,11 @@
             <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
                         Margin="0,0,8,0">
+                
+                <!-- Voice Profile Selector (v0.3.4d) -->
+                <views:ProfileSelectorWidget DataContext="{Binding ProfileSelector}"
+                                             Margin="0,0,4,0"/>
+                
                 <Border Classes="status-panel"
                         ToolTip.Tip="{Binding VaultTooltip}"
                         PointerPressed="OnVaultStatusClicked">

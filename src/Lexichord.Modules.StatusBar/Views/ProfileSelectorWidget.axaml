@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.StatusBar.ViewModels"
+             xmlns:contracts="using:Lexichord.Abstractions.Contracts"
+             mc:Ignorable="d"
+             d:DesignWidth="120" d:DesignHeight="24"
+             x:Class="Lexichord.Modules.StatusBar.Views.ProfileSelectorWidget"
+             x:DataType="vm:ProfileSelectorViewModel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    PROFILE SELECTOR WIDGET (v0.3.4d)
+    Status bar widget for displaying and selecting voice profiles.
+    
+    LOGIC: Displays current profile name with:
+    - Hover effect consistent with other status bar panels
+    - Rich tooltip showing full profile configuration
+    - Context menu for profile switching (populated dynamically)
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Status Panel Container (matches StatusBarView styling) -->
+        <Style Selector="Border.profile-panel">
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Border.profile-panel:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumHighBrush}"/>
+        </Style>
+
+        <!-- Profile Label Text -->
+        <Style Selector="TextBlock.profile-label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+        </Style>
+
+        <!-- Profile Icon -->
+        <Style Selector="TextBlock.profile-icon">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Style>
+
+        <!-- Context Menu Item -->
+        <Style Selector="MenuItem.profile-item">
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+        <Style Selector="MenuItem.profile-item:checked TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </UserControl.Styles>
+
+    <!-- Main Panel -->
+    <Border Classes="profile-panel"
+            Name="ProfilePanel"
+            ToolTip.Tip="{Binding ProfileTooltip}">
+        <Border.ContextMenu>
+            <ContextMenu Name="ProfileContextMenu"
+                         ItemsSource="{Binding AvailableProfiles}">
+                <ContextMenu.ItemTemplate>
+                    <DataTemplate x:DataType="contracts:VoiceProfile">
+                        <MenuItem Header="{Binding Name}"
+                                  Classes="profile-item"
+                                  Command="{Binding $parent[UserControl].((vm:ProfileSelectorViewModel)DataContext).SelectProfileCommand}"
+                                  CommandParameter="{Binding Id}"/>
+                    </DataTemplate>
+                </ContextMenu.ItemTemplate>
+            </ContextMenu>
+        </Border.ContextMenu>
+        
+        <StackPanel Orientation="Horizontal">
+            <!-- Profile Icon -->
+            <TextBlock Classes="profile-icon"
+                       Text="📝"/>
+            
+            <!-- Profile Name -->
+            <TextBlock Classes="profile-label"
+                       Text="{Binding CurrentProfileName}"/>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -126,6 +126,8 @@ This release introduces Voice Profiles for context-aware style enforcement based
 
 - **Weak Word Scanner** — New `IWeakWordScanner` detects adverbs (~40), weasel words (~30), and filler expressions (~15) in text. Respects Voice Profile settings for selective flagging while always detecting fillers. Provides specific suggestions for over 50 common weak words.
 
+- **Profile Selector UI** — New `ProfileSelectorWidget` in the status bar displays the active voice profile name with rich tooltips. Context menu enables quick profile switching. Auto-initializes on load with graceful error handling.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                    | Status      |
@@ -133,6 +135,7 @@ This release introduces Voice Profiles for context-aware style enforcement based
 | [v0.3.4a](v0.3.x/v0.3.4/LCS-CL-034a.md) | Voice Profile Definition | ✅ Complete |
 | [v0.3.4b](v0.3.x/v0.3.4/LCS-CL-034b.md) | Passive Voice Detector   | ✅ Complete |
 | [v0.3.4c](v0.3.x/v0.3.4/LCS-CL-034c.md) | Weak Word Scanner        | ✅ Complete |
+| [v0.3.4d](v0.3.x/v0.3.4/LCS-CL-034d.md) | Profile Selector UI      | ✅ Complete |
 
 ---
 
