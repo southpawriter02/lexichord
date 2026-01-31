@@ -69,6 +69,12 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.3a - Sentence tokenizer for readability analysis
         services.AddSingleton<ISentenceTokenizer, SentenceTokenizer>();
 
+        // LOGIC: v0.3.3b - Syllable counter for readability metrics
+        services.AddSingleton<ISyllableCounter, SyllableCounter>();
+
+        // LOGIC: v0.3.3c - Readability calculator service (stateless, thread-safe)
+        services.AddSingleton<IReadabilityService, ReadabilityService>();
+
         // LOGIC: v0.3.1c - Fuzzy scanner for terminology matching
         services.AddSingleton<IFuzzyScanner, FuzzyScanner>();
 

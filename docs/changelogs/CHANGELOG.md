@@ -74,6 +74,31 @@ This release introduces fuzzy string matching to detect typos and variations of 
 
 ---
 
+## [v0.3.3] - 2026-01 (In Progress)
+
+### The Readability Engine (Text Analysis)
+
+This release introduces algorithmic readability analysis to compute text complexity metrics.
+
+#### What's New
+
+- **Sentence Tokenizer** — New `ISentenceTokenizer` splits text into sentences while respecting abbreviations (Mr., Dr., Inc., U.S.A., etc.). Dictionary of 50+ common abbreviations avoids false sentence breaks. Handles ellipsis, initials, and edge cases.
+
+- **Syllable Counter** — New `ISyllableCounter` counts syllables using vowel-group heuristics and an exception dictionary of 40+ irregular words. Applies rules for silent 'e', '-ed', and '-es' suffixes. Provides `IsComplexWord()` for Gunning Fog Index calculation (3+ meaningful syllables, excluding common suffix inflation).
+
+- **Readability Calculator** — New `IReadabilityService` computes Flesch-Kincaid Grade Level, Gunning Fog Index, and Flesch Reading Ease scores. Uses Sentence Tokenizer and Syllable Counter for accurate analysis. Includes `ReadabilityMetrics` record with computed properties and human-readable interpretation of reading ease.
+
+#### Sub-Part Changelogs
+
+| Version                                 | Title                  | Status      |
+| --------------------------------------- | ---------------------- | ----------- |
+| [v0.3.3a](v0.3.x/v0.3.3/LCS-CL-033a.md) | Sentence Tokenizer     | ✅ Complete |
+| [v0.3.3b](v0.3.x/v0.3.3/LCS-CL-033b.md) | Syllable Counter       | ✅ Complete |
+| [v0.3.3c](v0.3.x/v0.3.3/LCS-CL-033c.md) | Readability Calculator | ✅ Complete |
+| v0.3.3d                                 | HUD Widget             | 🚧 Planned  |
+
+---
+
 ## [v0.2.7] - 2026-01 (In Progress)
 
 ### The Turbo (Performance Optimization)

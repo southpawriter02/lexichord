@@ -130,7 +130,17 @@
 | `IModuleFeatureRegistrar` | v0.3.1d    | Abstractions  | Module feature registration contract           |
 | `StyleFeatureRegistry`    | v0.3.1d    | Modules.Style | Style module feature registration              |
 
-### 1.5 v0.2.5 Dictionary Manager Interfaces (Consolidated)
+### 1.5 v0.3.3 Readability Engine Interfaces
+
+| Interface                  | Defined In | Module       | Purpose                                      |
+| :------------------------- | :--------- | :----------- | :------------------------------------------- |
+| `ISentenceTokenizer`       | v0.3.3a    | Abstractions | Abbreviation-aware sentence splitting        |
+| `ISyllableCounter`         | v0.3.3b    | Abstractions | Syllable counting and complex word detection |
+| `IReadabilityService`      | v0.3.3c    | Abstractions | Readability metric calculation               |
+| `ReadabilityMetrics`       | v0.3.3c    | Abstractions | Immutable result record with computed values |
+| `ReadabilityAnalyzedEvent` | v0.3.3c    | Abstractions | MediatR notification for UI updates          |
+
+### 1.6 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 
 > **Note:** These interfaces were originally planned for v0.3.2 but have been consolidated into v0.2.5 per ADR decision. See [roadmap-v0.3.x.md](v0.3.x/roadmap-v0.3.x.md) for details.
 
