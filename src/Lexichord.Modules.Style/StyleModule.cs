@@ -128,6 +128,9 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.4b - Passive voice detector with pattern matching and confidence scoring
         services.AddSingleton<IPassiveVoiceDetector, PassiveVoiceDetector>();
 
+        // LOGIC: v0.3.4c - Weak word scanner (adverbs, weasel words, fillers)
+        services.AddSingleton<IWeakWordScanner, WeakWordScanner>();
+
         // LOGIC: v0.2.5b - Filter ViewModel for filter bar UI
         services.AddTransient<FilterViewModel>();
 

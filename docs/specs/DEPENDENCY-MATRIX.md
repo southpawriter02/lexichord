@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-30 (v0.2.7c added)                                             |
+| **Last Updated** | 2026-01-30 (v0.3.4c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -140,7 +140,22 @@
 | `ReadabilityMetrics`       | v0.3.3c    | Abstractions | Immutable result record with computed values |
 | `ReadabilityAnalyzedEvent` | v0.3.3c    | Abstractions | MediatR notification for UI updates          |
 
-### 1.6 v0.2.5 Dictionary Manager Interfaces (Consolidated)
+### 1.7 v0.3.4 Writing Coach Interfaces
+
+| Interface               | Defined In | Module       | Purpose                                        |
+| :---------------------- | :--------- | :----------- | :--------------------------------------------- |
+| `VoiceProfile`          | v0.3.4a    | Abstractions | Voice profile record with style constraints    |
+| `IVoiceProfileService`  | v0.3.4a    | Abstractions | Profile CRUD and caching                       |
+| `ProfileChangedEvent`   | v0.3.4a    | Abstractions | MediatR notification for profile changes       |
+| `IPassiveVoiceDetector` | v0.3.4b    | Abstractions | Passive voice detection with confidence scores |
+| `PassiveType`           | v0.3.4b    | Abstractions | Passive voice construction type enum           |
+| `PassiveVoiceMatch`     | v0.3.4b    | Abstractions | Detected passive voice match record            |
+| `IWeakWordScanner`      | v0.3.4c    | Abstractions | Adverb/weasel word/filler detection            |
+| `WeakWordCategory`      | v0.3.4c    | Abstractions | Weak word classification enum                  |
+| `WeakWordMatch`         | v0.3.4c    | Abstractions | Detected weak word match record                |
+| `WeakWordStats`         | v0.3.4c    | Abstractions | Aggregate statistics for weak word analysis    |
+
+### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 
 > **Note:** These interfaces were originally planned for v0.3.2 but have been consolidated into v0.2.5 per ADR decision. See [roadmap-v0.3.x.md](v0.3.x/roadmap-v0.3.x.md) for details.
 

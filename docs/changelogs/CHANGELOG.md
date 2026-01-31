@@ -124,12 +124,15 @@ This release introduces Voice Profiles for context-aware style enforcement based
 
 - **Passive Voice Detector** — New `IPassiveVoiceDetector` uses regex pattern matching with confidence scoring to identify passive constructions (to-be, modal, progressive, get-passive). Distinguishes true passive voice from predicate adjectives like "The door is closed" using a confidence threshold (≥0.5).
 
+- **Weak Word Scanner** — New `IWeakWordScanner` detects adverbs (~40), weasel words (~30), and filler expressions (~15) in text. Respects Voice Profile settings for selective flagging while always detecting fillers. Provides specific suggestions for over 50 common weak words.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                    | Status      |
 | --------------------------------------- | ------------------------ | ----------- |
 | [v0.3.4a](v0.3.x/v0.3.4/LCS-CL-034a.md) | Voice Profile Definition | ✅ Complete |
 | [v0.3.4b](v0.3.x/v0.3.4/LCS-CL-034b.md) | Passive Voice Detector   | ✅ Complete |
+| [v0.3.4c](v0.3.x/v0.3.4/LCS-CL-034c.md) | Weak Word Scanner        | ✅ Complete |
 
 ---
 
