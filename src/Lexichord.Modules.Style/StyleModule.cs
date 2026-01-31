@@ -141,6 +141,9 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.5b - Target overlay computation service with caching
         services.AddSingleton<ITargetOverlayService, TargetOverlayService>();
 
+        // LOGIC: v0.3.5c - Real-time update service with debouncing
+        services.AddSingleton<IResonanceUpdateService, ResonanceUpdateService>();
+
         // LOGIC: v0.2.5b - Filter ViewModel for filter bar UI
         services.AddTransient<FilterViewModel>();
 

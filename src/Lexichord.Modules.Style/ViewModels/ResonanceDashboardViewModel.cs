@@ -41,7 +41,13 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
     private readonly IVoiceProfileService _profileService;
     private readonly ILicenseService _licenseService;
     private readonly IResonanceAxisProvider _axisProvider;
+    private readonly IResonanceUpdateService _updateService;
     private readonly ILogger<ResonanceDashboardViewModel> _logger;
+
+    /// <summary>
+    /// Subscription to the update service observable.
+    /// </summary>
+    private IDisposable? _updateSubscription;
 
     #endregion
 
@@ -92,6 +98,7 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
     /// <param name="profileService">Service for voice profile management.</param>
     /// <param name="licenseService">Service for license validation.</param>
     /// <param name="axisProvider">Provider for axis definitions.</param>
+    /// <param name="updateService">Service for real-time update coordination.</param>
     /// <param name="logger">Logger for diagnostic output.</param>
     public ResonanceDashboardViewModel(
         IChartDataService chartDataService,
@@ -100,6 +107,7 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
         IVoiceProfileService profileService,
         ILicenseService licenseService,
         IResonanceAxisProvider axisProvider,
+        IResonanceUpdateService updateService,
         ILogger<ResonanceDashboardViewModel> logger)
     {
         _chartDataService = chartDataService ?? throw new ArgumentNullException(nameof(chartDataService));
@@ -108,9 +116,13 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
         _profileService = profileService ?? throw new ArgumentNullException(nameof(profileService));
         _licenseService = licenseService ?? throw new ArgumentNullException(nameof(licenseService));
         _axisProvider = axisProvider ?? throw new ArgumentNullException(nameof(axisProvider));
+        _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        // Subscribe to chart data updates
+        // LOGIC: v0.3.5c - Subscribe to real-time update events
+        _updateSubscription = _updateService.UpdateRequested.Subscribe(OnUpdateRequested);
+
+        // Subscribe to chart data updates (legacy event, kept for compatibility)
         _chartDataService.DataUpdated += OnChartDataUpdated;
 
         // Check initial license status
@@ -159,6 +171,10 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
 
             // STEP 4: Load chart data
             await RefreshChartAsync(ct).ConfigureAwait(false);
+
+            // STEP 5: v0.3.5c - Start listening for real-time updates
+            _updateService.StartListening();
+            _logger.LogDebug("Started listening for real-time chart updates");
 
             _logger.LogInformation("ResonanceDashboardViewModel initialized successfully");
         }
@@ -218,6 +234,21 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
 
         // Rebuild series with new data
         _ = RebuildSeriesAsync(CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Handles update requests from the ResonanceUpdateService.
+    /// </summary>
+    /// <remarks>LOGIC: v0.3.5c - Responds to debounced and immediate update events.</remarks>
+    /// <param name="args">Event arguments containing trigger and timing info.</param>
+    private void OnUpdateRequested(ChartUpdateEventArgs args)
+    {
+        _logger.LogDebug(
+            "Update requested: trigger={Trigger}, immediate={WasImmediate}",
+            args.Trigger, args.WasImmediate);
+
+        // Refresh the chart with new data
+        _ = RefreshChartAsync(CancellationToken.None);
     }
 
     /// <summary>
@@ -358,6 +389,11 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
     /// </summary>
     public void Dispose()
     {
+        // LOGIC: v0.3.5c - Stop listening and dispose subscription
+        _updateService.StopListening();
+        _updateSubscription?.Dispose();
+        _updateSubscription = null;
+
         _chartDataService.DataUpdated -= OnChartDataUpdated;
         _logger.LogDebug("ResonanceDashboardViewModel disposed");
     }

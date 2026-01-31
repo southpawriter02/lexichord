@@ -159,12 +159,15 @@ This release introduces the charting infrastructure for visualizing writing metr
 
 - **Spider Chart with Target Overlay** — New `ResonanceDashboardView` displays writing metrics on an interactive polar chart. Features current values (solid fill) and target overlay (dashed line) based on active Voice Profile. Includes `ISpiderChartSeriesBuilder` for theme-aware series construction and `ITargetOverlayService` for profile-based target computation with caching.
 
+- **Real-Time Chart Updates** — New `IResonanceUpdateService` provides a reactive pipeline for chart updates. Uses Rx-based debouncing (300ms) to coalesce rapid analysis events while providing immediate response for profile changes. License-gated to Writer Pro tier.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                   | Status      |
 | --------------------------------------- | ----------------------- | ----------- |
 | [v0.3.5a](v0.3.x/v0.3.5/LCS-CL-035a.md) | Charting Infrastructure | ✅ Complete |
 | [v0.3.5b](v0.3.x/v0.3.5/LCS-CL-035b.md) | Spider Chart            | ✅ Complete |
+| [v0.3.5c](v0.3.x/v0.3.5/LCS-CL-035c.md) | Real-Time Updates       | ✅ Complete |
 
 ---
 

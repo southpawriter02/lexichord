@@ -30,6 +30,7 @@ public class ResonanceDashboardViewModelTests : IDisposable
     private readonly Mock<IVoiceProfileService> _voiceProfileServiceMock;
     private readonly Mock<ILicenseService> _licenseServiceMock;
     private readonly Mock<IResonanceAxisProvider> _axisProviderMock;
+    private readonly Mock<IResonanceUpdateService> _updateServiceMock;
     private readonly Mock<ILogger<ResonanceDashboardViewModel>> _loggerMock;
     private ResonanceDashboardViewModel? _sut;
 
@@ -41,6 +42,7 @@ public class ResonanceDashboardViewModelTests : IDisposable
         _voiceProfileServiceMock = new Mock<IVoiceProfileService>();
         _licenseServiceMock = new Mock<ILicenseService>();
         _axisProviderMock = new Mock<IResonanceAxisProvider>();
+        _updateServiceMock = new Mock<IResonanceUpdateService>();
         _loggerMock = new Mock<ILogger<ResonanceDashboardViewModel>>();
 
         SetupDefaultMocks();
@@ -284,6 +286,7 @@ public class ResonanceDashboardViewModelTests : IDisposable
             _voiceProfileServiceMock.Object,
             _licenseServiceMock.Object,
             _axisProviderMock.Object,
+            _updateServiceMock.Object,
             _loggerMock.Object);
     }
 

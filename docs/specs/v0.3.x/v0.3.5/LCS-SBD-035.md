@@ -249,12 +249,12 @@ Implement a Resonance Dashboard that:
 | v0.3.5b  | Implement normalization        | P0       | [ ]    |
 | v0.3.5b  | Add tooltips                   | P1       | [ ]    |
 | v0.3.5b  | Unit tests                     | P1       | [ ]    |
-| v0.3.5c  | Create IResonanceUpdateService | P0       | [ ]    |
-| v0.3.5c  | Implement update service       | P0       | [ ]    |
-| v0.3.5c  | Subscribe to events            | P0       | [ ]    |
-| v0.3.5c  | Implement debouncing           | P1       | [ ]    |
+| v0.3.5c  | Create IResonanceUpdateService | P0       | [x]    |
+| v0.3.5c  | Implement update service       | P0       | [x]    |
+| v0.3.5c  | Subscribe to events            | P0       | [x]    |
+| v0.3.5c  | Implement debouncing           | P1       | [x]    |
 | v0.3.5c  | Implement animations           | P2       | [ ]    |
-| v0.3.5c  | Unit tests                     | P1       | [ ]    |
+| v0.3.5c  | Unit tests                     | P1       | [x]    |
 | v0.3.5d  | Define TargetOverlay record    | P0       | [ ]    |
 | v0.3.5d  | Create overlay service         | P0       | [ ]    |
 | v0.3.5d  | Map profile to overlay         | P0       | [ ]    |

@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-30 (v0.3.5a added)                                             |
+| **Last Updated** | 2026-01-31 (v0.3.5c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -169,6 +169,11 @@
 | `ChartColors`               | v0.3.5a    | Modules.Style | Chart color record                        |
 | `DefaultAxisProvider`       | v0.3.5a    | Modules.Style | Default 6-axis spider chart configuration |
 | `ChartDataService`          | v0.3.5a    | Modules.Style | Aggregates metrics from upstream services |
+| `IResonanceUpdateService`   | v0.3.5c    | Abstractions  | Manages real-time update pipeline         |
+| `UpdateTrigger`             | v0.3.5c    | Abstractions  | Enum categorizing update sources          |
+| `ChartUpdateEvent`          | v0.3.5c    | Abstractions  | MediatR notification for chart updates    |
+| `ChartUpdateEventArgs`      | v0.3.5c    | Abstractions  | Update event context record               |
+| `ResonanceUpdateService`    | v0.3.5c    | Modules.Style | Rx-based debounced update service         |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 
