@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.11.x added)                                             |
+| **Last Updated** | 2026-01-31 (v0.12.x added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1858,3 +1858,240 @@ v0.11.5-SEC (API Gateway)
 - [ ] Usage metrics collection (v0.11.5e)
 - [ ] IGatewayMiddleware interface (v0.11.5f)
 - [ ] Request pipeline integration (v0.11.5f)
+
+---
+
+## 11. v0.12.x Agent Infrastructure Interfaces
+
+### 11.1 v0.12.1-AGT Agent Definition Model Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IAgent` | v0.12.1-AGT-a | Abstractions | Core agent contract |
+| `AgentId` | v0.12.1-AGT-a | Abstractions | Immutable agent identifier |
+| `AgentManifest` | v0.12.1-AGT-a | Abstractions | Agent capabilities/requirements declaration |
+| `AgentState` | v0.12.1-AGT-a | Abstractions | Agent operational state enum |
+| `AgentType` | v0.12.1-AGT-a | Abstractions | Task/Conversational/Reactive/Autonomous/Supervisor enum |
+| `ShutdownReason` | v0.12.1-AGT-a | Abstractions | Agent termination reason enum |
+| `AgentCapability` | v0.12.1-AGT-b | Abstractions | Capability declaration record |
+| `CapabilityCategory` | v0.12.1-AGT-b | Abstractions | TextGeneration/Analysis/Code/etc. enum |
+| `CapabilityQuery` | v0.12.1-AGT-b | Abstractions | Capability search query |
+| `AgentRequirements` | v0.12.1-AGT-c | Abstractions | LLM/memory/tool requirements |
+| `LLMRequirements` | v0.12.1-AGT-c | Abstractions | LLM-specific requirements |
+| `AgentConstraints` | v0.12.1-AGT-c | Abstractions | Behavioral limits |
+| `IAgentRegistry` | v0.12.1-AGT-d | Modules.Agents.Core | Agent registration and discovery |
+| `AgentFactory` | v0.12.1-AGT-d | Abstractions | Agent creation delegate |
+| `AgentRegistration` | v0.12.1-AGT-d | Abstractions | Registration result |
+| `AgentSearchQuery` | v0.12.1-AGT-d | Abstractions | Agent search parameters |
+| `IAgentValidator` | v0.12.1-AGT-e | Modules.Agents.Core | Manifest/behavior validation |
+| `ValidationResult` | v0.12.1-AGT-e | Abstractions | Validation outcome |
+
+### 11.2 v0.12.2-AGT Agent Lifecycle Manager Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IAgentLifecycleManager` | v0.12.2-AGT-a | Modules.Agents.Core | Agent spawn/terminate/observe |
+| `SpawnRequest` | v0.12.2-AGT-a | Abstractions | Agent spawn parameters |
+| `AgentSpawnOptions` | v0.12.2-AGT-a | Abstractions | Restart policy, limits, isolation |
+| `RestartPolicy` | v0.12.2-AGT-a | Abstractions | Never/OnFailure/Always/OnCrash enum |
+| `IsolationLevel` | v0.12.2-AGT-a | Abstractions | Shared/Isolated/Sandboxed enum |
+| `ResourceLimits` | v0.12.2-AGT-a | Abstractions | Concurrent/token/memory limits |
+| `AgentInstance` | v0.12.2-AGT-a | Abstractions | Running agent instance |
+| `IAgentMonitor` | v0.12.2-AGT-b | Modules.Agents.Core | Health checks and metrics |
+| `AgentHealthStatus` | v0.12.2-AGT-c | Abstractions | Health state and issues |
+| `HealthState` | v0.12.2-AGT-c | Abstractions | Healthy/Degraded/Unhealthy/Unknown enum |
+| `AgentMetrics` | v0.12.2-AGT-b | Abstractions | Request/latency/token metrics |
+| `AgentLifecycleEvent` | v0.12.2-AGT-a | Abstractions | Lifecycle state changes |
+| `TerminationReason` | v0.12.2-AGT-d | Abstractions | Termination cause enum |
+
+### 11.3 v0.12.3-AGT Agent Communication Bus Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IAgentMessageBus` | v0.12.3-AGT-a | Modules.Agents.Core | Inter-agent messaging |
+| `AgentMessage` | v0.12.3-AGT-a | Abstractions | Message record |
+| `MessageId` | v0.12.3-AGT-a | Abstractions | Unique message identifier |
+| `MessagePriority` | v0.12.3-AGT-a | Abstractions | Low/Normal/High/Critical enum |
+| `AgentEvent` | v0.12.3-AGT-b | Abstractions | Published event record |
+| `AgentEventFilter` | v0.12.3-AGT-b | Abstractions | Event subscription filter |
+| `AgentSelector` | v0.12.3-AGT-d | Abstractions | Target agent selector |
+| `IMessageRouter` | v0.12.3-AGT-e | Modules.Agents.Core | Message routing |
+| `RouteDefinition` | v0.12.3-AGT-e | Abstractions | Route configuration |
+| `RoutingStrategy` | v0.12.3-AGT-e | Abstractions | First/RoundRobin/LeastBusy/Broadcast/Random enum |
+
+### 11.4 v0.12.4-AGT Agent Memory & Context Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IAgentMemory` | v0.12.4-AGT-a | Modules.Agents.Core | Unified memory access |
+| `IWorkingMemory` | v0.12.4-AGT-a | Modules.Agents.Core | Session-scoped memory |
+| `IWorkingMemoryScope` | v0.12.4-AGT-a | Abstractions | Scoped memory container |
+| `ILongTermMemory` | v0.12.4-AGT-b | Modules.Agents.Core | Persistent semantic memory |
+| `MemoryEntry` | v0.12.4-AGT-b | Abstractions | Stored memory record |
+| `MemoryType` | v0.12.4-AGT-b | Abstractions | Fact/Event/Insight/Preference/Correction/Conversation enum |
+| `MemoryQuery` | v0.12.4-AGT-d | Abstractions | Memory retrieval query |
+| `IContextWindow` | v0.12.4-AGT-c | Modules.Agents.Core | LLM context management |
+| `ContextItem` | v0.12.4-AGT-c | Abstractions | Context window item |
+| `ContextItemType` | v0.12.4-AGT-c | Abstractions | SystemPrompt/UserMessage/etc. enum |
+| `CompactionStrategy` | v0.12.4-AGT-c | Abstractions | RemoveOldest/RemoveLowPriority/Summarize/Selective enum |
+| `MemorySnapshot` | v0.12.4-AGT-e | Abstractions | Memory state snapshot |
+
+### 11.5 v0.12.5-AGT Agent Tool System Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `ITool` | v0.12.5-AGT-a | Abstractions | Tool execution contract |
+| `ToolDefinition` | v0.12.5-AGT-a | Abstractions | Tool schema/parameters |
+| `ToolCategory` | v0.12.5-AGT-a | Abstractions | FileSystem/Network/Database/etc. enum |
+| `ToolParameter` | v0.12.5-AGT-a | Abstractions | Tool parameter definition |
+| `ToolParameterType` | v0.12.5-AGT-a | Abstractions | String/Integer/Number/Boolean/Array/Object enum |
+| `ToolConstraints` | v0.12.5-AGT-a | Abstractions | Execution limits |
+| `IToolRegistry` | v0.12.5-AGT-b | Modules.Agents.Core | Tool registration/discovery |
+| `ToolRegistration` | v0.12.5-AGT-b | Abstractions | Registration result |
+| `IToolExecutor` | v0.12.5-AGT-c | Modules.Agents.Core | Tool execution |
+| `ToolInput` | v0.12.5-AGT-c | Abstractions | Tool execution input |
+| `ToolExecutionOptions` | v0.12.5-AGT-c | Abstractions | Timeout, isolation, confirmation |
+| `ToolResult` | v0.12.5-AGT-e | Abstractions | Execution result |
+| `ToolResultMetadata` | v0.12.5-AGT-e | Abstractions | Side effects, affected resources |
+| `IToolSandbox` | v0.12.5-AGT-d | Modules.Agents.Core | Sandboxed execution |
+| `SandboxOptions` | v0.12.5-AGT-d | Abstractions | Allowed paths/hosts/limits |
+
+---
+
+## 12. v0.12.x Dependency Graph
+
+### 12.1 v0.12.x Internal Dependencies
+
+```
+v0.12.1-AGT (Agent Definition)
+├── v0.11.1-SEC (Authorization)
+├── v0.6.1a (LLM Integration)
+├── v0.0.7a (MediatR)
+└── PostgreSQL (manifest storage)
+
+v0.12.2-AGT (Lifecycle Manager)
+├── v0.12.1-AGT (Agent Definition)
+├── v0.11.1-SEC (Authorization)
+├── v0.11.2-SEC (Audit Logging)
+└── v0.0.7a (MediatR)
+
+v0.12.3-AGT (Communication Bus)
+├── v0.12.1-AGT (Agent Definition)
+├── v0.12.2-AGT (Lifecycle Manager)
+├── v0.11.2-SEC (Audit Logging)
+└── System.Threading.Channels
+
+v0.12.4-AGT (Memory & Context)
+├── v0.12.1-AGT (Agent Definition)
+├── v0.4.3 (RAG Service - embeddings)
+├── v0.11.3-SEC (Encryption)
+└── pgvector (semantic search)
+
+v0.12.5-AGT (Tool System)
+├── v0.12.1-AGT (Agent Definition)
+├── v0.11.1-SEC (Authorization)
+├── v0.11.2-SEC (Audit Logging)
+└── Jint / Docker.DotNet (sandbox)
+```
+
+### 12.2 v0.12.x Feature Gates
+
+| Version | Feature Gate | License Tier |
+| :--- | :--- | :--- |
+| v0.12.1-AGT | `FeatureFlags.Agents.Definition` | Core (3 built-in), WriterPro (+2 custom), Teams (+10 + sharing), Enterprise (unlimited) |
+| v0.12.2-AGT | `FeatureFlags.Agents.Lifecycle` | Core (2 concurrent), WriterPro (5), Teams (20 + hierarchies), Enterprise (unlimited + isolation) |
+| v0.12.3-AGT | `FeatureFlags.Agents.Communication` | Core (direct only), WriterPro (+pub/sub 5 topics), Teams (+broadcast + routing), Enterprise (+sagas + unlimited) |
+| v0.12.4-AGT | `FeatureFlags.Agents.Memory` | Core (working only), WriterPro (+100MB long-term), Teams (+1GB + semantic), Enterprise (unlimited + retention) |
+| v0.12.5-AGT | `FeatureFlags.Agents.Tools` | Core (5 built-in), WriterPro (+10 custom), Teams (+50 + sandbox), Enterprise (unlimited + custom sandboxes) |
+
+---
+
+## 13. v0.12.x Implementation Checklist
+
+### v0.12.1-AGT Prerequisites for v0.12.2+
+
+- [ ] IAgent interface (v0.12.1a)
+- [ ] AgentId record struct (v0.12.1a)
+- [ ] AgentManifest record (v0.12.1a)
+- [ ] AgentState enum (v0.12.1a)
+- [ ] AgentType enum (v0.12.1a)
+- [ ] AgentCapability record (v0.12.1b)
+- [ ] CapabilityCategory enum (v0.12.1b)
+- [ ] CapabilityQuery record (v0.12.1b)
+- [ ] AgentRequirements record (v0.12.1c)
+- [ ] AgentConstraints record (v0.12.1c)
+- [ ] IAgentRegistry interface (v0.12.1d)
+- [ ] AgentFactory delegate (v0.12.1d)
+- [ ] Database schema for manifests (v0.12.1d)
+- [ ] IAgentValidator interface (v0.12.1e)
+- [ ] Manifest validation rules (v0.12.1e)
+- [ ] Agent browser UI (v0.12.1f)
+
+### v0.12.2-AGT Prerequisites for v0.12.3+
+
+- [ ] IAgentLifecycleManager interface (v0.12.2a)
+- [ ] SpawnRequest record (v0.12.2a)
+- [ ] AgentSpawnOptions record (v0.12.2a)
+- [ ] RestartPolicy enum (v0.12.2a)
+- [ ] ResourceLimits record (v0.12.2a)
+- [ ] AgentInstance record (v0.12.2a)
+- [ ] IAgentMonitor interface (v0.12.2b)
+- [ ] AgentMetrics record (v0.12.2b)
+- [ ] AgentHealthStatus record (v0.12.2c)
+- [ ] HealthState enum (v0.12.2c)
+- [ ] Health check scheduler (v0.12.2c)
+- [ ] Graceful shutdown protocol (v0.12.2d)
+- [ ] Restart backoff algorithm (v0.12.2e)
+- [ ] Lifecycle dashboard UI (v0.12.2f)
+
+### v0.12.3-AGT Prerequisites for v0.12.4+
+
+- [ ] IAgentMessageBus interface (v0.12.3a)
+- [ ] AgentMessage record (v0.12.3a)
+- [ ] MessageId record struct (v0.12.3a)
+- [ ] MessagePriority enum (v0.12.3a)
+- [ ] AgentEvent record (v0.12.3b)
+- [ ] AgentEventFilter record (v0.12.3b)
+- [ ] Request/response correlation (v0.12.3c)
+- [ ] Timeout handling (v0.12.3c)
+- [ ] AgentSelector record (v0.12.3d)
+- [ ] Broadcast implementation (v0.12.3d)
+- [ ] IMessageRouter interface (v0.12.3e)
+- [ ] RouteDefinition record (v0.12.3e)
+- [ ] RoutingStrategy enum (v0.12.3e)
+- [ ] Communication monitor UI (v0.12.3f)
+
+### v0.12.4-AGT Prerequisites for v0.12.5+
+
+- [ ] IAgentMemory interface (v0.12.4a)
+- [ ] IWorkingMemory interface (v0.12.4a)
+- [ ] IWorkingMemoryScope interface (v0.12.4a)
+- [ ] ILongTermMemory interface (v0.12.4b)
+- [ ] MemoryEntry record (v0.12.4b)
+- [ ] MemoryType enum (v0.12.4b)
+- [ ] Vector embedding storage (v0.12.4b)
+- [ ] IContextWindow interface (v0.12.4c)
+- [ ] ContextItem record (v0.12.4c)
+- [ ] CompactionStrategy enum (v0.12.4c)
+- [ ] Token counting (v0.12.4c)
+- [ ] Semantic search implementation (v0.12.4d)
+- [ ] Memory persistence layer (v0.12.4e)
+- [ ] Memory inspector UI (v0.12.4f)
+
+### v0.12.5-AGT Prerequisites for v0.13.x+
+
+- [ ] ITool interface (v0.12.5a)
+- [ ] ToolDefinition record (v0.12.5a)
+- [ ] ToolCategory enum (v0.12.5a)
+- [ ] ToolParameter record (v0.12.5a)
+- [ ] ToolConstraints record (v0.12.5a)
+- [ ] IToolRegistry interface (v0.12.5b)
+- [ ] Tool discovery and search (v0.12.5b)
+- [ ] IToolExecutor interface (v0.12.5c)
+- [ ] ToolInput/ToolExecutionOptions (v0.12.5c)
+- [ ] IToolSandbox interface (v0.12.5d)
+- [ ] SandboxOptions record (v0.12.5d)
+- [ ] Jint sandbox backend (v0.12.5d)
+- [ ] ToolResult record (v0.12.5e)
+- [ ] Side effect tracking (v0.12.5e)
+- [ ] Tool management UI (v0.12.5f)

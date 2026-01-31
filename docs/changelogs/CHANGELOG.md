@@ -55,11 +55,20 @@ This release introduces comprehensive unit testing to verify algorithm accuracy 
 
 - **Scanner Accuracy Tests** — 5 new tests for multi-term scanning, position calculation, and ratio reporting accuracy.
 
+- **Readability Corpus Infrastructure** — Standard corpus with 5 entries (Gettysburg Address, simple children's text, academic prose, Hemingway-style, mixed complexity) containing pre-calculated reference values for validation.
+
+- **Syllable Counter Accuracy Tests** — 19 tests validating syllable counting against CMU dictionary reference words, corpus entries, silent 'e' patterns, and compound words.
+
+- **Sentence Tokenizer Accuracy Tests** — 17 tests verifying sentence and word count extraction accuracy across corpus entries.
+
+- **Readability Formula Accuracy Tests** — 50 tests ensuring Flesch-Kincaid Grade Level, Gunning Fog Index, and Flesch Reading Ease calculations match reference values within tolerance.
+
 #### Sub-Part Changelogs
 
-| Version                                    | Title            | Status      |
-| ------------------------------------------ | ---------------- | ----------- |
-| [v0.3.8a](v0.3.x/v0.3.8/LCS-CL-v0.3.8a.md) | Fuzzy Test Suite | ✅ Complete |
+| Version                                    | Title                  | Status      |
+| ------------------------------------------ | ---------------------- | ----------- |
+| [v0.3.8a](v0.3.x/v0.3.8/LCS-CL-v0.3.8a.md) | Fuzzy Test Suite       | ✅ Complete |
+| [v0.3.8b](v0.3.x/v0.3.8/LCS-CL-v0.3.8b.md) | Readability Test Suite | ✅ Complete |
 
 ---
 

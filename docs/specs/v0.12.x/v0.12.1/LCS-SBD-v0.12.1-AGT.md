@@ -52,12 +52,12 @@ This is the cornerstone of the entire agent infrastructure—without clear defin
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.12.1e | Agent Schema & Contracts | Core `IAgent` interface and related types | 8 |
-| v0.12.1f | Capability Declaration | System for declaring and querying capabilities | 8 |
-| v0.12.1g | Agent Configuration | Configuration schema and binding | 6 |
-| v0.12.1h | Agent Registry | Storage and retrieval of agent definitions | 10 |
-| v0.12.1i | Agent Validation | Manifest and runtime validation | 8 |
-| v0.12.1j | Agent Definition UI | UI for browsing and managing agents | 8 |
+| v0.12.1a | Agent Schema & Contracts | Core `IAgent` interface and related types | 8 |
+| v0.12.1b | Capability Declaration | System for declaring and querying capabilities | 8 |
+| v0.12.1c | Agent Configuration | Configuration schema and binding | 6 |
+| v0.12.1d | Agent Registry | Storage and retrieval of agent definitions | 10 |
+| v0.12.1e | Agent Validation | Manifest and runtime validation | 8 |
+| v0.12.1f | Agent Definition UI | UI for browsing and managing agents | 8 |
 | **Total** | | | **48 hours** |
 
 ### 2.2 Core Interfaces
