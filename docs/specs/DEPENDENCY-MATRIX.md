@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.3.7a added)                                             |
+| **Last Updated** | 2026-01-31 (v0.11.x added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1371,3 +1371,490 @@ graph TB
 - [ ] DegradedSearchMode enum (v0.5.8d)
 - [ ] Polly circuit breaker for embedding API (v0.5.8d)
 - [ ] BM25 fallback integration (v0.5.8d)
+
+---
+
+## 5. v0.10.x Knowledge Graph Advanced Features
+
+### 5.1 v0.10.1-KG Knowledge Graph Versioning Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IGraphVersionService` | v0.10.1-KG-a | Modules.CKVS.Versioning | Graph version management and history |
+| `IVersionStore` | v0.10.1-KG-a | Modules.CKVS.Versioning | Version persistence layer |
+| `GraphVersion` | v0.10.1-KG-a | Abstractions | Version metadata record |
+| `GraphVersionRef` | v0.10.1-KG-a | Abstractions | Version reference (ID/timestamp/tag) |
+| `GraphChangeStats` | v0.10.1-KG-a | Abstractions | Version change statistics |
+| `IChangeTracker` | v0.10.1-KG-b | Modules.CKVS.Versioning | Mutation change capture |
+| `GraphChange` | v0.10.1-KG-b | Abstractions | Individual change record |
+| `GraphChangeType` | v0.10.1-KG-b | Abstractions | Create/Update/Delete enum |
+| `GraphElementType` | v0.10.1-KG-b | Abstractions | Entity/Relationship/Claim/Axiom enum |
+| `ITimeTravelQueryService` | v0.10.1-KG-c | Modules.CKVS.Versioning | Historical state queries |
+| `IGraphSnapshot` | v0.10.1-KG-c | Abstractions | Point-in-time graph state |
+| `ISnapshotManager` | v0.10.1-KG-d | Modules.CKVS.Versioning | Named snapshot management |
+| `GraphSnapshot` | v0.10.1-KG-d | Abstractions | Snapshot metadata record |
+| `IGraphBranchService` | v0.10.1-KG-e | Modules.CKVS.Versioning | Branch/merge operations |
+| `GraphBranch` | v0.10.1-KG-e | Abstractions | Branch metadata record |
+| `MergeResult` | v0.10.1-KG-e | Abstractions | Merge outcome with conflicts |
+| `MergeConflict` | v0.10.1-KG-e | Abstractions | Conflict detail record |
+| `MergeStatus` | v0.10.1-KG-e | Abstractions | Success/Conflict/NothingToMerge enum |
+
+### 5.2 v0.10.2-KG Inference Engine Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IInferenceEngine` | v0.10.2-KG-c | Modules.CKVS.Inference | Core inference execution |
+| `InferenceResult` | v0.10.2-KG-c | Abstractions | Inference execution result |
+| `DerivedFact` | v0.10.2-KG-c | Abstractions | Inferred fact record |
+| `DerivedFactType` | v0.10.2-KG-c | Abstractions | Relationship/Property/Claim enum |
+| `InferenceRule` | v0.10.2-KG-a | Abstractions | Rule definition record |
+| `InferenceRuleScope` | v0.10.2-KG-a | Abstractions | Workspace/Project/Global enum |
+| `IInferenceRuleParser` | v0.10.2-KG-a | Modules.CKVS.Inference | Rule DSL parsing |
+| `IRuleCompiler` | v0.10.2-KG-b | Modules.CKVS.Inference | Rule compilation |
+| `CompiledRule` | v0.10.2-KG-b | Abstractions | Executable rule form |
+| `IForwardChainer` | v0.10.2-KG-c | Modules.CKVS.Inference | Forward-chaining execution |
+| `IWorkingMemory` | v0.10.2-KG-c | Modules.CKVS.Inference | Fact working memory |
+| `IAgenda` | v0.10.2-KG-c | Modules.CKVS.Inference | Rule activation queue |
+| `IIncrementalInferenceManager` | v0.10.2-KG-d | Modules.CKVS.Inference | Incremental re-inference |
+| `IProvenanceTracker` | v0.10.2-KG-e | Modules.CKVS.Inference | Derivation chain tracking |
+| `DerivationExplanation` | v0.10.2-KG-e | Abstractions | Explanation for derived fact |
+| `DerivationPremise` | v0.10.2-KG-e | Abstractions | Premise in derivation chain |
+| `InferenceOptions` | v0.10.2-KG-c | Abstractions | Inference execution options |
+
+### 5.3 v0.10.3-KG Entity Resolution Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IDisambiguationService` | v0.10.3-KG-a | Modules.CKVS.Resolution | Entity disambiguation |
+| `DisambiguationResult` | v0.10.3-KG-a | Abstractions | Disambiguation candidates |
+| `DisambiguationCandidate` | v0.10.3-KG-a | Abstractions | Match candidate record |
+| `IDuplicateDetector` | v0.10.3-KG-b | Modules.CKVS.Resolution | Duplicate entity detection |
+| `DuplicateScanResult` | v0.10.3-KG-b | Abstractions | Scan result with groups |
+| `DuplicateGroup` | v0.10.3-KG-b | Abstractions | Group of duplicate entities |
+| `IEntityMerger` | v0.10.3-KG-c | Modules.CKVS.Resolution | Entity merge operations |
+| `MergePreview` | v0.10.3-KG-c | Abstractions | Merge preview result |
+| `EntityMergeResult` | v0.10.3-KG-c | Abstractions | Merge execution result |
+| `IResolutionLearningService` | v0.10.3-KG-d | Modules.CKVS.Resolution | Learning from user choices |
+| `ResolutionFeedback` | v0.10.3-KG-d | Abstractions | User feedback record |
+| `IResolutionAuditService` | v0.10.3-KG-f | Modules.CKVS.Resolution | Resolution audit trail |
+| `ResolutionAuditEntry` | v0.10.3-KG-f | Abstractions | Audit entry record |
+
+### 5.4 v0.10.4-KG Graph Visualization & Search Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IGraphRenderer` | v0.10.4-KG-a | Modules.CKVS.Visualization | Graph visualization |
+| `GraphVisualization` | v0.10.4-KG-a | Abstractions | Visualization data |
+| `VisualNode` | v0.10.4-KG-a | Abstractions | Node rendering data |
+| `VisualEdge` | v0.10.4-KG-a | Abstractions | Edge rendering data |
+| `LayoutAlgorithm` | v0.10.4-KG-a | Abstractions | Layout algorithm enum |
+| `IPathFinder` | v0.10.4-KG-b | Modules.CKVS.Visualization | Path finding between entities |
+| `GraphPath` | v0.10.4-KG-b | Abstractions | Path result record |
+| `PathFindingOptions` | v0.10.4-KG-b | Abstractions | Path search options |
+| `IGraphQueryService` | v0.10.4-KG-c | Modules.CKVS.Visualization | CKVS-QL query execution |
+| `QueryResult` | v0.10.4-KG-c | Abstractions | Query result container |
+| `ISemanticGraphSearch` | v0.10.4-KG-d | Modules.CKVS.Visualization | Semantic search over graph |
+| `SemanticSearchResult` | v0.10.4-KG-d | Abstractions | Semantic search results |
+| `IGraphExporter` | v0.10.4-KG-e | Modules.CKVS.Visualization | Export to SVG/PNG/PDF |
+| `ExportFormat` | v0.10.4-KG-e | Abstractions | SVG/PNG/PDF/JSON enum |
+| `ExportOptions` | v0.10.4-KG-e | Abstractions | Export configuration |
+
+### 5.5 v0.10.5-KG Knowledge Import/Export Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IKnowledgeImporter` | v0.10.5-KG-c | Modules.CKVS.Interop | Knowledge import |
+| `ImportPreview` | v0.10.5-KG-c | Abstractions | Import preview result |
+| `ImportResult` | v0.10.5-KG-c | Abstractions | Import execution result |
+| `ImportFormat` | v0.10.5-KG-a | Abstractions | OWL/RDF/Turtle/JSON-LD enum |
+| `ImportOptions` | v0.10.5-KG-c | Abstractions | Import configuration |
+| `ImportMode` | v0.10.5-KG-c | Abstractions | Merge/Replace/Append enum |
+| `IFormatParser` | v0.10.5-KG-a | Modules.CKVS.Interop | Format-specific parsing |
+| `ParsedKnowledge` | v0.10.5-KG-a | Abstractions | Parsed knowledge container |
+| `ISchemaMappingService` | v0.10.5-KG-b | Modules.CKVS.Interop | Schema mapping |
+| `SchemaMapping` | v0.10.5-KG-b | Abstractions | Mapping configuration |
+| `TypeMapping` | v0.10.5-KG-b | Abstractions | Type mapping record |
+| `PropertyMapping` | v0.10.5-KG-b | Abstractions | Property mapping record |
+| `IKnowledgeExporter` | v0.10.5-KG-d | Modules.CKVS.Interop | Knowledge export |
+| `ExportResult` | v0.10.5-KG-d | Abstractions | Export execution result |
+| `IImportValidator` | v0.10.5-KG-e | Modules.CKVS.Interop | Import validation |
+| `ValidationResult` | v0.10.5-KG-e | Abstractions | Validation outcome |
+| `ImportValidationError` | v0.10.5-KG-e | Abstractions | Validation error detail |
+
+---
+
+## 6. v0.10.x Dependency Graph
+
+### 6.1 v0.10.x Internal Dependencies
+
+```
+v0.10.1-KG (Versioning)
+├── v0.4.5e (Graph Foundation)
+├── v0.7.6-KG (Sync Service)
+├── v0.0.7a (MediatR)
+└── PostgreSQL (v0.4.6-KG)
+
+v0.10.2-KG (Inference)
+├── v0.4.6-KG (Axiom Store)
+├── v0.6.5-KG (Validation Engine)
+├── v0.4.5e (Graph Repository)
+├── v0.7.6-KG (Sync Service)
+└── v0.0.7a (MediatR)
+
+v0.10.3-KG (Entity Resolution)
+├── v0.5.5-KG (Entity Linking)
+├── v0.4.7-KG (Entity Browser)
+├── v0.4.5e (Graph Repository)
+├── v0.10.1-KG (Versioning) - for audit
+└── v0.0.7a (MediatR)
+
+v0.10.4-KG (Visualization & Search)
+├── v0.4.5-KG (Graph Foundation)
+├── v0.4.7-KG (Entity Browser)
+├── v0.4.3 (RAG Service) - for semantic search
+└── Neo4j (v0.4.5-KG)
+
+v0.10.5-KG (Import/Export)
+├── v0.4.5e (Graph Repository)
+├── v0.4.6-KG (Axiom Store)
+├── v0.6.5-KG (Validation Engine)
+└── v0.10.3-KG (Entity Resolution) - for merge during import
+```
+
+### 6.2 v0.10.x Feature Gates
+
+| Version | Feature Gate | License Tier |
+| :--- | :--- | :--- |
+| v0.10.1-KG | `FeatureFlags.CKVS.GraphVersioning` | Teams (basic), Enterprise (branching) |
+| v0.10.2-KG | `FeatureFlags.CKVS.InferenceEngine` | Teams (built-in rules), Enterprise (custom) |
+| v0.10.3-KG | `FeatureFlags.CKVS.EntityResolution` | WriterPro (basic), Teams (full) |
+| v0.10.4-KG | `FeatureFlags.CKVS.GraphVisualization` | WriterPro (basic), Teams (CKVS-QL), Enterprise (semantic) |
+| v0.10.5-KG | `FeatureFlags.CKVS.KnowledgeInterop` | Teams |
+
+---
+
+## 7. v0.10.x Implementation Checklist
+
+### v0.10.1-KG Prerequisites for v0.10.2+
+
+- [ ] IVersionStore interface (v0.10.1a)
+- [ ] GraphVersion record (v0.10.1a)
+- [ ] GraphVersionRef record (v0.10.1a)
+- [ ] Version table migration (v0.10.1a)
+- [ ] IChangeTracker interface (v0.10.1b)
+- [ ] GraphChange record (v0.10.1b)
+- [ ] Change capture interceptor (v0.10.1b)
+- [ ] ITimeTravelQueryService interface (v0.10.1c)
+- [ ] Delta application algorithm (v0.10.1c)
+- [ ] ISnapshotManager interface (v0.10.1d)
+- [ ] Snapshot storage (v0.10.1d)
+- [ ] IGraphBranchService interface (v0.10.1e)
+- [ ] Three-way merge algorithm (v0.10.1e)
+- [ ] Version history UI components (v0.10.1f)
+
+### v0.10.2-KG Prerequisites for v0.10.3+
+
+- [ ] IInferenceRuleParser interface (v0.10.2a)
+- [ ] Rule DSL lexer/parser (v0.10.2a)
+- [ ] InferenceRule record (v0.10.2a)
+- [ ] IRuleCompiler interface (v0.10.2b)
+- [ ] CompiledRule record (v0.10.2b)
+- [ ] IForwardChainer interface (v0.10.2c)
+- [ ] IWorkingMemory interface (v0.10.2c)
+- [ ] IAgenda interface (v0.10.2c)
+- [ ] IIncrementalInferenceManager interface (v0.10.2d)
+- [ ] Rete network optimization (v0.10.2d)
+- [ ] IProvenanceTracker interface (v0.10.2e)
+- [ ] DerivationExplanation record (v0.10.2e)
+- [ ] Inference UI components (v0.10.2f)
+
+### v0.10.3-KG Prerequisites for v0.10.4+
+
+- [ ] IDisambiguationService interface (v0.10.3a)
+- [ ] DisambiguationResult record (v0.10.3a)
+- [ ] IDuplicateDetector interface (v0.10.3b)
+- [ ] Similarity algorithms (v0.10.3b)
+- [ ] IEntityMerger interface (v0.10.3c)
+- [ ] Merge preview/execute/undo (v0.10.3c)
+- [ ] IResolutionLearningService interface (v0.10.3d)
+- [ ] Pattern extraction (v0.10.3d)
+- [ ] Bulk resolution UI (v0.10.3e)
+- [ ] IResolutionAuditService interface (v0.10.3f)
+
+### v0.10.4-KG Prerequisites for v0.10.5+
+
+- [ ] IGraphRenderer interface (v0.10.4a)
+- [ ] Force-directed layout algorithm (v0.10.4a)
+- [ ] IPathFinder interface (v0.10.4b)
+- [ ] BFS/depth-limited traversal (v0.10.4b)
+- [ ] IGraphQueryService interface (v0.10.4c)
+- [ ] CKVS-QL lexer/parser (v0.10.4c)
+- [ ] ISemanticGraphSearch interface (v0.10.4d)
+- [ ] Vector embedding integration (v0.10.4d)
+- [ ] IGraphExporter interface (v0.10.4e)
+- [ ] SVG/PNG/PDF export (v0.10.4e)
+- [ ] Unified search UI (v0.10.4f)
+
+### v0.10.5-KG Prerequisites for v0.11.x+
+
+- [ ] IFormatParser interface (v0.10.5a)
+- [ ] OWL/RDF/Turtle/JSON-LD parsers (v0.10.5a)
+- [ ] ISchemaMappingService interface (v0.10.5b)
+- [ ] Auto-detection algorithm (v0.10.5b)
+- [ ] IKnowledgeImporter interface (v0.10.5c)
+- [ ] Merge/replace logic (v0.10.5c)
+- [ ] IKnowledgeExporter interface (v0.10.5d)
+- [ ] Multi-format serialization (v0.10.5d)
+- [ ] IImportValidator interface (v0.10.5e)
+- [ ] Validation rules (v0.10.5e)
+- [ ] Import/Export UI wizard (v0.10.5f)
+
+---
+
+## 8. v0.11.x Security Interfaces
+
+### 8.1 v0.11.1-SEC Access Control & Authorization Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `Permission` | v0.11.1-SEC-a | Abstractions | Flags-based permission enum |
+| `Role` | v0.11.1-SEC-a | Abstractions | Role definition record |
+| `RoleType` | v0.11.1-SEC-a | Abstractions | Global/EntityType/Workspace/Custom enum |
+| `BuiltInRoles` | v0.11.1-SEC-a | Security | Pre-defined Viewer/Contributor/Editor/Admin roles |
+| `PolicyRule` | v0.11.1-SEC-a | Abstractions | ABAC policy rule record |
+| `PolicyEffect` | v0.11.1-SEC-a | Abstractions | Allow/Deny enum |
+| `IAuthorizationService` | v0.11.1-SEC-b | Modules.Security | Core permission evaluation |
+| `AuthorizationRequest` | v0.11.1-SEC-b | Abstractions | Authorization request record |
+| `AuthorizationResult` | v0.11.1-SEC-b | Abstractions | Authorization outcome record |
+| `DenialReason` | v0.11.1-SEC-b | Abstractions | Permission denial reason enum |
+| `EntityAcl` | v0.11.1-SEC-c | Abstractions | Entity access control list |
+| `AclEntry` | v0.11.1-SEC-c | Abstractions | ACL entry record |
+| `PrincipalType` | v0.11.1-SEC-c | Abstractions | User/Role/Team/ServiceAccount enum |
+| `AccessLevel` | v0.11.1-SEC-c | Abstractions | None/Read/Write/Full/Inherit enum |
+| `IRoleManagementService` | v0.11.1-SEC-d | Modules.Security | Role CRUD operations |
+| `IPermissionInheritanceService` | v0.11.1-SEC-e | Modules.Security | Permission inheritance resolver |
+| `IAccessControlViewModel` | v0.11.1-SEC-f | Modules.Security | Access control UI |
+
+### 8.2 v0.11.2-SEC Security Audit Logging Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `AuditEvent` | v0.11.2-SEC-a | Abstractions | Audit event record |
+| `AuditEventType` | v0.11.2-SEC-a | Abstractions | Login/Permission/Entity/etc. event types |
+| `AuditEventCategory` | v0.11.2-SEC-a | Abstractions | Auth/DataAccess/Config/etc. categories |
+| `AuditSeverity` | v0.11.2-SEC-a | Abstractions | Debug/Info/Warning/Error/Critical enum |
+| `AuditOutcome` | v0.11.2-SEC-a | Abstractions | Success/Failure/Partial/Unknown enum |
+| `IAuditLogger` | v0.11.2-SEC-b | Modules.Security | High-performance audit logging |
+| `IAuditQueryService` | v0.11.2-SEC-b | Modules.Security | Audit event querying |
+| `AuditQuery` | v0.11.2-SEC-b | Abstractions | Query filter record |
+| `AuditQueryResult` | v0.11.2-SEC-b | Abstractions | Query result record |
+| `IntegrityVerificationResult` | v0.11.2-SEC-c | Abstractions | Hash chain verification |
+| `IntegrityViolation` | v0.11.2-SEC-c | Abstractions | Integrity violation detail |
+| `ISecurityAlertService` | v0.11.2-SEC-d | Modules.Security | Real-time security alerts |
+| `AlertRule` | v0.11.2-SEC-d | Abstractions | Alert rule configuration |
+| `SecurityAlert` | v0.11.2-SEC-d | Abstractions | Alert instance record |
+| `AlertSeverity` | v0.11.2-SEC-d | Abstractions | Low/Medium/High/Critical enum |
+| `IRetentionManager` | v0.11.2-SEC-e | Modules.Security | Log lifecycle management |
+| `IAuditQueryViewModel` | v0.11.2-SEC-f | Modules.Security | Audit query UI |
+
+### 8.3 v0.11.3-SEC Data Protection & Encryption Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `DataClassification` | v0.11.3-SEC-a | Abstractions | Public/Internal/Confidential/Restricted/Secret enum |
+| `PropertyClassification` | v0.11.3-SEC-a | Abstractions | Property sensitivity classification |
+| `IDataClassificationService` | v0.11.3-SEC-a | Modules.Security | Data classification management |
+| `IEncryptionService` | v0.11.3-SEC-b | Modules.Security | Core encryption/decryption |
+| `EncryptedData` | v0.11.3-SEC-b | Abstractions | Encrypted data container |
+| `EncryptionContext` | v0.11.3-SEC-b | Abstractions | Encryption context/AAD |
+| `IKeyManagementService` | v0.11.3-SEC-c | Modules.Security | Key storage and rotation |
+| `EncryptionKey` | v0.11.3-SEC-c | Abstractions | Encryption key metadata |
+| `KeyStatus` | v0.11.3-SEC-c | Abstractions | Pending/Active/Decrypt/Retired/Compromised enum |
+| `KeyRotationResult` | v0.11.3-SEC-c | Abstractions | Key rotation outcome |
+| `IFieldEncryptionService` | v0.11.3-SEC-d | Modules.Security | Field-level encryption |
+| `FieldEncryptionStatus` | v0.11.3-SEC-d | Abstractions | Field encryption state |
+| `IDataMaskingService` | v0.11.3-SEC-e | Modules.Security | Dynamic data masking |
+| `MaskingType` | v0.11.3-SEC-e | Abstractions | Full/Partial/Email/Phone/etc. enum |
+| `ISecureExportService` | v0.11.3-SEC-f | Modules.Security | Encrypted export with key escrow |
+
+### 8.4 v0.11.4-SEC Input Security & Validation Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IQuerySanitizer` | v0.11.4-SEC-a | Modules.Security | CKVS-QL injection prevention |
+| `SanitizedQuery` | v0.11.4-SEC-a | Abstractions | Sanitized query result |
+| `ParameterizedQuery` | v0.11.4-SEC-a | Abstractions | Parameterized query container |
+| `QueryValidationResult` | v0.11.4-SEC-a | Abstractions | Query structure validation |
+| `IInputSchemaValidator` | v0.11.4-SEC-b | Modules.Security | Schema validation |
+| `ValidationResult` | v0.11.4-SEC-b | Abstractions | Validation outcome |
+| `ValidationError` | v0.11.4-SEC-b | Abstractions | Validation error detail |
+| `IContentScanner` | v0.11.4-SEC-c | Modules.Security | Malicious content detection |
+| `ScanResult` | v0.11.4-SEC-c | Abstractions | Content scan result |
+| `DetectedThreat` | v0.11.4-SEC-c | Abstractions | Detected threat detail |
+| `ThreatType` | v0.11.4-SEC-c | Abstractions | Injection/XSS/Malware/etc. enum |
+| `IRateLimiter` | v0.11.4-SEC-d | Modules.Security | Request rate limiting |
+| `RateLimitResult` | v0.11.4-SEC-d | Abstractions | Rate limit check result |
+| `RateLimitPolicy` | v0.11.4-SEC-d | Abstractions | Rate limit configuration |
+| `IInputNormalizer` | v0.11.4-SEC-e | Modules.Security | Input sanitization |
+| `IErrorSanitizer` | v0.11.4-SEC-f | Modules.Security | Error response sanitization |
+
+### 8.5 v0.11.5-SEC API Security Gateway Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IApiKeyService` | v0.11.5-SEC-a | Modules.Security | API key management |
+| `ApiKeyCreationResult` | v0.11.5-SEC-a | Abstractions | Key creation result |
+| `ApiKeyValidationResult` | v0.11.5-SEC-a | Abstractions | Key validation result |
+| `ApiKeyInfo` | v0.11.5-SEC-a | Abstractions | API key metadata |
+| `ApiScope` | v0.11.5-SEC-a | Abstractions | API permission scopes |
+| `ApiKeyQuota` | v0.11.5-SEC-a | Abstractions | API key quota configuration |
+| `IOAuthService` | v0.11.5-SEC-b | Modules.Security | OAuth 2.0 / OIDC |
+| `TokenResponse` | v0.11.5-SEC-b | Abstractions | OAuth token response |
+| `TokenValidationResult` | v0.11.5-SEC-b | Abstractions | Token validation result |
+| `IRequestSigningService` | v0.11.5-SEC-c | Modules.Security | Request signature verification |
+| `SignedRequest` | v0.11.5-SEC-c | Abstractions | Signed request data |
+| `SignatureVerificationResult` | v0.11.5-SEC-c | Abstractions | Signature verification result |
+| `IApiVersioningService` | v0.11.5-SEC-d | Modules.Security | API version management |
+| `ApiVersion` | v0.11.5-SEC-d | Abstractions | API version record |
+| `DeprecationInfo` | v0.11.5-SEC-d | Abstractions | Version deprecation info |
+| `IApiAnalyticsService` | v0.11.5-SEC-e | Modules.Security | API usage analytics |
+| `ApiRequestMetrics` | v0.11.5-SEC-e | Abstractions | Request metrics record |
+| `ApiUsageStats` | v0.11.5-SEC-e | Abstractions | Usage statistics |
+| `IGatewayMiddleware` | v0.11.5-SEC-f | Modules.Security | Request pipeline integration |
+
+---
+
+## 9. v0.11.x Dependency Graph
+
+### 9.1 v0.11.x Internal Dependencies
+
+```
+v0.11.1-SEC (Access Control)
+├── v0.9.1 (User Profiles)
+├── v0.9.2 (License Engine)
+├── v0.4.5e (Graph Foundation)
+└── v0.0.7a (MediatR)
+
+v0.11.2-SEC (Audit Logging)
+├── v0.11.1-SEC (Access Control)
+├── v0.9.1 (User Profiles)
+├── v0.4.5e (Graph Repository)
+└── PostgreSQL (audit storage)
+
+v0.11.3-SEC (Data Protection)
+├── v0.11.1-SEC (Access Control)
+├── v0.11.2-SEC (Audit Logging)
+├── v0.9.6 (PII Scrubber)
+├── v0.0.6a (Secure Vault)
+└── Azure Key Vault / AWS KMS (HSM)
+
+v0.11.4-SEC (Input Security)
+├── v0.11.2-SEC (Audit Logging)
+├── v0.10.4-KG (CKVS-QL Query Service)
+├── v0.10.5-KG (Import Validation)
+└── Redis (rate limit storage)
+
+v0.11.5-SEC (API Gateway)
+├── v0.11.1-SEC (Access Control)
+├── v0.11.2-SEC (Audit Logging)
+├── v0.11.3-SEC (Data Protection)
+├── v0.11.4-SEC (Input Security)
+└── IdentityServer / Duende (OAuth)
+```
+
+### 9.2 v0.11.x Feature Gates
+
+| Version | Feature Gate | License Tier |
+| :--- | :--- | :--- |
+| v0.11.1-SEC | `FeatureFlags.Security.AccessControl` | Core (none), WriterPro (basic roles), Teams (RBAC), Enterprise (ABAC) |
+| v0.11.2-SEC | `FeatureFlags.Security.AuditLogging` | Core (7 days), WriterPro (30 days), Teams (1 year + alerts), Enterprise (unlimited + SIEM) |
+| v0.11.3-SEC | `FeatureFlags.Security.DataProtection` | Core (DB-level), WriterPro (masking), Teams (field encryption), Enterprise (HSM) |
+| v0.11.4-SEC | `FeatureFlags.Security.InputSecurity` | Core (basic), WriterPro (scanning), Teams (rate limits), Enterprise (threat detection) |
+| v0.11.5-SEC | `FeatureFlags.Security.ApiGateway` | Core (none), WriterPro (2 keys), Teams (keys + OAuth), Enterprise (full + SLA) |
+
+---
+
+## 10. v0.11.x Implementation Checklist
+
+### v0.11.1-SEC Prerequisites for v0.11.2+
+
+- [ ] Permission flags enum (v0.11.1a)
+- [ ] Role record with policies (v0.11.1a)
+- [ ] Built-in roles (Viewer, Contributor, Editor, Admin) (v0.11.1a)
+- [ ] PolicyRule ABAC structure (v0.11.1a)
+- [ ] IAuthorizationService interface (v0.11.1b)
+- [ ] AuthorizationRequest/Result records (v0.11.1b)
+- [ ] RBAC evaluator (v0.11.1b)
+- [ ] ABAC evaluator (v0.11.1b)
+- [ ] EntityAcl and AclEntry records (v0.11.1c)
+- [ ] ACL storage and retrieval (v0.11.1c)
+- [ ] IRoleManagementService interface (v0.11.1d)
+- [ ] Role CRUD operations (v0.11.1d)
+- [ ] IPermissionInheritanceService interface (v0.11.1e)
+- [ ] Inheritance traversal algorithm (v0.11.1e)
+- [ ] Access control UI components (v0.11.1f)
+
+### v0.11.2-SEC Prerequisites for v0.11.3+
+
+- [ ] AuditEvent record (v0.11.2a)
+- [ ] AuditEventType enum (v0.11.2a)
+- [ ] AuditEventCategory enum (v0.11.2a)
+- [ ] IAuditLogger interface (v0.11.2b)
+- [ ] High-performance async logging (v0.11.2b)
+- [ ] IAuditQueryService interface (v0.11.2b)
+- [ ] Hash chain implementation (v0.11.2c)
+- [ ] IntegrityVerificationResult record (v0.11.2c)
+- [ ] ISecurityAlertService interface (v0.11.2d)
+- [ ] AlertRule configuration (v0.11.2d)
+- [ ] IRetentionManager interface (v0.11.2e)
+- [ ] Tiered storage (hot/warm/cold) (v0.11.2e)
+- [ ] Audit query UI components (v0.11.2f)
+
+### v0.11.3-SEC Prerequisites for v0.11.4+
+
+- [ ] DataClassification enum (v0.11.3a)
+- [ ] PropertyClassification record (v0.11.3a)
+- [ ] IDataClassificationService interface (v0.11.3a)
+- [ ] IEncryptionService interface (v0.11.3b)
+- [ ] AES-256-GCM implementation (v0.11.3b)
+- [ ] IKeyManagementService interface (v0.11.3c)
+- [ ] Key hierarchy (MEK → KEK → DEK) (v0.11.3c)
+- [ ] Key rotation algorithm (v0.11.3c)
+- [ ] IFieldEncryptionService interface (v0.11.3d)
+- [ ] Transparent field encryption (v0.11.3d)
+- [ ] IDataMaskingService interface (v0.11.3e)
+- [ ] Masking patterns (v0.11.3e)
+- [ ] ISecureExportService interface (v0.11.3f)
+
+### v0.11.4-SEC Prerequisites for v0.11.5+
+
+- [ ] IQuerySanitizer interface (v0.11.4a)
+- [ ] Parameterized query support (v0.11.4a)
+- [ ] Injection pattern detection (v0.11.4a)
+- [ ] IInputSchemaValidator interface (v0.11.4b)
+- [ ] JSON schema validation (v0.11.4b)
+- [ ] IContentScanner interface (v0.11.4c)
+- [ ] Threat detection patterns (v0.11.4c)
+- [ ] IRateLimiter interface (v0.11.4d)
+- [ ] Sliding window / token bucket (v0.11.4d)
+- [ ] IInputNormalizer interface (v0.11.4e)
+- [ ] HTML sanitization (v0.11.4e)
+- [ ] IErrorSanitizer interface (v0.11.4f)
+- [ ] Safe error responses (v0.11.4f)
+
+### v0.11.5-SEC Prerequisites for v0.12.x+
+
+- [ ] IApiKeyService interface (v0.11.5a)
+- [ ] API key generation/validation (v0.11.5a)
+- [ ] Scoped permissions (v0.11.5a)
+- [ ] IOAuthService interface (v0.11.5b)
+- [ ] Authorization code flow (v0.11.5b)
+- [ ] Client credentials flow (v0.11.5b)
+- [ ] IRequestSigningService interface (v0.11.5c)
+- [ ] HMAC signature verification (v0.11.5c)
+- [ ] IApiVersioningService interface (v0.11.5d)
+- [ ] Deprecation headers (v0.11.5d)
+- [ ] IApiAnalyticsService interface (v0.11.5e)
+- [ ] Usage metrics collection (v0.11.5e)
+- [ ] IGatewayMiddleware interface (v0.11.5f)
+- [ ] Request pipeline integration (v0.11.5f)
