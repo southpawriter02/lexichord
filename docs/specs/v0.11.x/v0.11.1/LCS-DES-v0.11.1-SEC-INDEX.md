@@ -11,7 +11,7 @@
 | **Status** | Draft |
 | **Last Updated** | 2026-01-31 |
 | **Owner** | Security Architect |
-| **Parent Scope** | [LCS-SBD-111-SEC](./LCS-SBD-111-SEC.md) |
+| **Parent Scope** | [LCS-SBD-111-SEC](./LCS-SBD-v0.11.1-SEC.md) |
 
 ---
 
@@ -31,12 +31,12 @@ This index organizes all design specifications for CKVS v0.11.1-SEC (Access Cont
 
 | ID | Sub-Part | Title | Hours | Status | Link |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `LCS-DES-111-SEC-e` | v0.11.1e | Permission Model | 6 | Draft | [Read](./LCS-DES-111-SEC-e.md) |
-| `LCS-DES-111-SEC-f` | v0.11.1f | Authorization Service | 10 | Draft | [Read](./LCS-DES-111-SEC-f.md) |
-| `LCS-DES-111-SEC-g` | v0.11.1g | Entity-Level ACLs | 8 | Draft | [Read](./LCS-DES-111-SEC-g.md) |
-| `LCS-DES-111-SEC-h` | v0.11.1h | Role Management | 6 | Draft | [Read](./LCS-DES-111-SEC-h.md) |
-| `LCS-DES-111-SEC-i` | v0.11.1i | Permission Inheritance | 8 | Draft | [Read](./LCS-DES-111-SEC-i.md) |
-| `LCS-DES-111-SEC-j` | v0.11.1j | Access Control UI | 6 | Draft | [Read](./LCS-DES-111-SEC-j.md) |
+| `LCS-DES-111-SEC-a` | v0.11.1a | Permission Model | 6 | Draft | [Read](./LCS-DES-v0.11.1-SEC-a.md) |
+| `LCS-DES-111-SEC-b` | v0.11.1b | Authorization Service | 10 | Draft | [Read](./LCS-DES-v0.11.1-SEC-b.md) |
+| `LCS-DES-111-SEC-c` | v0.11.1c | Entity-Level ACLs | 8 | Draft | [Read](./LCS-DES-v0.11.1-SEC-c.md) |
+| `LCS-DES-111-SEC-d` | v0.11.1d | Role Management | 6 | Draft | [Read](./LCS-DES-v0.11.1-SEC-d.md) |
+| `LCS-DES-111-SEC-e` | v0.11.1e | Permission Inheritance | 8 | Draft | [Read](./LCS-DES-v0.11.1-SEC-e.md) |
+| `LCS-DES-111-SEC-f` | v0.11.1f | Access Control UI | 6 | Draft | [Read](./LCS-DES-v0.11.1-SEC-f.md) |
 
 ---
 
@@ -53,7 +53,7 @@ This index organizes all design specifications for CKVS v0.11.1-SEC (Access Cont
          │ AuthorizeAsync(request)
          │
 ┌────────▼──────────────────────────────────────────────────────────┐
-│              Authorization Service (v0.11.1f)                     │
+│              Authorization Service (v0.11.1b)                     │
 │  Entry point for all permission checks                           │
 │  Coordinates RBAC, ACL, and ABAC evaluation                      │
 └──┬──────────┬──────────────────┬─────────────┬──────────────────┬─┘
@@ -178,7 +178,7 @@ graph TB
 
 ## 4. Specification Details
 
-### 4.1 LCS-DES-111-SEC-e: Permission Model (6 hours)
+### 4.1 LCS-DES-111-SEC-a: Permission Model (6 hours)
 
 **Scope:** Define all permissions, roles, and permission structures
 **Key Deliverables:**
@@ -191,11 +191,11 @@ graph TB
 **Depends On:** Permission model is foundational; no internal dependencies
 **Depended On By:** All other components (f, g, h, i, j)
 
-**See:** [LCS-DES-111-SEC-e.md](./LCS-DES-111-SEC-e.md)
+**See:** [LCS-DES-111-SEC-a.md](./LCS-DES-v0.11.1-SEC-a.md)
 
 ---
 
-### 4.2 LCS-DES-111-SEC-f: Authorization Service (10 hours)
+### 4.2 LCS-DES-111-SEC-b: Authorization Service (10 hours)
 
 **Scope:** Core permission evaluation engine
 **Key Deliverables:**
@@ -216,11 +216,11 @@ graph TB
 - Access Control UI (j)
 - Application layer (all protected endpoints)
 
-**See:** [LCS-DES-111-SEC-f.md](./LCS-DES-111-SEC-f.md)
+**See:** [LCS-DES-111-SEC-b.md](./LCS-DES-v0.11.1-SEC-b.md)
 
 ---
 
-### 4.3 LCS-DES-111-SEC-g: Entity-Level ACLs (8 hours)
+### 4.3 LCS-DES-111-SEC-c: Entity-Level ACLs (8 hours)
 
 **Scope:** Per-entity access control lists
 **Key Deliverables:**
@@ -240,11 +240,11 @@ graph TB
 - Permission Inheritance (i)
 - Access Control UI (j)
 
-**See:** [LCS-DES-111-SEC-g.md](./LCS-DES-111-SEC-g.md)
+**See:** [LCS-DES-111-SEC-c.md](./LCS-DES-v0.11.1-SEC-c.md)
 
 ---
 
-### 4.4 LCS-DES-111-SEC-h: Role Management (6 hours)
+### 4.4 LCS-DES-111-SEC-d: Role Management (6 hours)
 
 **Scope:** Create and manage roles and assignments
 **Key Deliverables:**
@@ -264,11 +264,11 @@ graph TB
 - Authorization Service (f)
 - Access Control UI (j)
 
-**See:** [LCS-DES-111-SEC-h.md](./LCS-DES-111-SEC-h.md)
+**See:** [LCS-DES-111-SEC-d.md](./LCS-DES-v0.11.1-SEC-d.md)
 
 ---
 
-### 4.5 LCS-DES-111-SEC-i: Permission Inheritance (8 hours)
+### 4.5 LCS-DES-111-SEC-e: Permission Inheritance (8 hours)
 
 **Scope:** Permission inheritance through entity relationships
 **Key Deliverables:**
@@ -279,19 +279,19 @@ graph TB
 - Ancestor/descendant traversal
 
 **Depends On:**
-- Permission model (e)
-- Entity ACLs (g)
+- Permission model (a)
+- Entity ACLs (c)
 - Graph relationships (v0.4.5e)
 
 **Depended On By:**
-- Authorization Service (f)
-- Access Control UI (j)
+- Authorization Service (b)
+- Access Control UI (f)
 
-**See:** [LCS-DES-111-SEC-i.md](./LCS-DES-111-SEC-i.md)
+**See:** [LCS-DES-111-SEC-e.md](./LCS-DES-v0.11.1-SEC-e.md)
 
 ---
 
-### 4.6 LCS-DES-111-SEC-j: Access Control UI (6 hours)
+### 4.6 LCS-DES-111-SEC-f: Access Control UI (6 hours)
 
 **Scope:** Administrative interface for permission management
 **Key Deliverables:**
@@ -303,13 +303,13 @@ graph TB
 - RESTful API endpoints (Controllers)
 
 **Depends On:**
-- Authorization Service (f)
-- Role Management (h)
-- Entity ACLs (g)
-- Permission Inheritance (i)
+- Authorization Service (b)
+- Role Management (d)
+- Entity ACLs (c)
+- Permission Inheritance (e)
 - Audit logging (v0.11.2-SEC)
 
-**See:** [LCS-DES-111-SEC-j.md](./LCS-DES-111-SEC-j.md)
+**See:** [LCS-DES-111-SEC-f.md](./LCS-DES-v0.11.1-SEC-f.md)
 
 ---
 
@@ -616,7 +616,7 @@ All access control changes must be logged:
 ## 13. Reference Documents
 
 ### 13.1 Scope Document
-- [LCS-SBD-111-SEC: Scope Overview](./LCS-SBD-111-SEC.md)
+- [LCS-SBD-111-SEC: Scope Overview](./LCS-SBD-v0.11.1-SEC.md)
 
 ### 13.2 Related Versions
 - [v0.9.1: User Profiles & Authentication](../v0.9.x/v0.9.1/LCS-SBD-091-AUTH.md)
@@ -640,19 +640,19 @@ All access control changes must be logged:
 ## 15. Quick Navigation
 
 ### By Component
-- **Permission Model** → [LCS-DES-111-SEC-e.md](./LCS-DES-111-SEC-e.md)
-- **Authorization Service** → [LCS-DES-111-SEC-f.md](./LCS-DES-111-SEC-f.md)
-- **Entity ACLs** → [LCS-DES-111-SEC-g.md](./LCS-DES-111-SEC-g.md)
-- **Role Management** → [LCS-DES-111-SEC-h.md](./LCS-DES-111-SEC-h.md)
-- **Permission Inheritance** → [LCS-DES-111-SEC-i.md](./LCS-DES-111-SEC-i.md)
-- **Access Control UI** → [LCS-DES-111-SEC-j.md](./LCS-DES-111-SEC-j.md)
+- **Permission Model** → [LCS-DES-111-SEC-a.md](./LCS-DES-v0.11.1-SEC-a.md)
+- **Authorization Service** → [LCS-DES-111-SEC-b.md](./LCS-DES-v0.11.1-SEC-b.md)
+- **Entity ACLs** → [LCS-DES-111-SEC-c.md](./LCS-DES-v0.11.1-SEC-c.md)
+- **Role Management** → [LCS-DES-111-SEC-d.md](./LCS-DES-v0.11.1-SEC-d.md)
+- **Permission Inheritance** → [LCS-DES-111-SEC-e.md](./LCS-DES-v0.11.1-SEC-e.md)
+- **Access Control UI** → [LCS-DES-111-SEC-f.md](./LCS-DES-v0.11.1-SEC-f.md)
 
 ### By Topic
-- **API Interfaces** → Components f, g, h, i, j (Section 4)
-- **Data Types** → Components e, f, g, h, i, j (Section 4)
-- **Implementation** → Components e, f, g, h, i, j (Section 6)
-- **Testing** → Components e, f, g, h, i, j (Section 8)
-- **Performance** → Components f, g, i, j (Section 9)
+- **API Interfaces** → Components b, c, d, e, f (Section 4)
+- **Data Types** → Components a, b, c, d, e, f (Section 4)
+- **Implementation** → Components a, b, c, d, e, f (Section 6)
+- **Testing** → Components a, b, c, d, e, f (Section 8)
+- **Performance** → Components b, c, e, f (Section 9)
 
 ---
 

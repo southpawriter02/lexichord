@@ -1,20 +1,20 @@
-# LCS-DES-115-SEC-f: Design Specification — OAuth Provider
+# LCS-DES-115-SEC-b: Design Specification — Gateway Middleware
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                             |
 | :------------------- | :-------------------------------- |
-| **Document ID**      | LCS-DES-115-SEC-f                 |
-| **Feature ID**       | SEC-115f                          |
-| **Feature Name**     | OAuth Provider                    |
+| **Document ID**      | LCS-DES-115-SEC-b                 |
+| **Feature ID**       | SEC-115j                          |
+| **Feature Name**     | Gateway Middleware                |
 | **Parent Feature**   | v0.11.5 — API Security Gateway    |
-| **Module Scope**     | Lexichord.Modules.Security.OAuth  |
-| **Swimlane**         | Authentication & Authorization    |
-| **License Tier**     | Teams (OAuth), Enterprise (OIDC)  |
-| **Feature Gate Key** | `FeatureFlags.API.OAuthProvider`  |
+| **Module Scope**     | Lexichord.API.Gateway.Middleware  |
+| **Swimlane**         | API Gateway                       |
+| **License Tier**     | WriterPro+                        |
+| **Feature Gate Key** | `FeatureFlags.API.GatewayEnabled` |
 | **Status**           | Draft                             |
 | **Last Updated**     | 2026-01-31                        |
-| **Est. Hours**       | 12                                |
+| **Est. Hours**       | 6                                 |
 
 ---
 
@@ -22,948 +22,715 @@
 
 ### 2.1 Problem Statement
 
-Third-party integrations require secure delegated access without sharing user credentials:
+API security requires coordinated middleware integration:
 
-- No standard OAuth 2.0 authorization code flow
-- No machine-to-machine authentication (Client Credentials)
-- No token refresh mechanism
-- No OpenID Connect (OIDC) support for identity
-- No public JWKS endpoint for token validation
+- No unified request pipeline for authentication/authorization
+- No rate limiting at gateway level
+- No request validation before reaching handlers
+- No response envelope standardization
+- No centralized error handling
 
 ### 2.2 Solution Overview
 
-Implement `IOAuthService` that provides:
+Implement middleware pipeline components that:
 
-- **Authorization Code Flow** for user-delegated access
-- **Client Credentials Flow** for service-to-service access
-- **Token Refresh** mechanism with rotating refresh tokens
-- **Token Validation** with JWT and signature verification
-- **OIDC Support** for identity claims in ID tokens
-- **JWKS Endpoint** for public key distribution
+- **Authenticate Requests** using API keys, OAuth, or request signatures
+- **Extract Request Context** (user, scopes, version)
+- **Rate Limit Requests** based on API key quotas
+- **Validate API Versions** and route accordingly
+- **Record Metrics** for all requests
+- **Add Security Headers** to responses
+- **Handle Errors** with consistent response format
 
 ### 2.3 Key Deliverables
 
-| Deliverable               | Description                              |
-| :------------------------ | :--------------------------------------- |
-| `IOAuthService`           | Interface in Lexichord.Abstractions      |
-| `OAuthService`            | OAuth 2.0/OIDC implementation            |
-| `OAuthClientManager`      | OAuth application registration and admin |
-| `AuthorizationCodeStore`  | Short-lived authorization codes          |
-| `TokenIssuer`             | JWT token generation                     |
-| `TokenValidator`          | Token verification and claims extraction |
-| `JwksService`             | Public key distribution                  |
-| Unit tests               | 95%+ coverage                            |
+| Deliverable                | Description                         |
+| :------------------------- | :---------------------------------- |
+| `ApiAuthenticationMiddleware` | API key/OAuth/signature auth       |
+| `ApiRateLimitingMiddleware`   | Quota enforcement                   |
+| `ApiVersioningMiddleware`     | Version detection and routing       |
+| `ApiMetricsMiddleware`        | Request/response recording          |
+| `ApiSecurityHeadersMiddleware` | Security headers injection         |
+| `ApiErrorHandlingMiddleware`  | Exception to response conversion    |
+| `ApiRequestContextBuilder`    | Request context extraction         |
+| Integration tests              | End-to-end pipeline tests           |
 
 ---
 
 ## 3. Architecture & Modular Strategy
 
-### 3.1 Component Diagram
+### 3.1 Middleware Pipeline
 
 ```mermaid
 graph TB
-    subgraph "Lexichord.Abstractions"
-        IOS[IOAuthService]
-        ARQ[AuthorizationRequest]
-        ARS[AuthorizationResponse]
-        TRQ[TokenRequest]
-        TRP[TokenResponse]
-        TVR[TokenValidationResult]
-        CC[ClientCredentialsRequest]
-        RT[RefreshTokenRequest]
+    subgraph "Request Pipeline"
+        A["Incoming Request"] --> B["Authentication<br/>Middleware"]
+        B --> C["Version Detection<br/>Middleware"]
+        C --> D["Rate Limiting<br/>Middleware"]
+        D --> E["Request Validation<br/>Middleware"]
+        E --> F["Metrics Start<br/>Middleware"]
+        F --> G["Route Handler"]
+        G --> H["Metrics End<br/>Middleware"]
+        H --> I["Security Headers<br/>Middleware"]
+        I --> J["Error Handling<br/>Middleware"]
+        J --> K["Response<br/>Outgoing"]
     end
 
-    subgraph "Lexichord.Modules.Security.OAuth"
-        OS[OAuthService]
-        OCM[OAuthClientManager]
-        ACS[AuthorizationCodeStore]
-        TI[TokenIssuer]
-        TV[TokenValidator]
-        JS[JwksService]
-        PKG[PrivateKeyGenerator]
-    end
-
-    subgraph "Dependencies"
-        ENC[IEncryptionService<br/>v0.11.3-SEC]
-        DB[IDataStore]
-        AUDIT[IAuditLogger<br/>v0.11.2-SEC]
-        CLOCK[ISystemClock]
-        JWT[System.IdentityModel.Tokens.Jwt]
-    end
-
-    OS --> IOS
-    OS --> OCM
-    OS --> ACS
-    OS --> TI
-    OS --> TV
-    TI --> JWT
-    TV --> JWT
-    JS --> PKG
-    OS --> AUDIT
-    OCM --> DB
-    ACS --> DB
-
-    style OS fill:#22c55e,color:#fff
-    style IOS fill:#4a9eff,color:#fff
+    style B fill:#dc2626
+    style C fill:#dc2626
+    style D fill:#dc2626
+    style I fill:#dc2626
+    style J fill:#dc2626
 ```
 
 ### 3.2 Module Location
 
 ```text
 src/
-├── Lexichord.Abstractions/
-│   └── Contracts/
-│       └── OAuthModels.cs                ← Interfaces and records
-│
-└── Lexichord.Modules.Security.OAuth/
-    ├── Services/
-    │   ├── OAuthService.cs                ← Main implementation
-    │   ├── OAuthClientManager.cs          ← Client registration
-    │   ├── Tokens/
-    │   │   ├── TokenIssuer.cs             ← JWT generation
-    │   │   └── TokenValidator.cs          ← Token validation
-    │   ├── AuthorizationCodeStore.cs      ← Temporary code storage
-    │   └── Keys/
-    │       ├── JwksService.cs             ← JWKS endpoint
-    │       └── PrivateKeyGenerator.cs     ← Key generation
-    └── Data/
-        └── OAuthDataStore.cs              ← Data access
+└── Lexichord.API/
+    └── Gateway/
+        ├── Middleware/
+        │   ├── ApiAuthenticationMiddleware.cs       ← Auth
+        │   ├── ApiVersioningMiddleware.cs           ← Versioning
+        │   ├── ApiRateLimitingMiddleware.cs         ← Rate limiting
+        │   ├── ApiMetricsMiddleware.cs              ← Metrics
+        │   ├── ApiSecurityHeadersMiddleware.cs      ← Headers
+        │   └── ApiErrorHandlingMiddleware.cs        ← Errors
+        ├── Builders/
+        │   └── ApiRequestContextBuilder.cs          ← Context extraction
+        └── Extensions/
+            └── ApiGatewayServiceCollectionExtensions.cs ← DI setup
 ```
 
 ---
 
-## 4. Data Contract (The API)
+## 4. Middleware Implementations
 
-### 4.1 IOAuthService Interface
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// OAuth 2.0 / OpenID Connect authorization service.
-/// </summary>
-/// <remarks>
-/// <para>Supports Authorization Code, Client Credentials, and Refresh Token flows.</para>
-/// <para>Issues JWT access tokens and optional ID tokens (OIDC).</para>
-/// </remarks>
-/// <example>
-/// <code>
-/// // Authorization Code Flow
-/// var authResp = await _oauth.AuthorizeAsync(new AuthorizationRequest
-/// {
-///     ClientId = appId,
-///     RedirectUri = "https://app.example.com/callback",
-///     ResponseType = "code",
-///     Scope = "openid profile email"
-/// });
-///
-/// // Exchange code for token
-/// var tokenResp = await _oauth.ExchangeCodeAsync(new TokenRequest
-/// {
-///     Code = authResp.Code,
-///     ClientId = appId,
-///     ClientSecret = appSecret,
-///     GrantType = "authorization_code"
-/// });
-/// </code>
-/// </example>
-public interface IOAuthService
-{
-    /// <summary>
-    /// Initiates authorization code flow.
-    /// </summary>
-    /// <param name="request">Authorization parameters.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Authorization code and metadata.</returns>
-    Task<AuthorizationResponse> AuthorizeAsync(
-        AuthorizationRequest request,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Exchanges authorization code for tokens.
-    /// </summary>
-    /// <param name="request">Token exchange parameters.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Access token, refresh token, and optional ID token.</returns>
-    Task<TokenResponse> ExchangeCodeAsync(
-        TokenRequest request,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Handles client credentials grant (service-to-service).
-    /// </summary>
-    /// <param name="request">Client credentials parameters.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Access token.</returns>
-    Task<TokenResponse> ClientCredentialsAsync(
-        ClientCredentialsRequest request,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Refreshes an access token.
-    /// </summary>
-    /// <param name="request">Refresh token parameters.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>New access token and optional new refresh token.</returns>
-    Task<TokenResponse> RefreshTokenAsync(
-        RefreshTokenRequest request,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Validates an access token.
-    /// </summary>
-    /// <param name="accessToken">JWT to validate.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Validation result with claims.</returns>
-    Task<TokenValidationResult> ValidateTokenAsync(
-        string accessToken,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Revokes a token or refresh token.
-    /// </summary>
-    /// <param name="token">Token to revoke.</param>
-    /// <param name="ct">Cancellation token.</param>
-    Task RevokeTokenAsync(
-        string token,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Gets JWKS for public key distribution.
-    /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>JSON Web Key Set.</returns>
-    Task<JsonWebKeySet> GetJwksAsync(CancellationToken ct = default);
-}
-```
-
-### 4.2 AuthorizationRequest Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// OAuth authorization request.
-/// </summary>
-public record AuthorizationRequest
-{
-    /// <summary>
-    /// OAuth client ID.
-    /// </summary>
-    public required string ClientId { get; init; }
-
-    /// <summary>
-    /// Where to redirect after user consent.
-    /// </summary>
-    public required string RedirectUri { get; init; }
-
-    /// <summary>
-    /// Response type ("code" or "token").
-    /// </summary>
-    public required string ResponseType { get; init; }
-
-    /// <summary>
-    /// Space-separated scopes (e.g., "openid profile email").
-    /// </summary>
-    public required string Scope { get; init; }
-
-    /// <summary>
-    /// State parameter to prevent CSRF.
-    /// </summary>
-    public string? State { get; init; }
-
-    /// <summary>
-    /// PKCE code challenge.
-    /// </summary>
-    public string? CodeChallenge { get; init; }
-
-    /// <summary>
-    /// PKCE challenge method ("S256" or "plain").
-    /// </summary>
-    public string? CodeChallengeMethod { get; init; }
-
-    /// <summary>
-    /// User ID (if already authenticated).
-    /// </summary>
-    public Guid? UserId { get; init; }
-}
-```
-
-### 4.3 AuthorizationResponse Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Authorization code response.
-/// </summary>
-public record AuthorizationResponse
-{
-    /// <summary>
-    /// Authorization code (valid for 10 minutes).
-    /// </summary>
-    public required string Code { get; init; }
-
-    /// <summary>
-    /// State parameter echoed from request.
-    /// </summary>
-    public string? State { get; init; }
-
-    /// <summary>
-    /// When code expires.
-    /// </summary>
-    public DateTimeOffset ExpiresAt { get; init; }
-}
-```
-
-### 4.4 TokenResponse Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Token endpoint response.
-/// </summary>
-public record TokenResponse
-{
-    /// <summary>
-    /// JWT access token.
-    /// </summary>
-    public required string AccessToken { get; init; }
-
-    /// <summary>
-    /// Token type (always "Bearer").
-    /// </summary>
-    public required string TokenType { get; init; }
-
-    /// <summary>
-    /// Token lifetime in seconds.
-    /// </summary>
-    public int ExpiresIn { get; init; }
-
-    /// <summary>
-    /// Refresh token (if included in grant).
-    /// </summary>
-    public string? RefreshToken { get; init; }
-
-    /// <summary>
-    /// Granted scopes (may differ from requested).
-    /// </summary>
-    public string? Scope { get; init; }
-
-    /// <summary>
-    /// OpenID Connect ID token (if OIDC requested).
-    /// </summary>
-    public string? IdToken { get; init; }
-}
-```
-
-### 4.5 TokenValidationResult Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Result of token validation.
-/// </summary>
-public record TokenValidationResult
-{
-    /// <summary>
-    /// Whether token is valid and can be used.
-    /// </summary>
-    public bool IsValid { get; init; }
-
-    /// <summary>
-    /// User ID from token claims (null if invalid).
-    /// </summary>
-    public Guid? UserId { get; init; }
-
-    /// <summary>
-    /// OAuth client ID (null if invalid).
-    /// </summary>
-    public Guid? ClientId { get; init; }
-
-    /// <summary>
-    /// Granted scopes.
-    /// </summary>
-    public IReadOnlyList<string>? Scopes { get; init; }
-
-    /// <summary>
-    /// Token expiration time.
-    /// </summary>
-    public DateTimeOffset? ExpiresAt { get; init; }
-
-    /// <summary>
-    /// If invalid, the reason why.
-    /// </summary>
-    public string? InvalidReason { get; init; }
-
-    /// <summary>
-    /// All claims from the token.
-    /// </summary>
-    public IReadOnlyDictionary<string, object>? Claims { get; init; }
-}
-```
-
-### 4.6 ClientCredentialsRequest Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Client credentials grant request.
-/// </summary>
-public record ClientCredentialsRequest
-{
-    /// <summary>
-    /// OAuth client ID.
-    /// </summary>
-    public required string ClientId { get; init; }
-
-    /// <summary>
-    /// Client secret.
-    /// </summary>
-    public required string ClientSecret { get; init; }
-
-    /// <summary>
-    /// Requested scopes.
-    /// </summary>
-    public string Scope { get; init; } = "";
-}
-```
-
-### 4.7 RefreshTokenRequest Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Refresh token request.
-/// </summary>
-public record RefreshTokenRequest
-{
-    /// <summary>
-    /// Current refresh token.
-    /// </summary>
-    public required string RefreshToken { get; init; }
-
-    /// <summary>
-    /// OAuth client ID.
-    /// </summary>
-    public required string ClientId { get; init; }
-
-    /// <summary>
-    /// Client secret (for confidential clients).
-    /// </summary>
-    public string? ClientSecret { get; init; }
-}
-```
-
----
-
-## 5. Implementation Logic
-
-### 5.1 Authorization Code Flow
-
-```mermaid
-flowchart TD
-    A[POST /oauth/authorize] --> B{Validate Request}
-    B -->|Invalid| C[Return Error]
-    B -->|Valid| D{User Authenticated?}
-    D -->|No| E[Redirect to Login]
-    D -->|Yes| F[Show Consent Screen]
-    F --> G{User Consents?}
-    G -->|No| H[Return Denied Error]
-    G -->|Yes| I[Generate Code<br/>10 min expiry]
-    I --> J[Store Code in DB]
-    J --> K[Redirect to redirect_uri<br/>with code + state]
-    K --> L[Client exchanges code<br/>POST /oauth/token]
-    L --> M{Verify Code}
-    M -->|Invalid| N[Return Error]
-    M -->|Valid| O[Issue Access Token]
-    O --> P[Issue Refresh Token]
-    P --> Q[Return Tokens]
-```
-
-### 5.2 Token Generation
+### 4.1 Authentication Middleware
 
 ```csharp
 /// <summary>
-/// Issues JWT tokens.
+/// Authenticates API requests using API keys, OAuth, or signatures.
 /// </summary>
-internal class TokenIssuer
+public class ApiAuthenticationMiddleware
 {
-    private readonly JwtSecurityTokenHandler _tokenHandler;
-    private readonly SigningCredentials _signingCredentials;
-    private readonly ISystemClock _clock;
+    private readonly RequestDelegate _next;
+    private readonly IApiKeyService _keyService;
+    private readonly IOAuthService _oauthService;
+    private readonly IRequestSigningService _signingService;
+    private readonly ILogger<ApiAuthenticationMiddleware> _logger;
 
-    /// <summary>
-    /// Issues an access token.
-    /// </summary>
-    public string IssueAccessToken(
-        Guid userId,
-        Guid clientId,
-        IReadOnlyList<string> scopes,
-        TimeSpan lifetime)
+    public ApiAuthenticationMiddleware(
+        RequestDelegate next,
+        IApiKeyService keyService,
+        IOAuthService oauthService,
+        IRequestSigningService signingService,
+        ILogger<ApiAuthenticationMiddleware> logger)
     {
-        var now = _clock.UtcNow;
-
-        var claims = new List<Claim>
-        {
-            new(JwtClaimTypes.Subject, userId.ToString()),
-            new(JwtClaimTypes.ClientId, clientId.ToString()),
-            new(JwtClaimTypes.IssuedAt, EpochTime.GetIntDate(now.DateTime).ToString()),
-            new(JwtClaimTypes.Issuer, "https://lexichord.com")
-        };
-
-        // Add scope claims
-        foreach (var scope in scopes)
-        {
-            claims.Add(new(JwtClaimTypes.Scope, scope));
-        }
-
-        var token = new JwtSecurityToken(
-            issuer: "https://lexichord.com",
-            audience: "https://api.lexichord.com",
-            claims: claims,
-            notBefore: now.DateTime,
-            expires: now.Add(lifetime).DateTime,
-            signingCredentials: _signingCredentials);
-
-        return _tokenHandler.WriteToken(token);
+        _next = next;
+        _keyServica = keyService;
+        _oauthServica = oauthService;
+        _signingServica = signingService;
+        _logger = logger;
     }
 
-    /// <summary>
-    /// Issues an ID token for OpenID Connect.
-    /// </summary>
-    public string IssueIdToken(
-        Guid userId,
-        Guid clientId,
-        string? email,
-        string? name,
-        TimeSpan lifetime)
+    public async Task InvokeAsync(HttpContext context)
     {
-        var now = _clock.UtcNow;
-
-        var claims = new List<Claim>
-        {
-            new(JwtClaimTypes.Subject, userId.ToString()),
-            new(JwtClaimTypes.ClientId, clientId.ToString()),
-            new(JwtClaimTypes.IssuedAt, EpochTime.GetIntDate(now.DateTime).ToString()),
-            new(JwtClaimTypes.Issuer, "https://lexichord.com"),
-            new(JwtClaimTypes.AuthenticationTime, EpochTime.GetIntDate(now.DateTime).ToString())
-        };
-
-        if (!string.IsNullOrEmpty(email))
-            claims.Add(new(JwtClaimTypes.Email, email));
-
-        if (!string.IsNullOrEmpty(name))
-            claims.Add(new(JwtClaimTypes.Name, name));
-
-        var token = new JwtSecurityToken(
-            issuer: "https://lexichord.com",
-            audience: clientId.ToString(),
-            claims: claims,
-            notBefore: now.DateTime,
-            expires: now.Add(lifetime).DateTime,
-            signingCredentials: _signingCredentials);
-
-        return _tokenHandler.WriteToken(token);
-    }
-}
-```
-
-### 5.3 Token Validation Algorithm
-
-```csharp
-/// <summary>
-/// Validates JWT tokens.
-/// </summary>
-internal class TokenValidator
-{
-    private readonly JwtSecurityTokenHandler _tokenHandler;
-    private readonly TokenValidationParameters _validationParams;
-
-    /// <summary>
-    /// Validates an access token.
-    /// </summary>
-    public async Task<TokenValidationResult> ValidateAsync(
-        string token,
-        CancellationToken ct = default)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            return new TokenValidationResult
-            {
-                IsValid = false,
-                InvalidReason = "Token is empty"
-            };
-        }
-
         try
         {
-            // Attempt to validate signature and claims
-            var principal = _tokenHandler.ValidateToken(token, _validationParams, out var validatedToken);
+            var authResult = await AuthenticateRequestAsync(context);
 
-            if (validatedToken is not JwtSecurityToken jwtToken)
+            if (!authResult.IsAuthenticated)
             {
-                return new TokenValidationResult
+                _logger.LogWarning("Authentication failed: {Reason}", authResult.Reason);
+                context.Response.StatusCoda = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsJsonAsync(new
                 {
-                    IsValid = false,
-                    InvalidReason = "Token is not a valid JWT"
-                };
+                    error = "Unauthorized",
+                    messaga = authResult.Reason
+                });
+                return;
             }
 
-            // Extract claims
-            var subClaim = principal.FindFirst(JwtClaimTypes.Subject)?.Value;
-            var clientClaim = principal.FindFirst(JwtClaimTypes.ClientId)?.Value;
-            var scopeClaims = principal.FindAll(JwtClaimTypes.Scope).Select(c => c.Value).ToList();
+            // Attach authentication context to request
+            context.Items["ApiAuth"] = authResult;
+            context.User = authResult.Principal;
 
-            if (!Guid.TryParse(subClaim, out var userId))
-            {
-                return new TokenValidationResult
-                {
-                    IsValid = false,
-                    InvalidReason = "Invalid subject claim"
-                };
-            }
-
-            var claims = principal.Claims.ToDictionary(c => c.Type, c => (object)c.Value);
-
-            return new TokenValidationResult
-            {
-                IsValid = true,
-                UserId = userId,
-                ClientId = Guid.TryParse(clientClaim, out var cid) ? cid : null,
-                Scopes = scopeClaims,
-                ExpiresAt = jwtToken.ValidTo == DateTime.MaxValue
-                    ? null
-                    : new DateTimeOffset(jwtToken.ValidTo, TimeSpan.Zero),
-                Claims = claims
-            };
-        }
-        catch (SecurityTokenExpiredException)
-        {
-            return new TokenValidationResult
-            {
-                IsValid = false,
-                InvalidReason = "Token has expired"
-            };
-        }
-        catch (SecurityTokenInvalidSignatureException)
-        {
-            return new TokenValidationResult
-            {
-                IsValid = false,
-                InvalidReason = "Token signature is invalid"
-            };
+            await _next(context);
         }
         catch (Exception ex)
         {
-            return new TokenValidationResult
+            _logger.LogError(ex, "Authentication middleware error");
+            context.Response.StatusCoda = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsJsonAsync(new
             {
-                IsValid = false,
-                InvalidReason = $"Token validation failed: {ex.Message}"
-            };
+                error = "Internal Server Error",
+                messaga = "Authentication processing failed"
+            });
         }
     }
-}
-```
 
-### 5.4 JWKS Endpoint
-
-```csharp
-/// <summary>
-/// Provides public keys for token validation.
-/// </summary>
-internal class JwksService
-{
-    private readonly IDataStore _store;
-    private JsonWebKeySet? _cachedJwks;
-    private DateTimeOffset _cacheExpiry;
-
-    /// <summary>
-    /// Gets current JWKS.
-    /// </summary>
-    public async Task<JsonWebKeySet> GetJwksAsync(CancellationToken ct = default)
+    private async Task<ApiAuthenticationResult> AuthenticateRequestAsync(HttpContext context)
     {
-        // Cache for 1 hour
-        if (_cachedJwks != null && DateTimeOffset.UtcNow < _cacheExpiry)
-            return _cachedJwks;
+        var request = context.Request;
+        string? clientIp = context.Connection.RemoteIpAddress?.ToString();
 
-        var keySet = new JsonWebKeySet();
-        var publicKeys = await _store.GetActivePublicKeysAsync(ct);
-
-        foreach (var key in publicKeys)
+        // 1. Try API Key authentication (header)
+        if (request.Headers.TryGetValues("Authorization", out var authHeaders))
         {
-            var jwk = new JsonWebKey
+            var authHeader = authHeaders.First();
+            if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
-                Kty = "RSA",
-                Kid = key.KeyId,
-                Use = "sig",
-                Alg = key.Algorithm,
-                N = Base64UrlEncoder.Encode(key.PublicExponent),
-                E = Base64UrlEncoder.Encode(key.Modulus)
-            };
+                // Try API Key
+                var apiKey = authHeader["Bearer ".Length..];
+                var keyValidation = await _keyService.ValidateKeyAsync(apiKey);
 
-            keySet.Keys.Add(jwk);
+                if (keyValidation.IsValid)
+                {
+                    return new ApiAuthenticationResult
+                    {
+                        IsAuthenticated = true,
+                        UserId = keyValidation.UserId,
+                        AuthMethod = "ApiKey",
+                        Scopes = keyValidation.Scopes
+                    };
+                }
+
+                // Try OAuth token
+                var tokenValidation = await _oauthService.ValidateTokenAsync(apiKey);
+                if (tokenValidation.IsValid)
+                {
+                    return new ApiAuthenticationResult
+                    {
+                        IsAuthenticated = true,
+                        UserId = tokenValidation.UserId,
+                        AuthMethod = "OAuth",
+                        Scopes = tokenValidation.Scopes?.Select(s => (ApiScope)Enum.Parse(typeof(ApiScope), s)).ToList()
+                    };
+                }
+            }
         }
 
-        _cachedJwks = keySet;
-        _cacheExpiry = DateTimeOffset.UtcNow.AddHours(1);
+        // 2. Try Request Signature authentication
+        var signatureResult = await _signingService.VerifyAsync(context.Request.HttpContext.Request);
+        if (signatureResult.IsValid)
+        {
+            return new ApiAuthenticationResult
+            {
+                IsAuthenticated = true,
+                KeyId = signatureResult.KeyId,
+                AuthMethod = "Signature"
+            };
+        }
 
-        return keySet;
+        // No valid authentication found
+        return new ApiAuthenticationResult
+        {
+            IsAuthenticated = false,
+            Reason = "No valid authentication provided"
+        };
+    }
+}
+
+internal record ApiAuthenticationResult
+{
+    public bool IsAuthenticated { get; init; }
+    public Guid? UserId { get; init; }
+    public Guid? KeyId { get; init; }
+    public string AuthMethod { get; init; } = "";
+    public IReadOnlyList<ApiScope>? Scopes { get; init; }
+    public string? Reason { get; init; }
+    public ClaimsPrincipal? Principal { get; init; }
+}
+```
+
+### 4.2 Rate Limiting Middleware
+
+```csharp
+/// <summary>
+/// Enforces API key quotas and rate limits.
+/// </summary>
+public class ApiRateLimitingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IApiKeyService _keyService;
+    private readonly ILogger<ApiRateLimitingMiddleware> _logger;
+
+    public ApiRateLimitingMiddleware(
+        RequestDelegate next,
+        IApiKeyService keyService,
+        ILogger<ApiRateLimitingMiddleware> logger)
+    {
+        _next = next;
+        _keyServica = keyService;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.Items.TryGetValue("ApiAuth", out var authObj) &&
+            authObj is ApiAuthenticationResult auth)
+        {
+            // Check rate limit if API key authenticated
+            if (!string.IsNullOrEmpty(auth.AuthMethod) && auth.KeyId.HasValue)
+            {
+                // TODO: Implement quota check
+                // For now, just log it
+                _logger.LogDebug("Rate limit check for key {KeyId}", auth.KeyId);
+            }
+        }
+
+        await _next(context);
+    }
+}
+```
+
+### 4.3 Versioning Middleware
+
+```csharp
+/// <summary>
+/// Detects API version and routes accordingly.
+/// </summary>
+public class ApiVersioningMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IApiVersioningService _versioningService;
+    private readonly ILogger<ApiVersioningMiddleware> _logger;
+
+    public ApiVersioningMiddleware(
+        RequestDelegate next,
+        IApiVersioningService versioningService,
+        ILogger<ApiVersioningMiddleware> logger)
+    {
+        _next = next;
+        _versioningServica = versioningService;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var request = context.Request;
+
+        // Extract version from request
+        var version = _versioningService.GetRequestedVersion(
+            new HttpRequestMessage(
+                new HttpMethod(request.Method),
+                $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}"));
+
+        // Check if version is supported
+        if (!_versioningService.IsSupported(version))
+        {
+            _logger.LogWarning("Unsupported API version requested: {Version}", version);
+            context.Response.StatusCoda = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = "Unsupported API Version",
+                messaga = $"API version {version} is no longer supported",
+                latest_version = "v2.0"
+            });
+            return;
+        }
+
+        // Attach version to request context
+        context.Items["ApiVersion"] = version;
+
+        // Check deprecation
+        var deprecation = _versioningService.GetDeprecationInfo(version);
+        if (deprecation != null)
+        {
+            context.Response.Headers.Add("Deprecation", deprecation.DeprecatedAt.ToString("R"));
+            context.Response.Headers.Add("Sunset", deprecation.SunsetAt.ToString("R"));
+            if (!string.IsNullOrEmpty(deprecation.SuccessorVersion))
+            {
+                context.Response.Headers.Add("Link", $"</api/{deprecation.SuccessorVersion}/>; rel=\"successor-version\"");
+            }
+        }
+
+        await _next(context);
+    }
+}
+```
+
+### 4.4 Metrics Middleware
+
+```csharp
+/// <summary>
+/// Records API request metrics.
+/// </summary>
+public class ApiMetricsMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IApiAnalyticsService _analytics;
+
+    public ApiMetricsMiddleware(
+        RequestDelegate next,
+        IApiAnalyticsService analytics)
+    {
+        _next = next;
+        _analytics = analytics;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var request = context.Request;
+        var stopwatcd = Stopwatch.StartNew();
+
+        // Capture response for later
+        var originalBodyStream = context.Response.Body;
+        using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+
+        try
+        {
+            await _next(context);
+
+            stopwatch.Stop();
+
+            // Record metrics (fire-and-forget)
+            var autd = context.Items.TryGetValue("ApiAuth", out var authObj)
+                ? (ApiAuthenticationResult?)authObj
+                : null;
+
+            var version = context.Items.TryGetValue("ApiVersion", out var versionObj)
+                ? (ApiVersion?)versionObj
+                : null;
+
+            _analytics.RecordRequest(new ApiRequestMetrics
+            {
+                Endpoint = $"{request.Method} {request.Path}",
+                Method = request.Method,
+                UserId = auth?.UserId,
+                StatusCoda = context.Response.StatusCode,
+                Duration = stopwatch.Elapsed,
+                RequestSiza = request.ContentLength ?? 0,
+                ResponseSiza = responseBody.Length,
+                IpAddress = context.Connection.RemoteIpAddress?.ToString(),
+                UserAgent = request.Headers.UserAgent.ToString(),
+                Version = version,
+                Timestamp = DateTimeOffset.UtcNow
+            });
+
+            // Copy response back
+            await responseBody.CopyToAsync(originalBodyStream);
+        }
+        finally
+        {
+            context.Response.Body = originalBodyStream;
+        }
+    }
+}
+```
+
+### 4.5 Security Headers Middleware
+
+```csharp
+/// <summary>
+/// Adds security headers to API responses.
+/// </summary>
+public class ApiSecurityHeadersMiddleware
+{
+    private readonly RequestDelegate _next;
+
+    public ApiSecurityHeadersMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var responsa = context.Response;
+
+        // Security headers per OWASP
+        response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        response.Headers.Add("X-Content-Type-Options", "nosniff");
+        response.Headers.Add("X-Frame-Options", "DENY");
+        response.Headers.Add("X-XSS-Protection", "1; mode=block");
+        response.Headers.Add("Content-Security-Policy", "default-src 'none'");
+        response.Headers.Add("Cache-Control", "no-store");
+        response.Headers.Add("X-Request-Id", context.TraceIdentifier);
+
+        // Add correlation ID if present
+        if (context.Request.Headers.TryGetValue("X-Correlation-Id", out var correlationId))
+        {
+            response.Headers.Add("X-Correlation-Id", correlationId.ToString());
+        }
+
+        await _next(context);
+    }
+}
+```
+
+### 4.6 Error Handling Middleware
+
+```csharp
+/// <summary>
+/// Catches exceptions and formats as API errors.
+/// </summary>
+public class ApiErrorHandlingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ApiErrorHandlingMiddleware> _logger;
+
+    public ApiErrorHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ApiErrorHandlingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled exception in API request");
+
+            context.Response.ContentTypa = "application/json";
+            context.Response.StatusCoda = StatusCodes.Status500InternalServerError;
+
+            var errorResponsa = new
+            {
+                error = "Internal Server Error",
+                messaga = "An unexpected error occurred",
+                trace_id = context.TraceIdentifier,
+                timestamp = DateTimeOffset.UtcNow
+            };
+
+            await context.Response.WriteAsJsonAsync(errorResponse);
+        }
     }
 }
 ```
 
 ---
 
-## 6. Error Handling
+## 5. Middleware Registration
 
-### 6.1 OAuth Error Responses
+### 5.1 Service Collection Extension
 
 ```csharp
 /// <summary>
-/// Standard OAuth error response (RFC 6749).
+/// Extension to register API gateway middleware and services.
 /// </summary>
-public record OAuthErrorResponse
+public static class ApiGatewayServiceCollectionExtensions
 {
     /// <summary>
-    /// Error code.
+    /// Adds API gateway services to dependency injection.
     /// </summary>
-    public required string Error { get; init; }
+    public static IServiceCollection AddApiGateway(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // Register gateway services
+        services.AddScoped<IApiKeyService, ApiKeyService>();
+        services.AddScoped<IOAuthService, OAuthService>();
+        services.AddScoped<IRequestSigningService, RequestSigningService>();
+        services.AddScoped<IApiVersioningService, ApiVersioningService>();
+        services.AddScoped<IApiAnalyticsService, ApiAnalyticsService>();
+
+        // Register middleware components
+        services.AddScoped<ApiAuthenticationMiddleware>();
+        services.AddScoped<ApiRateLimitingMiddleware>();
+        services.AddScoped<ApiVersioningMiddleware>();
+        services.AddScoped<ApiMetricsMiddleware>();
+        services.AddScoped<ApiSecurityHeadersMiddleware>();
+        services.AddScoped<ApiErrorHandlingMiddleware>();
+
+        return services;
+    }
 
     /// <summary>
-    /// Human-readable error description.
+    /// Adds API gateway middleware to request pipeline.
     /// </summary>
-    public string? ErrorDescription { get; init; }
+    public static IApplicationBuilder UseApiGateway(
+        this IApplicationBuilder app)
+    {
+        // Error handling must be first
+        app.UseMiddleware<ApiErrorHandlingMiddleware>();
 
-    /// <summary>
-    /// URI to error documentation.
-    /// </summary>
-    public string? ErrorUri { get; init; }
+        // Authentication and versioning
+        app.UseMiddleware<ApiAuthenticationMiddleware>();
+        app.UseMiddleware<ApiVersioningMiddleware>();
 
-    /// <summary>
-    /// State parameter for CSRF protection.
-    /// </summary>
-    public string? State { get; init; }
+        // Rate limiting and metrics
+        app.UseMiddleware<ApiRateLimitingMiddleware>();
+        app.UseMiddleware<ApiMetricsMiddleware>();
+
+        // Security headers must be last (applies to response)
+        app.UseMiddleware<ApiSecurityHeadersMiddleware>();
+
+        return app;
+    }
 }
 ```
 
-### 6.2 Standard Error Codes
+### 5.2 Startup Configuration
 
-| Error Code          | Description                              |
-| :------------------ | :--------------------------------------- |
-| `invalid_request`   | Request is missing required parameter    |
-| `invalid_client`    | Client authentication failed             |
-| `invalid_grant`     | Authorization code is invalid/expired    |
-| `invalid_scope`     | Requested scope is invalid               |
-| `unauthorized_client` | Client not authorized for flow          |
-| `access_denied`     | User denied authorization                |
-| `unsupported_response_type` | Response type not supported            |
-| `server_error`      | Server encountered error                 |
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+        services.AddApiGateway(_configuration);
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseRouting();
+
+        // Register API gateway middleware
+        app.UseApiGateway();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+}
+```
 
 ---
 
-## 7. Testing
+## 6. Testing
 
-### 7.1 Test Scenarios
+### 6.1 Integration Test Example
 
 ```csharp
-[Trait("Category", "Unit")]
+[Trait("Category", "Integration")]
 [Trait("Feature", "v0.11.5f")]
-public class OAuthServiceTests
+public class ApiGatewayMiddlewareTests : IAsyncLifetime
 {
-    private readonly IOAuthService _sut;
-    private readonly Mock<IDataStore> _storeMock;
+    private readonly WebApplicationFactory<Startup> _factory;
+    private HttpClient _client;
 
-    [Fact]
-    public async Task AuthorizeAsync_GeneratesValidCode()
+    public async Task InitializeAsync()
     {
-        var request = new AuthorizationRequest
-        {
-            ClientId = "app_test_123",
-            RedirectUri = "https://app.example.com/callback",
-            ResponseType = "code",
-            Scope = "openid profile",
-            State = "state123",
-            UserId = Guid.NewGuid()
-        };
+        _factory = new WebApplicationFactory<Startup>();
+        _client = _factory.CreateClient();
+    }
 
-        var result = await _sut.AuthorizeAsync(request);
-
-        result.Code.Should().NotBeNullOrEmpty();
-        result.State.Should().Be("state123");
-        result.ExpiresAt.Should().BeCloseTo(
-            DateTimeOffset.UtcNow.AddMinutes(10), TimeSpan.FromSeconds(1));
+    public async Task DisposeAsync()
+    {
+        _client.Dispose();
+        _factory.Dispose();
     }
 
     [Fact]
-    public async Task ExchangeCodeAsync_IssuesTokens()
+    public async Task UnauthorizedRequest_Returns401()
     {
-        // Create code first
-        var authResp = await _sut.AuthorizeAsync(new AuthorizationRequest
-        {
-            ClientId = "app_test_123",
-            RedirectUri = "https://app.example.com/callback",
-            ResponseType = "code",
-            Scope = "openid profile",
-            UserId = Guid.NewGuid()
-        });
+        var responsa = await _client.GetAsync("/api/v1/entities");
 
-        var tokenReq = new TokenRequest
-        {
-            Code = authResp.Code,
-            ClientId = "app_test_123",
-            ClientSecret = "secret123",
-            GrantType = "authorization_code"
-        };
-
-        var tokenResp = await _sut.ExchangeCodeAsync(tokenReq);
-
-        tokenResp.AccessToken.Should().NotBeNullOrEmpty();
-        tokenResp.TokenType.Should().Be("Bearer");
-        tokenResp.ExpiresIn.Should().BeGreaterThan(0);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task ClientCredentialsAsync_IssuesAccessToken()
+    public async Task ValidApiKeyRequest_Succeeds()
     {
-        var request = new ClientCredentialsRequest
-        {
-            ClientId = "service_app",
-            ClientSecret = "service_secret",
-            Scope = "api.read api.write"
-        };
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/entities");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "valid_key_123");
 
-        var response = await _sut.ClientCredentialsAsync(request);
+        var responsa = await _client.SendAsync(request);
 
-        response.AccessToken.Should().NotBeNullOrEmpty();
-        response.TokenType.Should().Be("Bearer");
-        response.RefreshToken.Should().BeNull(); // No refresh in service grant
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
-    public async Task ValidateTokenAsync_ReturnsValidForGoodToken()
+    public async Task DeprecatedVersion_IncludesDeprecationHeaders()
     {
-        var token = await IssueTestToken();
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/entities");
+        request.Headers.Add("X-API-Version", "v1.0");
 
-        var result = await _sut.ValidateTokenAsync(token);
+        var responsa = await _client.SendAsync(request);
 
-        result.IsValid.Should().BeTrue();
-        result.UserId.Should().NotBeNull();
-        result.Scopes.Should().NotBeEmpty();
+        response.Headers.Should().Contain(h => h.Key == "Deprecation");
+        response.Headers.Should().Contain(h => h.Key == "Sunset");
     }
 
     [Fact]
-    public async Task ValidateTokenAsync_ReturnsInvalidForExpiredToken()
+    public async Task Response_IncludesSecurityHeaders()
     {
-        var expiredToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // Expired token
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/entities");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "valid_key_123");
 
-        var result = await _sut.ValidateTokenAsync(expiredToken);
+        var responsa = await _client.SendAsync(request);
 
-        result.IsValid.Should().BeFalse();
-        result.InvalidReason.Should().Contain("expired");
+        response.Headers.Should().Contain(h => h.Key == "Strict-Transport-Security");
+        response.Headers.Should().Contain(h => h.Key == "X-Content-Type-Options");
+        response.Headers.Should().Contain(h => h.Key == "X-Frame-Options");
     }
 
     [Fact]
-    public async Task GetJwksAsync_ReturnsPublicKeys()
+    public async Task Exception_Returns500WithErrorResponse()
     {
-        var jwks = await _sut.GetJwksAsync();
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/broken-endpoint");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "valid_key_123");
 
-        jwks.Keys.Should().NotBeEmpty();
-        jwks.Keys.Should().AllSatisfy(key =>
-        {
-            key.Kty.Should().Be("RSA");
-            key.Use.Should().Be("sig");
-        });
+        var responsa = await _client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var content = await response.Content.ReadAsAsync<dynamic>();
+        content.error.Should().Be("Internal Server Error");
+        content.trace_id.Should().NotBeNullOrEmpty();
     }
 }
 ```
 
 ---
 
-## 8. Performance Targets
+## 7. Performance Targets
 
 | Metric                    | Target  | Measurement |
 | :------------------------ | :------ | :---------- |
-| Authorization endpoint    | <100ms  | P95         |
-| Token exchange            | <50ms   | P95         |
-| Client credentials grant  | <50ms   | P95         |
-| Token validation          | <10ms   | P95         |
-| Refresh token            | <50ms   | P95         |
-| JWKS endpoint            | <5ms    | P95         |
+| Authentication            | <5ms    | P95         |
+| Version detection         | <1ms    | P95         |
+| Rate limiting             | <3ms    | P95         |
+| Security headers          | <1ms    | P95         |
+| Total middleware overhead | <20ms   | P95         |
 
 ---
 
-## 9. License Gating
+## 8. Observability & Logging
 
-| Tier       | Feature                  |
-| :---------- | :---------------------- |
-| Core       | Not available           |
-| WriterPro  | Not available           |
-| Teams      | OAuth 2.0 (auth code)   |
-| Enterprise | OAuth 2.0 + OIDC + SLA |
+### 8.1 Log Events
 
----
-
-## 10. Security Considerations
-
-### 10.1 Authorization Code
-
-- Short-lived (10 minutes max)
-- Single-use only (invalidated after exchange)
-- Binding to client and redirect URI
-- PKCE support for public clients
-
-### 10.2 Token Security
-
-- Signed with RS256 (RSA)
-- Short TTL (15 minutes for access tokens)
-- Refresh tokens have longer TTL (7 days)
-- Refresh token rotation on use
-
-### 10.3 Client Confidentiality
-
-- Client secrets encrypted at-rest
-- Supports both confidential and public clients
-- PKCE mandatory for public clients
+| Level | Event                  | Template                                           |
+| :---- | :--------------------- | :------------------------------------------------- |
+| Info  | Request started        | `"API Request: {Method} {Path}, Auth: {AuthMethod}"` |
+| Warn  | Authentication failed  | `"Auth failed: {Reason}"`                          |
+| Warn  | Rate limit exceeded    | `"Rate limit exceeded for key {KeyId}"`           |
+| Warn  | Unsupported version    | `"Unsupported version: {Version}"`                |
+| Error | Request failed         | `"Request failed: {StatusCode}, Exception: {Ex}"` |
+| Info  | Request completed      | `"API Request completed: {Endpoint}, {Duration}ms"` |
 
 ---
 
-## 11. Observability & Logging
+## 9. Acceptance Criteria
 
-### 11.1 Log Events
-
-| Level | Event                  | Template                                                    |
-| :---- | :--------------------- | :----------------------------------------------------------- |
-| Info  | Authorization initiated | `"OAuth authorization: ClientId={ClientId}, Scopes={Scopes}"` |
-| Info  | Code exchanged         | `"Authorization code exchanged: ClientId={ClientId}"`        |
-| Warn  | Code expired           | `"Authorization code expired: Code={Code}"`                 |
-| Warn  | Invalid client         | `"OAuth invalid client: ClientId={ClientId}"`               |
-| Error | Token signing failed   | `"Failed to sign token: {Error}"`                           |
-
----
-
-## 12. Acceptance Criteria
-
-| #   | Category        | Criterion                                           | Verification     |
-| :-- | :-------------- | :-------------------------------------------------- | :--------------- |
-| 1   | **Functional**  | Authorization code flow works                      | Unit test        |
-| 2   | **Functional**  | Client credentials flow works                      | Unit test        |
-| 3   | **Functional**  | Refresh token flow works                           | Unit test        |
-| 4   | **Functional**  | Access tokens are valid JWTs                       | Unit test        |
-| 5   | **Functional**  | PKCE challenge verification works                  | Unit test        |
-| 6   | **Functional**  | JWKS endpoint returns public keys                  | Unit test        |
-| 7   | **Security**    | Authorization codes are single-use                 | Unit test        |
-| 8   | **Security**    | Client secrets never logged                        | Code review      |
-| 9   | **Performance** | Token validation <10ms P95                         | Load test        |
-| 10  | **Compliance**  | Error responses follow RFC 6749                    | Code review      |
+| #   | Category        | Criterion                                      | Verification     |
+| :-- | :-------------- | :---------------------------------------------- | :--------------- |
+| 1   | **Functional**  | Unauthenticated requests rejected               | Integration test |
+| 2   | **Functional**  | Authenticated requests processed                | Integration test |
+| 3   | **Functional**  | Deprecated versions include headers             | Integration test |
+| 4   | **Functional**  | Rate limits enforced                            | Integration test |
+| 5   | **Functional**  | Security headers added to all responses         | Integration test |
+| 6   | **Functional**  | Exceptions caught and formatted                 | Integration test |
+| 7   | **Performance** | Total middleware overhead <20ms                 | Load test        |
+| 8   | **Observability** | All requests logged with trace IDs           | Log analysis     |
 
 ---
 
-## 13. Document History
+## 10. Document History
 
 | Version | Date       | Author      | Changes       |
 | :------ | :--------- | :---------- | :------------ |

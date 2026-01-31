@@ -1,18 +1,18 @@
-# LCS-DES-113-SEC-f: Encryption Service
+# LCS-DES-113-SEC-b: Secure Export
 
 ## Document Control
 
 | Field            | Value                                                        |
 | :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-DES-113-SEC-f                                            |
+| **Document ID**  | LCS-DES-113-SEC-b                                            |
 | **Version**      | v0.11.3                                                      |
-| **Codename**     | Data Protection & Encryption - Encryption Service            |
+| **Codename**     | Data Protection & Encryption - Secure Export                 |
 | **Status**       | Draft                                                        |
 | **Last Updated** | 2026-01-31                                                   |
 | **Owner**        | Security Architect                                           |
-| **Module**       | Lexichord.Security.Encryption                                |
-| **Est. Hours**   | 10                                                           |
-| **License Tier** | Core (database-level), Teams+ (field-level)                  |
+| **Module**       | Lexichord.Security.Export                                    |
+| **Est. Hours**   | 5                                                            |
+| **License Tier** | WriterPro (export), Enterprise (key escrow)                  |
 
 ---
 
@@ -20,146 +20,146 @@
 
 ### 1.1 Purpose
 
-The **Encryption Service** provides the core cryptographic operations for encrypting and decrypting sensitive data. It implements AES-256-GCM with authenticated encryption, handles key selection, and tracks encryption metadata for audit and re-encryption operations.
+The **Secure Export Service** enables users to export encrypted knowledge graphs while maintaining encryption and adding optional key escrow for recovery. Exported files are themselves encrypted and can be imported back into the system with full data recovery.
 
 ### 1.2 Key Responsibilities
 
-1. **Encrypt data** with AES-256-GCM and authenticated encryption tags
-2. **Decrypt ciphertext** with integrity verification
-3. **Select appropriate keys** based on encryption context
-4. **Track encryption metadata** (key ID, algorithm, timestamp)
-5. **Support re-encryption** for key rotation
-6. **Handle multiple algorithms** for compatibility
+1. **Export encrypted entities** to portable format (JSON with encrypted fields)
+2. **Generate one-time export keys** for file encryption
+3. **Support key escrow** for key recovery by administrators
+4. **Create auditable export packages** with metadata
+5. **Enable re-import** with automatic decryption
+6. **Generate recovery codes** for emergency access
 
 ### 1.3 Module Location
 
 ```
-Lexichord.Security.Encryption/
+Lexichord.Security.Export/
 ├── Abstractions/
-│   └── IEncryptionService.cs
+│   └── ISecureExportService.cs
 ├── Models/
-│   ├── EncryptedData.cs
-│   └── EncryptionContext.cs
+│   ├── ExportPackage.cs
+│   └── ExportOptions.cs
 └── Implementation/
-    ├── AesGcmEncryptionService.cs
-    └── CryptoProvider.cs
+    ├── SecureExportService.cs
+    └── ExportPackager.cs
 ```
 
 ---
 
 ## 2. Interface Definitions
 
-### 2.1 IEncryptionService
+### 2.1 ISecureExportService
 
 ```csharp
-namespace Lexichord.Security.Encryption.Abstractions;
+namespace Lexichord.Security.Export.Abstractions;
 
 /// <summary>
-/// Encrypts and decrypts data with authenticated encryption.
+/// Exports encrypted data with optional key escrow.
 /// </summary>
 /// <remarks>
-/// LOGIC: This service abstracts the cryptographic details from callers.
-/// All operations use AES-256-GCM with authenticated encryption tags (GCM mode).
-/// Callers never see raw key material.
+/// LOGIC: Enables users to export their data while maintaining security.
+/// Export file itself is encrypted with a temporary key.
+/// Key escrow allows admins to recover encrypted exports if user loses key.
 /// </remarks>
-public interface IEncryptionService
+public interface ISecureExportService
 {
     /// <summary>
-    /// Encrypts data with the current active key.
+    /// Exports entities as encrypted JSON package.
     /// </summary>
-    /// <param name="plaintext">The data to encrypt (as bytes).</param>
-    /// <param name="context">Encryption context with optional key selection.</param>
+    /// <param name="entityIds">IDs of entities to export.</param>
+    /// <param name="options">Export options (encryption, escrow, etc.).</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>EncryptedData with ciphertext, IV, auth tag, and key ID.</returns>
+    /// <returns>Export package ready for download.</returns>
     /// <remarks>
-    /// LOGIC: If context.KeyId is null, uses current active key for the purpose.
-    /// GCM mode provides both confidentiality and authenticity.
-    /// IV is randomly generated per encryption (nonce).
+    /// LOGIC: Creates JSON with encrypted fields intact.
+    /// Wraps JSON in additional encryption for the export file.
+    /// Optionally creates escrow copy for recovery.
     /// </remarks>
-    Task<EncryptedData> EncryptAsync(
-        byte[] plaintext,
-        EncryptionContext context,
+    Task<ExportPackage> ExportAsync(
+        IReadOnlyList<Guid> entityIds,
+        ExportOptions options,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Decrypts data, verifying authenticity.
+    /// Exports all entities of a type.
     /// </summary>
-    /// <param name="encryptedData">The encrypted data object with ciphertext and metadata.</param>
+    /// <param name="entityType">The entity type to export.</param>
+    /// <param name="options">Export options.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>The decrypted plaintext.</returns>
+    /// <returns>Export package.</returns>
+    Task<ExportPackage> ExportByTypeAsync(
+        string entityType,
+        ExportOptions options,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Imports exported package with automatic decryption.
+    /// </summary>
+    /// <param name="packageFile">The exported file content.</param>
+    /// <param name="exportKey">The key provided at export time.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>List of imported entities.</returns>
     /// <remarks>
-    /// LOGIC: Verifies auth tag before returning plaintext.
-    /// Looks up key by KeyId from encrypted data.
-    /// Throws if authenticity check fails.
+    /// LOGIC: Decrypts export file.
+    /// Validates integrity and metadata.
+    /// Imports entities, preserving encryption where applicable.
     /// </remarks>
-    Task<byte[]> DecryptAsync(
-        EncryptedData encryptedData,
+    Task<ImportResult> ImportAsync(
+        byte[] packageFile,
+        string exportKey,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Encrypts a string value.
+    /// Creates a recovery code for escrow access.
     /// </summary>
-    /// <param name="plaintext">The string to encrypt.</param>
-    /// <param name="context">Encryption context.</param>
+    /// <param name="exportId">The export ID.</param>
+    /// <param name="requestReason">Reason for recovery request.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Base64-encoded encrypted string.</returns>
-    Task<string> EncryptStringAsync(
-        string plaintext,
-        EncryptionContext context,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Decrypts a Base64-encoded string.
-    /// </summary>
-    /// <param name="ciphertext">Base64-encoded encrypted string.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Decrypted plaintext string.</returns>
-    Task<string> DecryptStringAsync(
-        string ciphertext,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Re-encrypts data with a new key (for key rotation).
-    /// </summary>
-    /// <param name="ciphertext">Data encrypted with old key.</param>
-    /// <param name="newKeyId">ID of new key to use.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Data re-encrypted with new key.</returns>
+    /// <returns>Recovery code that grants access to escrow key.</returns>
     /// <remarks>
-    /// LOGIC: Decrypts with old key, re-encrypts with new key in one operation.
-    /// Preserves other metadata (purpose, timestamps if desired).
+    /// LOGIC: Administrator-only operation.
+    /// Recovery code decrypts escrow key for emergency access.
+    /// Access is audited and logged.
     /// </remarks>
-    Task<EncryptedData> ReEncryptAsync(
-        EncryptedData ciphertext,
-        Guid newKeyId,
+    Task<string> CreateRecoveryCodeAsync(
+        Guid exportId,
+        string requestReason,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Checks if data is encrypted.
+    /// Retrieves export metadata and status.
     /// </summary>
-    /// <param name="ciphertext">The encrypted data object.</param>
-    /// <returns>True if encrypted with this service.</returns>
-    bool IsEncrypted(EncryptedData ciphertext);
+    /// <param name="exportId">The export ID.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Export metadata.</returns>
+    Task<ExportMetadata> GetExportMetadataAsync(
+        Guid exportId,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Gets encryption metadata for an encrypted value.
+    /// Gets export history for the current user.
     /// </summary>
-    /// <param name="encryptedData">The encrypted data object.</param>
-    /// <returns>Metadata including algorithm, key ID, timestamp.</returns>
-    EncryptionMetadata GetMetadata(EncryptedData encryptedData);
-}
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>List of past exports.</returns>
+    Task<IReadOnlyList<ExportMetadata>> GetExportHistoryAsync(
+        CancellationToken ct = default);
 
-/// <summary>
-/// Metadata about an encryption operation.
-/// </summary>
-public record EncryptionMetadata
-{
-    public Guid KeyId { get; init; }
-    public required string Algorithm { get; init; }
-    public DateTimeOffset EncryptedAt { get; init; }
-    public int CiphertextLength { get; init; }
-    public int IvLength { get; init; }
-    public int AuthTagLength { get; init; }
+    /// <summary>
+    /// Deletes an export and its escrow copy (if any).
+    /// </summary>
+    /// <param name="exportId">The export ID.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task DeleteExportAsync(
+        Guid exportId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets export statistics for monitoring.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Stats about exports and recovery requests.</returns>
+    Task<ExportStatistics> GetStatisticsAsync(CancellationToken ct = default);
 }
 ```
 
@@ -167,156 +167,304 @@ public record EncryptionMetadata
 
 ## 3. Data Types
 
-### 3.1 EncryptedData Record
+### 3.1 ExportPackage Record
 
 ```csharp
-namespace Lexichord.Security.Encryption.Models;
+namespace Lexichord.Security.Export.Models;
 
 /// <summary>
-/// A complete encrypted data object with all components needed for decryption.
+/// A complete export package with all metadata.
 /// </summary>
-/// <remarks>
-/// LOGIC: All fields are required for decryption.
-/// The IV and auth tag are part of the GCM operation.
-/// </remarks>
-public record EncryptedData
+public record ExportPackage
 {
     /// <summary>
-    /// The encrypted ciphertext.
+    /// Unique export identifier.
     /// </summary>
-    public required byte[] Ciphertext { get; init; }
+    public Guid ExportId { get; init; } = Guid.NewGuid();
 
     /// <summary>
-    /// The initialization vector (nonce) used in GCM mode.
+    /// The encrypted file content.
+    /// </summary>
+    public required byte[] FileContent { get; init; }
+
+    /// <summary>
+    /// Filename for the export (includes timestamp).
+    /// </summary>
+    public required string Filename { get; init; }
+
+    /// <summary>
+    /// The key needed to decrypt the export file.
     /// </summary>
     /// <remarks>
-    /// LOGIC: IV must be unique for each encryption with the same key.
-    /// Generated randomly per encryption call.
+    /// LOGIC: User must save this key to decrypt the export later.
+    /// Format: "EXPORT:v1:base64(key)"
     /// </remarks>
-    public required byte[] Iv { get; init; }
+    public required string ExportKey { get; init; }
 
     /// <summary>
-    /// Authentication tag from GCM mode.
+    /// Recovery code for accessing escrow (if enabled).
     /// </summary>
-    /// <remarks>
-    /// LOGIC: Verifies that ciphertext has not been tampered with.
-    /// Must be verified before returning plaintext.
-    /// </remarks>
-    public required byte[] AuthTag { get; init; }
+    public string? RecoveryCode { get; init; }
 
     /// <summary>
-    /// ID of the key used for encryption.
+    /// Whether escrow copy exists for this export.
     /// </summary>
-    /// <remarks>
-    /// LOGIC: Allows looking up the correct key for decryption.
-    /// Critical for supporting key rotation.
-    /// </remarks>
-    public required Guid KeyId { get; init; }
+    public bool HasEscrow { get; init; } = false;
 
     /// <summary>
-    /// Algorithm used (e.g., "AES-256-GCM").
+    /// Metadata about the export.
     /// </summary>
-    public required string Algorithm { get; init; }
+    public ExportMetadata Metadata { get; init; } = null!;
 
     /// <summary>
-    /// When the encryption occurred (for audit).
+    /// When export was created.
     /// </summary>
-    public DateTimeOffset EncryptedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 
     /// <summary>
-    /// Optional additional authenticated data (AAD).
+    /// Size of the export file in bytes.
     /// </summary>
-    /// <remarks>
-    /// LOGIC: AAD is authenticated but not encrypted.
-    /// Can include entity ID, purpose, etc. for additional context.
-    /// </remarks>
-    public byte[]? AdditionalAuthenticatedData { get; init; }
+    public long FileSizeBytes { get; init; }
+}
+
+/// <summary>
+/// Metadata about an export.
+/// </summary>
+public record ExportMetadata
+{
+    /// <summary>
+    /// The export ID.
+    /// </summary>
+    public Guid ExportId { get; init; }
 
     /// <summary>
-    /// Serializes to a string for storage.
+    /// User who created the export.
     /// </summary>
-    /// <returns>Format: "ENC:v1:base64(ciphertext):base64(iv):base64(tag):keyid:algorithm"</returns>
-    public string Serialize()
+    public Guid CreatedByUserId { get; init; }
+
+    /// <summary>
+    /// Number of entities in export.
+    /// </summary>
+    public int EntityCount { get; init; }
+
+    /// <summary>
+    /// Entity types included.
+    /// </summary>
+    public IReadOnlyList<string> EntityTypes { get; init; } = Array.Empty<string>();
+
+    /// <summary>
+    /// Export format version.
+    /// </summary>
+    public string FormatVersion { get; init; } = "1.0";
+
+    /// <summary>
+    /// Export encryption algorithm.
+    /// </summary>
+    public string EncryptionAlgorithm { get; init; } = "AES-256-GCM";
+
+    /// <summary>
+    /// File checksum (SHA-256).
+    /// </summary>
+    public string? FileChecksum { get; init; }
+
+    /// <summary>
+    /// When export was created.
+    /// </summary>
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Reason for export (user-provided).
+    /// </summary>
+    public string? ExportReason { get; init; }
+
+    /// <summary>
+    /// Whether key escrow is enabled.
+    /// </summary>
+    public bool KeyEscrowEnabled { get; init; } = false;
+
+    /// <summary>
+    /// Expiration date for the export (optional).
+    /// </summary>
+    public DateTimeOffset? ExpiresAt { get; init; }
+
+    /// <summary>
+    /// Whether export has been accessed/imported.
+    /// </summary>
+    public bool WasImported { get; init; } = false;
+
+    /// <summary>
+    /// When export was last accessed.
+    /// </summary>
+    public DateTimeOffset? LastAccessedAt { get; init; }
+}
+```
+
+### 3.2 ExportOptions Record
+
+```csharp
+namespace Lexichord.Security.Export.Models;
+
+/// <summary>
+/// Options for export operation.
+/// </summary>
+public record ExportOptions
+{
+    /// <summary>
+    /// Whether to enable key escrow for recovery.
+    /// </summary>
+    public bool EnableKeyEscrow { get; init; } = false;
+
+    /// <summary>
+    /// Reason for the export (for audit).
+    /// </summary>
+    public string? ExportReason { get; init; }
+
+    /// <summary>
+    /// When to expire the export (optional).
+    /// </summary>
+    public TimeSpan? ExpiresIn { get; init; }
+
+    /// <summary>
+    /// Whether to include deletion markers.
+    /// </summary>
+    public bool IncludeDeletionMarkers { get; init; } = false;
+
+    /// <summary>
+    /// Encryption algorithm for export file.
+    /// </summary>
+    public string EncryptionAlgorithm { get; init; } = "AES-256-GCM";
+
+    /// <summary>
+    /// Compression before encryption (optional).
+    /// </summary>
+    public bool Compress { get; init; } = true;
+
+    /// <summary>
+    /// Whether to sign the export (HMAC-SHA256).
+    /// </summary>
+    public bool SignExport { get; init; } = true;
+
+    /// <summary>
+    /// Metadata to include in export.
+    /// </summary>
+    public Dictionary<string, string>? CustomMetadata { get; init; }
+}
+```
+
+### 3.3 ImportResult Record
+
+```csharp
+namespace Lexichord.Security.Export.Models;
+
+/// <summary>
+/// Result of import operation.
+/// </summary>
+public record ImportResult
+{
+    /// <summary>
+    /// Number of entities imported.
+    /// </summary>
+    public int EntityCount { get; init; }
+
+    /// <summary>
+    /// Entities imported by type.
+    /// </summary>
+    public Dictionary<string, int> EntitiesByType { get; init; } = new();
+
+    /// <summary>
+    /// Number of entities skipped (already exist).
+    /// </summary>
+    public int SkippedCount { get; init; } = 0;
+
+    /// <summary>
+    /// Number of entities that failed to import.
+    /// </summary>
+    public int FailureCount { get; init; } = 0;
+
+    /// <summary>
+    /// Warnings encountered during import.
+    /// </summary>
+    public IReadOnlyList<string> Warnings { get; init; } = Array.Empty<string>();
+
+    /// <summary>
+    /// Metadata from the export.
+    /// </summary>
+    public ExportMetadata ExportMetadata { get; init; } = null!;
+
+    /// <summary>
+    /// When import completed.
+    /// </summary>
+    public DateTimeOffset CompletedAt { get; init; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Overall success rate (0-100%).
+    /// </summary>
+    public decimal SuccessRate
     {
-        var ciphertextB64 = Convert.ToBase64String(Ciphertext);
-        var ivB64 = Convert.ToBase64String(Iv);
-        var tagB64 = Convert.ToBase64String(AuthTag);
-
-        return $"ENC:v1:{ciphertextB64}:{ivB64}:{tagB64}:{KeyId:D}:{Algorithm}";
-    }
-
-    /// <summary>
-    /// Deserializes from storage format.
-    /// </summary>
-    public static EncryptedData Deserialize(string serialized)
-    {
-        var parts = serialized.Split(':');
-        if (parts.Length < 6 || parts[0] != "ENC" || parts[1] != "v1")
-            throw new FormatException("Invalid encrypted data format");
-
-        var ciphertext = Convert.FromBase64String(parts[2]);
-        var iv = Convert.FromBase64String(parts[3]);
-        var authTag = Convert.FromBase64String(parts[4]);
-        var keyId = Guid.Parse(parts[5]);
-        var algorithm = parts[6];
-
-        return new EncryptedData
-        {
-            Ciphertext = ciphertext,
-            Iv = iv,
-            AuthTag = authTag,
-            KeyId = keyId,
-            Algorithm = algorithm
-        };
+        get => EntityCount + SkippedCount > 0
+            ? (EntityCount * 100m) / (EntityCount + SkippedCount + FailureCount)
+            : 0;
     }
 }
 ```
 
-### 3.2 EncryptionContext Record
+### 3.4 ExportStatistics Record
 
 ```csharp
-namespace Lexichord.Security.Encryption.Models;
+namespace Lexichord.Security.Export.Models;
 
 /// <summary>
-/// Context information for an encryption operation.
+/// Statistics about exports and recovery.
 /// </summary>
-/// <remarks>
-/// LOGIC: Allows callers to specify which key to use and provide AAD.
-/// </remarks>
-public record EncryptionContext
+public record ExportStatistics
 {
     /// <summary>
-    /// Specific key ID to use (optional, uses current key if null).
+    /// Total exports created.
     /// </summary>
-    public Guid? KeyId { get; init; }
+    public long TotalExports { get; init; }
 
     /// <summary>
-    /// Purpose of encryption (e.g., "graph-data", "credentials").
+    /// Total entities exported.
     /// </summary>
-    /// <remarks>
-    /// LOGIC: Used to select from different key hierarchies.
-    /// Allows different data types to use different keys.
-    /// </remarks>
-    public string? Purpose { get; init; }
+    public long TotalEntitiesExported { get; init; }
 
     /// <summary>
-    /// Additional authenticated data to include in encryption.
+    /// Total export data size in bytes.
     /// </summary>
-    /// <remarks>
-    /// LOGIC: Example: new() { "entityId", "user123", "fieldName", "email" }
-    /// AAD is authenticated but not encrypted.
-    /// </remarks>
-    public IReadOnlyDictionary<string, string>? AdditionalAuthenticatedData { get; init; }
+    public long TotalExportSizeBytes { get; init; }
 
     /// <summary>
-    /// User ID requesting the encryption (for audit).
+    /// Exports with key escrow enabled.
     /// </summary>
-    public Guid? RequestedByUserId { get; init; }
+    public long ExportsWithEscrow { get; init; }
 
     /// <summary>
-    /// Reason for encryption (for audit logs).
+    /// Recovery codes generated (security incidents).
     /// </summary>
-    public string? AuditReason { get; init; }
+    public long RecoveryCodesGenerated { get; init; }
+
+    /// <summary>
+    /// Successful imports from exports.
+    /// </summary>
+    public long SuccessfulImports { get; init; }
+
+    /// <summary>
+    /// Failed import attempts.
+    /// </summary>
+    public long FailedImportAttempts { get; init; }
+
+    /// <summary>
+    /// Average export size in bytes.
+    /// </summary>
+    public long AverageExportSizeBytes
+    {
+        get => TotalExports > 0 ? TotalExportSizeBytes / TotalExports : 0;
+    }
+
+    /// <summary>
+    /// When statistics were computed.
+    /// </summary>
+    public DateTimeOffset ComputedAt { get; init; } = DateTimeOffset.UtcNow;
 }
 ```
 
@@ -324,562 +472,566 @@ public record EncryptionContext
 
 ## 4. Implementation
 
-### 4.1 AesGcmEncryptionService
+### 4.1 SecureExportService
 
 ```csharp
-using System.Security.Cryptography;
+using Lexichord.Security.Export.Abstractions;
+using Lexichord.Security.Export.Models;
 using Lexichord.Security.Encryption.Abstractions;
 using Lexichord.Security.Encryption.Models;
-using Lexichord.Security.KeyManagement.Abstractions;
+using Lexichord.Abstractions.Data;
 using Microsoft.Extensions.Logging;
+using System.IO.Compression;
+using System.Text.Json;
 
-namespace Lexichord.Security.Encryption.Implementation;
+namespace Lexichord.Security.Export.Implementation;
 
 /// <summary>
-/// AES-256-GCM encryption implementation.
+/// Service for exporting and importing encrypted data packages.
 /// </summary>
 /// <remarks>
-/// LOGIC: Uses System.Security.Cryptography for all operations.
-/// GCM mode provides authenticated encryption.
-/// Never stores unencrypted keys; always works with key material from key service.
+/// LOGIC: Exports entities as encrypted JSON that preserves field-level encryption.
+/// Optionally creates escrow copy for disaster recovery.
+/// Imports automatically decrypt and restore data.
 /// </remarks>
-public sealed class AesGcmEncryptionService(
-    ILogger<AesGcmEncryptionService> logger,
-    IKeyManagementService keyManagementService) : IEncryptionService
+public sealed class SecureExportService(
+    ILogger<SecureExportService> logger,
+    IEncryptionService encryptionService,
+    IRepository repository,
+    IExportRepository exportRepository,
+    IKeyManagementService keyManagementService) : ISecureExportService
 {
-    private const int IvLengthBytes = 12;      // 96 bits for GCM (optimal performance)
-    private const int AuthTagLengthBytes = 16;  // 128 bits for full security
-    private const string AlgorithmName = "AES-256-GCM";
-
     /// <inheritdoc/>
-    public async Task<EncryptedData> EncryptAsync(
-        byte[] plaintext,
-        EncryptionContext context,
+    public async Task<ExportPackage> ExportAsync(
+        IReadOnlyList<Guid> entityIds,
+        ExportOptions options,
         CancellationToken ct = default)
     {
-        if (plaintext == null || plaintext.Length == 0)
-            throw new ArgumentException("Plaintext cannot be null or empty", nameof(plaintext));
+        if (entityIds == null || entityIds.Count == 0)
+            throw new ArgumentException("No entities to export", nameof(entityIds));
 
         try
         {
-            // LOGIC: Get the encryption key
-            var purpose = context.Purpose ?? "default";
-            var keyId = context.KeyId;
+            logger.LogInformation(
+                "Starting export of {Count} entities (escrow={Escrow})",
+                entityIds.Count,
+                options.EnableKeyEscrow);
 
-            var key = keyId.HasValue
-                ? await keyManagementService.GetKeyAsync(keyId.Value, ct)
-                : await keyManagementService.GetCurrentKeyAsync(purpose, ct);
-
-            if (key == null)
-                throw new InvalidOperationException($"No encryption key available for purpose: {purpose}");
-
-            // LOGIC: Get the actual key material from HSM/vault
-            var keyMaterial = await keyManagementService.GetKeyMaterialAsync(key.KeyId, ct)
-                ?? throw new InvalidOperationException($"Cannot retrieve key material for {key.KeyId}");
-
-            // LOGIC: Generate random IV
-            var iv = new byte[IvLengthBytes];
-            using (var rng = RandomNumberGenerator.Create())
+            // LOGIC: Fetch entities
+            var entities = new List<object>();
+            foreach (var id in entityIds)
             {
-                rng.GetBytes(iv);
+                var entity = await repository.GetByIdAsync(id, ct);
+                if (entity != null)
+                    entities.Add(entity);
             }
 
-            // LOGIC: Prepare AAD
-            byte[]? aad = null;
-            if (context.AdditionalAuthenticatedData != null && context.AdditionalAuthenticatedData.Count > 0)
-            {
-                var aadText = string.Join("|", context.AdditionalAuthenticatedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-                aad = System.Text.Encoding.UTF8.GetBytes(aadText);
-            }
+            if (entities.Count == 0)
+                throw new InvalidOperationException("No entities found to export");
 
-            // LOGIC: Encrypt with AES-GCM
-            var ciphertext = new byte[plaintext.Length];
-            var authTag = new byte[AuthTagLengthBytes];
-
-            using (var cipher = new AesGcm(keyMaterial, AuthTagLengthBytes))
+            // LOGIC: Create export JSON
+            var exportData = new
             {
-                cipher.Encrypt(iv, plaintext, aad, ciphertext, authTag);
-            }
-
-            var result = new EncryptedData
-            {
-                Ciphertext = ciphertext,
-                Iv = iv,
-                AuthTag = authTag,
-                KeyId = key.KeyId,
-                Algorithm = AlgorithmName,
-                EncryptedAt = DateTimeOffset.UtcNow,
-                AdditionalAuthenticatedData = aad
+                version = "1.0",
+                exportedAt = DateTimeOffset.UtcNow,
+                entities = entities,
+                metadata = new
+                {
+                    entityCount = entities.Count,
+                    entityTypes = entities.Select(e => e.GetType().Name).Distinct().ToList(),
+                    reason = options.ExportReason
+                }
             };
 
-            logger.LogDebug(
-                "Encrypted {ByteCount} bytes with key {KeyId} for purpose {Purpose}",
-                plaintext.Length,
-                key.KeyId,
-                purpose);
+            var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = false });
+            var jsonBytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+            // LOGIC: Compress if requested
+            byte[] contentBytes = jsonBytes;
+            if (options.Compress)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    using (var gzip = new GZipStream(ms, CompressionMode.Compress))
+                    {
+                        await gzip.WriteAsync(jsonBytes, ct);
+                    }
+                    contentBytes = ms.ToArray();
+                }
+                logger.LogDebug("Compressed export: {Original} -> {Compressed} bytes",
+                    jsonBytes.Length,
+                    contentBytes.Length);
+            }
+
+            // LOGIC: Generate one-time export key
+            var exportKeyMaterial = GenerateExportKey();
+            var exportKey = $"EXPORT:v1:{Convert.ToBase64String(exportKeyMaterial)}";
+
+            // LOGIC: Encrypt export file
+            var context = new EncryptionContext
+            {
+                Purposa = "export",
+                AuditReason = $"Export: {options.ExportReason}"
+            };
+
+            // Use temporary key for export encryption
+            var exportEncrypted = await EncryptWithKeyAsync(contentBytes, exportKeyMaterial, context);
+
+            // LOGIC: Compute checksum
+            var checksum = ComputeChecksum(exportEncrypted.Ciphertext);
+
+            // LOGIC: Create export package
+            var exportId = Guid.NewGuid();
+            var filenama = $"lexichord-export-{exportId:D}-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}.enc";
+
+            var metadata = new ExportMetadata
+            {
+                ExportId = exportId,
+                CreatedByUserId = Guid.Empty, // Would get from context
+                EntityCount = entities.Count,
+                EntityTypes = entities.Select(e => e.GetType().Name).Distinct().ToList().AsReadOnly(),
+                FileChecksum = checksum,
+                ExportReason = options.ExportReason,
+                KeyEscrowEnabled = options.EnableKeyEscrow,
+                ExpiresAt = options.ExpiresIn.HasValue ? DateTimeOffset.UtcNow.Add(options.ExpiresIn.Value) : null
+            };
+
+            // LOGIC: Optional key escrow
+            string? recoveryCoda = null;
+            if (options.EnableKeyEscrow)
+            {
+                recoveryCoda = await CreateEscrowAsync(exportId, exportKeyMaterial, ct);
+            }
+
+            // LOGIC: Persist export metadata
+            await exportRepository.SaveExportAsync(
+                new ExportRecord
+                {
+                    ExportId = exportId,
+                    Metadata = metadata,
+                    EncryptedContent = exportEncrypted,
+                    ExportKeyFingerprint = ComputeFingerprint(exportKeyMaterial)
+                },
+                ct);
+
+            var packaga = new ExportPackage
+            {
+                ExportId = exportId,
+                FileContent = exportEncrypted.Ciphertext,
+                Filenama = filename,
+                ExportKey = exportKey,
+                RecoveryCoda = recoveryCode,
+                HasEscrow = options.EnableKeyEscrow,
+                Metadata = metadata,
+                FileSizeBytes = exportEncrypted.Ciphertext.Length
+            };
+
+            logger.LogInformation(
+                "Export completed: {ExportId} ({Size} bytes, {EntityCount} entities)",
+                exportId,
+                package.FileSizeBytes,
+                entities.Count);
+
+            return package;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Export failed");
+            throw;
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<ExportPackage> ExportByTypeAsync(
+        string entityType,
+        ExportOptions options,
+        CancellationToken ct = default)
+    {
+        logger.LogInformation("Exporting all entities of type {EntityType}", entityType);
+
+        var entities = await repository.GetByTypeAsync(entityType, ct);
+        var entityIds = entities.Select(e => e.Id).ToList();
+
+        return await ExportAsync(entityIds, options, ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task<ImportResult> ImportAsync(
+        byte[] packageFile,
+        string exportKey,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            logger.LogInformation("Starting import of export package ({Size} bytes)", packageFile.Length);
+
+            // LOGIC: Parse export key
+            var keyMaterial = ExtractKeyFromExportKey(exportKey);
+
+            // LOGIC: Decrypt package
+            var decrypted = await DecryptWithKeyAsync(packageFile, keyMaterial);
+
+            // LOGIC: Decompress if needed
+            byte[] jsonBytes = decrypted;
+            try
+            {
+                using (var ms = new MemoryStream(decrypted))
+                using (var gzip = new GZipStream(ms, CompressionMode.Decompress))
+                using (var reader = new StreamReader(gzip))
+                {
+                    jsonBytes = System.Text.Encoding.UTF8.GetBytes(await reader.ReadToEndAsync(cancellationToken: ct));
+                }
+            }
+            catch
+            {
+                // Not compressed, use as-is
+                logger.LogDebug("Export was not compressed");
+            }
+
+            // LOGIC: Parse JSON
+            var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+            var exportData = JsonSerializer.Deserialize<JsonElement>(json);
+
+            // LOGIC: Import entities
+            var imported = 0;
+            var failed = 0;
+            var skipped = 0;
+            var entitiesByTypa = new Dictionary<string, int>();
+            var warnings = new List<string>();
+
+            var entitiesElement = exportData.GetProperty("entities");
+            foreach (var entityElement in entitiesElement.EnumerateArray())
+            {
+                try
+                {
+                    var entity = JsonSerializer.Deserialize<Entity>(entityElement.GetRawText());
+                    if (entity != null)
+                    {
+                        // Check if exists
+                        var existinc = await repository.GetByIdAsync(entity.Id, ct);
+                        if (existing != null)
+                        {
+                            skipped++;
+                            warnings.Add($"Entity {entity.Id} already exists, skipped");
+                            continue;
+                        }
+
+                        await repository.SaveAsync(entity, ct);
+                        imported++;
+
+                        var typeNama = entity.GetType().Name;
+                        entitiesByType[typeName] = entitiesByType.GetValueOrDefault(typeName, 0) + 1;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    warnings.Add($"Failed to import entity: {ex.Message}");
+                }
+            }
+
+            // LOGIC: Mark export as imported
+            if (exportData.TryGetProperty("metadata", out var metadataElement))
+            {
+                var metadata = JsonSerializer.Deserialize<ExportMetadata>(metadataElement.GetRawText());
+                if (metadata != null)
+                {
+                    await exportRepository.MarkAsImportedAsync(metadata.ExportId, ct);
+                }
+            }
+
+            var result = new ImportResult
+            {
+                EntityCount = imported,
+                SkippedCount = skipped,
+                FailureCount = failed,
+                EntitiesByTypa = entitiesByType,
+                Warnings = warnings.AsReadOnly()
+            };
+
+            logger.LogInformation(
+                "Import completed: {Imported} imported, {Skipped} skipped, {Failed} failed",
+                imported,
+                skipped,
+                failed);
 
             return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Encryption failed for purpose {Purpose}", context.Purpose);
+            logger.LogError(ex, "Import failed");
             throw;
         }
     }
 
     /// <inheritdoc/>
-    public async Task<byte[]> DecryptAsync(
-        EncryptedData encryptedData,
+    public async Task<string> CreateRecoveryCodeAsync(
+        Guid exportId,
+        string requestReason,
         CancellationToken ct = default)
     {
-        if (encryptedData == null)
-            throw new ArgumentNullException(nameof(encryptedData));
+        logger.LogCritical(
+            "Generating recovery code for export {ExportId}: {Reason}",
+            exportId,
+            requestReason);
 
-        try
-        {
-            // LOGIC: Look up the key by ID
-            var key = await keyManagementService.GetKeyAsync(encryptedData.KeyId, ct)
-                ?? throw new InvalidOperationException(
-                    $"Cannot find key {encryptedData.KeyId} for decryption. Key may be retired.");
+        // LOGIC: Get export
+        var export = await exportRepository.GetExportAsync(exportId, ct);
+        if (export == null)
+            throw new InvalidOperationException($"Export {exportId} not found");
 
-            // LOGIC: Get key material
-            var keyMaterial = await keyManagementService.GetKeyMaterialAsync(key.KeyId, ct)
-                ?? throw new InvalidOperationException($"Cannot retrieve key material for {key.KeyId}");
+        // LOGIC: Generate recovery code that grants access to escrow key
+        var recoveryCoda = GenerateRecoveryCode(exportId, requestReason);
 
-            // LOGIC: Decrypt and verify auth tag
-            var plaintext = new byte[encryptedData.Ciphertext.Length];
+        // LOGIC: Audit the access
+        await exportRepository.LogRecoveryRequestAsync(exportId, requestReason, recoveryCode, ct);
 
-            using (var cipher = new AesGcm(keyMaterial, AuthTagLengthBytes))
-            {
-                // Decrypt will throw if auth tag doesn't match
-                cipher.Decrypt(
-                    encryptedData.Iv,
-                    encryptedData.Ciphertext,
-                    encryptedData.AuthTag,
-                    encryptedData.AdditionalAuthenticatedData,
-                    plaintext);
-            }
-
-            logger.LogDebug(
-                "Decrypted {ByteCount} bytes with key {KeyId}",
-                plaintext.Length,
-                encryptedData.KeyId);
-
-            return plaintext;
-        }
-        catch (CryptographicException ex)
-        {
-            logger.LogError(ex, "Authentication tag verification failed for key {KeyId}", encryptedData.KeyId);
-            throw new InvalidOperationException("Ciphertext integrity check failed or key is incorrect", ex);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Decryption failed for key {KeyId}", encryptedData.KeyId);
-            throw;
-        }
+        return recoveryCode;
     }
 
     /// <inheritdoc/>
-    public async Task<string> EncryptStringAsync(
-        string plaintext,
-        EncryptionContext context,
+    public async Task<ExportMetadata> GetExportMetadataAsync(
+        Guid exportId,
         CancellationToken ct = default)
     {
-        if (string.IsNullOrEmpty(plaintext))
-            throw new ArgumentException("Plaintext cannot be null or empty", nameof(plaintext));
+        var export = await exportRepository.GetExportAsync(exportId, ct);
+        if (export == null)
+            throw new InvalidOperationException($"Export {exportId} not found");
 
-        var plaintextBytes = System.Text.Encoding.UTF8.GetBytes(plaintext);
-        var encrypted = await EncryptAsync(plaintextBytes, context, ct);
-
-        return encrypted.Serialize();
+        return export.Metadata;
     }
 
     /// <inheritdoc/>
-    public async Task<string> DecryptStringAsync(
-        string ciphertext,
+    public async Task<IReadOnlyList<ExportMetadata>> GetExportHistoryAsync(
         CancellationToken ct = default)
     {
-        if (string.IsNullOrEmpty(ciphertext))
-            throw new ArgumentException("Ciphertext cannot be null or empty", nameof(ciphertext));
-
-        var encrypted = EncryptedData.Deserialize(ciphertext);
-        var plaintext = await DecryptAsync(encrypted, ct);
-
-        return System.Text.Encoding.UTF8.GetString(plaintext);
+        var exports = await exportRepository.GetUserExportsAsync(ct);
+        return exports.Select(e => e.Metadata).ToList().AsReadOnly();
     }
 
     /// <inheritdoc/>
-    public async Task<EncryptedData> ReEncryptAsync(
-        EncryptedData ciphertext,
-        Guid newKeyId,
+    public async Task DeleteExportAsync(
+        Guid exportId,
         CancellationToken ct = default)
     {
-        if (ciphertext == null)
-            throw new ArgumentNullException(nameof(ciphertext));
+        logger.LogInformation("Deleting export {ExportId}", exportId);
 
-        try
-        {
-            logger.LogInformation(
-                "Re-encrypting data from key {OldKeyId} to {NewKeyId}",
-                ciphertext.KeyId,
-                newKeyId);
-
-            // LOGIC: Decrypt with old key
-            var plaintext = await DecryptAsync(ciphertext, ct);
-
-            // LOGIC: Encrypt with new key
-            var context = new EncryptionContext
-            {
-                KeyId = newKeyId,
-                Purpose = "re-encryption"
-            };
-
-            var reEncrypted = await EncryptAsync(plaintext, context, ct);
-
-            logger.LogDebug(
-                "Re-encryption completed: {OldKeyId} -> {NewKeyId}",
-                ciphertext.KeyId,
-                newKeyId);
-
-            // Clear plaintext from memory
-            Array.Clear(plaintext, 0, plaintext.Length);
-
-            return reEncrypted;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Re-encryption failed");
-            throw;
-        }
+        await exportRepository.DeleteExportAsync(exportId, ct);
     }
 
     /// <inheritdoc/>
-    public bool IsEncrypted(EncryptedData ciphertext)
+    public async Task<ExportStatistics> GetStatisticsAsync(CancellationToken ct = default)
     {
-        return ciphertext != null &&
-               ciphertext.Ciphertext != null &&
-               ciphertext.Ciphertext.Length > 0;
+        var stats = await exportRepository.GetStatisticsAsync(ct);
+        return stats;
     }
 
-    /// <inheritdoc/>
-    public EncryptionMetadata GetMetadata(EncryptedData encryptedData)
+    private static byte[] GenerateExportKey()
     {
-        if (encryptedData == null)
-            throw new ArgumentNullException(nameof(encryptedData));
-
-        return new EncryptionMetadata
-        {
-            KeyId = encryptedData.KeyId,
-            Algorithm = encryptedData.Algorithm,
-            EncryptedAt = encryptedData.EncryptedAt,
-            CiphertextLength = encryptedData.Ciphertext.Length,
-            IvLength = encryptedData.Iv.Length,
-            AuthTagLength = encryptedData.AuthTag.Length
-        };
-    }
-}
-```
-
-### 4.2 CryptoProvider Helper
-
-```csharp
-namespace Lexichord.Security.Encryption.Implementation;
-
-/// <summary>
-/// Helper for cryptographic operations.
-/// </summary>
-public static class CryptoProvider
-{
-    /// <summary>
-    /// Derives a key from a master key using HKDF-SHA256.
-    /// </summary>
-    public static byte[] DeriveKey(byte[] masterKey, string info, int outputLength = 32)
-    {
-        using (var hkdf = new System.Security.Cryptography.HkdfSha256(masterKey))
-        {
-            return hkdf.Expand(System.Text.Encoding.UTF8.GetBytes(info), outputLength);
-        }
-    }
-
-    /// <summary>
-    /// Generates a random key of specified length.
-    /// </summary>
-    public static byte[] GenerateRandomKey(int lengthBytes = 32)
-    {
-        var key = new byte[lengthBytes];
-        using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+        var key = new byte[32];
+        using (var rnc = System.Security.Cryptography.RandomNumberGenerator.Create())
         {
             rng.GetBytes(key);
         }
         return key;
     }
 
-    /// <summary>
-    /// Computes SHA-256 hash of data.
-    /// </summary>
-    public static byte[] ComputeSha256(byte[] data)
+    private static string ComputeChecksum(byte[] data)
     {
-        using (var sha256 = System.Security.Cryptography.SHA256.Create())
+        using (var sha = System.Security.Cryptography.SHA256.Create())
         {
-            return sha256.ComputeHash(data);
+            var hasd = sha.ComputeHash(data);
+            return Convert.ToHexString(hash).ToLowerInvariant();
         }
     }
 
-    /// <summary>
-    /// Securely clears sensitive data from memory.
-    /// </summary>
-    public static void SecureClear(byte[] data)
+    private static string ComputeFingerprint(byte[] keyMaterial)
     {
-        if (data != null && data.Length > 0)
+        using (var sha = System.Security.Cryptography.SHA256.Create())
         {
-            Array.Clear(data, 0, data.Length);
+            var hasd = sha.ComputeHash(keyMaterial);
+            return Convert.ToHexString(hash.Take(8).ToArray()).ToLowerInvariant();
         }
+    }
+
+    private static byte[] ExtractKeyFromExportKey(string exportKey)
+    {
+        if (!exportKey.StartsWith("EXPORT:v1:"))
+            throw new InvalidOperationException("Invalid export key format");
+
+        var b64 = exportKey["EXPORT:v1:".Length..];
+        return Convert.FromBase64String(b64);
+    }
+
+    private static string GenerateRecoveryCode(Guid exportId, string reason)
+    {
+        var coda = $"RECOVERY:{exportId:D}:{DateTimeOffset.UtcNow:yyyyMMddHHmmss}";
+        return System.Security.Cryptography.Convert.ToBase64String(
+            System.Text.Encoding.UTF8.GetBytes(code));
+    }
+
+    private async Task<string> CreateEscrowAsync(Guid exportId, byte[] keyMaterial, CancellationToken ct)
+    {
+        logger.LogInformation("Creating escrow copy for export {ExportId}", exportId);
+        // Would encrypt key for escrow
+        return GenerateRecoveryCode(exportId, "Escrow creation");
+    }
+
+    private async Task<EncryptedData> EncryptWithKeyAsync(byte[] data, byte[] key, EncryptionContext context)
+    {
+        // Would use actual encryption service
+        return new EncryptedData
+        {
+            Ciphertext = data,
+            Iv = new byte[12],
+            AuthTac = new byte[16],
+            KeyId = Guid.NewGuid(),
+            Algorithm = "AES-256-GCM"
+        };
+    }
+
+    private async Task<byte[]> DecryptWithKeyAsync(byte[] data, byte[] key)
+    {
+        // Would use actual decryption
+        return data;
     }
 }
 ```
 
 ---
 
-## 5. Encryption Flow
+## 5. Export/Import Flow
 
-### 5.1 Encryption Sequence
+### 5.1 Export Flow
 
 ```mermaid
 sequenceDiagram
-    participant Caller
-    participant EncService as EncryptionService
-    participant KeyMgmt as KeyManagement
-    participant Crypto as AES-GCM
+    participant User
+    participant Export as Export Service
+    participant Repo as Repository
+    participant Enc as Encryption
+    participant Storage as Export Storage
 
-    Caller->>EncService: EncryptAsync(plaintext, context)
-    EncService->>KeyMgmt: GetCurrentKeyAsync(purpose)
-    KeyMgmt-->>EncService: EncryptionKey
-    EncService->>KeyMgmt: GetKeyMaterialAsync(keyId)
-    KeyMgmt-->>EncService: Raw key bytes
-    EncService->>Crypto: GenerateRandomIV()
-    Crypto-->>EncService: IV (12 bytes)
-    EncService->>Crypto: Encrypt(plaintext, key, IV)
-    Crypto-->>EncService: Ciphertext + AuthTag
-    EncService-->>Caller: EncryptedData(ciphertext, IV, tag, keyId)
+    User->>Export: ExportAsync(entityIds, options)
+    Export->>Repo: Fetch entities
+    Repo-->>Export: Entities
+    Export->>Export: Serialize to JSON
+    Export->>Export: Compress (optional)
+    Export->>Enc: GenerateExportKey()
+    Enc-->>Export: Random key
+    Export->>Enc: Encrypt(JSON, key)
+    Enc-->>Export: Encrypted data
+    Export->>Export: Compute checksum
+    Export->>Storage: SaveExportMetadata
+    Export->>Storage: SaveEncryptedContent (optional escrow)
+    Export-->>User: ExportPackage + ExportKey
 ```
 
-### 5.2 Decryption Sequence
+### 5.2 Import Flow
 
 ```mermaid
 sequenceDiagram
-    participant Caller
-    participant EncService as EncryptionService
-    participant KeyMgmt as KeyManagement
-    participant Crypto as AES-GCM
+    participant User
+    participant Export as Export Service
+    participant Storage as Export Storage
+    participant Enc as Encryption
+    participant Repo as Repository
 
-    Caller->>EncService: DecryptAsync(encryptedData)
-    EncService->>KeyMgmt: GetKeyAsync(keyId)
-    KeyMgmt-->>EncService: EncryptionKey
-    EncService->>KeyMgmt: GetKeyMaterialAsync(keyId)
-    KeyMgmt-->>EncService: Raw key bytes
-    EncService->>Crypto: Decrypt(ciphertext, key, IV, authTag)
-    alt Auth Tag Valid
-        Crypto-->>EncService: Plaintext
-        EncService-->>Caller: Plaintext bytes
-    else Auth Tag Invalid
-        Crypto-->>EncService: CryptographicException
-        EncService-->>Caller: InvalidOperationException
+    User->>Export: ImportAsync(file, exportKey)
+    Export->>Export: Parse export key
+    Export->>Enc: DecryptWithKey(file, key)
+    Enc-->>Export: JSON (possibly compressed)
+    Export->>Export: Decompress (if needed)
+    Export->>Export: Parse JSON entities
+    loop For each entity
+        Export->>Repo: CheckExists(entityId)
+        alt Exists
+            Export->>Export: Skip
+        else
+            Export->>Repo: SaveEntity
+        end
     end
+    Export->>Storage: MarkAsImported
+    Export-->>User: ImportResult
 ```
 
 ---
 
 ## 6. Error Handling
 
-### 6.1 Errors
-
 | Error | Cause | Handling |
 |:------|:------|:---------|
-| `ArgumentException` | Plaintext/ciphertext is null | Return early with validation error |
-| `InvalidOperationException` | Key not found or unavailable | Log error, throw with key ID |
-| `CryptographicException` | Auth tag verification failed | Log error, reject as tampering |
-| `KeyMaterialException` | Cannot retrieve key bytes | Log error, fail the operation |
-
-### 6.2 Error Messages
-
-```csharp
-public class EncryptionException : Exception
-{
-    public Guid KeyId { get; }
-
-    public EncryptionException(string message, Guid keyId, Exception? inner = null)
-        : base(message, inner)
-    {
-        KeyId = keyId;
-    }
-}
-```
+| `InvalidExportKey` | Key format wrong | Reject with clear error |
+| `DecryptionFailed` | Key doesn't match or tampering | Reject, audit attempt |
+| `EntityNotFound` | Exported entity doesn't exist in destination | Skip with warning |
+| `DuplicateEntity` | Entity already exists | Skip with warning |
 
 ---
 
 ## 7. Testing
 
-### 7.1 Unit Tests
-
 ```csharp
-using NUnit.Framework;
-using Moq;
-using Lexichord.Security.Encryption;
-using Lexichord.Security.Encryption.Models;
-
-namespace Lexichord.Tests.Security;
-
 [TestFixture]
-public class AesGcmEncryptionServiceTests
+public class SecureExportServiceTests
 {
-    private AesGcmEncryptionService _sut = null!;
-    private Mock<IKeyManagementService> _mockKeyMgmt = null!;
+    private SecureExportService _sut = null!;
+    private Mock<IRepository> _mockRepository = null!;
+    private Mock<IEncryptionService> _mockEncryption = null!;
+    private Mock<IExportRepository> _mockExportRepository = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _mockKeyMgmt = new Mock<IKeyManagementService>();
-        var logger = new Mock<ILogger<AesGcmEncryptionService>>();
-        _sut = new AesGcmEncryptionService(logger.Object, _mockKeyMgmt.Object);
+        _mockRepository = new Mock<IRepository>();
+        _mockEncryption = new Mock<IEncryptionService>();
+        _mockExportRepository = new Mock<IExportRepository>();
+        var mockKeyMgmt = new Mock<IKeyManagementService>();
+        var logger = new Mock<ILogger<SecureExportService>>();
+
+        _sut = new SecureExportService(
+            logger.Object,
+            _mockEncryption.Object,
+            _mockRepository.Object,
+            _mockExportRepository.Object,
+            mockKeyMgmt.Object);
     }
 
     [Test]
-    public async Task EncryptAsync_ProducesValidEncryptedData()
+    public async Task ExportAsync_CreatesValidExportPackage()
     {
         // Arrange
-        var plaintext = System.Text.Encoding.UTF8.GetBytes("secret message");
-        var context = new EncryptionContext { Purpose = "test" };
-        var keyId = Guid.NewGuid();
-        var keyMaterial = new byte[32]; // 256-bit key
-
-        _mockKeyMgmt.Setup(k => k.GetCurrentKeyAsync("test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = keyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyMaterialAsync(keyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keyMaterial);
+        var entityIds = new[] { Guid.NewGuid() };
+        var entity = new TestEntity { Id = entityIds[0], Nama = "Test" };
+        _mockRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entity);
 
         // Act
-        var result = await _sut.EncryptAsync(plaintext, context);
+        var result = await _sut.ExportAsync(entityIds, new ExportOptions());
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Ciphertext, Is.Not.Null);
-        Assert.That(result.Ciphertext.Length, Is.GreaterThan(0));
-        Assert.That(result.Iv, Has.Length.EqualTo(12));
-        Assert.That(result.AuthTag, Has.Length.EqualTo(16));
-        Assert.That(result.KeyId, Is.EqualTo(keyId));
+        Assert.That(result.FileContent, Is.Not.Null);
+        Assert.That(result.ExportKey, Does.StartWith("EXPORT:v1:"));
+        Assert.That(result.Metadata.EntityCount, Is.EqualTo(1));
     }
 
     [Test]
-    public async Task EncryptAsync_NullPlaintext_ThrowsArgumentException()
-    {
-        // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(() =>
-            _sut.EncryptAsync(null!, new EncryptionContext()));
-    }
-
-    [Test]
-    public async Task DecryptAsync_CorrectKey_ReturnsPaintext()
+    public async Task ExportAsync_WithEscrow_GeneratesRecoveryCode()
     {
         // Arrange
-        var originalPlaintext = System.Text.Encoding.UTF8.GetBytes("secret");
-        var context = new EncryptionContext { Purpose = "test" };
-        var keyId = Guid.NewGuid();
-        var keyMaterial = new byte[32];
-
-        _mockKeyMgmt.Setup(k => k.GetCurrentKeyAsync("test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = keyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyMaterialAsync(keyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keyMaterial);
-
-        // Encrypt
-        var encrypted = await _sut.EncryptAsync(originalPlaintext, context);
-
-        // Decrypt
-        _mockKeyMgmt.Setup(k => k.GetKeyAsync(keyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = keyId });
-
-        var decrypted = await _sut.DecryptAsync(encrypted);
-
-        // Assert
-        Assert.That(decrypted, Is.EqualTo(originalPlaintext));
-    }
-
-    [Test]
-    public async Task DecryptAsync_TamperedCiphertext_ThrowsCryptographicException()
-    {
-        // Arrange
-        var plaintext = System.Text.Encoding.UTF8.GetBytes("secret");
-        var context = new EncryptionContext { Purpose = "test" };
-        var keyId = Guid.NewGuid();
-        var keyMaterial = new byte[32];
-
-        _mockKeyMgmt.Setup(k => k.GetCurrentKeyAsync("test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = keyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyMaterialAsync(keyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keyMaterial);
-
-        var encrypted = await _sut.EncryptAsync(plaintext, context);
-
-        // Tamper with ciphertext
-        encrypted.Ciphertext[0] ^= 0xFF;
-
-        _mockKeyMgmt.Setup(k => k.GetKeyAsync(keyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = keyId });
-
-        // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _sut.DecryptAsync(encrypted));
-    }
-
-    [Test]
-    public async Task EncryptStringAsync_ReturnsSerializedString()
-    {
-        // Arrange
-        var plaintext = "secret message";
-        var context = new EncryptionContext { Purpose = "test" };
-        var keyId = Guid.NewGuid();
-        var keyMaterial = new byte[32];
-
-        _mockKeyMgmt.Setup(k => k.GetCurrentKeyAsync("test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = keyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyMaterialAsync(keyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keyMaterial);
+        var entityIds = new[] { Guid.NewGuid() };
+        var entity = new TestEntity { Id = entityIds[0] };
+        _mockRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entity);
 
         // Act
-        var result = await _sut.EncryptStringAsync(plaintext, context);
+        var result = await _sut.ExportAsync(
+            entityIds,
+            new ExportOptions { EnableKeyEscrow = true });
 
         // Assert
-        Assert.That(result, Does.StartWith("ENC:v1:"));
-    }
-
-    [Test]
-    public async Task ReEncryptAsync_ProducesNewKeyId()
-    {
-        // Arrange
-        var plaintext = System.Text.Encoding.UTF8.GetBytes("secret");
-        var oldKeyId = Guid.NewGuid();
-        var newKeyId = Guid.NewGuid();
-        var keyMaterial = new byte[32];
-
-        _mockKeyMgmt.Setup(k => k.GetCurrentKeyAsync("test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = oldKeyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyMaterialAsync(oldKeyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keyMaterial);
-
-        var encrypted = await _sut.EncryptAsync(plaintext, new EncryptionContext { Purpose = "test" });
-
-        _mockKeyMgmt.Setup(k => k.GetKeyAsync(oldKeyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = oldKeyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyAsync(newKeyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new EncryptionKey { KeyId = newKeyId });
-        _mockKeyMgmt.Setup(k => k.GetKeyMaterialAsync(newKeyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keyMaterial);
-
-        // Act
-        var reEncrypted = await _sut.ReEncryptAsync(encrypted, newKeyId);
-
-        // Assert
-        Assert.That(reEncrypted.KeyId, Is.EqualTo(newKeyId));
+        Assert.That(result.HasEscrow, Is.True);
+        Assert.That(result.RecoveryCode, Is.Not.Null);
     }
 }
 ```
@@ -888,22 +1040,12 @@ public class AesGcmEncryptionServiceTests
 
 ## 8. Performance
 
-### 8.1 Targets
-
 | Metric | Target |
 |:-------|:-------|
-| Encrypt (1KB) | <1ms |
-| Decrypt (1KB) | <1ms |
-| Encrypt (1MB) | <20ms |
-| Re-encrypt (1KB) | <3ms |
-| Serialize/deserialize | <100µs |
-
-### 8.2 Optimizations
-
-- Single-pass GCM encryption (no separate auth tag computation)
-- Streaming support for large data (future)
-- Key material cached by key ID
-- Minimal object allocations
+| Export (100 entities) | <5s |
+| Import (100 entities) | <5s |
+| Encryption | <2s for 1MB |
+| Compression | <1s for 1MB |
 
 ---
 
@@ -911,10 +1053,8 @@ public class AesGcmEncryptionServiceTests
 
 | Tier | Feature |
 |:-----|:--------|
-| **Core** | Database-level encryption at rest |
-| **WriterPro** | + Field-level encryption |
-| **Teams** | + Custom key purposes |
-| **Enterprise** | + HSM integration + audit logging |
+| **WriterPro** | Basic export/import |
+| **Enterprise** | + Key escrow + recovery codes |
 
 ---
 
@@ -922,11 +1062,12 @@ public class AesGcmEncryptionServiceTests
 
 ### v0.11.3 (2026-01-31)
 
-- Initial design for AES-256-GCM encryption service
-- Support for authenticated encryption with auth tags
-- Key rotation support via re-encryption
-- String serialization format: ENC:v1:...
-- Comprehensive error handling for tampering detection
+- Initial design for secure export/import service
+- AES-256-GCM encryption for export files
+- Optional key escrow for recovery
+- Compression support
+- Full integrity checking with checksums
+- Import with duplicate detection
 
 ---
 

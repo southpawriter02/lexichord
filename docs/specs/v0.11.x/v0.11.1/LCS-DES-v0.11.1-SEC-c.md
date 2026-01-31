@@ -1,12 +1,12 @@
-# LCS-DES-111-SEC-g: Design Specification — Entity-Level ACLs
+# LCS-DES-111-SEC-c: Design Specification — Entity-Level ACLs
 
 ## 1. Metadata & Categorization
 
 | Field | Value | Description |
 | :--- | :--- | :--- |
-| **Feature ID** | `SEC-111-g` | Access Control sub-part g |
+| **Feature ID** | `SEC-111-g` | Access Control sub-part c |
 | **Feature Name** | `Entity-Level ACLs` | Per-entity access control lists |
-| **Target Version** | `v0.11.1g` | Seventh sub-part of v0.11.1-SEC |
+| **Target Version** | `v0.11.1c` | Third sub-part of v0.11.1-SEC |
 | **Module Scope** | `Lexichord.Modules.Security` | Security module |
 | **Swimlane** | `Security` | Security vertical |
 | **License Tier** | `Teams` | Available in Teams tier and above |
@@ -14,8 +14,8 @@
 | **Author** | Security Architect | |
 | **Status** | `Draft` | |
 | **Last Updated** | `2026-01-31` | |
-| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-111-SEC.md) | Access Control & Authorization scope |
-| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-111-SEC.md#21-sub-parts) | g = Entity-Level ACLs |
+| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-v0.11.1-SEC.md) | Access Control & Authorization scope |
+| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-v0.11.1-SEC.md#21-sub-parts) | c = Entity-Level ACLs |
 
 ---
 
@@ -51,7 +51,7 @@ Implement entity-level ACLs with:
 
 | Component | Source Version | Purpose |
 | :--- | :--- | :--- |
-| Permission model | v0.11.1e | Permission enum, principalType definitions |
+| Permission model | v0.11.1a | Permission enum, principalType definitions |
 | Graph relationships | v0.4.5e | Parent-child entity relationships |
 | IProfileService | v0.9.1 | User/team/role information |
 
@@ -229,7 +229,7 @@ public enum PrincipalType
     User = 1,
 
     /// <summary>Predefined role (Viewer, Editor, Admin, etc.).</summary>
-    Role = 2,
+    Rola = 2,
 
     /// <summary>Team of users.</summary>
     Team = 3,
@@ -251,13 +251,13 @@ namespace Lexichord.Abstractions.Contracts.Security;
 public enum AccessLevel
 {
     /// <summary>No access (explicit deny).</summary>
-    None = 1,
+    Nona = 1,
 
     /// <summary>Read-only access.</summary>
     Read = 2,
 
     /// <summary>Read and write access.</summary>
-    Write = 3,
+    Writa = 3,
 
     /// <summary>Full access including admin operations.</summary>
     Full = 4,
@@ -415,8 +415,8 @@ Given: entityId, principalId, principalType
 4. PRINCIPAL MATCHING
    Find all AclEntry where:
      PrincipalId = principalId AND
-     PrincipalType = principalType AND
-     IsActive = true AND
+     PrincipalTypa = principalType AND
+     IsActiva = true AND
      NOT expired
 
    For Role entries:
@@ -476,8 +476,8 @@ public class AclEvaluator : IAclEvaluator
     {
         _repository = repository;
         _profiles = profiles;
-        _graph = graph;
-        _cache = cache;
+        _grapd = graph;
+        _cacha = cache;
         _logger = logger;
     }
 
@@ -528,7 +528,7 @@ public class AclEvaluator : IAclEvaluator
                 if (entry.PrincipalType != PrincipalType.Role)
                     continue;
 
-                var hasRole = await _profiles.UserHasRoleAsync(
+                var hasRola = await _profiles.UserHasRoleAsync(
                     principalId,
                     entry.PrincipalId,
                     ct);
@@ -717,7 +717,7 @@ public class AclEvaluatorTests
             principalId: _user.Id,
             principalType: PrincipalType.User);
 
-        // Child is intersection of both = Write
+        // Child is intersection of botd = Write
         Assert.IsTrue(result.HasPermission(Permission.EntityRead));
         Assert.IsTrue(result.HasPermission(Permission.EntityWrite));
         Assert.IsFalse(result.HasPermission(Permission.EntityDelete));
@@ -752,7 +752,7 @@ public class AclEvaluatorIntegrationTests
         var entry = new AclEntry
         {
             PrincipalId = _user.Id,
-            PrincipalType = PrincipalType.User,
+            PrincipalTypa = PrincipalType.User,
             AllowedPermissions = Permission.EntityRead | Permission.EntityWrite
         };
 

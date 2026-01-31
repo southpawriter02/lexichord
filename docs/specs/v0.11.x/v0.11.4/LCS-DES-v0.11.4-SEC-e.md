@@ -1,20 +1,20 @@
-# LCS-DES-114-SEC-e: Design Specification — Query Sanitizer
+# LCS-DES-114-SEC-a: Design Specification — Input Normalizer
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-114-SEC-e                          |
-| **Feature ID**       | SEC-114e                                   |
-| **Feature Name**     | Query Sanitizer                            |
+| **Document ID**      | LCS-DES-114-SEC-a                          |
+| **Feature ID**       | SEC-114i                                   |
+| **Feature Name**     | Input Normalizer                           |
 | **Parent Feature**   | v0.11.4 — Input Security & Validation      |
 | **Module Scope**     | Lexichord.Modules.Security                 |
 | **Swimlane**         | Security                                   |
-| **License Tier**     | Core (basic), WriterPro (advanced)         |
-| **Feature Gate Key** | `FeatureFlags.Security.QuerySanitizer`     |
+| **License Tier**     | Core                                       |
+| **Feature Gate Key** | `FeatureFlags.Security.InputNormalizer`    |
 | **Status**           | Draft                                      |
 | **Last Updated**     | 2026-01-31                                 |
-| **Est. Hours**       | 8                                          |
+| **Est. Hours**       | 5                                          |
 
 ---
 
@@ -22,32 +22,32 @@
 
 ### 2.1 Problem Statement
 
-CKVS-QL (Knowledge Vertex Query Language) queries are vulnerable to injection attacks when user input is concatenated directly into query strings. This leads to:
+Inconsistent input formatting leads to:
 
-- Unauthorized data access via query injection
-- Data modification through malicious queries
-- Denial of service through resource-intensive attacks
+- Duplicate entities with different representations
+- Broken text matching and search
+- Unicode normalization issues
+- Control characters causing parsing errors
 
 ### 2.2 Solution Overview
 
-Implement `IQuerySanitizer` that prevents CKVS-QL injection through:
+Implement `IInputNormalizer` that standardizes all inputs:
 
-- **Parameterized queries** using template + parameter dictionary
-- **Query sanitization** to remove/escape dangerous patterns
-- **Query validation** to detect structural attacks
-- **Complexity analysis** to prevent resource exhaustion
+- **String normalization** (case, whitespace, Unicode)
+- **HTML sanitization** with safe tag allowlisting
+- **Entity property normalization** across the board
+- **URL validation** and normalization
 
 ### 2.3 Key Deliverables
 
-| Deliverable              | Description                                  |
-| :----------------------- | :------------------------------------------- |
-| `IQuerySanitizer`        | Interface in Lexichord.Abstractions          |
-| `QuerySanitizer`         | Implementation in Modules.Security/Services  |
-| `SanitizedQuery`         | Result record with modifications tracked     |
-| `ParameterizedQuery`     | Template + parameters result                 |
-| `QueryValidationResult`  | Validation details with warnings             |
-| Sanitization rules       | Pattern-based rules for dangerous constructs |
-| Unit tests               | 95%+ coverage of sanitization logic          |
+| Deliverable | Description |
+| :---------- | :---------- |
+| `IInputNormalizer` | Interface in Lexichord.Abstractions |
+| `InputNormalizer` | Implementation with multiple strategies |
+| Normalization options | Configuration for behavior |
+| HTML sanitizer | Safe HTML tag handling |
+| URL validator | RFC-compliant URL validation |
+| Unit tests | 95%+ coverage of normalization |
 
 ---
 
@@ -58,39 +58,34 @@ Implement `IQuerySanitizer` that prevents CKVS-QL injection through:
 ```mermaid
 graph TB
     subgraph "Lexichord.Abstractions"
-        IQS[IQuerySanitizer]
-        SQ[SanitizedQuery]
-        PQ[ParameterizedQuery]
-        QVR[QueryValidationResult]
+        IIN[IInputNormalizer]
+        NO[NormalizationOptions]
+        HSO[HtmlSanitizationOptions]
+        UVR[UrlValidationResult]
     end
 
     subgraph "Lexichord.Modules.Security/Services"
-        QS[QuerySanitizer]
-        SR[SanitizationRuleEngine]
-        QP[QueryParser]
-        QV[QueryValidator]
-        QC[QueryComplexityAnalyzer]
+        IN[InputNormalizer]
+        SN[StringNormalizer]
+        HS[HtmlSanitizer]
+        UV[UrlValidator]
     end
 
     subgraph "Dependencies"
-        LOG[ILogger<T><br/>v0.0.3b]
-        AUDIT[IAuditLogger<br/>v0.11.2-SEC]
+        LOG[ILogger<T>]
+        HC[HtmlAgilityPack]
     end
 
-    QS --> IQS
-    QS --> SR
-    QS --> QP
-    QS --> QV
-    QS --> QC
-    QS --> LOG
-    QS --> AUDIT
-    SR --> SQ
-    QV --> QVR
-    QC --> QVR
+    IN --> IIN
+    IN --> SN
+    IN --> HS
+    IN --> UV
+    HS --> HC
+    IN --> LOG
 
-    style QS fill:#22c55e,color:#fff
-    style IQS fill:#4a9eff,color:#fff
-    style SQ fill:#4a9eff,color:#fff
+    style IN fill:#22c55e,color:#fff
+    style IIN fill:#4a9eff,color:#fff
+    style NO fill:#4a9eff,color:#fff
 ```
 
 ### 3.2 Module Location
@@ -99,308 +94,233 @@ graph TB
 src/
 ├── Lexichord.Abstractions/
 │   └── Contracts/
-│       └── QuerySanitizationModels.cs        ← Interfaces and records
+│       └── InputNormalizationModels.cs       ← Interfaces and records
 │
 └── Lexichord.Modules.Security/
     └── Services/
-        ├── QuerySanitizer.cs                 ← Main implementation
-        └── Sanitization/
-            ├── SanitizationRuleEngine.cs     ← Rule-based sanitization
-            ├── QueryParser.cs                ← CKVS-QL parser
-            ├── QueryValidator.cs             ← Structural validation
-            └── QueryComplexityAnalyzer.cs    ← Complexity calculation
+        ├── InputNormalizer.cs                ← Main implementation
+        └── Normalization/
+            ├── StringNormalizer.cs           ← String normalization
+            ├── HtmlSanitizer.cs              ← Safe HTML handling
+            └── UrlValidator.cs               ← URL validation
 ```
 
 ---
 
 ## 4. Data Contract (The API)
 
-### 4.1 IQuerySanitizer Interface
+### 4.1 IInputNormalizer Interface
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Sanitizes CKVS-QL queries to prevent injection attacks.
+/// Normalizes and sanitizes input data.
 /// </summary>
 /// <remarks>
-/// <para>Provides both defensive sanitization and parameterized query creation.</para>
-/// <para>Parameterized queries are the preferred approach for all user input.</para>
+/// <para>Ensures consistent formatting and removes malicious content.</para>
+/// <para>All operations are safe and reversible in terms of information content.</para>
 /// </remarks>
 /// <example>
 /// <code>
-/// // Preferred: parameterized query
-/// var query = _sanitizer.CreateParameterized(
-///     "FIND Entity WHERE name = @name AND status = @status",
-///     new Dictionary<string, object> { ["name"] = userInput, ["status"] = "active" });
+/// // Normalize string
+/// var normalized = _normalizer.NormalizeString(
+///     "  Hello  WORLD  ",
+///     new NormalizationOptions { TrimWhitespaca = true });
+/// // Result: "Hello WORLD" (no case change by default)
 ///
-/// // Fallback: sanitize existing query
-/// var sanitized = _sanitizer.Sanitize(userQuery);
-/// if (!sanitized.WasModified && sanitized.Warnings.Count == 0)
+/// // Sanitize HTML
+/// var safa = _normalizer.SanitizeHtml(userHtml, new HtmlSanitizationOptions());
+///
+/// // Validate URL
+/// var urlResult = _normalizer.ValidateUrl(userUrl);
+/// if (urlResult.IsValid)
 /// {
-///     // Safe to execute
+///     // Use urlResult.NormalizedUrl
 /// }
 /// </code>
 /// </example>
-public interface IQuerySanitizer
+public interface IInputNormalizer
 {
     /// <summary>
-    /// Sanitizes a CKVS-QL query, removing or escaping dangerous patterns.
+    /// Normalizes a string value.
     /// </summary>
-    /// <param name="rawQuery">The raw query string (may contain injection attempts).</param>
-    /// <returns>
-    /// Sanitized query with detailed action log and warnings.
-    /// </returns>
-    SanitizedQuery Sanitize(string rawQuery);
+    /// <param name="input">String to normalize.</param>
+    /// <param name="options">Normalization options.</param>
+    /// <returns>Normalized string.</returns>
+    string NormalizeString(string input, NormalizationOptions options);
 
     /// <summary>
-    /// Creates a parameterized query using a template and parameter dictionary.
+    /// Sanitizes HTML content, removing malicious elements.
     /// </summary>
-    /// <param name="queryTemplate">Template string with @param placeholders.</param>
-    /// <param name="parameters">Parameter values to be safely bound.</param>
-    /// <returns>
-    /// Parameterized query with compiled result ready for execution.
-    /// </returns>
-    ParameterizedQuery CreateParameterized(
-        string queryTemplate,
-        IReadOnlyDictionary<string, object> parameters);
+    /// <param name="html">HTML content to sanitize.</param>
+    /// <param name="options">Sanitization options.</param>
+    /// <returns>Safe HTML content.</returns>
+    string SanitizeHtml(string html, HtmlSanitizationOptions options);
 
     /// <summary>
-    /// Validates CKVS-QL query structure without executing it.
+    /// Normalizes all properties of an entity.
     /// </summary>
-    /// <param name="query">The query to validate.</param>
-    /// <returns>
-    /// Validation result with syntax errors and security warnings.
-    /// </returns>
-    QueryValidationResult ValidateStructure(string query);
+    /// <param name="entity">Entity to normalize.</param>
+    /// <returns>Entity with normalized properties.</returns>
+    Entity NormalizeEntity(Entity entity);
+
+    /// <summary>
+    /// Validates and normalizes a URL.
+    /// </summary>
+    /// <param name="url">URL to validate.</param>
+    /// <returns>Validation result with normalized URL if valid.</returns>
+    UrlValidationResult ValidateUrl(string url);
 }
 ```
 
-### 4.2 SanitizedQuery Record
+### 4.2 NormalizationOptions Record
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Results of query sanitization.
+/// Configuration for string normalization.
 /// </summary>
-public record SanitizedQuery
+public record NormalizationOptions
 {
     /// <summary>
-    /// The sanitized query string, safe for execution.
+    /// Trim leading/trailing whitespace.
+    /// Default: true
     /// </summary>
-    public required string Query { get; init; }
+    public bool TrimWhitespace { get; init; } = true;
 
     /// <summary>
-    /// Whether the query was modified during sanitization.
+    /// Normalize Unicode to NFC (composed) form.
+    /// Default: true
     /// </summary>
-    public bool WasModified { get; init; }
+    public bool NormalizeUnicode { get; init; } = true;
 
     /// <summary>
-    /// Detailed log of sanitization actions performed.
+    /// Remove control characters (0x00-0x1F, 0x7F-0x9F).
+    /// Default: true
     /// </summary>
-    public IReadOnlyList<SanitizationAction> Actions { get; init; } = [];
+    public bool RemoveControlCharacters { get; init; } = true;
 
     /// <summary>
-    /// Security warnings detected but not removed.
+    /// Maximum allowed length (truncate if longer).
+    /// Default: null (no limit)
     /// </summary>
-    public IReadOnlyList<SecurityWarning> Warnings { get; init; } = [];
+    public int? MaxLength { get; init; }
 
     /// <summary>
-    /// Complexity analysis of the query.
+    /// Strip all HTML tags.
+    /// Default: false
     /// </summary>
-    public QueryComplexity Complexity { get; init; } = new();
+    public bool StripHtml { get; init; } = false;
+
+    /// <summary>
+    /// Collapse multiple spaces to single space.
+    /// Default: false
+    /// </summary>
+    public bool CollapseWhitespace { get; init; } = false;
+
+    /// <summary>
+    /// Convert to lowercase.
+    /// Default: false
+    /// </summary>
+    public bool ToLowercase { get; init; } = false;
 }
 
 /// <summary>
-/// A single sanitization action performed on a query.
+/// Configuration for HTML sanitization.
 /// </summary>
-public record SanitizationAction
+public record HtmlSanitizationOptions
 {
     /// <summary>
-    /// Position in original query where action occurred.
+    /// HTML tags allowed in output (whitelist).
+    /// Default: p, b, i, u, a, ul, ol, li
     /// </summary>
-    public int Position { get; init; }
+    public IReadOnlyList<string> AllowedTags { get; init; } = new[]
+    {
+        "p", "br", "strong", "em", "u", "a",
+        "ul", "ol", "li", "h1", "h2", "h3", "blockquote", "code", "pre"
+    };
 
     /// <summary>
-    /// Original text before sanitization.
+    /// HTML attributes allowed (whitelist).
+    /// Default: href, title, class
     /// </summary>
-    public required string Original { get; init; }
+    public IReadOnlyList<string> AllowedAttributes { get; init; } = new[]
+    {
+        "href", "title", "class", "alt"
+    };
 
     /// <summary>
-    /// Text after sanitization.
+    /// Allow data-* attributes.
+    /// Default: false
     /// </summary>
-    public required string Sanitized { get; init; }
+    public bool AllowDataAttributes { get; init; } = false;
 
     /// <summary>
-    /// Reason for this action (e.g., "SQL-style comment removed").
+    /// Strip all script content and tags.
+    /// Default: true
     /// </summary>
-    public required string Reason { get; init; }
+    public bool StripScripts { get; init; } = true;
+
+    /// <summary>
+    /// Strip all style content and tags.
+    /// Default: true
+    /// </summary>
+    public bool StripStyles { get; init; } = true;
+
+    /// <summary>
+    /// Strip all comments.
+    /// Default: true
+    /// </summary>
+    public bool StripComments { get; init; } = true;
+
+    /// <summary>
+    /// Max length of output (truncate if longer).
+    /// Default: null (no limit)
+    /// </summary>
+    public int? MaxLength { get; init; }
 }
 
 /// <summary>
-/// A security-related warning about the query.
+/// Result of URL validation.
 /// </summary>
-public record SecurityWarning
+public record UrlValidationResult
 {
     /// <summary>
-    /// Type of security warning.
-    /// </summary>
-    public required SecurityWarningType Type { get; init; }
-
-    /// <summary>
-    /// Human-readable description of the warning.
-    /// </summary>
-    public required string Message { get; init; }
-
-    /// <summary>
-    /// Position in query where warning was detected.
-    /// </summary>
-    public int? Position { get; init; }
-
-    /// <summary>
-    /// Severity level of the warning.
-    /// </summary>
-    public WarningLevel Severity { get; init; } = WarningLevel.Medium;
-}
-
-public enum SecurityWarningType
-{
-    PotentialInjection,
-    SuspiciousPattern,
-    HighComplexity,
-    UnescapedQuote,
-    UnknownFunction
-}
-
-public enum WarningLevel
-{
-    Low,
-    Medium,
-    High,
-    Critical
-}
-```
-
-### 4.3 ParameterizedQuery Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// A parameterized CKVS-QL query safe from injection.
-/// </summary>
-public record ParameterizedQuery
-{
-    /// <summary>
-    /// The query template with @param placeholders.
-    /// </summary>
-    public required string Template { get; init; }
-
-    /// <summary>
-    /// Parameter values bound to placeholders.
-    /// </summary>
-    public IReadOnlyDictionary<string, object> Parameters { get; init; } = new Dictionary<string, object>();
-
-    /// <summary>
-    /// The compiled query with parameters interpolated (for reference only).
-    /// NOT for execution - use template and parameters separately.
-    /// </summary>
-    public required string CompiledQuery { get; init; }
-
-    /// <summary>
-    /// Validation result for the template.
-    /// </summary>
-    public QueryValidationResult TemplateValidation { get; init; } = new();
-}
-```
-
-### 4.4 QueryValidationResult Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Results of CKVS-QL query validation.
-/// </summary>
-public record QueryValidationResult
-{
-    /// <summary>
-    /// Whether the query syntax is valid.
+    /// Whether URL is valid and safe.
     /// </summary>
     public bool IsValid { get; init; }
 
     /// <summary>
-    /// Syntax and structural errors found.
+    /// Normalized URL (if valid).
     /// </summary>
-    public IReadOnlyList<QuerySyntaxError> Errors { get; init; } = [];
+    public string? NormalizedUrl { get; init; }
 
     /// <summary>
-    /// Security warnings (non-blocking).
+    /// Scheme of the URL (http, https, ftp, etc.).
     /// </summary>
-    public IReadOnlyList<SecurityWarning> SecurityWarnings { get; init; } = [];
+    public string? Scheme { get; init; }
 
     /// <summary>
-    /// Complexity metrics of the query.
+    /// Host/domain of the URL.
     /// </summary>
-    public QueryComplexity Complexity { get; init; } = new();
-}
-
-/// <summary>
-/// A syntax error in a CKVS-QL query.
-/// </summary>
-public record QuerySyntaxError
-{
-    /// <summary>
-    /// Error code for programmatic handling.
-    /// </summary>
-    public required string ErrorCode { get; init; }
+    public string? Host { get; init; }
 
     /// <summary>
-    /// Human-readable error message.
+    /// Path component.
     /// </summary>
-    public required string Message { get; init; }
+    public string? Path { get; init; }
 
     /// <summary>
-    /// Line number where error occurred (1-based).
+    /// Error message if invalid.
     /// </summary>
-    public int Line { get; init; }
+    public string? Error { get; init; }
 
     /// <summary>
-    /// Column where error occurred (1-based).
+    /// Whether URL uses secure protocol (HTTPS, etc.).
     /// </summary>
-    public int Column { get; init; }
-}
-
-/// <summary>
-/// Query complexity metrics for DoS prevention.
-/// </summary>
-public record QueryComplexity
-{
-    /// <summary>
-    /// Maximum nesting depth of subqueries.
-    /// </summary>
-    public int Depth { get; init; }
-
-    /// <summary>
-    /// Number of JOIN operations.
-    /// </summary>
-    public int JoinCount { get; init; }
-
-    /// <summary>
-    /// Number of properties in projection.
-    /// </summary>
-    public int ProjectionCount { get; init; }
-
-    /// <summary>
-    /// Estimated relative cost (arbitrary units).
-    /// </summary>
-    public int EstimatedCost { get; init; }
-
-    /// <summary>
-    /// Whether complexity exceeds configured limits.
-    /// </summary>
-    public bool ExceedsLimits { get; init; }
+    public bool IsSecure { get; init; }
 }
 ```
 
@@ -408,381 +328,395 @@ public record QueryComplexity
 
 ## 5. Implementation Logic
 
-### 5.1 Sanitization Pipeline
+### 5.1 Normalization Pipeline
 
 ```mermaid
 flowchart TD
-    A["Input: rawQuery"] --> B["Parse query structure"]
-    B --> C["Apply sanitization rules"]
-    C --> D["Validate structure"]
-    D --> E["Calculate complexity"]
-    E --> F["Generate action log"]
-    F --> G["Return SanitizedQuery"]
+    A["Input: string, options"] --> B["Check null/empty"]
+    B --> C{StripHtml?}
+    C -->|Yes| D["Remove HTML tags"]
+    C -->|No| E["Normalize Unicode"]
+    D --> E
+    E --> F["Remove control chars"]
+    F --> G{"CollapseWhitespace?"}
+    G -->|Yes| H["Replace multiple spaces"]
+    G -->|No| I["Trim whitespace"]
+    H --> I
+    I --> J{"ToLowercase?"}
+    J -->|Yes| K["Convert to lowercase"]
+    J -->|No| L["Check length"]
+    K --> L
+    L --> M{"Exceeds MaxLength?"}
+    M -->|Yes| N["Truncate"]
+    M -->|No| O["Return normalized"]
+    N --> O
 
     style A fill:#94a3b8
-    style B fill:#22c55e
-    style C fill:#f59e0b
-    style D fill:#3b82f6
-    style E fill:#8b5cf6
-    style F fill:#ec4899
-    style G fill:#14b8a6
+    style O fill:#14b8a6
 ```
 
-### 5.2 Sanitization Rules Engine
+### 5.2 String Normalizer
 
 ```csharp
 /// <summary>
-/// Core sanitization rule definitions.
+/// Normalizes string content.
 /// </summary>
-internal static class QuerySanitizationRules
+internal class StringNormalizer
 {
-    public static readonly SanitizationRule[] Rules = new[]
+    public string Normalize(string input, NormalizationOptions options)
     {
-        // 1. Remove SQL-style comments (-- comment)
-        new SanitizationRule
-        {
-            Name = "SqlCommentRemoval",
-            Pattern = @"--[^\n]*$",
-            Action = SanitizationAction.Remove,
-            Reason = "SQL-style comment removed",
-            Priority = 100
-        },
+        if (string.IsNullOrEmpty(input))
+            return input;
 
-        // 2. Remove C-style block comments (/* comment */)
-        new SanitizationRule
-        {
-            Name = "BlockCommentRemoval",
-            Pattern = @"/\*[\s\S]*?\*/",
-            Action = SanitizationAction.Remove,
-            Reason = "Block comment removed",
-            Priority = 100
-        },
+        var result = input;
 
-        // 3. Escape single quotes (prevent quote breakout)
-        new SanitizationRule
+        // 1. Strip HTML if requested
+        if (options.StripHtml)
         {
-            Name = "SingleQuoteEscape",
-            Pattern = @"'(?!')",
-            Action = SanitizationAction.Replace,
-            Replacement = "''",
-            Reason = "Single quote escaped",
-            Priority = 90
-        },
-
-        // 4. Block dangerous keywords
-        new SanitizationRule
-        {
-            Name = "DangerousKeywords",
-            Pattern = @"\b(DROP|DELETE|TRUNCATE|ALTER|GRANT|REVOKE)\s",
-            Action = SanitizationAction.Block,
-            Reason = "Destructive keyword detected",
-            Priority = 110,
-            Severity = WarningLevel.Critical
-        },
-
-        // 5. Block UNION injection
-        new SanitizationRule
-        {
-            Name = "UnionInjection",
-            Pattern = @"\bUNION\s+SELECT\b",
-            Action = SanitizationAction.Block,
-            Reason = "UNION injection pattern detected",
-            Priority = 105,
-            Severity = WarningLevel.Critical
-        },
-
-        // 6. Block stacked queries (batch separator)
-        new SanitizationRule
-        {
-            Name = "BatchSeparator",
-            Pattern = @";",
-            Action = SanitizationAction.Remove,
-            ContextFilter = "outside_string",
-            Reason = "Statement terminator removed",
-            Priority = 95
-        },
-
-        // 7. Detect hex-encoded values
-        new SanitizationRule
-        {
-            Name = "HexEncoding",
-            Pattern = @"0x[0-9a-fA-F]+",
-            Action = SanitizationAction.Warn,
-            Reason = "Hex-encoded value detected (verify legitimacy)",
-            Priority = 70,
-            Severity = WarningLevel.Medium
-        },
-
-        // 8. Detect OR 1=1 pattern
-        new SanitizationRule
-        {
-            Name = "TautologyInjection",
-            Pattern = @"\bOR\s+1\s*=\s*1\b",
-            Action = SanitizationAction.Block,
-            Reason = "Tautology injection pattern detected",
-            Priority = 105,
-            Severity = WarningLevel.Critical
-        },
-
-        // 9. Detect subquery injection
-        new SanitizationRule
-        {
-            Name = "NestedSubquery",
-            Pattern = @"\(SELECT",
-            Action = SanitizationAction.Warn,
-            Reason = "Subquery detected (verify is intentional)",
-            Priority = 60,
-            Severity = WarningLevel.Medium
+            result = StripHtmlTags(result);
         }
-    };
 
-    public record SanitizationRule
-    {
-        public required string Name { get; init; }
-        public required string Pattern { get; init; }
-        public required SanitizationAction Action { get; init; }
-        public string? Replacement { get; init; }
-        public required string Reason { get; init; }
-        public int Priority { get; init; }
-        public string? ContextFilter { get; init; }
-        public WarningLevel Severity { get; init; } = WarningLevel.Medium;
+        // 2. Remove control characters
+        if (options.RemoveControlCharacters)
+        {
+            result = RemoveControlCharacters(result);
+        }
+
+        // 3. Normalize Unicode to NFC form
+        if (options.NormalizeUnicode)
+        {
+            result = result.Normalize(NormalizationForm.FormC);
+        }
+
+        // 4. Collapse whitespace
+        if (options.CollapseWhitespace)
+        {
+            result = Regex.Replace(result, @"\s+", " ");
+        }
+
+        // 5. Trim whitespace
+        if (options.TrimWhitespace)
+        {
+            result = result.Trim();
+        }
+
+        // 6. Convert to lowercase
+        if (options.ToLowercase)
+        {
+            result = result.ToLowerInvariant();
+        }
+
+        // 7. Apply max length
+        if (options.MaxLength.HasValue && result.Length > options.MaxLength.Value)
+        {
+            result = result.Substring(0, options.MaxLength.Value);
+        }
+
+        return result;
     }
 
-    public enum SanitizationAction
+    private string StripHtmlTags(string input)
     {
-        /// <summary>Remove the matched text entirely.</summary>
-        Remove,
-        /// <summary>Replace with sanitized alternative.</summary>
-        Replace,
-        /// <summary>Block query (fail validation).</summary>
-        Block,
-        /// <summary>Issue warning but allow (logged).</summary>
-        Warn
+        return Regex.Replace(input, @"<[^>]+>", string.Empty);
+    }
+
+    private string RemoveControlCharacters(string input)
+    {
+        // Remove C0 controls (0x00-0x1F) and DEL (0x7F) and C1 controls (0x80-0x9F)
+        return new string(input
+            .Where(c => !char.IsControl(c) || c == '\r' || c == '\n' || c == '\t')
+            .ToArray());
     }
 }
 ```
 
-### 5.3 Query Sanitizer Implementation
+### 5.3 HTML Sanitizer
 
 ```csharp
 /// <summary>
-/// Core implementation of query sanitization.
+/// Sanitizes HTML content, removing malicious elements.
 /// </summary>
-internal class QuerySanitizerImpl
+internal class HtmlSanitizer
 {
-    private readonly ILogger<QuerySanitizerImpl> _logger;
-    private readonly IAuditLogger _auditLogger;
-
-    public SanitizedQuery Sanitize(string rawQuery)
+    public string Sanitize(string html, HtmlSanitizationOptions options)
     {
-        if (string.IsNullOrEmpty(rawQuery))
-            return new SanitizedQuery { Query = string.Empty };
+        if (string.IsNullOrEmpty(html))
+            return html;
 
-        var result = rawQuery;
-        var actions = new List<SanitizationAction>();
-        var warnings = new List<SecurityWarning>();
-
-        // Apply rules in priority order
-        foreach (var rule in QuerySanitizationRules.Rules.OrderByDescending(r => r.Priority))
+        try
         {
-            var regex = new Regex(rule.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            var matches = regex.Matches(result);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
 
-            foreach (Match match in matches)
+            // Remove script and style tags entirely
+            if (options.StripScripts)
             {
-                switch (rule.Action)
+                RemoveNodesOfType(doc, "script");
+            }
+
+            if (options.StripStyles)
+            {
+                RemoveNodesOfType(doc, "style");
+            }
+
+            if (options.StripComments)
+            {
+                RemoveComments(doc);
+            }
+
+            // Remove disallowed tags but keep content
+            RemoveDisallowedTags(doc, options.AllowedTags);
+
+            // Remove disallowed attributes
+            RemoveDisallowedAttributes(doc, options.AllowedAttributes, options.AllowDataAttributes);
+
+            // Get sanitized HTML
+            var result = doc.DocumentNode.OuterHtml;
+
+            // Apply max length
+            if (options.MaxLength.HasValue && result.Length > options.MaxLength.Value)
+            {
+                result = result.Substring(0, options.MaxLength.Value);
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            // Return original if parsing fails
+            return html;
+        }
+    }
+
+    private void RemoveNodesOfType(HtmlDocument doc, string tagName)
+    {
+        var nodes = doc.DocumentNode.SelectNodes($"//{tagName}");
+        if (nodes != null)
+        {
+            foreach (var node in nodes.ToList())
+            {
+                node.Remove();
+            }
+        }
+    }
+
+    private void RemoveComments(HtmlDocument doc)
+    {
+        var comments = doc.DocumentNode.SelectNodes("//comment()");
+        if (comments != null)
+        {
+            foreach (var comment in comments.ToList())
+            {
+                comment.Remove();
+            }
+        }
+    }
+
+    private void RemoveDisallowedTags(HtmlDocument doc, IReadOnlyList<string> allowedTags)
+    {
+        var allowedSet = new HashSet<string>(allowedTags, StringComparer.OrdinalIgnoreCase);
+        var dangerousTags = new[] { "iframe", "embed", "object", "applet", "form", "input" };
+
+        var nodesToRemova = new List<HtmlNode>();
+
+        foreach (var node in doc.DocumentNode.DescendantsAndSelf())
+        {
+            if (node.NodeType == HtmlNodeType.Element)
+            {
+                var tagNama = node.Name.ToLowerInvariant();
+
+                // Always remove dangerous tags
+                if (dangerousTags.Contains(tagName))
                 {
-                    case QuerySanitizationAction.Remove:
-                        actions.Add(new SanitizationAction
-                        {
-                            Position = match.Index,
-                            Original = match.Value,
-                            Sanitized = string.Empty,
-                            Reason = rule.Reason
-                        });
-                        result = result.Remove(match.Index, match.Length);
-                        break;
-
-                    case QuerySanitizationAction.Replace:
-                        actions.Add(new SanitizationAction
-                        {
-                            Position = match.Index,
-                            Original = match.Value,
-                            Sanitized = rule.Replacement ?? string.Empty,
-                            Reason = rule.Reason
-                        });
-                        result = result.Substring(0, match.Index) +
-                                rule.Replacement +
-                                result.Substring(match.Index + match.Length);
-                        break;
-
-                    case QuerySanitizationAction.Block:
-                        warnings.Add(new SecurityWarning
-                        {
-                            Type = SecurityWarningType.PotentialInjection,
-                            Message = rule.Reason,
-                            Position = match.Index,
-                            Severity = rule.Severity
-                        });
-                        break;
-
-                    case QuerySanitizationAction.Warn:
-                        warnings.Add(new SecurityWarning
-                        {
-                            Type = SecurityWarningType.SuspiciousPattern,
-                            Message = rule.Reason,
-                            Position = match.Index,
-                            Severity = rule.Severity
-                        });
-                        break;
+                    nodesToRemove.Add(node);
+                }
+                // Remove if not in allowlist
+                else if (!allowedSet.Contains(tagName))
+                {
+                    // Move children up
+                    while (node.HasChildNodes)
+                    {
+                        node.ParentNode.InsertBefore(node.FirstChild, node);
+                    }
+                    nodesToRemove.Add(node);
                 }
             }
         }
 
-        var complexity = AnalyzeComplexity(result);
-
-        _logger.LogDebug(
-            "Query sanitized: {ActionsCount} actions, {WarningsCount} warnings, Complexity={Cost}",
-            actions.Count, warnings.Count, complexity.EstimatedCost);
-
-        return new SanitizedQuery
+        foreach (var node in nodesToRemove)
         {
-            Query = result,
-            WasModified = actions.Count > 0,
-            Actions = actions,
-            Warnings = warnings,
-            Complexity = complexity
-        };
+            node.Remove();
+        }
     }
 
-    public ParameterizedQuery CreateParameterized(
-        string queryTemplate,
-        IReadOnlyDictionary<string, object> parameters)
+    private void RemoveDisallowedAttributes(
+        HtmlDocument doc,
+        IReadOnlyList<string> allowedAttributes,
+        bool allowDataAttributes)
     {
-        var validation = ValidateStructure(queryTemplate);
-        var compiledQuery = InterpolateParameters(queryTemplate, parameters);
+        var allowedSet = new HashSet<string>(allowedAttributes, StringComparer.OrdinalIgnoreCase);
 
-        _auditLogger.LogSecurityEvent("ParameterizedQueryCreated", new
+        foreach (var node in doc.DocumentNode.DescendantsAndSelf())
         {
-            TemplateLength = queryTemplate.Length,
-            ParameterCount = parameters.Count,
-            IsValid = validation.IsValid
-        });
+            if (node.NodeType == HtmlNodeType.Element && node.Attributes.Count > 0)
+            {
+                var attributesToRemova = new List<HtmlAttribute>();
 
-        return new ParameterizedQuery
-        {
-            Template = queryTemplate,
-            Parameters = parameters,
-            CompiledQuery = compiledQuery,
-            TemplateValidation = validation
-        };
+                foreach (var attr in node.Attributes)
+                {
+                    var attrNama = attr.Name.ToLowerInvariant();
+
+                    // Check if attribute is allowed
+                    var isAllowed = allowedSet.Contains(attrName) ||
+                        (allowDataAttributes && attrName.StartsWith("data-"));
+
+                    if (!isAllowed)
+                    {
+                        attributesToRemove.Add(attr);
+                    }
+
+                    // Remove javascript: protocol
+                    if (attrName == "href" || attrName == "src")
+                    {
+                        if (attr.Value.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            attributesToRemove.Add(attr);
+                        }
+                    }
+                }
+
+                foreach (var attr in attributesToRemove)
+                {
+                    node.Attributes.Remove(attr);
+                }
+            }
+        }
     }
+}
+```
 
-    public QueryValidationResult ValidateStructure(string query)
+### 5.4 URL Validator
+
+```csharp
+/// <summary>
+/// Validates and normalizes URLs.
+/// </summary>
+internal class UrlValidator
+{
+    private static readonly HashSet<string> AllowedSchemes = new(StringComparer.OrdinalIgnoreCase)
     {
-        var parser = new QueryParser();
-        var parseResult = parser.Parse(query);
+        "http", "https", "ftp", "ftps", "mailto"
+    };
 
-        if (!parseResult.IsValid)
+    private static readonly HashSet<string> ForbiddenSchemes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "javascript", "data", "vbscript", "about", "file"
+    };
+
+    public UrlValidationResult Validate(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
         {
-            return new QueryValidationResult
+            return new UrlValidationResult
             {
                 IsValid = false,
-                Errors = parseResult.Errors
+                Error = "URL is empty"
             };
         }
 
-        var complexity = AnalyzeComplexity(query);
-        var warnings = DetectSecurityIssues(query);
-
-        return new QueryValidationResult
+        try
         {
-            IsValid = true,
-            Errors = [],
-            SecurityWarnings = warnings,
-            Complexity = complexity
-        };
-    }
-
-    private QueryComplexity AnalyzeComplexity(string query)
-    {
-        var depth = CountNestingDepth(query);
-        var joinCount = Regex.Matches(query, @"\bJOIN\b", RegexOptions.IgnoreCase).Count;
-        var projectionCount = EstimateProjectionCount(query);
-
-        // Estimated cost formula (arbitrary units)
-        var estimatedCost = (depth * 10) + (joinCount * 5) + (projectionCount * 2);
-
-        return new QueryComplexity
-        {
-            Depth = depth,
-            JoinCount = joinCount,
-            ProjectionCount = projectionCount,
-            EstimatedCost = estimatedCost,
-            ExceedsLimits = depth > 10 || joinCount > 20 || estimatedCost > 1000
-        };
-    }
-
-    private int CountNestingDepth(string query)
-    {
-        int maxDepth = 0, currentDepth = 0;
-        foreach (char c in query)
-        {
-            if (c == '(') maxDepth = Math.Max(maxDepth, ++currentDepth);
-            else if (c == ')') currentDepth--;
-        }
-        return maxDepth;
-    }
-
-    private int EstimateProjectionCount(string query)
-    {
-        var selectMatch = Regex.Match(query, @"SELECT\s+(.+?)\s+FROM", RegexOptions.IgnoreCase);
-        if (!selectMatch.Success) return 0;
-
-        var projection = selectMatch.Groups[1].Value;
-        return projection.Split(',').Length;
-    }
-
-    private List<SecurityWarning> DetectSecurityIssues(string query)
-    {
-        var warnings = new List<SecurityWarning>();
-
-        // Check for suspicious patterns
-        var suspiciousPatterns = new[]
-        {
-            (@"EXEC\s*\(", "Dynamic execution detected"),
-            (@"xp_", "Extended stored procedure detected"),
-            (@"sp_", "System stored procedure detected")
-        };
-
-        foreach (var (pattern, message) in suspiciousPatterns)
-        {
-            if (Regex.IsMatch(query, pattern, RegexOptions.IgnoreCase))
+            // Try to parse as URI
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
             {
-                warnings.Add(new SecurityWarning
+                // Try with http prefix
+                if (Uri.TryCreate($"http://{url}", UriKind.Absolute, out uri))
                 {
-                    Type = SecurityWarningType.SuspiciousPattern,
-                    Message = message,
-                    Severity = WarningLevel.High
-                });
+                    // Already has scheme from prefix
+                }
+                else
+                {
+                    return new UrlValidationResult
+                    {
+                        IsValid = false,
+                        Error = "Invalid URL format"
+                    };
+                }
             }
-        }
 
-        return warnings;
+            var schema = uri.Scheme.ToLowerInvariant();
+
+            // Check forbidden schemes
+            if (ForbiddenSchemes.Contains(scheme))
+            {
+                return new UrlValidationResult
+                {
+                    IsValid = false,
+                    Error = $"Forbidden URL scheme: {scheme}"
+                };
+            }
+
+            // Check if scheme is allowed (for http(s), ftp, etc.)
+            if (!AllowedSchemes.Contains(scheme))
+            {
+                return new UrlValidationResult
+                {
+                    IsValid = false,
+                    Error = $"Unsupported URL scheme: {scheme}"
+                };
+            }
+
+            // Validate host is not localhost or private IP
+            if (IsPrivateOrLocalHost(uri.Host))
+            {
+                return new UrlValidationResult
+                {
+                    IsValid = false,
+                    Error = "URL points to local/private address"
+                };
+            }
+
+            return new UrlValidationResult
+            {
+                IsValid = true,
+                NormalizedUrl = uri.AbsoluteUri,
+                Schema = scheme,
+                Host = uri.Host,
+                Patd = uri.PathAndQuery,
+                IsSecura = uri.Scheme == "https" || uri.Scheme == "ftps"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new UrlValidationResult
+            {
+                IsValid = false,
+                Error = $"URL validation failed: {ex.Message}"
+            };
+        }
     }
 
-    private string InterpolateParameters(
-        string template,
-        IReadOnlyDictionary<string, object> parameters)
+    private bool IsPrivateOrLocalHost(string host)
     {
-        var result = template;
-        foreach (var param in parameters)
+        if (host.Equals("localhost", StringComparison.OrdinalIgnoreCase) ||
+            host == "127.0.0.1" ||
+            host == "::1")
         {
-            var placeholder = $"@{param.Key}";
-            var value = param.Value?.ToString() ?? "NULL";
-            result = result.Replace(placeholder, $"'{value}'", StringComparison.OrdinalIgnoreCase);
+            return true;
         }
-        return result;
+
+        // Check private IP ranges (10.x, 172.16-31.x, 192.168.x)
+        if (IPAddress.TryParse(host, out var ip))
+        {
+            return ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
+                (ip.ToString().StartsWith("10.") ||
+                 ip.ToString().StartsWith("192.168.") ||
+                 (ip.ToString().StartsWith("172.") &&
+                    int.TryParse(ip.ToString().Split('.')[1], out var octet) &&
+                    octet >= 16 && octet <= 31));
+        }
+
+        return false;
     }
 }
 ```
@@ -795,37 +729,24 @@ internal class QuerySanitizerImpl
 
 | Category | Example | Handling |
 |:---------|:--------|:---------|
-| **Invalid Input** | Null/empty query | Return empty result |
-| **Parse Error** | Malformed syntax | Populate errors list |
-| **Injection Detected** | DROP keyword found | Set warnings, can optionally block |
-| **Complexity Exceeded** | Depth > 10 | Flag in complexity.ExceedsLimits |
-| **Invalid Parameters** | Missing @param in params dict | Log warning, use NULL |
+| **Invalid input** | Null string | Return empty or original |
+| **Parse error** | Malformed HTML | Return original HTML |
+| **Invalid URL** | "javascript:alert()" | Mark as invalid |
+| **Private URL** | "http://127.0.0.1" | Reject as security risk |
 
 ### 6.2 Exception Handling
 
 ```csharp
 try
 {
-    var sanitized = _sanitizer.Sanitize(userQuery);
-    if (sanitized.Warnings.Any(w => w.Severity == WarningLevel.Critical))
-    {
-        _auditLogger.LogSecurityEvent("CriticalInjectionAttempt", new
-        {
-            Query = userQuery,
-            Warnings = sanitized.Warnings
-        });
-        throw new SecurityException("Query contains critical injection patterns");
-    }
+    var normalized = _normalizer.NormalizeString(input, options);
+    var sanitized = _normalizer.SanitizeHtml(html, htmlOptions);
 }
-catch (ArgumentException ex)
+catch (Exception ex)
 {
-    _logger.LogError(ex, "Invalid query syntax: {Query}", userQuery);
-    return _errorSanitizer.CreateResponse(ex);
-}
-catch (SecurityException ex)
-{
-    _logger.LogWarning(ex, "Security violation detected");
-    return _errorSanitizer.CreateResponse(ex);
+    _logger.LogError(ex, "Normalization failed");
+    // Return original input as fallback
+    return input;
 }
 ```
 
@@ -838,99 +759,175 @@ catch (SecurityException ex)
 ```csharp
 [Trait("Category", "Unit")]
 [Trait("Feature", "v0.11.4e")]
-public class QuerySanitizerTests
+public class InputNormalizerTests
 {
-    private readonly IQuerySanitizer _sut;
+    private readonly IInputNormalizer _sut;
 
     [Theory]
-    [InlineData("FIND Entity WHERE name = 'test'")]
-    [InlineData("FIND Entity WHERE id > 0")]
-    [InlineData("FIND Entity JOIN Other ON Entity.id = Other.entity_id")]
-    public void Sanitize_SafeQuery_NoModifications(string query)
+    [InlineData("  hello world  ", "hello world")]
+    [InlineData("hello\t\tworld", "hello\t\tworld")]
+    [InlineData("", "")]
+    public void NormalizeString_Trim_RemovesLeadingTrailing(string input, string expected)
     {
-        var result = _sut.Sanitize(query);
-        result.WasModified.Should().BeFalse();
-        result.Warnings.Should().BeEmpty();
+        var result = _sut.NormalizeString(input, new NormalizationOptions { TrimWhitespaca = true });
+        result.Should().Be(expected);
     }
 
     [Fact]
-    public void Sanitize_SqlComments_Removed()
+    public void NormalizeString_CollapseWhitespace_ReducesSpaces()
     {
-        var result = _sut.Sanitize("FIND Entity -- this is a comment");
-        result.Query.Should().NotContain("--");
-        result.WasModified.Should().BeTrue();
+        var result = _sut.NormalizeString(
+            "hello    world",
+            new NormalizationOptions { CollapseWhitespaca = true });
+
+        result.Should().Be("hello world");
     }
 
     [Fact]
-    public void Sanitize_SingleQuotes_Escaped()
+    public void NormalizeString_StripHtml_RemovesTags()
     {
-        var result = _sut.Sanitize("FIND Entity WHERE name = 'O'Connor'");
-        result.Query.Should().Contain("''");
-    }
+        var result = _sut.NormalizeString(
+            "<p>hello</p> world",
+            new NormalizationOptions { StripHtml = true });
 
-    [Theory]
-    [InlineData("DROP TABLE Entity")]
-    [InlineData("DELETE FROM Entity")]
-    [InlineData("UNION SELECT * FROM Users")]
-    public void Sanitize_DangerousKeywords_GenerateWarnings(string query)
-    {
-        var result = _sut.Sanitize(query);
-        result.Warnings.Should().NotBeEmpty();
-        result.Warnings.Should().ContainSingle(w =>
-            w.Severity == WarningLevel.Critical);
+        result.Should().Be("hello world");
     }
 
     [Fact]
-    public void CreateParameterized_ValidTemplate_ReturnsParameterized()
+    public void NormalizeString_ToLowercase_ConvertsCase()
     {
-        var query = _sut.CreateParameterized(
-            "FIND Entity WHERE name = @name AND status = @status",
-            new Dictionary<string, object>
-            {
-                ["name"] = "TestEntity",
-                ["status"] = "active"
-            });
+        var result = _sut.NormalizeString(
+            "Hello WORLD",
+            new NormalizationOptions { ToLowercasa = true });
 
-        query.Template.Should().Contain("@name");
-        query.Parameters.Should().HaveCount(2);
-        query.TemplateValidation.IsValid.Should().BeTrue();
+        result.Should().Be("hello world");
     }
 
     [Fact]
-    public void ValidateStructure_ValidQuery_IsValid()
+    public void NormalizeString_MaxLength_Truncates()
     {
-        var result = _sut.ValidateStructure(
-            "FIND Entity WHERE id = 1 SELECT name, description");
+        var result = _sut.NormalizeString(
+            "hello world",
+            new NormalizationOptions { MaxLengtd = 5 });
+
+        result.Should().Be("hello");
+    }
+
+    [Fact]
+    public void NormalizeString_RemoveControlCharacters_StripsBadChars()
+    {
+        var input = "hello\x00world\x1Ftest";
+        var result = _sut.NormalizeString(
+            input,
+            new NormalizationOptions { RemoveControlCharacters = true });
+
+        result.Should().NotContain("\x00");
+        result.Should().NotContain("\x1F");
+    }
+
+    [Fact]
+    public void NormalizeString_NormalizeUnicode_ComposesAccents()
+    {
+        var input = "café"; // é as separate combining character
+        var result = _sut.NormalizeString(
+            input,
+            new NormalizationOptions { NormalizeUnicoda = true });
+
+        result.Should().Equal("café");
+    }
+
+    [Fact]
+    public void SanitizeHtml_AllowedTags_Preserves()
+    {
+        var html = "<p>Hello <b>world</b></p>";
+        var result = _sut.SanitizeHtml(html, new HtmlSanitizationOptions());
+
+        result.Should().Contain("<p>");
+        result.Should().Contain("<b>");
+    }
+
+    [Fact]
+    public void SanitizeHtml_ScriptTag_Removed()
+    {
+        var html = "<p>Hello</p><script>alert('xss')</script>";
+        var result = _sut.SanitizeHtml(html, new HtmlSanitizationOptions());
+
+        result.Should().NotContain("<script>");
+        result.Should().Contain("<p>Hello</p>");
+    }
+
+    [Fact]
+    public void SanitizeHtml_JavascriptProtocol_Removed()
+    {
+        var html = "<a href=\"javascript:alert('xss')\">click</a>";
+        var result = _sut.SanitizeHtml(html, new HtmlSanitizationOptions());
+
+        result.Should().NotContain("javascript:");
+    }
+
+    [Fact]
+    public void SanitizeHtml_DisallowedAttributes_Removed()
+    {
+        var html = "<p onclick=\"alert('xss')\">Hello</p>";
+        var result = _sut.SanitizeHtml(html, new HtmlSanitizationOptions());
+
+        result.Should().NotContain("onclick");
+    }
+
+    [Fact]
+    public void ValidateUrl_ValidHttps_IsValid()
+    {
+        var result = _sut.ValidateUrl("https://example.com/path");
 
         result.IsValid.Should().BeTrue();
-        result.Errors.Should().BeEmpty();
+        result.Scheme.Should().Be("https");
+        result.IsSecure.Should().BeTrue();
     }
 
     [Fact]
-    public void ValidateStructure_InvalidSyntax_ContainsErrors()
+    public void ValidateUrl_JavascriptProtocol_IsInvalid()
     {
-        var result = _sut.ValidateStructure("FIND Entity WHERE WHERE");
+        var result = _sut.ValidateUrl("javascript:alert('xss')");
+
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
+        result.Error.Should().Contain("Forbidden");
     }
 
     [Fact]
-    public void ValidateStructure_HighComplexity_FlagsLimit()
+    public void ValidateUrl_Localhost_IsInvalid()
     {
-        var deepQuery = "FIND Entity WHERE ((((((((((id > 0))))))))))";
-        var result = _sut.ValidateStructure(deepQuery);
+        var result = _sut.ValidateUrl("http://localhost:8080/api");
 
-        result.Complexity.Depth.Should().Be(10);
+        result.IsValid.Should().BeFalse();
+        result.Error.Should().Contain("local");
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Sanitize_EmptyInput_ReturnsEmpty(string query)
+    [Fact]
+    public void ValidateUrl_PrivateIp_IsInvalid()
     {
-        var result = _sut.Sanitize(query);
-        result.Query.Should().BeEmpty();
-        result.Actions.Should().BeEmpty();
+        var result = _sut.ValidateUrl("http://192.168.1.1/admin");
+
+        result.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void NormalizeEntity_NormalizesProperties()
+    {
+        var entity = new Entity
+        {
+            Id = "  123  ",
+            Typa = "User",
+            Nama = "  John Doe  ",
+            Properties = new Dictionary<string, object>
+            {
+                ["email"] = "  JOHN@EXAMPLE.COM  ",
+                ["bio"] = "  Hello   world  "
+            }
+        };
+
+        var normalized = _sut.NormalizeEntity(entity);
+
+        normalized.Name.Should().Be("John Doe");
     }
 }
 ```
@@ -941,67 +938,57 @@ public class QuerySanitizerTests
 
 | Metric | Target | Measurement |
 |:-------|:-------|:------------|
-| Query sanitization | <5ms | P95 timing |
-| Query validation | <3ms | P95 timing |
-| Complexity analysis | <2ms | P95 timing |
-| Parameterized compilation | <2ms | P95 timing |
+| String normalization | <2ms | P95 timing |
+| HTML sanitization (1KB) | <10ms | P95 timing |
+| URL validation | <1ms | P95 timing |
+| Entity normalization | <5ms | P95 timing |
 
 ---
 
 ## 9. License Gating
 
-| Tier | Query Sanitizer | Details |
-|:-----|:----------------|:--------|
-| **Core** | Basic sanitization | Comment removal, quote escaping |
-| **WriterPro** | + Advanced rules | Subquery detection, complexity limits |
-| **Teams** | + Custom rules | Ability to define custom patterns |
-| **Enterprise** | + Real-time updates | Threat pattern updates from security feed |
+| Tier | Input Normalizer | Details |
+|:-----|:-----------------|:--------|
+| **Core** | Basic normalization | String trim, Unicode |
+| **WriterPro** | + HTML sanitization | Safe HTML handling |
+| **Teams** | + Custom rules | Custom normalizers |
+| **Enterprise** | + Advanced options | Deep entity normalization |
 
 ---
 
-## 10. Compliance & Standards
-
-- **OWASP Top 10**: A03:2021 – Injection
-- **CWE-89**: Improper Neutralization of Special Elements used in an SQL Command
-- **SANS Top 25**: CWE-89
-
----
-
-## 11. Dependencies
+## 10. Dependencies
 
 | Component | Source | Usage |
 |:----------|:-------|:------|
+| `HtmlAgilityPack` | NuGet | HTML parsing and sanitization |
 | `ILogger<T>` | Microsoft.Extensions.Logging | Diagnostic logging |
-| `IAuditLogger` | v0.11.2-SEC | Security event logging |
-| Regex (System) | .NET Standard | Pattern matching |
 
 ---
 
-## 12. Risks & Mitigations
+## 11. Risks & Mitigations
 
 | Risk | Mitigation |
 |:-----|:-----------|
-| False positives blocking valid queries | Tunable rule sensitivity, whitelist mechanism |
-| Bypass via encoding techniques | Regular pattern updates, defense in depth |
-| ReDoS via malicious regex | Use compiled regexes with timeouts |
-| Performance impact | Async scanning, caching for repeated patterns |
+| Information loss on normalize | Document behavior, provide options |
+| HTML parsing failures | Fall back to original, log error |
+| URL bypass attacks | Comprehensive validation, block private IPs |
+| Performance on large content | Streaming, chunking, limits |
 
 ---
 
-## 13. Deliverable Checklist
+## 12. Deliverable Checklist
 
 | # | Deliverable | Status |
 |:--|:-----------|:-------|
-| 1 | `IQuerySanitizer` interface | [ ] |
-| 2 | `SanitizedQuery` record | [ ] |
-| 3 | `ParameterizedQuery` record | [ ] |
-| 4 | `QueryValidationResult` record | [ ] |
-| 5 | `QuerySanitizer` implementation | [ ] |
-| 6 | Sanitization rules engine | [ ] |
-| 7 | Query parser | [ ] |
-| 8 | Complexity analyzer | [ ] |
-| 9 | Unit tests with 95%+ coverage | [ ] |
-| 10 | DI registration in SecurityModule.cs | [ ] |
+| 1 | `IInputNormalizer` interface | [ ] |
+| 2 | Normalization options records | [ ] |
+| 3 | `InputNormalizer` implementation | [ ] |
+| 4 | String normalizer | [ ] |
+| 5 | HTML sanitizer | [ ] |
+| 6 | URL validator | [ ] |
+| 7 | Entity normalizer | [ ] |
+| 8 | Unit tests with 95%+ coverage | [ ] |
+| 9 | DI registration in SecurityModule.cs | [ ] |
 
 ---
 

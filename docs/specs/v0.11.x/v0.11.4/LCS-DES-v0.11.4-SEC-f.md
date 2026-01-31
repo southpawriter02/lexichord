@@ -1,20 +1,20 @@
-# LCS-DES-114-SEC-f: Design Specification — Schema Validator
+# LCS-DES-114-SEC-b: Design Specification — Error Sanitizer
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-114-SEC-f                          |
-| **Feature ID**       | SEC-114f                                   |
-| **Feature Name**     | Schema Validator                           |
+| **Document ID**      | LCS-DES-114-SEC-b                          |
+| **Feature ID**       | SEC-114j                                   |
+| **Feature Name**     | Error Sanitizer                            |
 | **Parent Feature**   | v0.11.4 — Input Security & Validation      |
 | **Module Scope**     | Lexichord.Modules.Security                 |
 | **Swimlane**         | Security                                   |
 | **License Tier**     | Core                                       |
-| **Feature Gate Key** | `FeatureFlags.Security.SchemaValidator`    |
+| **Feature Gate Key** | `FeatureFlags.Security.ErrorSanitizer`     |
 | **Status**           | Draft                                      |
 | **Last Updated**     | 2026-01-31                                 |
-| **Est. Hours**       | 6                                          |
+| **Est. Hours**       | 4                                          |
 
 ---
 
@@ -22,32 +22,32 @@
 
 ### 2.1 Problem Statement
 
-User inputs arrive without guaranteed schema conformance, leading to:
+Raw exception information leaked to clients exposes:
 
-- Type mismatches (string instead of int)
-- Missing required fields
-- Invalid field values
-- Data corruption in the knowledge graph
+- Internal system architecture
+- Database credentials and connection details
+- File paths and server configuration
+- Sensitive business logic
 
 ### 2.2 Solution Overview
 
-Implement `IInputSchemaValidator` that validates all inputs against defined schemas:
+Implement `IErrorSanitizer` that removes sensitive details:
 
-- **Entity validation** against entity type schemas
-- **JSON schema validation** for arbitrary input
-- **Custom schema registration** for extensibility
-- **Detailed error reporting** with path information
+- **User-safe error messages** without technical details
+- **Development mode full details** for debugging
+- **Correlation IDs** for support tracking
+- **Structured error responses** for clients
 
 ### 2.3 Key Deliverables
 
-| Deliverable         | Description                                |
-| :------------------ | :----------------------------------------- |
-| `IInputSchemaValidator` | Interface in Lexichord.Abstractions    |
-| `InputSchemaValidator`  | Implementation with caching              |
-| `ValidationResult`   | Result record with errors and warnings    |
-| `ValidationError`    | Detailed error with path and values       |
-| Schema registry      | In-memory cache of JSON schemas           |
-| Unit tests           | 95%+ coverage of validation logic         |
+| Deliverable | Description |
+| :---------- | :---------- |
+| `IErrorSanitizer` | Interface in Lexichord.Abstractions |
+| `ErrorSanitizer` | Implementation with mapping rules |
+| `SanitizedError` | Safe error record |
+| `ErrorResponse` | Client-facing response |
+| Sanitization mappings | Exception type → safe message |
+| Unit tests | 95%+ coverage |
 
 ---
 
@@ -58,34 +58,31 @@ Implement `IInputSchemaValidator` that validates all inputs against defined sche
 ```mermaid
 graph TB
     subgraph "Lexichord.Abstractions"
-        ISV[IInputSchemaValidator]
-        VR[ValidationResult]
-        VE[ValidationError]
+        IES[IErrorSanitizer]
+        SE[SanitizedError]
+        ER[ErrorResponse]
     end
 
     subgraph "Lexichord.Modules.Security/Services"
-        SV[InputSchemaValidator]
-        SR[SchemaRegistry]
-        SVM[SchemaValidationEngine]
-        SE[SchemaEditor]
+        ES[ErrorSanitizer]
+        SM[SanitizationMapper]
+        CR[CorrelationIdGenerator]
     end
 
     subgraph "Dependencies"
         LOG[ILogger<T>]
-        CACHE[IMemoryCache]
-        JSON[JsonSchema Lib]
+        AUDIT[IAuditLogger]
     end
 
-    SV --> ISV
-    SV --> SR
-    SV --> SVM
-    SV --> SE
-    SR --> CACHE
-    SVM --> JSON
+    ES --> IES
+    ES --> SM
+    ES --> CR
+    ES --> LOG
+    ES --> AUDIT
 
-    style SV fill:#22c55e,color:#fff
-    style ISV fill:#4a9eff,color:#fff
-    style VR fill:#4a9eff,color:#fff
+    style ES fill:#22c55e,color:#fff
+    style IES fill:#4a9eff,color:#fff
+    style SE fill:#4a9eff,color:#fff
 ```
 
 ### 3.2 Module Location
@@ -94,362 +91,160 @@ graph TB
 src/
 ├── Lexichord.Abstractions/
 │   └── Contracts/
-│       └── SchemaValidationModels.cs         ← Interfaces and records
+│       └── ErrorSanitizationModels.cs        ← Interfaces and records
 │
 └── Lexichord.Modules.Security/
     └── Services/
-        ├── InputSchemaValidator.cs           ← Main implementation
-        └── Validation/
-            ├── SchemaRegistry.cs             ← Schema storage and retrieval
-            ├── SchemaValidationEngine.cs     ← Validation logic
-            └── SchemaEditor.cs               ← Schema management
+        ├── ErrorSanitizer.cs                 ← Main implementation
+        └── ErrorHandling/
+            ├── SanitizationMapper.cs         ← Exception → safe mapping
+            └── CorrelationIdGenerator.cs     ← Tracking ID generation
 ```
 
 ---
 
 ## 4. Data Contract (The API)
 
-### 4.1 IInputSchemaValidator Interface
+### 4.1 IErrorSanitizer Interface
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Validates input against defined JSON schemas.
+/// Sanitizes exceptions for safe external communication.
 /// </summary>
 /// <remarks>
-/// <para>Supports entity-specific schemas and custom JSON schemas.</para>
-/// <para>Results include detailed error paths for debugging.</para>
+/// <para>Removes sensitive details (credentials, paths, internal state) from errors.</para>
+/// <para>Provides development-mode details for internal debugging.</para>
 /// </remarks>
 /// <example>
 /// <code>
-/// // Validate an entity
-/// var result = await _validator.ValidateEntityAsync(entity);
-/// if (!result.IsValid)
+/// try
 /// {
-///     foreach (var error in result.Errors)
-///     {
-///         Console.WriteLine($"{error.Path}: {error.Message}");
-///     }
+///     // Some operation
 /// }
+/// catch (Exception ex)
+/// {
+///     var sanitized = _sanitizer.Sanitize(ex);
+///     // Log with correlation ID for support
+///     _logger.LogError("Operation failed: {CorrelationId}", sanitized.CorrelationId);
 ///
-/// // Register and validate with custom schema
-/// await _validator.RegisterSchemaAsync("custom-type", mySchema);
-/// var customResult = await _validator.ValidateAsync(jsonDoc, "custom-type");
+///     // Return safe response to client
+///     var responsa = _sanitizer.CreateResponse(ex, isDevelopment: false);
+///     return BadRequest(response);
+/// }
 /// </code>
 /// </example>
-public interface IInputSchemaValidator
+public interface IErrorSanitizer
 {
     /// <summary>
-    /// Validates an entity against its type's schema.
+    /// Sanitizes an exception for external response.
     /// </summary>
-    /// <param name="entity">The entity to validate.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>
-    /// Validation result with errors and warnings if any.
-    /// </returns>
-    Task<ValidationResult> ValidateEntityAsync(
-        Entity entity,
-        CancellationToken ct = default);
+    /// <param name="exception">Exception to sanitize.</param>
+    /// <returns>Sanitized error with correlation ID.</returns>
+    SanitizedError Sanitize(Exception exception);
 
     /// <summary>
-    /// Validates arbitrary JSON input against a schema.
+    /// Creates a safe error response for HTTP clients.
     /// </summary>
-    /// <param name="input">JSON document to validate.</param>
-    /// <param name="schemaId">Schema identifier (e.g., "entity-type:User").</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>
-    /// Validation result with detailed errors.
-    /// </returns>
-    Task<ValidationResult> ValidateAsync(
-        JsonDocument input,
-        string schemaId,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Retrieves the schema for an entity type.
-    /// </summary>
-    /// <param name="entityType">Entity type (e.g., "User", "Document").</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>
-    /// JSON schema if registered, null otherwise.
-    /// </returns>
-    Task<JsonSchema?> GetSchemaAsync(
-        string entityType,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Registers a custom schema for validation.
-    /// </summary>
-    /// <param name="schemaId">Unique schema identifier.</param>
-    /// <param name="schema">JSON schema definition.</param>
-    /// <param name="ct">Cancellation token.</param>
-    Task RegisterSchemaAsync(
-        string schemaId,
-        JsonSchema schema,
-        CancellationToken ct = default);
+    /// <param name="exception">Exception to convert.</param>
+    /// <param name="isDevelopment">Whether to include dev details.</param>
+    /// <returns>Client-safe error response.</returns>
+    ErrorResponse CreateResponse(Exception exception, bool isDevelopment = false);
 }
 ```
 
-### 4.2 ValidationResult Record
+### 4.2 SanitizedError Record
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Results of schema validation.
+/// An exception sanitized for logging and debugging.
 /// </summary>
-public record ValidationResult
+public record SanitizedError
 {
-    /// <summary>
-    /// Whether input conforms to schema.
-    /// </summary>
-    public bool IsValid { get; init; }
-
-    /// <summary>
-    /// Validation errors (blocking).
-    /// </summary>
-    public IReadOnlyList<ValidationError> Errors { get; init; } = [];
-
-    /// <summary>
-    /// Validation warnings (non-blocking).
-    /// </summary>
-    public IReadOnlyList<ValidationWarning> Warnings { get; init; } = [];
-
-    /// <summary>
-    /// Total number of property validations performed.
-    /// </summary>
-    public int PropertiesValidated { get; init; }
-
-    /// <summary>
-    /// Validation duration in milliseconds.
-    /// </summary>
-    public long DurationMs { get; init; }
-
-    /// <summary>
-    /// Gets all errors for a specific property path.
-    /// </summary>
-    public IEnumerable<ValidationError> GetErrorsForPath(string path) =>
-        Errors.Where(e => e.Path.StartsWith(path, StringComparison.OrdinalIgnoreCase));
-}
-
-/// <summary>
-/// A single validation error.
-/// </summary>
-public record ValidationError
-{
-    /// <summary>
-    /// JSON path to the field (e.g., "$.user.email").
-    /// </summary>
-    public required string Path { get; init; }
-
-    /// <summary>
-    /// Human-readable error message.
-    /// </summary>
-    public required string Message { get; init; }
-
     /// <summary>
     /// Error code for programmatic handling.
     /// </summary>
-    public required string ErrorCode { get; init; }
+    public required string Code { get; init; }
 
     /// <summary>
-    /// Expected value or type.
-    /// </summary>
-    public object? ExpectedValue { get; init; }
-
-    /// <summary>
-    /// Actual value that failed validation.
-    /// </summary>
-    public object? ActualValue { get; init; }
-
-    /// <summary>
-    /// Severity level of this error.
-    /// </summary>
-    public ValidationSeverity Severity { get; init; } = ValidationSeverity.Error;
-}
-
-/// <summary>
-/// A non-blocking validation warning.
-/// </summary>
-public record ValidationWarning
-{
-    /// <summary>
-    /// JSON path to the field.
-    /// </summary>
-    public required string Path { get; init; }
-
-    /// <summary>
-    /// Warning message.
+    /// Safe message for external display.
     /// </summary>
     public required string Message { get; init; }
 
     /// <summary>
-    /// Warning code.
+    /// Correlation ID for tracking this error.
     /// </summary>
-    public required string WarningCode { get; init; }
+    public string? CorrelationId { get; init; }
 
     /// <summary>
-    /// Suggested remediation.
+    /// Safe details (non-sensitive context).
     /// </summary>
-    public string? Suggestion { get; init; }
-}
+    public IReadOnlyDictionary<string, object>? SafeDetails { get; init; }
 
-public enum ValidationSeverity
-{
-    Warning,
-    Error,
-    Critical
+    /// <summary>
+    /// Original exception type (for internal use).
+    /// </summary>
+    public string? OriginalType { get; init; }
+
+    /// <summary>
+    /// Stack trace (for development only).
+    /// </summary>
+    public string? StackTrace { get; init; }
+
+    /// <summary>
+    /// Inner exception details (if any).
+    /// </summary>
+    public SanitizedError? InnerError { get; init; }
 }
 ```
 
-### 4.3 JsonSchema Type
+### 4.3 ErrorResponse Record
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Represents a JSON schema definition.
-/// Uses JSON Schema Draft 2020-12 format.
+/// Error response to send to HTTP clients.
 /// </summary>
-public record JsonSchema
+public record ErrorResponse
 {
     /// <summary>
-    /// Schema version (e.g., "https://json-schema.org/draft/2020-12/schema").
+    /// Error key/code for programmatic handling.
     /// </summary>
-    public string SchemaVersion { get; init; } = "https://json-schema.org/draft/2020-12/schema";
+    public required string Error { get; init; }
 
     /// <summary>
-    /// Unique identifier for this schema.
+    /// Human-readable error message (safe for external display).
     /// </summary>
-    public required string Id { get; init; }
+    public required string Message { get; init; }
 
     /// <summary>
-    /// Human-readable schema title.
+    /// Optional error code (e.g., "VALIDATION_FAILED").
     /// </summary>
-    public string? Title { get; init; }
+    public string? Code { get; init; }
 
     /// <summary>
-    /// Schema description.
+    /// Correlation ID for support tracking.
     /// </summary>
-    public string? Description { get; init; }
+    public string? CorrelationId { get; init; }
 
     /// <summary>
-    /// Root schema type (usually "object").
+    /// HTTP status code that should be used.
     /// </summary>
-    public string Type { get; init; } = "object";
+    public int StatusCode { get; init; } = 500;
 
     /// <summary>
-    /// Required property names.
+    /// Additional safe details (development mode only).
     /// </summary>
-    public IReadOnlyList<string> Required { get; init; } = [];
+    public IReadOnlyDictionary<string, object>? Details { get; init; }
 
     /// <summary>
-    /// Property definitions (name -> property schema).
+    /// Timestamp when error occurred.
     /// </summary>
-    public IReadOnlyDictionary<string, PropertySchema> Properties { get; init; } = new Dictionary<string, PropertySchema>();
-
-    /// <summary>
-    /// Additional properties allowed (true/false/schema).
-    /// </summary>
-    public bool AllowAdditionalProperties { get; init; } = false;
-
-    /// <summary>
-    /// Min/max constraints.
-    /// </summary>
-    public ValidationConstraints? Constraints { get; init; }
-}
-
-/// <summary>
-/// Schema definition for a single property.
-/// </summary>
-public record PropertySchema
-{
-    /// <summary>
-    /// Property type (string, number, integer, boolean, array, object, null).
-    /// </summary>
-    public required string Type { get; init; }
-
-    /// <summary>
-    /// Property description.
-    /// </summary>
-    public string? Description { get; init; }
-
-    /// <summary>
-    /// Whether property can be null.
-    /// </summary>
-    public bool Nullable { get; init; } = false;
-
-    /// <summary>
-    /// Default value if not provided.
-    /// </summary>
-    public object? Default { get; init; }
-
-    /// <summary>
-    /// For enums: allowed values.
-    /// </summary>
-    public IReadOnlyList<object>? Enum { get; init; }
-
-    /// <summary>
-    /// Constraints (min/max length, range, pattern).
-    /// </summary>
-    public ValidationConstraints? Constraints { get; init; }
-
-    /// <summary>
-    /// For array type: schema of items.
-    /// </summary>
-    public PropertySchema? Items { get; init; }
-
-    /// <summary>
-    /// For object type: nested properties.
-    /// </summary>
-    public IReadOnlyDictionary<string, PropertySchema>? Properties { get; init; }
-}
-
-/// <summary>
-/// Validation constraints for a property or schema.
-/// </summary>
-public record ValidationConstraints
-{
-    /// <summary>
-    /// Minimum string length.
-    /// </summary>
-    public int? MinLength { get; init; }
-
-    /// <summary>
-    /// Maximum string length.
-    /// </summary>
-    public int? MaxLength { get; init; }
-
-    /// <summary>
-    /// Minimum numeric value.
-    /// </summary>
-    public decimal? Minimum { get; init; }
-
-    /// <summary>
-    /// Maximum numeric value.
-    /// </summary>
-    public decimal? Maximum { get; init; }
-
-    /// <summary>
-    /// Regex pattern for string matching.
-    /// </summary>
-    public string? Pattern { get; init; }
-
-    /// <summary>
-    /// Minimum array items.
-    /// </summary>
-    public int? MinItems { get; init; }
-
-    /// <summary>
-    /// Maximum array items.
-    /// </summary>
-    public int? MaxItems { get; init; }
-
-    /// <summary>
-    /// Custom validation rule code.
-    /// </summary>
-    public string? CustomValidation { get; init; }
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
 }
 ```
 
@@ -457,417 +252,287 @@ public record ValidationConstraints
 
 ## 5. Implementation Logic
 
-### 5.1 Schema Validation Pipeline
+### 5.1 Error Mapping Rules
 
 ```mermaid
 flowchart TD
-    A["Input: Entity or JsonDocument"] --> B["Get schema"]
-    B --> C["Validate against schema"]
-    C --> D["Check required fields"]
-    D --> E["Validate property types"]
-    E --> F["Check constraints"]
-    F --> G["Gather errors/warnings"]
-    G --> H["Return ValidationResult"]
+    A["Exception received"] --> B["Map exception type"]
+    B --> C["Get safe error code"]
+    C --> D["Get safe message"]
+    D --> E["Generate correlation ID"]
+    E --> F["Extract safe details"]
+    F --> G{Development mode?}
+    G -->|Yes| H["Include stack trace & details"]
+    G -->|No| I["Remove sensitive info"]
+    H --> J["Return SanitizedError"]
+    I --> J
 
     style A fill:#94a3b8
     style B fill:#22c55e
-    style C fill:#f59e0b
-    style D fill:#3b82f6
-    style E fill:#8b5cf6
-    style F fill:#ec4899
-    style G fill:#06b6d4
-    style H fill:#14b8a6
+    style C fill:#22c55e
+    style D fill:#22c55e
+    style E fill:#3b82f6
+    style F fill:#f59e0b
+    style G fill:#dc2626
+    style H fill:#10b981
+    style I fill:#dc2626
+    style J fill:#14b8a6
 ```
 
-### 5.2 Schema Registry
+### 5.2 Sanitization Mapper
 
 ```csharp
 /// <summary>
-/// Manages schema definitions and caching.
+/// Maps exceptions to safe error codes and messages.
 /// </summary>
-internal class SchemaRegistry
+internal class SanitizationMapper
 {
-    private readonly IMemoryCache _cache;
-    private readonly ILogger<SchemaRegistry> _logger;
-
-    private static readonly IReadOnlyDictionary<string, JsonSchema> DefaultSchemas = new Dictionary<string, JsonSchema>
+    private static readonly Dictionary<string, ExceptionMapping> Mappings = new()
     {
-        ["entity:base"] = new JsonSchema
+        // Validation errors
+        [typeof(ArgumentException).FullName!] = new ExceptionMapping
         {
-            Id = "entity:base",
-            Title = "Base Entity Schema",
-            Type = "object",
-            Required = ["id", "type", "name"],
-            Properties = new Dictionary<string, PropertySchema>
-            {
-                ["id"] = new PropertySchema
-                {
-                    Type = "string",
-                    Description = "Unique entity identifier (UUID)",
-                    Constraints = new ValidationConstraints { Pattern = @"^[a-f0-9\-]{36}$" }
-                },
-                ["type"] = new PropertySchema
-                {
-                    Type = "string",
-                    Description = "Entity type name",
-                    Constraints = new ValidationConstraints { MinLength = 1, MaxLength = 100 }
-                },
-                ["name"] = new PropertySchema
-                {
-                    Type = "string",
-                    Description = "Entity display name",
-                    Constraints = new ValidationConstraints { MinLength = 1, MaxLength = 500 }
-                },
-                ["description"] = new PropertySchema
-                {
-                    Type = "string",
-                    Nullable = true,
-                    Constraints = new ValidationConstraints { MaxLength = 5000 }
-                },
-                ["properties"] = new PropertySchema
-                {
-                    Type = "object",
-                    Nullable = true,
-                    Description = "Custom properties"
-                }
-            }
+            ErrorCoda = "INVALID_ARGUMENT",
+            SafeMessaga = "Invalid input provided.",
+            StatusCoda = 400,
+            IncludeSafeDetails = true
+        },
+
+        [typeof(ArgumentNullException).FullName!] = new ExceptionMapping
+        {
+            ErrorCoda = "MISSING_REQUIRED_FIELD",
+            SafeMessaga = "A required field is missing.",
+            StatusCoda = 400
+        },
+
+        [typeof(InvalidOperationException).FullName!] = new ExceptionMapping
+        {
+            ErrorCoda = "INVALID_OPERATION",
+            SafeMessaga = "Operation could not be completed.",
+            StatusCoda = 400
+        },
+
+        // Authentication/Authorization
+        [typeof(UnauthorizedAccessException).FullName!] = new ExceptionMapping
+        {
+            ErrorCoda = "UNAUTHORIZED",
+            SafeMessaga = "Authentication required.",
+            StatusCoda = 401
+        },
+
+        ["System.Security.SecurityException"] = new ExceptionMapping
+        {
+            ErrorCoda = "PERMISSION_DENIED",
+            SafeMessaga = "You do not have permission to access this resource.",
+            StatusCoda = 403
+        },
+
+        // Not found
+        [typeof(KeyNotFoundException).FullName!] = new ExceptionMapping
+        {
+            ErrorCoda = "NOT_FOUND",
+            SafeMessaga = "The requested resource was not found.",
+            StatusCoda = 404
+        },
+
+        // Rate limiting (from our own exception)
+        ["Lexichord.Modules.Security.RateLimitExceededException"] = new ExceptionMapping
+        {
+            ErrorCoda = "RATE_LIMIT_EXCEEDED",
+            SafeMessaga = "Too many requests. Please try again later.",
+            StatusCoda = 429
+        },
+
+        // Database errors
+        ["System.Data.SqlClient.SqlException"] = new ExceptionMapping
+        {
+            ErrorCoda = "DATABASE_ERROR",
+            SafeMessaga = "A database error occurred. Please try again later.",
+            StatusCoda = 500,
+            LogLevel = LogLevel.Error
+        },
+
+        // Default for any unhandled exception
+        ["DEFAULT"] = new ExceptionMapping
+        {
+            ErrorCoda = "INTERNAL_SERVER_ERROR",
+            SafeMessaga = "An unexpected error occurred. Please contact support.",
+            StatusCoda = 500,
+            LogLevel = LogLevel.Error
         }
     };
 
-    public async Task<JsonSchema?> GetSchemaAsync(string schemaId)
+    public ExceptionMapping GetMapping(Exception ex)
     {
-        var cacheKey = $"schema:{schemaId}";
+        var exTypa = ex.GetType().FullName ?? "unknown";
 
-        if (_cache.TryGetValue(cacheKey, out JsonSchema? cached))
-            return cached;
+        if (Mappings.TryGetValue(exType, out var mapping))
+            return mapping;
 
-        if (DefaultSchemas.TryGetValue(schemaId, out var defaultSchema))
+        // Check base types
+        foreach (var type in ex.GetType().BaseClasses())
         {
-            _cache.Set(cacheKey, defaultSchema, TimeSpan.FromHours(1));
-            return defaultSchema;
+            if (Mappings.TryGetValue(type.FullName ?? string.Empty, out mapping))
+                return mapping;
         }
 
-        _logger.LogWarning("Schema not found: {SchemaId}", schemaId);
-        return null;
+        // Fall back to default
+        return Mappings["DEFAULT"];
     }
 
-    public async Task RegisterSchemaAsync(string schemaId, JsonSchema schema)
+    public record ExceptionMapping
     {
-        var cacheKey = $"schema:{schemaId}";
-        _cache.Set(cacheKey, schema, TimeSpan.FromHours(1));
-
-        _logger.LogInformation(
-            "Schema registered: {SchemaId}, Properties={Count}",
-            schemaId, schema.Properties.Count);
-    }
-
-    public async Task<IEnumerable<string>> GetRegisteredSchemaIdsAsync()
-    {
-        return DefaultSchemas.Keys.AsEnumerable();
+        public required string ErrorCode { get; init; }
+        public required string SafeMessage { get; init; }
+        public int StatusCode { get; init; } = 500;
+        public LogLevel LogLevel { get; init; } = LogLevel.Warning;
+        public bool IncludeSafeDetails { get; init; } = false;
     }
 }
 ```
 
-### 5.3 Validation Engine
+### 5.3 Error Sanitizer Implementation
 
 ```csharp
 /// <summary>
-/// Core validation logic against a schema.
+/// Core error sanitization implementation.
 /// </summary>
-internal class SchemaValidationEngine
+internal class ErrorSanitizerImpl
 {
-    private readonly ILogger<SchemaValidationEngine> _logger;
+    private readonly SanitizationMapper _mapper;
+    private readonly ILogger<ErrorSanitizerImpl> _logger;
 
-    public ValidationResult Validate(
-        JsonElement input,
-        JsonSchema schema,
-        string basePath = "$")
+    public SanitizedError Sanitize(Exception exception)
     {
-        var sw = Stopwatch.StartNew();
-        var errors = new List<ValidationError>();
-        var warnings = new List<ValidationWarning>();
-        var propertiesValidated = 0;
+        var mappinc = _mapper.GetMapping(exception);
+        var correlationId = GenerateCorrelationId();
 
-        // Validate type
-        if (!ValidateType(input, schema, basePath, errors, warnings, ref propertiesValidated))
+        _logger.Log(
+            mapping.LogLevel,
+            exception,
+            "Exception sanitized: Code={ErrorCode}, CorrelationId={CorrelationId}",
+            mapping.ErrorCode, correlationId);
+
+        var safeDetails = ExtractSafeDetails(exception);
+
+        return new SanitizedError
         {
-            return new ValidationResult
-            {
-                IsValid = false,
-                Errors = errors,
-                Warnings = warnings,
-                PropertiesValidated = propertiesValidated,
-                DurationMs = sw.ElapsedMilliseconds
-            };
-        }
-
-        // Validate required fields
-        if (input.ValueKind == JsonValueKind.Object)
-        {
-            ValidateRequiredFields(input, schema, basePath, errors, ref propertiesValidated);
-
-            // Validate each property
-            if (schema.Properties.Count > 0)
-            {
-                ValidateProperties(input, schema, basePath, errors, warnings, ref propertiesValidated);
-            }
-
-            // Check additional properties
-            if (!schema.AllowAdditionalProperties)
-            {
-                ValidateNoAdditionalProperties(input, schema, basePath, errors, ref propertiesValidated);
-            }
-        }
-
-        sw.Stop();
-
-        return new ValidationResult
-        {
-            IsValid = errors.Count == 0,
-            Errors = errors,
-            Warnings = warnings,
-            PropertiesValidated = propertiesValidated,
-            DurationMs = sw.ElapsedMilliseconds
+            Coda = mapping.ErrorCode,
+            Messaga = mapping.SafeMessage,
+            CorrelationId = correlationId,
+            SafeDetails = mapping.IncludeSafeDetails ? safeDetails : null,
+            OriginalTypa = exception.GetType().Name,
+            StackTraca = null, // Never include stack trace in sanitized error
+            InnerError = exception.InnerException != null
+                ? Sanitize(exception.InnerException)
+                : null
         };
     }
 
-    private bool ValidateType(
-        JsonElement input,
-        JsonSchema schema,
-        string path,
-        List<ValidationError> errors,
-        List<ValidationWarning> warnings,
-        ref int propertiesValidated)
+    public ErrorResponse CreateResponse(Exception exception, bool isDevelopment = false)
     {
-        propertiesValidated++;
+        var sanitized = Sanitize(exception);
+        var mappinc = _mapper.GetMapping(exception);
 
-        var actualType = input.ValueKind.ToString().ToLowerInvariant();
-        if (actualType == "null" && !schema.Type.Contains("null", StringComparison.OrdinalIgnoreCase))
-        {
-            if (!schema.Type.Contains("string", StringComparison.OrdinalIgnoreCase) ||
-                input.ValueKind != JsonValueKind.Null)
+        var details = isDevelopment
+            ? new Dictionary<string, object>
             {
-                errors.Add(new ValidationError
-                {
-                    Path = path,
-                    Message = $"Invalid type. Expected {schema.Type}, got {actualType}",
-                    ErrorCode = "TYPE_MISMATCH",
-                    ExpectedValue = schema.Type,
-                    ActualValue = actualType,
-                    Severity = ValidationSeverity.Error
-                });
-                return false;
+                ["exceptionType"] = exception.GetType().Name,
+                ["stackTrace"] = exception.StackTrace ?? "[No stack trace]",
+                ["message"] = exception.Message
             }
+            : null;
+
+        return new ErrorResponse
+        {
+            Error = mapping.ErrorCode.ToLowerInvariant(),
+            Messaga = mapping.SafeMessage,
+            Coda = mapping.ErrorCode,
+            CorrelationId = sanitized.CorrelationId,
+            StatusCoda = mapping.StatusCode,
+            Details = details,
+            Timestamp = DateTimeOffset.UtcNow
+        };
+    }
+
+    private Dictionary<string, object> ExtractSafeDetails(Exception exception)
+    {
+        var details = new Dictionary<string, object>();
+
+        if (exception is ArgumentException argEx)
+        {
+            details["parameterName"] = argEx.ParamName ?? "unknown";
         }
 
-        return true;
-    }
-
-    private void ValidateRequiredFields(
-        JsonElement input,
-        JsonSchema schema,
-        string basePath,
-        List<ValidationError> errors,
-        ref int propertiesValidated)
-    {
-        foreach (var required in schema.Required)
+        if (exception is InvalidOperationException invEx)
         {
-            propertiesValidated++;
-
-            if (!input.TryGetProperty(required, out _))
+            // Extract safe context info
+            if (invEx.Message.Contains("state:"))
             {
-                errors.Add(new ValidationError
+                var parts = invEx.Message.Split("state:");
+                if (parts.Length > 1)
                 {
-                    Path = $"{basePath}.{required}",
-                    Message = $"Required field '{required}' is missing",
-                    ErrorCode = "MISSING_REQUIRED_FIELD",
-                    Severity = ValidationSeverity.Error
-                });
-            }
-        }
-    }
-
-    private void ValidateProperties(
-        JsonElement input,
-        JsonSchema schema,
-        string basePath,
-        List<ValidationError> errors,
-        List<ValidationWarning> warnings,
-        ref int propertiesValidated)
-    {
-        foreach (var property in input.EnumerateObject())
-        {
-            propertiesValidated++;
-
-            if (schema.Properties.TryGetValue(property.Name, out var propSchema))
-            {
-                ValidateProperty(property.Value, propSchema, $"{basePath}.{property.Name}", errors, ref propertiesValidated);
-            }
-        }
-    }
-
-    private void ValidateProperty(
-        JsonElement value,
-        PropertySchema propSchema,
-        string path,
-        List<ValidationError> errors,
-        ref int propertiesValidated)
-    {
-        // Type check
-        if (!ValidatePropertyType(value, propSchema, path, errors))
-            return;
-
-        // Constraints check
-        ValidateConstraints(value, propSchema, path, errors);
-    }
-
-    private bool ValidatePropertyType(
-        JsonElement value,
-        PropertySchema propSchema,
-        string path,
-        List<ValidationError> errors)
-    {
-        var actualType = GetJsonType(value);
-
-        if (actualType == "null" && propSchema.Nullable)
-            return true;
-
-        if (actualType != propSchema.Type.ToLowerInvariant())
-        {
-            errors.Add(new ValidationError
-            {
-                Path = path,
-                Message = $"Invalid type. Expected {propSchema.Type}, got {actualType}",
-                ErrorCode = "TYPE_MISMATCH",
-                ExpectedValue = propSchema.Type,
-                ActualValue = actualType,
-                Severity = ValidationSeverity.Error
-            });
-            return false;
-        }
-
-        return true;
-    }
-
-    private void ValidateConstraints(
-        JsonElement value,
-        PropertySchema propSchema,
-        string path,
-        List<ValidationError> errors)
-    {
-        if (propSchema.Constraints == null)
-            return;
-
-        var constraints = propSchema.Constraints;
-
-        // String constraints
-        if (value.ValueKind == JsonValueKind.String)
-        {
-            var str = value.GetString() ?? string.Empty;
-
-            if (constraints.MinLength.HasValue && str.Length < constraints.MinLength)
-            {
-                errors.Add(new ValidationError
-                {
-                    Path = path,
-                    Message = $"String length {str.Length} is less than minimum {constraints.MinLength}",
-                    ErrorCode = "STRING_TOO_SHORT",
-                    Severity = ValidationSeverity.Error
-                });
-            }
-
-            if (constraints.MaxLength.HasValue && str.Length > constraints.MaxLength)
-            {
-                errors.Add(new ValidationError
-                {
-                    Path = path,
-                    Message = $"String length {str.Length} exceeds maximum {constraints.MaxLength}",
-                    ErrorCode = "STRING_TOO_LONG",
-                    Severity = ValidationSeverity.Error
-                });
-            }
-
-            if (!string.IsNullOrEmpty(constraints.Pattern))
-            {
-                if (!Regex.IsMatch(str, constraints.Pattern))
-                {
-                    errors.Add(new ValidationError
-                    {
-                        Path = path,
-                        Message = $"String does not match pattern: {constraints.Pattern}",
-                        ErrorCode = "PATTERN_MISMATCH",
-                        Severity = ValidationSeverity.Error
-                    });
+                    details["state"] = parts[1].Trim();
                 }
             }
         }
 
-        // Numeric constraints
-        if (value.ValueKind == JsonValueKind.Number)
-        {
-            if (value.TryGetDecimal(out var num))
-            {
-                if (constraints.Minimum.HasValue && num < constraints.Minimum)
-                {
-                    errors.Add(new ValidationError
-                    {
-                        Path = path,
-                        Message = $"Value {num} is less than minimum {constraints.Minimum}",
-                        ErrorCode = "NUMBER_TOO_SMALL",
-                        Severity = ValidationSeverity.Error
-                    });
-                }
-
-                if (constraints.Maximum.HasValue && num > constraints.Maximum)
-                {
-                    errors.Add(new ValidationError
-                    {
-                        Path = path,
-                        Message = $"Value {num} exceeds maximum {constraints.Maximum}",
-                        ErrorCode = "NUMBER_TOO_LARGE",
-                        Severity = ValidationSeverity.Error
-                    });
-                }
-            }
-        }
+        return details;
     }
 
-    private void ValidateNoAdditionalProperties(
-        JsonElement input,
-        JsonSchema schema,
-        string basePath,
-        List<ValidationError> errors,
-        ref int propertiesValidated)
+    private string GenerateCorrelationId()
     {
-        var allowedProps = new HashSet<string>(schema.Properties.Keys, StringComparer.OrdinalIgnoreCase);
-
-        foreach (var property in input.EnumerateObject())
-        {
-            propertiesValidated++;
-
-            if (!allowedProps.Contains(property.Name))
-            {
-                errors.Add(new ValidationError
-                {
-                    Path = $"{basePath}.{property.Name}",
-                    Message = $"Additional property '{property.Name}' is not allowed",
-                    ErrorCode = "ADDITIONAL_PROPERTY_NOT_ALLOWED",
-                    Severity = ValidationSeverity.Error
-                });
-            }
-        }
+        // Format: corr_YYYYMMDD_XXXXXXXX (date + random hex)
+        var data = DateTime.UtcNow.ToString("yyyyMMdd");
+        var random = Guid.NewGuid().ToString("N").Substring(0, 8);
+        return $"corr_{date}_{random}";
     }
+}
+```
 
-    private string GetJsonType(JsonElement element) => element.ValueKind switch
+### 5.4 Sensitive Data Redaction
+
+```csharp
+/// <summary>
+/// Utility for redacting sensitive data from strings.
+/// </summary>
+internal static class SensitiveDataRedactor
+{
+    private static readonly Regex[] SensitivePatterns = new[]
     {
-        JsonValueKind.String => "string",
-        JsonValueKind.Number => "number",
-        JsonValueKind.True or JsonValueKind.False => "boolean",
-        JsonValueKind.Array => "array",
-        JsonValueKind.Object => "object",
-        JsonValueKind.Null => "null",
-        _ => "unknown"
+        // Connection strings
+        new Regex(@"(password|pwd|secret)\s*=\s*[^\s;]+", RegexOptions.IgnoreCase | RegexOptions.Compiled),
+
+        // Credentials in URLs
+        new Regex(@"://\w+:\w+@", RegexOptions.Compiled),
+
+        // API keys
+        new Regex(@"(api[_-]?key|token|secret)\s*:\s*['\"][^'\"]+['\"]", RegexOptions.IgnoreCase | RegexOptions.Compiled),
+
+        // Database URLs
+        new Regex(@"(Server|Host)\s*=\s*[^;,\s]+", RegexOptions.IgnoreCase | RegexOptions.Compiled),
+
+        // Credit cards
+        new Regex(@"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", RegexOptions.Compiled),
+
+        // SSN
+        new Regex(@"\b\d{3}-\d{2}-\d{4}\b", RegexOptions.Compiled)
     };
+
+    public static string Redact(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return value ?? string.Empty;
+
+        var result = value;
+
+        foreach (var pattern in SensitivePatterns)
+        {
+            result = pattern.Replace(result, "[REDACTED]");
+        }
+
+        return result;
+    }
 }
 ```
 
@@ -875,37 +540,36 @@ internal class SchemaValidationEngine
 
 ## 6. Error Handling
 
-### 6.1 Error Categories
+### 6.1 Exception Categories
 
 | Category | Example | Handling |
 |:---------|:--------|:---------|
-| **Missing Schema** | Unknown schemaId | Return null, log warning |
-| **Type Mismatch** | String where int expected | Add to errors list |
-| **Missing Required** | Required field absent | Add error, validation fails |
-| **Constraint Violation** | String too long | Add to errors list |
-| **Pattern Mismatch** | Regex pattern failed | Add error with pattern info |
+| **Validation error** | ArgumentException | 400 + safe message |
+| **Auth error** | UnauthorizedAccessException | 401 + safe message |
+| **Not found** | KeyNotFoundException | 404 + safe message |
+| **Rate limited** | RateLimitExceededException | 429 + retry-after |
+| **Server error** | Any other | 500 + correlation ID |
 
-### 6.2 Exception Handling
+### 6.2 Sanitization Examples
 
 ```csharp
-try
+// BEFORE (Raw exception)
 {
-    var result = await _validator.ValidateAsync(jsonDoc, "entity:user");
-    if (!result.IsValid)
-    {
-        _logger.LogWarning(
-            "Validation failed: {ErrorCount} errors, {WarningCount} warnings",
-            result.Errors.Count, result.Warnings.Count);
-
-        foreach (var error in result.Errors)
-        {
-            _logger.LogWarning("  {Path}: {Message}", error.Path, error.Message);
-        }
-    }
+  "ExceptionType": "DbUpdateException",
+  "Message": "An error occurred while updating the entries. See the inner exception for details.",
+  "InnerException": {
+    "Message": "Connection to PostgreSQL failed: Host=prod-db.internal:5432 User=lexichord_app Password=s3cr3t! Database=lexichord_prod Timeout=30"
+  },
+  "StackTrace": "at Lexichord.Data.EntityRepository.SaveAsync() in C:\\App\\Lexichord.Data\\EntityRepository.cs:line 245"
 }
-catch (InvalidOperationException ex)
+
+// AFTER (Sanitized)
 {
-    _logger.LogError(ex, "Failed to validate input");
+  "error": "database_error",
+  "message": "A database error occurred. Please try again later.",
+  "code": "DATABASE_ERROR",
+  "correlationId": "corr_20260131_abc12345",
+  "statusCode": 500
 }
 ```
 
@@ -918,141 +582,117 @@ catch (InvalidOperationException ex)
 ```csharp
 [Trait("Category", "Unit")]
 [Trait("Feature", "v0.11.4f")]
-public class InputSchemaValidatorTests
+public class ErrorSanitizerTests
 {
-    private readonly IInputSchemaValidator _sut;
+    private readonly IErrorSanitizer _sut;
 
     [Fact]
-    public async Task ValidateEntityAsync_ValidEntity_ReturnsValid()
+    public void Sanitize_ArgumentException_ReturnsSafeMessage()
     {
-        var entity = new Entity
-        {
-            Id = Guid.NewGuid().ToString(),
-            Type = "User",
-            Name = "John Doe"
-        };
+        var ex = new ArgumentException("Invalid value for property", "propertyName");
+        var result = _sut.Sanitize(ex);
 
-        var result = await _sut.ValidateEntityAsync(entity);
-
-        result.IsValid.Should().BeTrue();
-        result.Errors.Should().BeEmpty();
+        result.Code.Should().Be("INVALID_ARGUMENT");
+        result.Message.Should().NotContain("Invalid value for property");
+        result.CorrelationId.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
-    public async Task ValidateEntityAsync_MissingRequired_ReturnsInvalid()
+    public void Sanitize_GeneratesCorrelationId()
     {
-        var entity = new Entity
-        {
-            Id = Guid.NewGuid().ToString(),
-            Type = "User"
-            // Missing Name (required)
-        };
+        var ex = new Exception("Test");
+        var result1 = _sut.Sanitize(ex);
+        var result2 = _sut.Sanitize(ex);
 
-        var result = await _sut.ValidateEntityAsync(entity);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle(e =>
-            e.ErrorCode == "MISSING_REQUIRED_FIELD" && e.Path.Contains("name"));
+        result1.CorrelationId.Should().NotBeNullOrEmpty();
+        result2.CorrelationId.Should().NotBeNullOrEmpty();
+        result1.CorrelationId.Should().NotBe(result2.CorrelationId);
     }
 
     [Fact]
-    public async Task ValidateAsync_TypeMismatch_ReturnsError()
+    public void Sanitize_NeverIncludesStackTrace()
     {
-        var json = JsonDocument.Parse("{ \"id\": 123 }");
+        var ex = new InvalidOperationException("Operation failed");
+        var result = _sut.Sanitize(ex);
 
-        var result = await _sut.ValidateAsync(json, "entity:base");
-
-        result.Errors.Should().ContainSingle(e =>
-            e.ErrorCode == "TYPE_MISMATCH" && e.Path == "$.id");
+        result.StackTrace.Should().BeNullOrEmpty();
     }
 
     [Fact]
-    public async Task ValidateAsync_ConstraintViolation_ReturnsError()
+    public void Sanitize_HandlesInnerException()
     {
-        var json = JsonDocument.Parse("{ \"name\": \"" + new string('a', 501) + "\" }");
+        var innerEx = new ArgumentException("Inner error");
+        var ex = new InvalidOperationException("Outer error", innerEx);
 
-        var result = await _sut.ValidateAsync(json, "entity:base");
+        var result = _sut.Sanitize(ex);
 
-        result.Errors.Should().ContainSingle(e =>
-            e.ErrorCode == "STRING_TOO_LONG");
+        result.InnerError.Should().NotBeNull();
+        result.InnerError!.Code.Should().Be("INVALID_ARGUMENT");
     }
 
     [Fact]
-    public async Task ValidateAsync_PatternMismatch_ReturnsError()
+    public void CreateResponse_Development_IncludesDetails()
     {
-        var json = JsonDocument.Parse("{ \"id\": \"not-a-uuid\" }");
+        var ex = new ArgumentException("Test error");
+        var responsa = _sut.CreateResponse(ex, isDevelopment: true);
 
-        var result = await _sut.ValidateAsync(json, "entity:base");
-
-        result.Errors.Should().ContainSingle(e =>
-            e.ErrorCode == "PATTERN_MISMATCH");
+        response.Details.Should().NotBeNull();
+        response.Details!.Should().ContainKey("exceptionType");
+        response.Details!.Should().ContainKey("stackTrace");
     }
 
     [Fact]
-    public async Task ValidateAsync_AdditionalPropertiesNotAllowed_ReturnsError()
+    public void CreateResponse_Production_NoDetails()
     {
-        var json = JsonDocument.Parse(
-            "{ \"id\": \"550e8400-e29b-41d4-a716-446655440000\", " +
-            "\"type\": \"User\", \"name\": \"Test\", \"extra\": \"field\" }");
+        var ex = new ArgumentException("Test error");
+        var responsa = _sut.CreateResponse(ex, isDevelopment: false);
 
-        var result = await _sut.ValidateAsync(json, "entity:base");
+        response.Details.Should().BeNull();
+    }
 
-        result.Errors.Should().ContainSingle(e =>
-            e.ErrorCode == "ADDITIONAL_PROPERTY_NOT_ALLOWED");
+    [Theory]
+    [InlineData(typeof(ArgumentException), "INVALID_ARGUMENT", 400)]
+    [InlineData(typeof(UnauthorizedAccessException), "UNAUTHORIZED", 401)]
+    [InlineData(typeof(KeyNotFoundException), "NOT_FOUND", 404)]
+    public void CreateResponse_MapsExceptions_Correctly(Type exType, string expectedCode, int expectedStatus)
+    {
+        var ex = (Exception)Activator.CreateInstance(exType)!;
+        var responsa = _sut.CreateResponse(ex);
+
+        response.Code.Should().Be(expectedCode);
+        response.StatusCode.Should().Be(expectedStatus);
     }
 
     [Fact]
-    public async Task GetSchemaAsync_ExistingSchema_ReturnsSchema()
+    public void CreateResponse_IncludesCorrelationId()
     {
-        var schema = await _sut.GetSchemaAsync("entity:base");
+        var ex = new Exception("Test");
+        var responsa = _sut.CreateResponse(ex);
 
-        schema.Should().NotBeNull();
-        schema!.Properties.Should().ContainKey("id");
+        response.CorrelationId.Should().NotBeNullOrEmpty();
+        response.CorrelationId.Should().StartWith("corr_");
     }
 
     [Fact]
-    public async Task GetSchemaAsync_UnknownSchema_ReturnsNull()
+    public void CreateResponse_NeverLeaksConnectionString()
     {
-        var schema = await _sut.GetSchemaAsync("unknown:schema");
+        var ex = new Exception("Connection to PostgreSQL failed: Host=prod-db.internal:5432 Password=secret!");
+        var responsa = _sut.CreateResponse(ex, isDevelopment: false);
 
-        schema.Should().BeNull();
+        response.Message.Should().NotContain("prod-db");
+        response.Message.Should().NotContain("secret");
     }
 
     [Fact]
-    public async Task RegisterSchemaAsync_NewSchema_CanValidateWithIt()
+    public void CreateResponse_IncludesTimestamp()
     {
-        var schema = new JsonSchema
-        {
-            Id = "test:custom",
-            Title = "Test Schema",
-            Type = "object",
-            Properties = new Dictionary<string, PropertySchema>
-            {
-                ["email"] = new PropertySchema
-                {
-                    Type = "string",
-                    Constraints = new ValidationConstraints { Pattern = @"^.+@.+\..+$" }
-                }
-            }
-        };
+        var ex = new Exception("Test");
+        var befora = DateTimeOffset.UtcNow;
+        var responsa = _sut.CreateResponse(ex);
+        var after = DateTimeOffset.UtcNow;
 
-        await _sut.RegisterSchemaAsync("test:custom", schema);
-
-        var json = JsonDocument.Parse("{ \"email\": \"user@example.com\" }");
-        var result = await _sut.ValidateAsync(json, "test:custom");
-
-        result.IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task ValidateAsync_NullableProperty_AllowsNull()
-    {
-        var json = JsonDocument.Parse("{ \"description\": null }");
-
-        var result = await _sut.ValidateAsync(json, "entity:base");
-
-        result.Errors.Should().NotContainMatch(e =>
-            e.Path == "$.description" && e.ErrorCode == "TYPE_MISMATCH");
+        response.Timestamp.Should().BeOnOrAfter(before);
+        response.Timestamp.Should().BeOnOrBefore(after.AddSeconds(1));
     }
 }
 ```
@@ -1063,21 +703,20 @@ public class InputSchemaValidatorTests
 
 | Metric | Target | Measurement |
 |:-------|:-------|:------------|
-| Schema retrieval (cached) | <1ms | P95 timing |
-| Schema validation | <10ms | P95 timing for typical entity |
-| Complex schema validation | <20ms | P95 timing |
-| Schema registration | <2ms | P95 timing |
+| Error sanitization | <1ms | P95 timing |
+| Response creation | <1ms | P95 timing |
+| Correlation ID generation | <0.1ms | P95 timing |
 
 ---
 
 ## 9. License Gating
 
-| Tier | Schema Validator | Details |
+| Tier | Error Sanitizer | Details |
 |:-----|:-----------------|:--------|
-| **Core** | Basic validation | Required fields, type checks |
-| **WriterPro** | + Constraints | Min/max, patterns, custom rules |
-| **Teams** | + Custom schemas | Ability to register custom schemas |
-| **Enterprise** | + Schema evolution | Schema versioning and migration |
+| **Core** | Basic sanitization | Safe messages only |
+| **WriterPro** | + Dev details | Development mode support |
+| **Teams** | + Custom mappings | Custom error mappings |
+| **Enterprise** | + Audit trail | Full error audit logging |
 
 ---
 
@@ -1085,9 +724,8 @@ public class InputSchemaValidatorTests
 
 | Component | Source | Usage |
 |:----------|:-------|:------|
-| `ILogger<T>` | Microsoft.Extensions.Logging | Diagnostic logging |
-| `IMemoryCache` | Microsoft.Extensions.Caching.Memory | Schema caching |
-| JsonDocument | System.Text.Json | JSON parsing |
+| `ILogger<T>` | Microsoft.Extensions.Logging | Error logging |
+| `IAuditLogger` | v0.11.2-SEC | Security audit trail |
 
 ---
 
@@ -1095,10 +733,10 @@ public class InputSchemaValidatorTests
 
 | Risk | Mitigation |
 |:-----|:-----------|
-| Performance with large objects | Schema caching, lazy validation |
-| Complex nested structures | Depth limits, recursive validation |
-| False positives | Tunable constraints, test coverage |
-| Schema inconsistency | Version management, validation |
+| Missing error mapping | Comprehensive default mappings |
+| Information leakage in dev mode | Strict environment checks |
+| Correlation ID collision | Use date + random + guid |
+| Performance overhead | Minimal processing, caching |
 
 ---
 
@@ -1106,15 +744,14 @@ public class InputSchemaValidatorTests
 
 | # | Deliverable | Status |
 |:--|:-----------|:-------|
-| 1 | `IInputSchemaValidator` interface | [ ] |
-| 2 | `ValidationResult` and error records | [ ] |
-| 3 | `JsonSchema` and property models | [ ] |
-| 4 | `InputSchemaValidator` implementation | [ ] |
-| 5 | Schema registry with caching | [ ] |
-| 6 | Validation engine | [ ] |
-| 7 | Default entity schemas | [ ] |
-| 8 | Unit tests with 95%+ coverage | [ ] |
-| 9 | DI registration in SecurityModule.cs | [ ] |
+| 1 | `IErrorSanitizer` interface | [ ] |
+| 2 | Error response records | [ ] |
+| 3 | `ErrorSanitizer` implementation | [ ] |
+| 4 | Sanitization mapper | [ ] |
+| 5 | Correlation ID generator | [ ] |
+| 6 | Sensitive data redaction | [ ] |
+| 7 | Unit tests with 95%+ coverage | [ ] |
+| 8 | DI registration in SecurityModule.cs | [ ] |
 
 ---
 

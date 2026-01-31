@@ -1,20 +1,20 @@
-# LCS-DES-112-SEC-f: Design Specification — Audit Logger
+# LCS-DES-112-SEC-b: Design Specification — Audit Query UI
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-112-SEC-f                          |
-| **Feature ID**       | SEC-112f                                   |
-| **Feature Name**     | Audit Logger                               |
+| **Document ID**      | LCS-DES-112-SEC-b                          |
+| **Feature ID**       | SEC-112j                                   |
+| **Feature Name**     | Audit Query UI                             |
 | **Parent Feature**   | v0.11.2 — Security Audit Logging           |
-| **Module Scope**     | Lexichord.Modules.Security                 |
+| **Module Scope**     | Lexichord.Web.Components, Lexichord.Server |
 | **Swimlane**         | Security & Compliance                      |
-| **License Tier**     | Core (basic logging)                       |
-| **Feature Gate Key** | `FeatureFlags.Security.AuditLogging`       |
+| **License Tier**     | Core (basic query)                         |
+| **Feature Gate Key** | `FeatureFlags.Security.AuditQueryUI`       |
 | **Status**           | Draft                                      |
 | **Last Updated**     | 2026-01-31                                 |
-| **Est. Hours**       | 8                                          |
+| **Est. Hours**       | 6                                          |
 
 ---
 
@@ -22,32 +22,33 @@
 
 ### 2.1 Problem Statement
 
-Security events occur throughout the system but lack a centralized, high-performance logging mechanism:
+Security personnel need to investigate incidents but lack a dedicated audit log interface:
 
-- No unified interface for logging across services
-- Synchronous logging can block critical paths
-- Batch operations need efficient event collection
-- No built-in correlation or context propagation
+- Requires CLI or API knowledge
+- Cannot filter without writing queries
+- No visualization of event patterns
+- Cannot correlate related events visually
 
 ### 2.2 Solution Overview
 
-Implement `IAuditLogger` with:
+Implement a professional audit log UI with:
 
-- **Non-blocking async logging** with <5ms P95 latency
-- **Batch logging** for bulk operations
-- **Automatic context extraction** (user, IP, request ID)
-- **Buffers and background writes** for performance
-- **Resilience** against storage failures
+- **Advanced filtering**: Multiple filter types with live preview
+- **Event details**: Full context, before/after values, correlation chains
+- **Forensics mode**: Timeline view of related events
+- **Export**: CSV, JSON for external analysis
+- **Search**: Full-text and structured search
+- **Severity indicators**: Visual alerting
 
 ### 2.3 Key Deliverables
 
 | Deliverable | Description |
 | :---------- | :---------- |
-| `IAuditLogger` | Interface in Lexichord.Abstractions |
-| `AuditLogger` | Implementation with buffering and async writes |
-| `AuditLoggerOptions` | Configuration (buffer size, flush interval) |
-| `AuditLoggerMetrics` | Performance metrics collection |
-| `LogBuffer` | Ring buffer for event queuing |
+| `AuditLogPage` component | Main audit log UI |
+| `AuditEventDetails` component | Detail modal/sidebar |
+| `AuditQueryBuilder` component | Filter builder |
+| `AuditChart` component | Timeline/chart visualization |
+| API endpoints | Query, export, detail endpoints |
 
 ---
 
@@ -57,959 +58,1005 @@ Implement `IAuditLogger` with:
 
 ```mermaid
 graph TB
-    subgraph "Event Sources"
-        AUTH["Authorization<br/>Service"]
-        API["API Layer"]
-        KG["Knowledge Graph"]
-        SYS["System"]
+    subgraph "UI Components"
+        ALP["AuditLogPage"]
+        AQB["AuditQueryBuilder"]
+        AED["AuditEventDetails"]
+        CHART["AuditChart"]
+        TABLE["EventsTable"]
     end
 
-    subgraph "Audit Logger (Core)"
-        IAL["IAuditLogger"]
-        AL["AuditLogger"]
-        BUF["LogBuffer<br/>Ring Buffer"]
+    subgraph "API Endpoints"
+        QUERY["/api/audit/query"]
+        DETAILS["/api/audit/event/:id"]
+        EXPORT["/api/audit/export"]
+        STATS["/api/audit/stats"]
     end
 
-    subgraph "Dependencies"
-        HASH["IIntegrityHasher<br/>SEC-112g"]
-        STORE["IAuditStore<br/>PostgreSQL"]
-        METRIC["IMetricsCollector"]
+    subgraph "Services"
+        QS["IAuditQueryService"]
+        LS["ILogService"]
     end
 
-    AUTH --> IAL
-    API --> IAL
-    KG --> IAL
-    SYS --> IAL
+    ALP --> AQB
+    ALP --> TABLE
+    ALP --> EXPORT
+    TABLE --> AED
+    AED --> DETAILS
 
-    IAL --> AL
-    AL --> BUF
-    BUF --> HASH
-    HASH --> STORE
-    AL --> METRIC
+    QUERY --> QS
+    DETAILS --> QS
+    EXPORT --> QS
+    STATS --> LS
 
-    style AL fill:#22c55e,color:#fff
-    style IAL fill:#4a9eff,color:#fff
+    style ALP fill:#4a9eff,color:#fff
+    style AQB fill:#4a9eff,color:#fff
+    style QUERY fill:#22c55e,color:#fff
 ```
 
 ### 3.2 Module Location
 
 ```text
 src/
-├── Lexichord.Abstractions/
-│   └── Contracts/
-│       └── AuditLoggerContracts.cs       ← IAuditLogger interface
+├── Lexichord.Web.Components/
+│   └── Audit/
+│       ├── AuditLogPage.razor           ← Main page
+│       ├── AuditQueryBuilder.razor      ← Filter builder
+│       ├── AuditEventDetails.razor      ← Detail view
+│       ├── AuditChart.razor             ← Timeline
+│       └── AuditLogStyles.css           ← Styling
 │
-└── Lexichord.Modules.Security/
-    ├── Services/
-    │   ├── AuditLogger.cs                ← Main implementation
-    │   └── LogBuffer.cs                  ← Ring buffer
-    ├── Configuration/
-    │   └── AuditLoggerOptions.cs         ← Options
-    └── Metrics/
-        └── AuditLoggerMetrics.cs         ← Performance metrics
+└── Lexichord.Server/
+    ├── Controllers/
+    │   └── AuditController.cs           ← API endpoints
+    └── Services/
+        └── AuditUIService.cs            ← UI business logic
 ```
 
 ---
 
-## 4. Data Contract (The API)
+## 4. Component Specifications
 
-### 4.1 IAuditLogger Interface
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Logs security audit events to persistent storage.
-/// </summary>
-/// <remarks>
-/// <para>
-/// All methods are optimized for high throughput with minimal latency.
-/// The Log() method is non-blocking and returns immediately.
-/// </para>
-/// <para>
-/// Events are buffered in memory and written to storage in batches.
-/// Internally maintains event ordering using timestamps and sequence IDs.
-/// </para>
-/// <para>
-/// Implements automatic context capture (user, IP, session) if not provided.
-/// </para>
-/// </remarks>
-public interface IAuditLogger
-{
-    /// <summary>
-    /// Logs an event asynchronously (non-blocking).
-    /// Returns immediately; actual write happens in background.
-    /// </summary>
-    /// <param name="auditEvent">The event to log.</param>
-    /// <remarks>
-    /// Target: <5ms P95 latency (including allocation).
-    /// Does NOT throw exceptions; errors are logged and swallowed.
-    /// If buffer is full, event is dropped and warning logged.
-    /// </remarks>
-    void Log(AuditEvent auditEvent);
-
-    /// <summary>
-    /// Logs an event and waits for storage confirmation.
-    /// </summary>
-    /// <param name="auditEvent">The event to log.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <remarks>
-    /// Target: <20ms P95 latency.
-    /// Blocks caller until event is written to storage and integrity verified.
-    /// Throws on storage errors or cancellation.
-    /// Use for critical events (login, permission grant).
-    /// </remarks>
-    Task LogAsync(AuditEvent auditEvent, CancellationToken ct = default);
-
-    /// <summary>
-    /// Logs multiple events efficiently in a single batch.
-    /// </summary>
-    /// <param name="events">Collection of events (1-10000 recommended).</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <remarks>
-    /// For bulk operations: imports, large data syncs.
-    /// More efficient than calling LogAsync multiple times.
-    /// Events are ordered by Timestamp within batch.
-    /// Throws on cancellation; partial writes not possible.
-    /// </remarks>
-    Task LogBatchAsync(
-        IReadOnlyList<AuditEvent> events,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Forces any buffered events to be written immediately.
-    /// </summary>
-    /// <remarks>
-    /// Called automatically on shutdown.
-    /// Useful for testing or before long-running operations.
-    /// </remarks>
-    Task FlushAsync(CancellationToken ct = default);
-
-    /// <summary>
-    /// Gets current logging metrics (buffer size, write count, etc).
-    /// </summary>
-    AuditLoggerMetrics GetMetrics();
-}
-```
-
-### 4.2 AuditLoggerOptions Configuration
+### 4.1 AuditLogPage Component
 
 ```csharp
-namespace Lexichord.Modules.Security.Configuration;
-
 /// <summary>
-/// Configuration options for AuditLogger.
+/// Main audit log query and display interface.
 /// </summary>
-public class AuditLoggerOptions
-{
-    /// <summary>
-    /// Size of the in-memory event buffer.
-    /// Default: 10,000 events.
-    /// Larger = more memory, fewer disk writes.
-    /// </summary>
-    public int BufferSize { get; set; } = 10_000;
+@page "/security/audit-logs"
+@attribute [Authorize(Roles = "Security,Admin")]
+@inject IAuditQueryService AuditQueryService
+@inject ISecurityAlertService AlertService
 
-    /// <summary>
-    /// Maximum time to hold events in buffer before flushing.
-    /// Default: 5 seconds.
-    /// Shorter = fresher logs, more disk writes.
-    /// </summary>
-    public TimeSpan FlushInterval { get; set; } = TimeSpan.FromSeconds(5);
+<PageTitle>Security Audit Log</PageTitle>
 
-    /// <summary>
-    /// Maximum number of events to write in a single batch.
-    /// Default: 1,000.
-    /// Larger = better throughput, larger transactions.
-    /// </summary>
-    public int BatchWriteSize { get; set; } = 1_000;
+<div class="audit-log-container">
+    <!-- Header -->
+    <div class="audit-header">
+        <h1>Security Audit Log</h1>
+        <div class="header-actions">
+            <button class="btn btn-primary" @onclick="ExportResults">
+                📥 Export Results
+            </button>
+            <button class="btn btn-secondary" @onclick="SaveAsReport">
+                💾 Save as Report
+            </button>
+            <button class="btn btn-outline" @onclick="RefreshResults">
+                🔄 Refresh
+            </button>
+        </div>
+    </div>
 
-    /// <summary>
-    /// Whether to hash events for integrity verification.
-    /// Default: true.
-    /// Should only be disabled for non-compliance workloads.
-    /// </summary>
-    public bool EnableIntegrityHashing { get; set; } = true;
+    <!-- Query Builder -->
+    <div class="filters-section">
+        <h3>Filters</h3>
+        <AuditQueryBuilder @ref="QueryBuilder" OnQueryChanged="OnFilterChanged" />
 
-    /// <summary>
-    /// Timeout for individual write operations.
-    /// Default: 30 seconds.
-    /// </summary>
-    public TimeSpan WriteTimeout { get; set; } = TimeSpan.FromSeconds(30);
+        <div class="filter-actions">
+            <button class="btn btn-primary" @onclick="ApplyFilters">
+                Apply Filters
+            </button>
+            <button class="btn btn-outline" @onclick="ClearFilters">
+                Clear
+            </button>
+        </div>
+    </div>
 
-    /// <summary>
-    /// Whether to log debug events (LogAsync with Debug severity).
-    /// Default: false in production, true in development.
-    /// </summary>
-    public bool EnableDebugEvents { get; set; } = false;
-
-    /// <summary>
-    /// Maximum queue depth before warning.
-    /// Default: 80% of BufferSize.
-    /// </summary>
-    public int? QueueWarningThreshold { get; set; }
-}
-```
-
-### 4.3 AuditLoggerMetrics Record
-
-```csharp
-namespace Lexichord.Modules.Security.Services;
-
-/// <summary>
-/// Performance and health metrics for the audit logger.
-/// </summary>
-public record AuditLoggerMetrics
-{
-    /// <summary>Total events logged since startup.</summary>
-    public long TotalEventsLogged { get; init; }
-
-    /// <summary>Total events written to storage.</summary>
-    public long TotalEventsWritten { get; init; }
-
-    /// <summary>Total events dropped (buffer full).</summary>
-    public long TotalEventsDropped { get; init; }
-
-    /// <summary>Current size of buffer (number of events).</summary>
-    public int CurrentBufferSize { get; init; }
-
-    /// <summary>Maximum buffer capacity.</summary>
-    public int MaxBufferSize { get; init; }
-
-    /// <summary>P95 latency of Log() calls in milliseconds.</summary>
-    public double LogLatencyP95Ms { get; init; }
-
-    /// <summary>P99 latency of Log() calls in milliseconds.</summary>
-    public double LogLatencyP99Ms { get; init; }
-
-    /// <summary>Average batch size for writes.</summary>
-    public double AverageBatchSize { get; init; }
-
-    /// <summary>Total number of write batches.</summary>
-    public long TotalBatches { get; init; }
-
-    /// <summary>Last time buffer was flushed.</summary>
-    public DateTimeOffset LastFlushTime { get; init; }
-
-    /// <summary>Number of write errors encountered.</summary>
-    public long WriteErrors { get; init; }
-}
-```
-
----
-
-## 5. Implementation
-
-### 5.1 AuditLogger Main Implementation
-
-```csharp
-namespace Lexichord.Modules.Security.Services;
-
-/// <summary>
-/// High-performance audit event logger with buffering and batching.
-/// </summary>
-public class AuditLogger : IAuditLogger, IAsyncDisposable
-{
-    private readonly AuditLoggerOptions _options;
-    private readonly IIntegrityHasher _hasher;
-    private readonly IAuditStore _store;
-    private readonly ILogger<AuditLogger> _logger;
-    private readonly LogBuffer _buffer;
-    private readonly PeriodicTimer _flushTimer;
-    private readonly object _metricsLock = new();
-    private AuditLoggerMetrics _metrics;
-    private readonly Histogram<double> _logLatencyHistogram;
-    private CancellationTokenSource _shutdownCts = new();
-
-    public AuditLogger(
-        IOptions<AuditLoggerOptions> options,
-        IIntegrityHasher hasher,
-        IAuditStore store,
-        ILogger<AuditLogger> logger,
-        IMeterFactory meterFactory)
+    <!-- Results Summary -->
+    @if (QueryResult != null)
     {
-        _options = options.Value;
-        _hasher = hasher;
-        _store = store;
-        _logger = logger;
+        <div class="results-summary">
+            <p>
+                Results: <strong>@QueryResult.Events.Count</strong> of
+                <strong>@QueryResult.TotalCount</strong> events
+                @if (QueryResult.HasMore)
+                {
+                    <span>(more available)</span>
+                }
+            </p>
+        </div>
+    }
 
-        _buffer = new LogBuffer(_options.BufferSize);
-
-        // Initialize metrics
-        _metrics = new AuditLoggerMetrics
+    <!-- Events Table -->
+    <div class="events-table-section">
+        @if (IsLoading)
         {
-            MaxBufferSize = _options.BufferSize,
-            CurrentBufferSize = 0
+            <div class="spinner">Loading events...</div>
+        }
+        else if (QueryResult?.Events.Count == 0)
+        {
+            <div class="empty-state">
+                No events found matching filters.
+            </div>
+        }
+        else
+        {
+            <table class="events-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Timestamp</th>
+                        <th>Event Type</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Outcome</th>
+                        <th>Severity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var evt in QueryResult.Events)
+                    {
+                        <tr class="event-row @GetOutcomeClass(evt.Outcome)"
+                            @onclick="() => ShowEventDetails(evt)">
+                            <td>
+                                <span class="severity-indicator @GetSeverityClass(evt.Severity)">
+                                    ●
+                                </span>
+                            </td>
+                            <td>@evt.Timestamp:G</td>
+                            <td>@evt.EventType</td>
+                            <td>@(evt.UserEmail ?? "System")</td>
+                            <td>@evt.Action</td>
+                            <td>
+                                @if (evt.Outcome == AuditOutcome.Success)
+                                {
+                                    <span class="badge bg-success">✓ Success</span>
+                                }
+                                else if (evt.Outcome == AuditOutcome.Failure)
+                                {
+                                    <span class="badge bg-danger">✗ Failed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">⚠ @evt.Outcome</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @GetSeverityBadgeClass(evt.Severity)">
+                                    @evt.Severity
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                @if (CurrentOffset > 0)
+                {
+                    <button class="btn btn-sm" @onclick="PreviousPage">
+                        ◀ Previous
+                    </button>
+                }
+
+                <span class="page-indicator">
+                    Page @((CurrentOffset / CurrentQuery.Limit) + 1) of
+                    @((QueryResult.TotalCount + CurrentQuery.Limit - 1) / CurrentQuery.Limit)
+                </span>
+
+                @if (QueryResult.HasMore)
+                {
+                    <button class="btn btn-sm" @onclick="NextPage">
+                        Next ▶
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Event Details Modal -->
+    @if (SelectedEvent != null)
+    {
+        <div class="modal-overlay" @onclick="CloseEventDetails">
+            <div class="modal" @onclick:stopPropagation>
+                <AuditEventDetails
+                    Event="SelectedEvent"
+                    OnClose="CloseEventDetails"
+                    OnViewRelated="ViewRelatedEvents" />
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private AuditQueryBuilder? QueryBuilder;
+    private AuditQuery CurrentQuery = new();
+    private AuditQueryResult? QueryResult;
+    private AuditEvent? SelectedEvent;
+    private int CurrentOffset = 0;
+    private bool IsLoadinc = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentQuery = new AuditQuery { Limit = 100 };
+        await ApplyFilters();
+    }
+
+    private async Task OnFilterChanged(AuditQuery query)
+    {
+        CurrentQuery = query with { Offset = 0 };
+        CurrentOffset = 0;
+    }
+
+    private async Task ApplyFilters()
+    {
+        IsLoadinc = true;
+        try
+        {
+            CurrentQuery = CurrentQuery with { Offset = CurrentOffset };
+            QueryResult = await AuditQueryService.QueryAsync(CurrentQuery);
+        }
+        finally
+        {
+            IsLoadinc = false;
+        }
+    }
+
+    private void ClearFilters()
+    {
+        QueryBuilder?.Reset();
+        CurrentQuery = new AuditQuery { Limit = 100 };
+        CurrentOffset = 0;
+    }
+
+    private void ShowEventDetails(AuditEvent evt)
+    {
+        SelectedEvent = evt;
+    }
+
+    private void CloseEventDetails()
+    {
+        SelectedEvent = null;
+    }
+
+    private async Task ViewRelatedEvents(string correlationId)
+    {
+        // Filter to related events
+        CurrentQuery = CurrentQuery with
+        {
+            SearchText = correlationId,
+            Offset = 0
+        };
+        CurrentOffset = 0;
+        await ApplyFilters();
+    }
+
+    private async Task NextPage()
+    {
+        CurrentOffset += CurrentQuery.Limit;
+        await ApplyFilters();
+    }
+
+    private async Task PreviousPage()
+    {
+        CurrentOffset = Math.Max(0, CurrentOffset - CurrentQuery.Limit);
+        await ApplyFilters();
+    }
+
+    private async Task ExportResults()
+    {
+        // Export as CSV/JSON
+    }
+
+    private async Task SaveAsReport()
+    {
+        // Save query and results as report
+    }
+
+    private async Task RefreshResults()
+    {
+        await ApplyFilters();
+    }
+
+    private string GetOutcomeClass(AuditOutcome outcome) => outcome switch
+    {
+        AuditOutcome.Success => "outcome-success",
+        AuditOutcome.Failure => "outcome-failure",
+        _ => "outcome-other"
+    };
+
+    private string GetSeverityClass(AuditSeverity severity) => severity switch
+    {
+        AuditSeverity.Critical => "severity-critical",
+        AuditSeverity.Error => "severity-error",
+        AuditSeverity.Warning => "severity-warning",
+        _ => "severity-info"
+    };
+
+    private string GetSeverityBadgeClass(AuditSeverity severity) =>
+        $"badge-{GetSeverityClass(severity)}";
+}
+```
+
+### 4.2 AuditQueryBuilder Component
+
+```csharp
+/// <summary>
+/// Advanced filter builder for audit queries.
+/// </summary>
+@inject IJSRuntime JS
+
+<div class="query-builder">
+    <!-- Date Range -->
+    <div class="filter-group">
+        <label>Date Range</label>
+        <div class="filter-inputs">
+            <input type="datetime-local"
+                @bind="FilterFromDate"
+                placeholder="From" />
+            <input type="datetime-local"
+                @bind="FilterToDate"
+                placeholder="To" />
+        </div>
+    </div>
+
+    <!-- Event Type -->
+    <div class="filter-group">
+        <label>Event Type</label>
+        <select @onchange="OnEventTypeChange" multiple>
+            <option value="">-- All Types --</option>
+            @foreach (var type in Enum.GetValues<AuditEventType>())
+            {
+                <option value="@type">@type</option>
+            }
+        </select>
+    </div>
+
+    <!-- Category -->
+    <div class="filter-group">
+        <label>Category</label>
+        <select @onchange="OnCategoryChange" multiple>
+            <option value="">-- All Categories --</option>
+            @foreach (var cat in Enum.GetValues<AuditEventCategory>())
+            {
+                <option value="@cat">@cat</option>
+            }
+        </select>
+    </div>
+
+    <!-- User -->
+    <div class="filter-group">
+        <label>User</label>
+        <input type="text"
+            @bind="FilterUser"
+            placeholder="Email or name"
+            list="user-list" />
+        <datalist id="user-list">
+            @foreach (var user in AvailableUsers)
+            {
+                <option value="@user.Email">@user.Name</option>
+            }
+        </datalist>
+    </div>
+
+    <!-- Outcome -->
+    <div class="filter-group">
+        <label>Outcome</label>
+        <div class="radio-group">
+            <label><input type="radio" @onchange="e => FilterOutcoma = null"
+                @checked="FilterOutcome == null" /> All</label>
+            <label><input type="radio" @onchange="e => FilterOutcoma = AuditOutcome.Success"
+                @checked="FilterOutcome == AuditOutcome.Success" /> Success</label>
+            <label><input type="radio" @onchange="e => FilterOutcoma = AuditOutcome.Failure"
+                @checked="FilterOutcome == AuditOutcome.Failure" /> Failure</label>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="filter-group">
+        <label>Search</label>
+        <input type="text"
+            @bind="FilterSearch"
+            placeholder="Search action, resource, IP..." />
+    </div>
+
+    <!-- Saved Filters -->
+    <div class="saved-filters">
+        <label>Saved Filters</label>
+        <select @onchange="OnLoadSavedFilter">
+            <option value="">-- Load Saved Filter --</option>
+            @foreach (var saved in SavedFilters)
+            {
+                <option value="@saved.Id">@saved.Name</option>
+            }
+        </select>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<AuditQuery> OnQueryChanged { get; set; }
+
+    private DateTime? FilterFromDate;
+    private DateTime? FilterToDate;
+    private List<AuditEventType> FilterEventTypes = new();
+    private List<AuditEventCategory> FilterCategories = new();
+    private string FilterUser = "";
+    private AuditOutcome? FilterOutcome;
+    private string FilterSearcd = "";
+    private List<SavedFilter> SavedFilters = new();
+    private List<UserInfo> AvailableUsers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load available users and saved filters
+        // AvailableUsers = await UserService.GetUsersAsync();
+        // SavedFilters = await QueryService.GetSavedFiltersAsync();
+    }
+
+    private async Task OnEventTypeChange(ChangeEventArgs e)
+    {
+        await NotifyQueryChanged();
+    }
+
+    private async Task OnCategoryChange(ChangeEventArgs e)
+    {
+        await NotifyQueryChanged();
+    }
+
+    private async Task NotifyQueryChanged()
+    {
+        var query = new AuditQuery
+        {
+            From = FilterFromDate?.ToUniversalTime() ?? DateTimeOffset.UtcNow.AddDays(-30),
+            To = FilterToDate?.ToUniversalTime() ?? DateTimeOffset.UtcNow,
+            EventTypes = FilterEventTypes.Count > 0 ? FilterEventTypes : null,
+            Categories = FilterCategories.Count > 0 ? FilterCategories : null,
+            Outcoma = FilterOutcome,
+            SearchText = string.IsNullOrEmpty(FilterSearch) ? null : FilterSearch
         };
 
-        // Create OpenTelemetry histogram
-        var meter = meterFactory.Create("Lexichord.Security.AuditLogger");
-        _logLatencyHistogram = meter.CreateHistogram<double>(
-            "audit_log_latency_ms",
-            "milliseconds",
-            "Latency of non-blocking log operations");
-
-        // Start background flush timer
-        _flushTimer = new PeriodicTimer(_options.FlushInterval);
-        _ = RunFlushLoopAsync();
-
-        _logger.LogInformation(
-            "AuditLogger initialized: BufferSize={BufferSize}, FlushInterval={FlushMs}ms",
-            _options.BufferSize,
-            _options.FlushInterval.TotalMilliseconds);
+        await OnQueryChanged.InvokeAsync(query);
     }
+
+    public void Reset()
+    {
+        FilterFromData = null;
+        FilterToData = null;
+        FilterEventTypes.Clear();
+        FilterCategories.Clear();
+        FilterUser = "";
+        FilterOutcoma = null;
+        FilterSearcd = "";
+    }
+}
+```
+
+### 4.3 AuditEventDetails Component
+
+```csharp
+/// <summary>
+/// Detailed view of a single audit event.
+/// </summary>
+@inject IAuditQueryService AuditQueryService
+
+<div class="event-details">
+    <!-- Header -->
+    <div class="details-header">
+        <h2>Event Details</h2>
+        <button class="btn-close" @onclick="OnClose">✕</button>
+    </div>
+
+    <!-- Event ID and Timestamp -->
+    <div class="details-section">
+        <div class="detail-field">
+            <label>Event ID</label>
+            <code>@Event.EventId</code>
+        </div>
+        <div class="detail-field">
+            <label>Timestamp</label>
+            <time>@Event.Timestamp:O</time>
+        </div>
+        <div class="detail-field">
+            <label>Type / Severity</label>
+            <span>@Event.EventType</span>
+            <span class="badge @GetSeverityBadgeClass(Event.Severity)">
+                @Event.Severity
+            </span>
+        </div>
+    </div>
+
+    <!-- Actor Information -->
+    @if (!string.IsNullOrEmpty(Event.UserEmail))
+    {
+        <div class="details-section">
+            <h3>Actor</h3>
+            <div class="detail-field">
+                <label>User</label>
+                <span>@Event.UserName (@Event.UserEmail)</span>
+            </div>
+            @if (!string.IsNullOrEmpty(Event.IpAddress))
+            {
+                <div class="detail-field">
+                    <label>IP Address</label>
+                    <code>@Event.IpAddress</code>
+                    <button class="btn-small" @onclick="() => ViewIpHistory(Event.IpAddress)">
+                        View History
+                    </button>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Event.SessionId))
+            {
+                <div class="detail-field">
+                    <label>Session</label>
+                    <code>@Event.SessionId</code>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Resource Information -->
+    @if (!string.IsNullOrEmpty(Event.ResourceName))
+    {
+        <div class="details-section">
+            <h3>Resource</h3>
+            <div class="detail-field">
+                <label>Type</label>
+                <span>@Event.ResourceType</span>
+            </div>
+            <div class="detail-field">
+                <label>Name</label>
+                <span>@Event.ResourceName</span>
+            </div>
+            <div class="detail-field">
+                <label>ID</label>
+                <code>@Event.ResourceId</code>
+            </div>
+        </div>
+    }
+
+    <!-- Action Details -->
+    <div class="details-section">
+        <h3>Action</h3>
+        <div class="detail-field">
+            <label>Action</label>
+            <span>@Event.Action</span>
+        </div>
+        <div class="detail-field">
+            <label>Outcome</label>
+            <span class="@GetOutcomeClass(Event.Outcome)">
+                @Event.Outcome
+            </span>
+        </div>
+        @if (!string.IsNullOrEmpty(Event.FailureReason))
+        {
+            <div class="detail-field">
+                <label>Failure Reason</label>
+                <span class="text-danger">@Event.FailureReason</span>
+            </div>
+        }
+    </div>
+
+    <!-- Before/After Values -->
+    @if (Event.OldValue != null || Event.NewValue != null)
+    {
+        <div class="details-section">
+            <h3>Changes</h3>
+            @if (Event.OldValue != null)
+            {
+                <div class="detail-field">
+                    <label>Previous Value</label>
+                    <pre>@FormatJson(Event.OldValue)</pre>
+                </div>
+            }
+            @if (Event.NewValue != null)
+            {
+                <div class="detail-field">
+                    <label>New Value</label>
+                    <pre>@FormatJson(Event.NewValue)</pre>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Integrity -->
+    @if (!string.IsNullOrEmpty(Event.Hash))
+    {
+        <div class="details-section">
+            <h3>Integrity</h3>
+            <div class="detail-field">
+                <label>Hash</label>
+                <code class="hash">@Event.Hash</code>
+                <span class="badge bg-success">✓ Verified</span>
+            </div>
+            @if (!string.IsNullOrEmpty(Event.PreviousHash))
+            {
+                <div class="detail-field">
+                    <label>Previous Hash</label>
+                    <code class="hash">@Event.PreviousHash</code>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Correlation -->
+    @if (!string.IsNullOrEmpty(Event.CorrelationId))
+    {
+        <div class="details-section">
+            <h3>Correlation</h3>
+            <div class="detail-field">
+                <label>Correlation ID</label>
+                <code>@Event.CorrelationId</code>
+                <button class="btn-small"
+                    @onclick="() => OnViewRelated.InvokeAsync(Event.CorrelationId)">
+                    View Related Events
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- Actions -->
+    <div class="details-actions">
+        <button class="btn btn-primary" @onclick="ExportEvent">
+            📥 Export
+        </button>
+        <button class="btn btn-secondary" @onclick="CreateAlertRule">
+            🚨 Create Alert Rule
+        </button>
+        <button class="btn btn-outline" @onclick="OnClose">
+            Close
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public AuditEvent Event { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnViewRelated { get; set; }
+
+    private async Task ViewIpHistory(string ipAddress)
+    {
+        // Filter to events from this IP
+    }
+
+    private async Task ExportEvent()
+    {
+        var json = JsonSerializer.Serialize(Event,
+            new JsonSerializerOptions { WriteIndented = true });
+        // Download as file
+    }
+
+    private async Task CreateAlertRule()
+    {
+        // Create alert rule based on this event
+    }
+
+    private string FormatJson(JsonDocument? doc) =>
+        doc?.RootElement.GetRawText() ?? "";
+
+    private string GetOutcomeClass(AuditOutcome outcome) => outcome switch
+    {
+        AuditOutcome.Success => "text-success",
+        AuditOutcome.Failure => "text-danger",
+        _ => "text-warning"
+    };
+
+    private string GetSeverityBadgeClass(AuditSeverity severity) => severity switch
+    {
+        AuditSeverity.Critical => "badge-danger",
+        AuditSeverity.Error => "badge-danger",
+        AuditSeverity.Warning => "badge-warning",
+        _ => "badge-info"
+    };
+}
+```
+
+---
+
+## 5. API Endpoints
+
+### 5.1 Query Endpoint
+
+```csharp
+[ApiController]
+[Route("api/audit")]
+[Authorize(Roles = "Security,Admin")]
+public class AuditController : ControllerBase
+{
+    private readonly IAuditQueryService _queryService;
 
     /// <summary>
-    /// Logs an event non-blockingly.
+    /// Queries audit events with filters.
     /// </summary>
-    public void Log(AuditEvent auditEvent)
-    {
-        if (auditEvent == null)
-            throw new ArgumentNullException(nameof(auditEvent));
-
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-        try
-        {
-            // Calculate hash if enabled
-            if (_options.EnableIntegrityHashing && auditEvent.Hash == null)
-            {
-                var previousHash = _buffer.GetLastHash();
-                auditEvent = auditEvent with
-                {
-                    Hash = _hasher.CalculateEventHash(auditEvent),
-                    PreviousHash = previousHash
-                };
-            }
-
-            // Try to add to buffer
-            bool added = _buffer.TryEnqueue(auditEvent);
-
-            if (!added)
-            {
-                _logger.LogWarning(
-                    "Audit event buffer full, dropping event. EventId={EventId}",
-                    auditEvent.EventId);
-
-                lock (_metricsLock)
-                {
-                    _metrics = _metrics with
-                    {
-                        TotalEventsDropped = _metrics.TotalEventsDropped + 1
-                    };
-                }
-                return;
-            }
-
-            lock (_metricsLock)
-            {
-                _metrics = _metrics with
-                {
-                    TotalEventsLogged = _metrics.TotalEventsLogged + 1,
-                    CurrentBufferSize = _buffer.Count
-                };
-            }
-
-            stopwatch.Stop();
-            _logLatencyHistogram.Record(stopwatch.Elapsed.TotalMilliseconds);
-
-            // Check if buffer exceeds warning threshold
-            if (_buffer.Count > (_options.QueueWarningThreshold ??
-                                _options.BufferSize * 0.8))
-            {
-                _logger.LogWarning(
-                    "Audit log buffer approaching capacity: {Current}/{Max}",
-                    _buffer.Count,
-                    _options.BufferSize);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error logging audit event. EventId={EventId}",
-                auditEvent?.EventId);
-            // Don't throw - this is non-blocking
-        }
-    }
-
-    /// <summary>
-    /// Logs an event and waits for storage confirmation.
-    /// </summary>
-    public async Task LogAsync(
-        AuditEvent auditEvent,
-        CancellationToken ct = default)
-    {
-        if (auditEvent == null)
-            throw new ArgumentNullException(nameof(auditEvent));
-
-        ThrowIfCancelled(ct);
-
-        // Calculate hash
-        if (_options.EnableIntegrityHashing && auditEvent.Hash == null)
-        {
-            var previousHash = await _buffer.GetLastHashAsync();
-            auditEvent = auditEvent with
-            {
-                Hash = _hasher.CalculateEventHash(auditEvent),
-                PreviousHash = previousHash
-            };
-        }
-
-        // Write directly to storage (don't buffer)
-        using var cts = new CancellationTokenSource(_options.WriteTimeout);
-        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
-
-        try
-        {
-            await _store.WriteEventAsync(auditEvent, linked.Token);
-
-            lock (_metricsLock)
-            {
-                _metrics = _metrics with
-                {
-                    TotalEventsLogged = _metrics.TotalEventsLogged + 1,
-                    TotalEventsWritten = _metrics.TotalEventsWritten + 1
-                };
-            }
-
-            _logger.LogDebug("Audit event logged and stored. EventId={EventId}",
-                auditEvent.EventId);
-        }
-        catch (OperationCanceledException) when (cts.Token.IsCancellationRequested)
-        {
-            _logger.LogError("Audit event write timeout. EventId={EventId}",
-                auditEvent.EventId);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            lock (_metricsLock)
-            {
-                _metrics = _metrics with
-                {
-                    WriteErrors = _metrics.WriteErrors + 1
-                };
-            }
-
-            _logger.LogError(ex, "Failed to store audit event. EventId={EventId}",
-                auditEvent.EventId);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Logs multiple events efficiently in a batch.
-    /// </summary>
-    public async Task LogBatchAsync(
-        IReadOnlyList<AuditEvent> events,
-        CancellationToken ct = default)
-    {
-        if (events == null || events.Count == 0)
-            throw new ArgumentException("Events collection required");
-
-        ThrowIfCancelled(ct);
-
-        _logger.LogInformation("Beginning batch log of {Count} events", events.Count);
-
-        using var cts = new CancellationTokenSource(_options.WriteTimeout);
-        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, cts.Token);
-
-        try
-        {
-            // Calculate hashes for all events
-            var processedEvents = events;
-            if (_options.EnableIntegrityHashing)
-            {
-                processedEvents = await CalculateHashesForBatchAsync(
-                    events, linked.Token);
-            }
-
-            // Write in chunks
-            var chunks = processedEvents
-                .Chunk(_options.BatchWriteSize)
-                .ToList();
-
-            foreach (var chunk in chunks)
-            {
-                await _store.WriteBatchAsync(chunk.ToList(), linked.Token);
-
-                lock (_metricsLock)
-                {
-                    _metrics = _metrics with
-                    {
-                        TotalEventsWritten = _metrics.TotalEventsWritten + chunk.Length,
-                        TotalBatches = _metrics.TotalBatches + 1,
-                        AverageBatchSize = (double)chunk.Length
-                    };
-                }
-            }
-
-            lock (_metricsLock)
-            {
-                _metrics = _metrics with
-                {
-                    TotalEventsLogged = _metrics.TotalEventsLogged + events.Count
-                };
-            }
-
-            _logger.LogInformation(
-                "Batch log complete. EventCount={Count}, Chunks={Chunks}",
-                events.Count, chunks.Count);
-        }
-        catch (OperationCanceledException) when (cts.Token.IsCancellationRequested)
-        {
-            _logger.LogError("Batch write timeout after {Count} events", events.Count);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            lock (_metricsLock)
-            {
-                _metrics = _metrics with
-                {
-                    WriteErrors = _metrics.WriteErrors + 1
-                };
-            }
-
-            _logger.LogError(ex, "Batch write failed after {Count} events",
-                events.Count);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Flushes buffered events to storage.
-    /// </summary>
-    public async Task FlushAsync(CancellationToken ct = default)
-    {
-        ThrowIfCancelled(ct);
-
-        var events = _buffer.DequeueAll();
-        if (events.Count == 0)
-            return;
-
-        _logger.LogDebug("Flushing {Count} buffered audit events", events.Count);
-
-        await LogBatchAsync(events, ct);
-
-        lock (_metricsLock)
-        {
-            _metrics = _metrics with
-            {
-                LastFlushTime = DateTimeOffset.UtcNow,
-                CurrentBufferSize = 0
-            };
-        }
-    }
-
-    /// <summary>
-    /// Gets current metrics.
-    /// </summary>
-    public AuditLoggerMetrics GetMetrics()
-    {
-        lock (_metricsLock)
-        {
-            return _metrics with
-            {
-                CurrentBufferSize = _buffer.Count
-            };
-        }
-    }
-
-    /// <summary>
-    /// Background task that periodically flushes the buffer.
-    /// </summary>
-    private async Task RunFlushLoopAsync()
-    {
-        try
-        {
-            while (await _flushTimer.WaitForNextTickAsync(_shutdownCts.Token))
-            {
-                try
-                {
-                    await FlushAsync(_shutdownCts.Token);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error during periodic flush");
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogDebug("Flush loop cancelled");
-        }
-    }
-
-    private async Task<IReadOnlyList<AuditEvent>> CalculateHashesForBatchAsync(
-        IReadOnlyList<AuditEvent> events,
+    /// <remarks>
+    /// Supports pagination with Offset/Limit.
+    /// Returns matching events and total count.
+    /// </remarks>
+    [HttpPost("query")]
+    public async Task<AuditQueryResult> QueryEvents(
+        [FromBody] AuditQuery query,
         CancellationToken ct)
     {
-        var result = new List<AuditEvent>(events.Count);
-        string? previousHash = await _buffer.GetLastHashAsync();
+        ValidateQuery(query);
+        return await _queryService.QueryAsync(query, ct);
+    }
+
+    /// <summary>
+    /// Gets a specific event by ID.
+    /// </summary>
+    [HttpGet("event/{eventId}")]
+    public async Task<ActionResult<AuditEvent>> GetEvent(
+        Guid eventId,
+        CancellationToken ct)
+    {
+        var evt = await _queryService.GetByIdAsync(eventId, ct);
+        if (evt == null)
+            return NotFound();
+        return evt;
+    }
+
+    /// <summary>
+    /// Exports audit results as CSV.
+    /// </summary>
+    [HttpPost("export")]
+    public async Task<FileContentResult> ExportResults(
+        [FromBody] AuditQuery query,
+        CancellationToken ct)
+    {
+        var result = await _queryService.QueryAsync(query, ct);
+        var csv = ConvertToCsv(result.Events);
+
+        return File(
+            Encoding.UTF8.GetBytes(csv),
+            "text/csv",
+            $"audit-export-{DateTime.UtcNow:yyyyMMdd-HHmmss}.csv");
+    }
+
+    /// <summary>
+    /// Gets correlated events.
+    /// </summary>
+    [HttpGet("events/correlated/{correlationId}")]
+    public async Task<ActionResult<IReadOnlyList<AuditEvent>>> GetCorrelatedEvents(
+        string correlationId,
+        CancellationToken ct)
+    {
+        var events = await _queryService.GetCorrelatedEventsAsync(
+            correlationId, ct);
+        return Ok(events);
+    }
+
+    private static void ValidateQuery(AuditQuery query)
+    {
+        if (query.Limit < 1 || query.Limit > 10_000)
+            throw new ArgumentException("Limit must be 1-10000");
+        if (query.Offset < 0)
+            throw new ArgumentException("Offset must be >= 0");
+    }
+
+    private static string ConvertToCsv(IReadOnlyList<AuditEvent> events)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("EventId,Timestamp,Type,User,Action,Outcome,Severity");
 
         foreach (var evt in events)
         {
-            var withHash = evt with
-            {
-                Hash = _hasher.CalculateEventHash(evt),
-                PreviousHash = previousHash
-            };
-            result.Add(withHash);
-            previousHash = withHash.Hash;
+            sb.AppendLine(
+                $"\"{evt.EventId}\",\"{evt.Timestamp:O}\"," +
+                $"\"{evt.EventType}\",\"{evt.UserEmail ?? ""}\"," +
+                $"\"{evt.Action}\",\"{evt.Outcome}\",\"{evt.Severity}\"");
         }
 
-        return result;
-    }
-
-    private static void ThrowIfCancelled(CancellationToken ct)
-    {
-        if (ct.IsCancellationRequested)
-            throw new OperationCanceledException();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        _shutdownCts.Cancel();
-        _flushTimer?.Dispose();
-
-        try
-        {
-            await FlushAsync(CancellationToken.None);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error flushing during shutdown");
-        }
-
-        _shutdownCts?.Dispose();
-    }
-}
-```
-
-### 5.2 LogBuffer Ring Buffer
-
-```csharp
-namespace Lexichord.Modules.Security.Services;
-
-/// <summary>
-/// Thread-safe ring buffer for audit events.
-/// </summary>
-internal class LogBuffer
-{
-    private readonly AuditEvent?[] _buffer;
-    private volatile int _head = 0;
-    private volatile int _tail = 0;
-    private readonly object _lock = new();
-    private string? _lastHash;
-
-    public int Count
-    {
-        get
-        {
-            lock (_lock)
-            {
-                if (_head == _tail)
-                    return 0;
-                return _head > _tail
-                    ? _head - _tail
-                    : _buffer.Length - _tail + _head;
-            }
-        }
-    }
-
-    public LogBuffer(int capacity)
-    {
-        if (capacity <= 0)
-            throw new ArgumentException("Capacity must be positive", nameof(capacity));
-
-        _buffer = new AuditEvent[capacity];
-    }
-
-    /// <summary>
-    /// Tries to enqueue an event.
-    /// </summary>
-    public bool TryEnqueue(AuditEvent evt)
-    {
-        lock (_lock)
-        {
-            int nextHead = (_head + 1) % _buffer.Length;
-            if (nextHead == _tail)
-                return false; // Buffer full
-
-            _buffer[_head] = evt;
-            _lastHash = evt.Hash;
-            _head = nextHead;
-            return true;
-        }
-    }
-
-    /// <summary>
-    /// Dequeues all events from the buffer.
-    /// </summary>
-    public IReadOnlyList<AuditEvent> DequeueAll()
-    {
-        lock (_lock)
-        {
-            if (_head == _tail)
-                return Array.Empty<AuditEvent>();
-
-            var result = new List<AuditEvent>();
-
-            if (_head > _tail)
-            {
-                for (int i = _tail; i < _head; i++)
-                {
-                    if (_buffer[i] != null)
-                        result.Add(_buffer[i]!);
-                }
-            }
-            else
-            {
-                for (int i = _tail; i < _buffer.Length; i++)
-                {
-                    if (_buffer[i] != null)
-                        result.Add(_buffer[i]!);
-                }
-                for (int i = 0; i < _head; i++)
-                {
-                    if (_buffer[i] != null)
-                        result.Add(_buffer[i]!);
-                }
-            }
-
-            _tail = _head;
-            return result;
-        }
-    }
-
-    /// <summary>
-    /// Gets the hash of the last event in the buffer (or storage).
-    /// </summary>
-    public string? GetLastHash()
-    {
-        lock (_lock)
-        {
-            return _lastHash;
-        }
-    }
-
-    /// <summary>
-    /// Gets the hash asynchronously (may query storage).
-    /// </summary>
-    public async Task<string?> GetLastHashAsync()
-    {
-        lock (_lock)
-        {
-            if (_lastHash != null)
-                return _lastHash;
-        }
-
-        // Query storage for last event hash (if buffer is empty)
-        return await Task.FromResult<string?>(null);
+        return sb.ToString();
     }
 }
 ```
 
 ---
 
-## 6. DI Registration
+## 6. UI Styling
 
-```csharp
-public static class SecurityAuditExtensions
-{
-    public static IServiceCollection AddSecurityAuditLogging(
-        this IServiceCollection services,
-        Action<AuditLoggerOptions>? configureOptions = null)
-    {
-        services.Configure<AuditLoggerOptions>(opts =>
-        {
-            configureOptions?.Invoke(opts);
-        });
+Key CSS classes for styling:
 
-        services.AddSingleton<IAuditLogger, AuditLogger>();
-        services.AddSingleton<LogBuffer>();
-
-        return services;
-    }
+```css
+.audit-log-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-// In Program.cs:
-builder.Services.AddSecurityAuditLogging(opts =>
-{
-    opts.BufferSize = 10_000;
-    opts.FlushInterval = TimeSpan.FromSeconds(5);
-    opts.EnableIntegrityHashing = true;
-});
+.event-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.event-row:hover {
+    background-color: #f5f5f5;
+}
+
+.event-row.outcome-failure {
+    border-left: 4px solid #dc2626;
+}
+
+.event-row.outcome-success {
+    border-left: 4px solid #10b981;
+}
+
+.severity-indicator.severity-critical {
+    color: #dc2626;
+}
+
+.severity-indicator.severity-error {
+    color: #ef4444;
+}
+
+.severity-indicator.severity-warning {
+    color: #f59e0b;
+}
+
+.severity-indicator.severity-info {
+    color: #3b82f6;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 8px;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+.details-section {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 15px 0;
+}
+
+.detail-field {
+    margin: 10px 0;
+}
+
+.detail-field label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+    color: #374151;
+}
+
+.detail-field code {
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.hash {
+    font-size: 0.85em;
+    word-break: break-all;
+}
 ```
 
 ---
 
-## 7. Performance Characteristics
+## 7. Performance Considerations
 
-| Operation | Target P95 | Implementation |
-| :--------- | :--------- | :------------- |
-| `Log()` | <5ms | Ring buffer, no I/O, minimal allocation |
-| `LogAsync()` | <20ms | Direct write, single transaction |
-| `LogBatchAsync()` | <2s for 1000 events | Chunked writes, indexed inserts |
-| `FlushAsync()` | <1s for 10k events | Batch write, database optimization |
-| Memory overhead | <200KB | Ring buffer only, no event copies |
+- **Virtual scrolling**: For large result sets
+- **Lazy loading**: Details load on demand
+- **Caching**: Query results cached for 1 minute
+- **Pagination**: Always use offset/limit
 
 ---
 
-## 8. Error Handling
+## 8. Accessibility
 
-| Scenario | Behavior |
-| :-------- | :--------- |
-| Buffer full | Event dropped, warning logged, metric incremented |
-| Write timeout | Exception thrown (for async methods) |
-| Storage down | Retry with exponential backoff (for batch) |
-| Hashing error | Event still logged (without hash verification) |
-| Cancellation | OperationCanceledException thrown |
+- ARIA labels on all buttons
+- Keyboard navigation (Tab, Enter, Escape)
+- Color not the only indicator (severity badges)
+- Focus management in modals
 
 ---
 
-## 9. Observability & Metrics
-
-```csharp
-// OpenTelemetry histogram automatically tracked:
-- audit_log_latency_ms (milliseconds)
-
-// Manual metrics available via GetMetrics():
-var metrics = _auditLogger.GetMetrics();
-Console.WriteLine($"Logged: {metrics.TotalEventsLogged}");
-Console.WriteLine($"Dropped: {metrics.TotalEventsDropped}");
-Console.WriteLine($"P95 latency: {metrics.LogLatencyP95Ms}ms");
-Console.WriteLine($"Errors: {metrics.WriteErrors}");
-```
-
----
-
-## 10. Acceptance Criteria
+## 9. Acceptance Criteria
 
 | #   | Category | Criterion | Verification |
 | :-- | :------- | :-------- | :----------- |
-| 1 | Functional | Log() returns immediately (<5ms P95) | Performance test |
-| 2 | Functional | LogAsync() waits for storage confirmation | Integration test |
-| 3 | Functional | LogBatchAsync() handles 1-10000 events | Load test |
-| 4 | Functional | Buffer fills and flushes automatically | Integration test |
-| 5 | Functional | Events maintain order by timestamp | Integration test |
-| 6 | Functional | Hash chain calculated correctly | Unit test |
-| 7 | Functional | Metrics collected accurately | Unit test |
-| 8 | Resilience | Dropped events logged as warning | Unit test |
-| 9 | Resilience | Write timeout handled gracefully | Integration test |
-| 10 | Stress | Handles 10k events/sec | Load test |
+| 1 | Functional | Audit log page loads | E2E test |
+| 2 | Functional | Filtering works | E2E test |
+| 3 | Functional | Details modal opens | E2E test |
+| 4 | Functional | Export to CSV works | E2E test |
+| 5 | Functional | Pagination works | E2E test |
+| 6 | Functional | Search filters results | E2E test |
+| 7 | Performance | Page loads in <2s | Perf test |
+| 8 | Performance | Table scrolls smoothly | Visual test |
+| 9 | Accessibility | Keyboard navigation works | A11y test |
+| 10 | Security | RBAC enforced on API | Security test |
 
 ---
 
-## 11. Unit Testing Requirements
+## 10. Unit Testing Requirements
 
 ```csharp
-[Trait("Category", "Unit")]
-[Trait("Feature", "v0.11.2f")]
-public class AuditLoggerTests
+[Collection("Audit UI Tests")]
+public class AuditLogPageTests : IAsyncLifetime
 {
+    private readonly TestContext _ctx = new();
+
     [Fact]
-    public void Log_ReturnsImmediately()
+    public async Task Renders_QueryBuilderAndTable()
     {
-        var logger = CreateAuditLogger();
-        var evt = CreateEvent();
-        var sw = Stopwatch.StartNew();
+        var cut = _ctx.RenderComponent<AuditLogPage>();
 
-        logger.Log(evt);
-
-        sw.Stop();
-        sw.Elapsed.Should().BeLessThan(TimeSpan.FromMilliseconds(5));
+        cut.FindComponent<AuditQueryBuilder>().Should().NotBeNull();
+        cut.FindAll("table.events-table").Should().HaveCount(1);
     }
 
     [Fact]
-    public async Task LogAsync_WritesEventToStorage()
+    public async Task Filters_UpdatesResults()
     {
-        var mockStore = new Mock<IAuditStore>();
-        var logger = CreateAuditLogger(store: mockStore.Object);
-        var evt = CreateEvent();
+        var cut = _ctx.RenderComponent<AuditLogPage>();
+        var queryBuilder = cut.FindComponent<AuditQueryBuilder>();
 
-        await logger.LogAsync(evt);
-
-        mockStore.Verify(
-            s => s.WriteEventAsync(evt, It.IsAny<CancellationToken>()),
-            Times.Once);
+        // Change filters
+        // Assert results updated
     }
 
     [Fact]
-    public async Task LogBatchAsync_WritesBatch()
+    public async Task ClickingEvent_ShowsDetails()
     {
-        var mockStore = new Mock<IAuditStore>();
-        var logger = CreateAuditLogger(store: mockStore.Object);
-        var events = Enumerable.Range(0, 100)
-            .Select(_ => CreateEvent())
-            .ToList();
+        var cut = _ctx.RenderComponent<AuditLogPage>();
+        var firstRow = cut.Find("tr.event-row");
 
-        await logger.LogBatchAsync(events);
+        await firstRow.ClickAsync(new MouseEventArgs());
 
-        mockStore.Verify(
-            s => s.WriteBatchAsync(It.IsAny<List<AuditEvent>>(),
-                It.IsAny<CancellationToken>()),
-            Times.AtLeastOnce);
-    }
-
-    [Fact]
-    public async Task FlushAsync_FlushesBuffer()
-    {
-        var mockStore = new Mock<IAuditStore>();
-        var logger = CreateAuditLogger(store: mockStore.Object);
-        var evt = CreateEvent();
-
-        logger.Log(evt);
-        await logger.FlushAsync();
-
-        mockStore.Verify(
-            s => s.WriteBatchAsync(It.IsAny<List<AuditEvent>>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public void GetMetrics_ReturnsAccurateMetrics()
-    {
-        var logger = CreateAuditLogger();
-
-        logger.Log(CreateEvent());
-        logger.Log(CreateEvent());
-
-        var metrics = logger.GetMetrics();
-        metrics.TotalEventsLogged.Should().Be(2);
-    }
-
-    [Fact]
-    public void Log_DropsEventWhenBufferFull()
-    {
-        var logger = CreateAuditLogger(bufferSize: 2);
-
-        logger.Log(CreateEvent());
-        logger.Log(CreateEvent());
-        logger.Log(CreateEvent()); // This should be dropped
-
-        var metrics = logger.GetMetrics();
-        metrics.TotalEventsDropped.Should().Be(1);
+        cut.FindComponent<AuditEventDetails>().Should().NotBeNull();
     }
 }
 ```
 
 ---
 
-## 12. Deliverable Checklist
+## 11. Deliverable Checklist
 
 | #   | Deliverable | Status |
 | :-- | :---------- | :----- |
-| 1   | IAuditLogger interface | [ ] |
-| 2   | AuditLogger implementation | [ ] |
-| 3   | LogBuffer ring buffer | [ ] |
-| 4   | AuditLoggerOptions configuration | [ ] |
-| 5   | AuditLoggerMetrics telemetry | [ ] |
-| 6   | OpenTelemetry histogram integration | [ ] |
-| 7   | DI registration extension | [ ] |
-| 8   | Unit tests (>95% coverage) | [ ] |
-| 9   | Performance tests (<5ms P95) | [ ] |
-| 10  | Load tests (10k events/sec) | [ ] |
+| 1   | AuditLogPage component | [ ] |
+| 2   | AuditQueryBuilder component | [ ] |
+| 3   | AuditEventDetails component | [ ] |
+| 4   | AuditChart component (timeline) | [ ] |
+| 5   | API query endpoint | [ ] |
+| 6   | API export endpoint | [ ] |
+| 7   | CSS styling | [ ] |
+| 8   | RBAC integration | [ ] |
+| 9   | Unit tests (>90% coverage) | [ ] |
+| 10  | E2E tests | [ ] |
 
 ---
 

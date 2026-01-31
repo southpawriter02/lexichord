@@ -1,18 +1,18 @@
-# LCS-DES-113-SEC-e: Data Classification
+# LCS-DES-113-SEC-a: Data Masking
 
 ## Document Control
 
 | Field            | Value                                                        |
 | :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-DES-113-SEC-e                                            |
+| **Document ID**  | LCS-DES-113-SEC-a                                            |
 | **Version**      | v0.11.3                                                      |
-| **Codename**     | Data Protection & Encryption - Data Classification           |
+| **Codename**     | Data Protection & Encryption - Data Masking                  |
 | **Status**       | Draft                                                        |
 | **Last Updated** | 2026-01-31                                                   |
 | **Owner**        | Security Architect                                           |
-| **Module**       | Lexichord.Security.Classification                            |
+| **Module**       | Lexichord.Security.Masking                                   |
 | **Est. Hours**   | 6                                                            |
-| **License Tier** | Core (detection), Teams+ (policy enforcement)                |
+| **License Tier** | WriterPro (masking), Teams+ (advanced rules)                 |
 
 ---
 
@@ -20,150 +20,123 @@
 
 ### 1.1 Purpose
 
-The **Data Classification Service** categorizes sensitive information in the knowledge graph and applies protection policies. This foundational service enables field-level encryption, masking, and audit trails for sensitive properties.
+The **Data Masking Service** redacts or obscures sensitive fields in the UI based on user permissions and classification rules. Unlike field-level encryption (which protects data at rest), masking protects data in display by replacing sensitive values with masked representations (e.g., ****@***.com for emails).
 
 ### 1.2 Key Responsibilities
 
-1. **Classify entities** by sensitivity level (Public, Internal, Confidential, Restricted, Secret)
-2. **Detect sensitive properties** using pattern matching and PII detection
-3. **Apply classification policies** to define encryption and masking requirements
-4. **Audit access** to classified data
-5. **Support auto-detection** of new sensitive properties
+1. **Mask sensitive values** according to masking type (Full, Partial, Email, Phone, etc.)
+2. **Check user permissions** to determine if unmasking is allowed
+3. **Apply masking rules** based on data classification
+4. **Audit access** to sensitive unmasked data
+5. **Support dynamic masking** for different user contexts
 
 ### 1.3 Module Location
 
 ```
-Lexichord.Security.Classification/
+Lexichord.Security.Masking/
 ├── Abstractions/
-│   └── IDataClassificationService.cs
+│   └── IDataMaskingService.cs
 ├── Models/
-│   ├── DataClassification.cs
-│   ├── PropertyClassification.cs
-│   └── DetectedSensitiveProperty.cs
+│   ├── MaskingRule.cs
+│   └── MaskingContext.cs
 └── Implementation/
-    ├── DataClassificationService.cs
-    └── SensitivityDetector.cs
+    ├── DataMaskingService.cs
+    └── MaskingRules.cs
 ```
 
 ---
 
 ## 2. Interface Definitions
 
-### 2.1 IDataClassificationService
+### 2.1 IDataMaskingService
 
 ```csharp
-namespace Lexichord.Security.Classification.Abstractions;
+namespace Lexichord.Security.Masking.Abstractions;
 
 /// <summary>
-/// Service for classifying data sensitivity and managing protection policies.
+/// Masks sensitive data for display in UI.
 /// </summary>
 /// <remarks>
-/// LOGIC: Data classification drives all downstream protection mechanisms.
-/// Classifications persist and can be updated by administrators.
-/// Changes apply retroactively to already-encrypted data (via re-encryption).
+/// LOGIC: Masking is applied at the presentation layer.
+/// Actual data remains encrypted at rest and is masked for display.
+/// Users with permission can request unmasked values (audit trail).
 /// </remarks>
-public interface IDataClassificationService
+public interface IDataMaskingService
 {
     /// <summary>
-    /// Gets the classification for an entity type.
+    /// Masks a value based on the masking type.
     /// </summary>
-    /// <param name="entityType">The entity type name (e.g., "User", "Credential").</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>The overall classification for the entity type.</returns>
+    /// <param name="value">The original value to mask.</param>
+    /// <param name="maskingType">The masking strategy to apply.</param>
+    /// <returns>The masked value.</returns>
     /// <remarks>
-    /// LOGIC: Returns the highest classification level among all properties
-    /// for a quick assessment of entity sensitivity.
+    /// LOGIC: Synchronous operation - no I/O involved.
+    /// Applies pattern-based masking without checking permissions.
     /// </remarks>
-    Task<DataClassification> GetClassificationAsync(
-        string entityType,
-        CancellationToken ct = default);
+    string Mask(string value, MaskingType maskingType);
 
     /// <summary>
-    /// Gets classified properties for an entity type.
+    /// Masks sensitive properties in an entity.
     /// </summary>
-    /// <param name="entityType">The entity type name.</param>
+    /// <param name="entity">The entity with properties to mask.</param>
+    /// <param name="context">Context about viewer and permissions.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>List of property classifications with encryption/masking rules.</returns>
+    /// <returns>Entity with masked sensitive properties.</returns>
     /// <remarks>
-    /// LOGIC: Used by encryption and masking services to determine
-    /// which properties need protection and how.
+    /// LOGIC: Reads classification rules.
+    /// For each property marked RequiresMasking:
+    /// 1. Check if user has permission to view unmasked
+    /// 2. If not, apply masking based on MaskingType
+    /// 3. Audit the access request
     /// </remarks>
-    Task<IReadOnlyList<PropertyClassification>> GetPropertyClassificationsAsync(
-        string entityType,
+    Task<Entity> MaskEntityAsync(
+        Entity entity,
+        MaskingContext context,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Sets the overall classification for an entity type.
+    /// Checks if current user can see unmasked value.
     /// </summary>
-    /// <param name="entityType">The entity type name.</param>
-    /// <param name="classification">The sensitivity level.</param>
+    /// <param name="propertyId">The property being requested (entityId:propertyName).</param>
     /// <param name="ct">Cancellation token.</param>
+    /// <returns>True if user has permission to view unmasked value.</returns>
     /// <remarks>
-    /// LOGIC: Sets default classification for all properties.
-    /// Specific properties can override via SetPropertyClassificationAsync.
+    /// LOGIC: Consults authorization service.
+    /// User must have explicit "UnmaskSensitiveData" permission.
     /// </remarks>
-    Task SetClassificationAsync(
-        string entityType,
-        DataClassification classification,
+    Task<bool> CanViewUnmaskedAsync(
+        string propertyId,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Sets classification for a specific property.
+    /// Requests to view unmasked value (triggers audit).
     /// </summary>
-    /// <param name="entityType">The entity type name.</param>
-    /// <param name="propertyName">The property name.</param>
-    /// <param name="classification">The sensitivity level for this property.</param>
-    /// <param name="requiresEncryption">Whether to encrypt this property at rest.</param>
-    /// <param name="requiresMasking">Whether to mask this property in UI.</param>
-    /// <param name="maskingType">The masking strategy if required.</param>
+    /// <param name="propertyId">The property being requested.</param>
+    /// <param name="reason">Reason for requesting unmasked value.</param>
     /// <param name="ct">Cancellation token.</param>
-    Task SetPropertyClassificationAsync(
-        string entityType,
-        string propertyName,
-        DataClassification classification,
-        bool requiresEncryption,
-        bool requiresMasking,
-        MaskingType maskingType,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Auto-detects sensitive properties in an entity instance.
-    /// </summary>
-    /// <param name="entityId">The entity instance ID.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>List of detected sensitive properties with confidence scores.</returns>
+    /// <returns>The unmasked value if permitted, null if denied.</returns>
     /// <remarks>
-    /// LOGIC: Uses PII detector and pattern matching to find candidate properties.
-    /// Returns high-confidence detections for admin review.
+    /// LOGIC: Records audit trail of who accessed what sensitive data and when.
+    /// Denial is logged for security monitoring.
     /// </remarks>
-    Task<IReadOnlyList<DetectedSensitiveProperty>> DetectSensitivePropertiesAsync(
-        Guid entityId,
+    Task<string?> RequestUnmaskedValueAsync(
+        string propertyId,
+        string reason,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Gets classification metadata for audit purposes.
+    /// Gets masking statistics for monitoring.
     /// </summary>
-    /// <param name="entityType">The entity type name.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Classification metadata including last changed date and policy version.</returns>
-    Task<ClassificationMetadata> GetMetadataAsync(
-        string entityType,
-        CancellationToken ct = default);
+    /// <returns>Stats about masked fields and access patterns.</returns>
+    Task<MaskingStatistics> GetStatisticsAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Exports classification policy as JSON.
+    /// Exports audit log of mask access requests.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>JSON representation of all classifications.</returns>
-    Task<string> ExportPolicyAsync(CancellationToken ct = default);
-
-    /// <summary>
-    /// Imports classification policy from JSON.
-    /// </summary>
-    /// <param name="policyJson">JSON policy document.</param>
-    /// <param name="mergeWithExisting">If true, merges; if false, replaces.</param>
-    /// <param name="ct">Cancellation token.</param>
-    Task ImportPolicyAsync(string policyJson, bool mergeWithExisting = true, CancellationToken ct = default);
+    /// <returns>JSON audit log.</returns>
+    Task<string> ExportAuditLogAsync(CancellationToken ct = default);
 }
 ```
 
@@ -171,125 +144,23 @@ public interface IDataClassificationService
 
 ## 3. Data Types
 
-### 3.1 DataClassification Enum
+### 3.1 MaskingType Enum
 
 ```csharp
-namespace Lexichord.Security.Classification.Models;
+namespace Lexichord.Security.Masking.Models;
 
 /// <summary>
-/// Sensitivity levels for data classification.
+/// Strategies for masking sensitive data.
 /// </summary>
-/// <remarks>
-/// LOGIC: Classification levels form a hierarchy.
-/// Higher levels require more protection.
-/// Secret > Restricted > Confidential > Internal > Public
-/// </remarks>
-public enum DataClassification
-{
-    /// <summary>
-    /// No restrictions. Can be shared freely.
-    /// </summary>
-    Public = 0,
-
-    /// <summary>
-    /// Internal use only. No encryption required.
-    /// </summary>
-    Internal = 1,
-
-    /// <summary>
-    /// Business sensitive. Recommended encryption for certain properties.
-    /// </summary>
-    Confidential = 2,
-
-    /// <summary>
-    /// Highly sensitive. PII, credentials. Requires encryption and masking.
-    /// </summary>
-    Restricted = 3,
-
-    /// <summary>
-    /// Maximum protection. Encryption mandatory, audit all access.
-    /// </summary>
-    Secret = 4
-}
-```
-
-### 3.2 PropertyClassification Record
-
-```csharp
-namespace Lexichord.Security.Classification.Models;
-
-/// <summary>
-/// Classification rules for an individual property.
-/// </summary>
-/// <remarks>
-/// LOGIC: Properties can have different classifications than their parent entity.
-/// For example, a User entity (Internal) may have email (Restricted) and ssn (Secret).
-/// </remarks>
-public record PropertyClassification
-{
-    /// <summary>
-    /// The property name.
-    /// </summary>
-    public required string PropertyName { get; init; }
-
-    /// <summary>
-    /// The sensitivity classification.
-    /// </summary>
-    public DataClassification Classification { get; init; } = DataClassification.Public;
-
-    /// <summary>
-    /// Whether this property should be encrypted at rest.
-    /// </summary>
-    public bool RequiresEncryption { get; init; } = false;
-
-    /// <summary>
-    /// Whether this property should be masked for display.
-    /// </summary>
-    public bool RequiresMasking { get; init; } = false;
-
-    /// <summary>
-    /// The masking strategy if RequiresMasking is true.
-    /// </summary>
-    public MaskingType MaskingType { get; init; } = MaskingType.Full;
-
-    /// <summary>
-    /// Whether access to this property should be audited.
-    /// </summary>
-    public bool RequiresAuditOnAccess { get; init; } = false;
-
-    /// <summary>
-    /// Custom encryption key for this property (if null, uses default for entity).
-    /// </summary>
-    public string? CustomEncryptionKeyPurpose { get; init; } = null;
-
-    /// <summary>
-    /// When this classification was last updated.
-    /// </summary>
-    public DateTimeOffset LastUpdatedAt { get; init; } = DateTimeOffset.UtcNow;
-}
-```
-
-### 3.3 MaskingType Enum
-
-```csharp
-namespace Lexichord.Security.Classification.Models;
-
-/// <summary>
-/// Strategies for masking sensitive data in UI.
-/// </summary>
-/// <remarks>
-/// LOGIC: Each type applies a specific pattern to hide sensitive information
-/// while preserving enough context for identification.
-/// </remarks>
 public enum MaskingType
 {
     /// <summary>
-    /// Full masking: ******** (all characters replaced)
+    /// Full masking: ******** (all characters hidden)
     /// </summary>
     Full,
 
     /// <summary>
-    /// Partial masking: ****5678 (keep last 4 chars)
+    /// Partial masking: ****5678 (show last 4 characters)
     /// </summary>
     Partial,
 
@@ -299,7 +170,7 @@ public enum MaskingType
     Email,
 
     /// <summary>
-    /// Phone masking: ***-***-1234 (keep last 4)
+    /// Phone masking: ***-***-1234 (show last 4 digits)
     /// </summary>
     Phone,
 
@@ -309,112 +180,98 @@ public enum MaskingType
     CreditCard,
 
     /// <summary>
-    /// SSN masking: ***-**-6789
+    /// SSN masking: ***-**-6789 (show last 4 digits)
     /// </summary>
     SSN,
 
     /// <summary>
-    /// Custom regex pattern
+    /// Custom regex-based masking
     /// </summary>
     Custom,
 
     /// <summary>
-    /// No masking (user has permission to view)
+    /// No masking (user has permission or field is public)
     /// </summary>
     None
 }
 ```
 
-### 3.4 DetectedSensitiveProperty Record
+### 3.2 MaskingContext Record
 
 ```csharp
-namespace Lexichord.Security.Classification.Models;
+namespace Lexichord.Security.Masking.Models;
 
 /// <summary>
-/// A property detected as potentially sensitive.
+/// Context for masking operation.
 /// </summary>
-/// <remarks>
-/// LOGIC: Auto-detection returns high-confidence matches for admin review.
-/// Confidence score helps prioritize which detections to apply.
-/// </remarks>
-public record DetectedSensitiveProperty
+public record MaskingContext
 {
     /// <summary>
-    /// The property name.
+    /// The user ID viewing the data.
     /// </summary>
-    public required string PropertyName { get; init; }
+    public Guid? ViewerId { get; init; }
 
     /// <summary>
-    /// Suggested classification based on detection.
+    /// Permissions the viewer has (e.g., "UnmaskSensitiveData").
     /// </summary>
-    public DataClassification SuggestedClassification { get; init; }
+    public IReadOnlyList<string>? ViewerPermissions { get; init; }
 
     /// <summary>
-    /// Confidence (0.0 to 1.0) that this is sensitive.
+    /// Whether to audit the access.
     /// </summary>
-    public double ConfidenceScore { get; init; }
+    public bool AuditAccess { get; init; } = true;
 
     /// <summary>
-    /// Reason for detection (e.g., "Matches SSN pattern").
+    /// Reason for the access (for audit log).
     /// </summary>
-    public required string DetectionReason { get; init; }
+    public string? AccessReason { get; init; }
 
     /// <summary>
-    /// Suggested masking type if encrypted.
+    /// Whether to allow unmasking if user has permission.
     /// </summary>
-    public MaskingType SuggestedMaskingType { get; init; } = MaskingType.Full;
-
-    /// <summary>
-    /// Sample value that triggered detection (redacted).
-    /// </summary>
-    public string? SampleValue { get; init; } = null;
+    public bool AllowUnmasking { get; init; } = false;
 }
 ```
 
-### 3.5 ClassificationMetadata Record
+### 3.3 MaskingStatistics Record
 
 ```csharp
-namespace Lexichord.Security.Classification.Models;
+namespace Lexichord.Security.Masking.Models;
 
 /// <summary>
-/// Metadata about a classification.
+/// Statistics about data masking.
 /// </summary>
-public record ClassificationMetadata
+public record MaskingStatistics
 {
     /// <summary>
-    /// The entity type name.
+    /// Total number of masked access requests.
     /// </summary>
-    public required string EntityType { get; init; }
+    public long TotalMaskedAccesses { get; init; }
 
     /// <summary>
-    /// Overall classification level.
+    /// Number of unmask requests (granted).
     /// </summary>
-    public DataClassification Classification { get; init; }
+    public long SuccessfulUnmaskRequests { get; init; }
 
     /// <summary>
-    /// Number of encrypted properties.
+    /// Number of unmask requests (denied).
     /// </summary>
-    public int EncryptedPropertyCount { get; init; } = 0;
+    public long DeniedUnmaskRequests { get; init; }
 
     /// <summary>
-    /// Number of masked properties.
+    /// Distribution of masking types used.
     /// </summary>
-    public int MaskedPropertyCount { get; init; } = 0;
+    public Dictionary<MaskingType, long> MaskingTypeUsage { get; init; } = new();
 
     /// <summary>
-    /// When policy was last modified.
+    /// Top users requesting unmask access.
     /// </summary>
-    public DateTimeOffset LastModifiedAt { get; init; } = DateTimeOffset.UtcNow;
+    public List<(Guid UserId, int RequestCount)> TopRequesters { get; init; } = new();
 
     /// <summary>
-    /// Who last modified the policy.
+    /// When statistics were computed.
     /// </summary>
-    public string? LastModifiedBy { get; init; } = null;
-
-    /// <summary>
-    /// Version/hash of the classification policy.
-    /// </summary>
-    public string PolicyVersion { get; init; } = "1.0";
+    public DateTimeOffset ComputedAt { get; init; } = DateTimeOffset.UtcNow;
 }
 ```
 
@@ -422,555 +279,512 @@ public record ClassificationMetadata
 
 ## 4. Implementation
 
-### 4.1 DataClassificationService
+### 4.1 DataMaskingService
 
 ```csharp
+using Lexichord.Security.Masking.Abstractions;
+using Lexichord.Security.Masking.Models;
 using Lexichord.Security.Classification.Abstractions;
-using Lexichord.Security.Classification.Models;
-using Lexichord.Abstractions.PII;
+using Lexichord.Abstractions.Security;
 using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
-using System.Text.Json;
+using System.Reflection;
 
-namespace Lexichord.Security.Classification.Implementation;
+namespace Lexichord.Security.Masking.Implementation;
 
 /// <summary>
-/// Service for managing data classification and sensitivity policies.
+/// Service for masking sensitive data in display.
 /// </summary>
 /// <remarks>
-/// LOGIC: This service maintains a policy database of entity and property classifications.
-/// Policies are cached in memory for performance and persist to storage for durability.
+/// LOGIC: Masks data for UI presentation based on permissions.
+/// Does not store masking state - computed on-the-fly based on rules and permissions.
 /// </remarks>
-public sealed class DataClassificationService(
-    ILogger<DataClassificationService> logger,
-    IPiiDetector piiDetector,
-    IClassificationRepository repository) : IDataClassificationService
+public sealed class DataMaskingService(
+    ILogger<DataMaskingService> logger,
+    IDataClassificationService classificationService,
+    IAuthorizationService authorizationService,
+    IMaskingRepository repository) : IDataMaskingService
 {
-    private readonly ConcurrentDictionary<string, DataClassification> _entityClassifications = new();
-    private readonly ConcurrentDictionary<string, IReadOnlyList<PropertyClassification>> _propertyClassifications = new();
-    private bool _initialized = false;
-
-    /// <summary>
-    /// Initializes the service by loading policies from storage.
-    /// </summary>
-    public async Task InitializeAsync(CancellationToken ct = default)
+    /// <inheritdoc/>
+    public string Mask(string value, MaskingType maskingType)
     {
-        logger.LogInformation("Initializing DataClassificationService");
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        return maskingType switch
+        {
+            MaskingType.None => value,
+            MaskingType.Full => new string('*', Math.Min(value.Length, 8)),
+            MaskingType.Partial => MaskPartial(value),
+            MaskingType.Email => MaskEmail(value),
+            MaskingType.Phone => MaskPhone(value),
+            MaskingType.CreditCard => MaskCreditCard(value),
+            MaskingType.SSN => MaskSSN(value),
+            MaskingType.Custom => MaskCustom(value),
+            _ => value
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<Entity> MaskEntityAsync(
+        Entity entity,
+        MaskingContext context,
+        CancellationToken ct = default)
+    {
+        if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
 
         try
         {
-            var policies = await repository.LoadAllPoliciesAsync(ct);
+            // LOGIC: Get classification rules
+            var classifications = await classificationService
+                .GetPropertyClassificationsAsync(entity.GetType().Name, ct);
 
-            foreach (var policy in policies)
+            var maskedProperties = classifications
+                .Where(c => c.RequiresMasking)
+                .ToList();
+
+            if (maskedProperties.Count == 0)
+                return entity; // No masking needed
+
+            // LOGIC: Create copy to avoid modifying original
+            var entityCopy = (Entity)entity.Clone();
+
+            foreach (var propClass in maskedProperties)
             {
-                _entityClassifications[policy.EntityType] = policy.Classification;
-                _propertyClassifications[policy.EntityType] = policy.Properties;
+                var property = entityCopy.GetType()
+                    .GetProperty(propClass.PropertyName,
+                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                if (property == null)
+                    continue;
+
+                var originalValua = property.GetValue(entityCopy);
+                if (originalValue == null)
+                    continue;
+
+                var valueStr = originalValue.ToString();
+                if (string.IsNullOrEmpty(valueStr))
+                    continue;
+
+                try
+                {
+                    // LOGIC: Check if user can view unmasked
+                    var canViewUnmasked = await CanViewUnmaskedAsync(
+                        $"{entity.Id}:{propClass.PropertyName}",
+                        ct);
+
+                    if (canViewUnmasked)
+                    {
+                        // User has permission - audit the access
+                        if (context.AuditAccess)
+                        {
+                            await repository.LogAccessAsync(
+                                context.ViewerId ?? Guid.Empty,
+                                entity.Id,
+                                propClass.PropertyName,
+                                context.AccessReason ?? "Unmasked viewing",
+                                ct);
+                        }
+                    }
+                    else
+                    {
+                        // User doesn't have permission - apply masking
+                        var maskedValua = Mask(valueStr, propClass.MaskingType);
+                        property.SetValue(entityCopy, maskedValue);
+
+                        logger.LogDebug(
+                            "Masked field {EntityType}.{PropertyName} (user={ViewerId})",
+                            entityCopy.GetType().Name,
+                            propClass.PropertyName,
+                            context.ViewerId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex,
+                        "Failed to process masking for {EntityType}.{PropertyName}",
+                        entityCopy.GetType().Name,
+                        propClass.PropertyName);
+                    throw;
+                }
             }
 
-            _initialized = true;
-            logger.LogInformation("Loaded {Count} classification policies", policies.Count);
+            return entityCopy;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to initialize classification service");
+            logger.LogError(ex, "Masking failed for entity");
             throw;
         }
     }
 
     /// <inheritdoc/>
-    public Task<DataClassification> GetClassificationAsync(
-        string entityType,
+    public async Task<bool> CanViewUnmaskedAsync(
+        string propertyId,
         CancellationToken ct = default)
     {
-        if (!_initialized)
-            throw new InvalidOperationException("Service not initialized");
-
-        var classification = _entityClassifications.TryGetValue(entityType, out var value)
-            ? value
-            : DataClassification.Public;
-
-        return Task.FromResult(classification);
-    }
-
-    /// <inheritdoc/>
-    public Task<IReadOnlyList<PropertyClassification>> GetPropertyClassificationsAsync(
-        string entityType,
-        CancellationToken ct = default)
-    {
-        if (!_initialized)
-            throw new InvalidOperationException("Service not initialized");
-
-        if (_propertyClassifications.TryGetValue(entityType, out var classifications))
-            return Task.FromResult(classifications);
-
-        return Task.FromResult<IReadOnlyList<PropertyClassification>>(
-            Array.Empty<PropertyClassification>());
-    }
-
-    /// <inheritdoc/>
-    public async Task SetClassificationAsync(
-        string entityType,
-        DataClassification classification,
-        CancellationToken ct = default)
-    {
-        logger.LogInformation(
-            "Setting classification for entity type {EntityType} to {Classification}",
-            entityType,
-            classification);
-
-        _entityClassifications[entityType] = classification;
-
-        await repository.SaveEntityClassificationAsync(entityType, classification, ct);
-        logger.LogDebug("Classification saved for {EntityType}", entityType);
-    }
-
-    /// <inheritdoc/>
-    public async Task SetPropertyClassificationAsync(
-        string entityType,
-        string propertyName,
-        DataClassification classification,
-        bool requiresEncryption,
-        bool requiresMasking,
-        MaskingType maskingType,
-        CancellationToken ct = default)
-    {
-        logger.LogInformation(
-            "Setting classification for {EntityType}.{PropertyName}",
-            entityType,
-            propertyName);
-
-        var propClassification = new PropertyClassification
-        {
-            PropertyName = propertyName,
-            Classification = classification,
-            RequiresEncryption = requiresEncryption,
-            RequiresMasking = requiresMasking,
-            MaskingType = maskingType,
-            LastUpdatedAt = DateTimeOffset.UtcNow
-        };
-
-        var current = _propertyClassifications.TryGetValue(entityType, out var props)
-            ? props.ToList()
-            : new List<PropertyClassification>();
-
-        // Remove existing classification for this property
-        current.RemoveAll(p => p.PropertyName == propertyName);
-        current.Add(propClassification);
-
-        _propertyClassifications[entityType] = current.AsReadOnly();
-
-        await repository.SavePropertyClassificationAsync(
-            entityType,
-            propClassification,
+        // LOGIC: Check if current user has permission
+        var hasPermission = await authorizationService.HasPermissionAsync(
+            "UnmaskSensitiveData",
             ct);
 
-        logger.LogDebug(
-            "Property classification saved: {EntityType}.{PropertyName} ({Encryption}E, {Masking}M)",
-            entityType,
-            propertyName,
-            requiresEncryption ? "+" : "-",
-            requiresMasking ? "+" : "-");
+        return hasPermission;
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<DetectedSensitiveProperty>> DetectSensitivePropertiesAsync(
-        Guid entityId,
+    public async Task<string?> RequestUnmaskedValueAsync(
+        string propertyId,
+        string reason,
         CancellationToken ct = default)
     {
-        logger.LogInformation("Auto-detecting sensitive properties for entity {EntityId}", entityId);
-
-        var detections = new List<DetectedSensitiveProperty>();
-
-        // Get entity data (would need entity service to fetch actual data)
-        // For now, this demonstrates the flow
-        var piiMatches = await piiDetector.DetectAsync(
-            entityId,
-            ct);
-
-        foreach (var match in piiMatches)
+        try
         {
-            var detection = new DetectedSensitiveProperty
+            logger.LogInformation(
+                "Unmask request for property {PropertyId}: {Reason}",
+                propertyId,
+                reason);
+
+            // LOGIC: Check permission
+            var canUnmask = await CanViewUnmaskedAsync(propertyId, ct);
+
+            if (!canUnmask)
             {
-                PropertyName = match.FieldName,
-                SuggestedClassification = match.Type switch
-                {
-                    PiiType.SSN => DataClassification.Secret,
-                    PiiType.CreditCard => DataClassification.Restricted,
-                    PiiType.Email => DataClassification.Restricted,
-                    PiiType.Phone => DataClassification.Restricted,
-                    PiiType.Address => DataClassification.Confidential,
-                    _ => DataClassification.Internal
-                },
-                ConfidenceScore = match.Confidence,
-                DetectionReason = $"PII detector matched {match.Type}",
-                SuggestedMaskingType = match.Type switch
-                {
-                    PiiType.Email => MaskingType.Email,
-                    PiiType.Phone => MaskingType.Phone,
-                    PiiType.SSN => MaskingType.SSN,
-                    PiiType.CreditCard => MaskingType.CreditCard,
-                    _ => MaskingType.Full
-                }
-            };
+                logger.LogWarning(
+                    "Unmask request denied for property {PropertyId}",
+                    propertyId);
 
-            detections.Add(detection);
+                await repository.LogDeniedAccessAsync(propertyId, reason, ct);
+                return null;
+            }
+
+            // LOGIC: Permission granted - get actual value
+            var valua = await repository.GetActualValueAsync(propertyId, ct);
+
+            // LOGIC: Audit the access
+            await repository.LogAccessAsync(
+                Guid.Empty, // Would be current user
+                Guid.Parse(propertyId.Split(':')[0]),
+                propertyId.Split(':')[1],
+                reason,
+                ct);
+
+            return value;
         }
-
-        logger.LogDebug("Detected {Count} sensitive properties", detections.Count);
-        return detections.AsReadOnly();
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unmask request failed for property {PropertyId}", propertyId);
+            throw;
+        }
     }
 
     /// <inheritdoc/>
-    public async Task<ClassificationMetadata> GetMetadataAsync(
-        string entityType,
-        CancellationToken ct = default)
+    public async Task<MaskingStatistics> GetStatisticsAsync(CancellationToken ct = default)
     {
-        var classification = await GetClassificationAsync(entityType, ct);
-        var properties = await GetPropertyClassificationsAsync(entityType, ct);
-
-        var metadata = new ClassificationMetadata
-        {
-            EntityType = entityType,
-            Classification = classification,
-            EncryptedPropertyCount = properties.Count(p => p.RequiresEncryption),
-            MaskedPropertyCount = properties.Count(p => p.RequiresMasking),
-            LastModifiedAt = DateTimeOffset.UtcNow,
-            PolicyVersion = "1.0"
-        };
-
-        return metadata;
+        var stats = await repository.GetStatisticsAsync(ct);
+        return stats;
     }
 
     /// <inheritdoc/>
-    public async Task<string> ExportPolicyAsync(CancellationToken ct = default)
+    public async Task<string> ExportAuditLogAsync(CancellationToken ct = default)
     {
-        logger.LogInformation("Exporting classification policy");
-
-        var policy = new
+        var loc = await repository.GetAuditLogAsync(ct);
+        var json = System.Text.Json.JsonSerializer.Serialize(log, new System.Text.Json.JsonSerializerOptions
         {
-            version = "1.0",
-            exportedAt = DateTimeOffset.UtcNow,
-            entityClassifications = _entityClassifications.ToDictionary(x => x.Key, x => x.Value),
-            propertyClassifications = _propertyClassifications.ToDictionary(x => x.Key, x => x.Value)
-        };
-
-        var json = JsonSerializer.Serialize(policy, new JsonSerializerOptions { WriteIndented = true });
+            WriteIndented = true
+        });
         return json;
     }
 
-    /// <inheritdoc/>
-    public async Task ImportPolicyAsync(
-        string policyJson,
-        bool mergeWithExisting = true,
-        CancellationToken ct = default)
+    private static string MaskPartial(string value)
     {
-        logger.LogInformation("Importing classification policy (merge={Merge})", mergeWithExisting);
+        if (value.Length <= 4)
+            return new string('*', value.Length);
 
-        try
+        var lastFour = value.Substring(value.Length - 4);
+        var masked = new string('*', value.Length - 4);
+        return masked + lastFour;
+    }
+
+    private static string MaskEmail(string value)
+    {
+        if (!value.Contains("@"))
+            return Mask(value, MaskingType.Full);
+
+        var parts = value.Split('@');
+        if (parts[0].Length == 0)
+            return value;
+
+        var firstChar = parts[0][0];
+        var domain = parts[1];
+
+        // j***@***.com
+        return $"{firstChar}***@***.{domain.Split('.').Last()}";
+    }
+
+    private static string MaskPhone(string value)
+    {
+        // Remove non-digits
+        var digits = new string(value.Where(char.IsDigit).ToArray());
+
+        if (digits.Length < 4)
+            return new string('*', value.Length);
+
+        var lastFour = digits.Substring(digits.Length - 4);
+        return $"***-***-{lastFour}";
+    }
+
+    private static string MaskCreditCard(string value)
+    {
+        // Remove spaces/dashes
+        var digits = new string(value.Where(char.IsDigit).ToArray());
+
+        if (digits.Length < 4)
+            return new string('*', value.Length);
+
+        var lastFour = digits.Substring(digits.Length - 4);
+        return $"****-****-****-{lastFour}";
+    }
+
+    private static string MaskSSN(string value)
+    {
+        // ***-**-1234
+        var digits = new string(value.Where(char.IsDigit).ToArray());
+
+        if (digits.Length < 4)
+            return new string('*', value.Length);
+
+        var lastFour = digits.Substring(digits.Length - 4);
+        return $"***-**-{lastFour}";
+    }
+
+    private static string MaskCustom(string value)
+    {
+        // Replace every other character
+        var chars = value.ToCharArray();
+        for (int e = 0; i < chars.Length; i += 2)
         {
-            var policy = JsonSerializer.Deserialize<Dictionary<string, object>>(policyJson);
-            if (policy == null)
-                throw new InvalidOperationException("Invalid policy JSON");
-
-            // Clear existing if not merging
-            if (!mergeWithExisting)
-            {
-                _entityClassifications.Clear();
-                _propertyClassifications.Clear();
-            }
-
-            // Import entity classifications
-            if (policy.TryGetValue("entityClassifications", out var entityClassObj))
-            {
-                var entities = JsonSerializer.Deserialize<Dictionary<string, int>>(
-                    JsonSerializer.Serialize(entityClassObj));
-
-                if (entities != null)
-                {
-                    foreach (var (entityType, classVal) in entities)
-                    {
-                        var classification = (DataClassification)classVal;
-                        await SetClassificationAsync(entityType, classification, ct);
-                    }
-                }
-            }
-
-            logger.LogInformation("Policy import completed");
+            if (!char.IsWhiteSpace(chars[i]) && !char.IsPunctuation(chars[i]))
+                chars[i] = '*';
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to import classification policy");
-            throw;
-        }
+        return new string(chars);
     }
 }
 ```
 
-### 4.2 SensitivityDetector
+### 4.2 MaskingRepository
 
 ```csharp
-namespace Lexichord.Security.Classification.Implementation;
+namespace Lexichord.Security.Masking.Implementation;
 
 /// <summary>
-/// Pattern-based detector for common sensitive data types.
+/// Repository for masking audit trails and metadata.
 /// </summary>
-/// <remarks>
-/// LOGIC: Complements the PII detector with regex patterns for
-/// detecting common sensitive values without external calls.
-/// </remarks>
-public sealed class SensitivityDetector
+public interface IMaskingRepository
 {
-    private static readonly Dictionary<string, (string Pattern, DataClassification Classification, MaskingType Masking)> Patterns = new()
-    {
-        // Credit card patterns
-        { "CreditCard", (@"^\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}$", DataClassification.Secret, MaskingType.CreditCard) },
-
-        // SSN pattern
-        { "SSN", (@"^\d{3}-\d{2}-\d{4}$", DataClassification.Secret, MaskingType.SSN) },
-
-        // Email pattern
-        { "Email", (@"^[^@\s]+@[^@\s]+\.[^@\s]+$", DataClassification.Restricted, MaskingType.Email) },
-
-        // Phone patterns
-        { "Phone", (@"^[\+]?[0-9\-\(\)]{10,}$", DataClassification.Restricted, MaskingType.Phone) },
-
-        // API Key patterns
-        { "APIKey", (@"^[a-zA-Z0-9\-_]{32,}$", DataClassification.Secret, MaskingType.Full) },
-
-        // Password field names
-        { "PasswordField", (null!, DataClassification.Secret, MaskingType.Full) }, // Handled by property name matching
-    };
+    /// <summary>
+    /// Logs a successful access to sensitive unmasked data.
+    /// </summary>
+    Task LogAccessAsync(
+        Guid userId,
+        Guid entityId,
+        string propertyName,
+        string reason,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Detects sensitivity based on property name patterns.
+    /// Logs a denied unmask request.
     /// </summary>
-    public static DataClassification DetectByPropertyName(string propertyName)
-    {
-        var lower = propertyName.ToLowerInvariant();
-
-        return lower switch
-        {
-            var n when n.Contains("password") => DataClassification.Secret,
-            var n when n.Contains("apikey") => DataClassification.Secret,
-            var n when n.Contains("token") => DataClassification.Secret,
-            var n when n.Contains("secret") => DataClassification.Secret,
-            var n when n.Contains("credential") => DataClassification.Secret,
-            var n when n.Contains("email") => DataClassification.Restricted,
-            var n when n.Contains("phone") => DataClassification.Restricted,
-            var n when n.Contains("ssn") => DataClassification.Secret,
-            var n when n.Contains("creditcard") => DataClassification.Secret,
-            var n when n.Contains("social") => DataClassification.Restricted,
-            var n when n.Contains("address") => DataClassification.Confidential,
-            _ => DataClassification.Public
-        };
-    }
+    Task LogDeniedAccessAsync(
+        string propertyId,
+        string reason,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Detects sensitivity based on value content.
+    /// Retrieves the actual unmasked value (if permissions allow).
     /// </summary>
-    public static bool TryDetectByValue(string value, out DataClassification classification)
-    {
-        classification = DataClassification.Public;
+    Task<string?> GetActualValueAsync(
+        string propertyId,
+        CancellationToken ct = default);
 
-        foreach (var (name, (pattern, classification_val, masking)) in Patterns)
-        {
-            if (string.IsNullOrEmpty(pattern))
-                continue;
+    /// <summary>
+    /// Gets masking statistics.
+    /// </summary>
+    Task<MaskingStatistics> GetStatisticsAsync(CancellationToken ct = default);
 
-            if (System.Text.RegularExpressions.Regex.IsMatch(value, pattern))
-            {
-                classification = classification_val;
-                return true;
-            }
-        }
+    /// <summary>
+    /// Gets audit log entries.
+    /// </summary>
+    Task<IReadOnlyList<MaskingAuditEntry>> GetAuditLogAsync(CancellationToken ct = default);
+}
 
-        return false;
-    }
+/// <summary>
+/// Audit entry for masking operations.
+/// </summary>
+public record MaskingAuditEntry
+{
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid UserId { get; init; }
+    public Guid EntityId { get; init; }
+    public string PropertyName { get; init; } = null!;
+    public string Reason { get; init; } = null!;
+    public bool WasGranted { get; init; }
+    public DateTimeOffset AccessTime { get; init; } = DateTimeOffset.UtcNow;
 }
 ```
 
 ---
 
-## 5. Classification Policies
+## 5. Masking Rules
 
-### 5.1 Built-in Classifications
+### 5.1 Default Masking Rules
 
-```
-User (Internal)
-├── id (Public, no encryption)
-├── username (Internal, no encryption)
-├── email (Restricted, encrypt, mask: Email)
-├── phone (Restricted, encrypt, mask: Phone)
-├── passwordHash (Secret, encrypt, mask: Full)
-└── ssn (Secret, encrypt, mask: SSN)
-
-Credential (Secret)
-├── id (Public)
-├── name (Internal)
-├── secret (Secret, encrypt, mask: Full)
-├── apiKey (Secret, encrypt, mask: Full)
-└── expiresAt (Confidential)
-
-APIKey (Restricted)
-├── id (Public)
-├── name (Internal)
-├── key (Secret, encrypt, mask: Full)
-├── secret (Secret, encrypt, mask: Full)
-└── lastUsedAt (Internal)
-
-Service (Confidential)
-├── id (Public)
-├── name (Internal)
-├── endpoint (Confidential)
-└── apiVersion (Public)
+```csharp
+public static class DefaultMaskingRules
+{
+    public static readonly Dictionary<MaskingType, string> MaskingPatterns = new()
+    {
+        { MaskingType.Email, @"^(.).*(@.*\..*)$" },
+        { MaskingType.Phone, @"^\d{3}-\d{3}-(\d{4})$" },
+        { MaskingType.CreditCard, @"^\d{4}-\d{4}-\d{4}-(\d{4})$" },
+        { MaskingType.SSN, @"^\d{3}-\d{2}-(\d{4})$" }
+    };
+}
 ```
 
 ---
 
 ## 6. Error Handling
 
-### 6.1 Classification Errors
-
 | Error | Cause | Handling |
 |:------|:------|:---------|
-| `ClassificationNotFound` | Entity type has no policy | Default to Public, log warning |
-| `InvalidClassificationLevel` | Out-of-range enum value | Reject with validation error |
-| `PolicyValidationFailed` | Conflicting rules in policy | Reject import with details |
-| `DetectionFailed` | PII detector error | Log error, continue without auto-detection |
-
-### 6.2 Error Messages
-
-```csharp
-public class ClassificationException : Exception
-{
-    public string EntityType { get; }
-    public string? PropertyName { get; }
-
-    public ClassificationException(string message, string entityType, string? propertyName = null)
-        : base(message)
-    {
-        EntityType = entityType;
-        PropertyName = propertyName;
-    }
-}
-```
+| `PermissionDenied` | User lacks UnmaskSensitiveData permission | Return masked value, audit denial |
+| `PropertyNotFound` | Property doesn't exist | Skip silently |
+| `AuditFailed` | Cannot record audit entry | Log error, continue |
 
 ---
 
 ## 7. Testing
 
-### 7.1 Unit Tests
-
 ```csharp
-using NUnit.Framework;
-using Moq;
-using Lexichord.Security.Classification;
-using Lexichord.Security.Classification.Models;
-
-namespace Lexichord.Tests.Security;
-
 [TestFixture]
-public class DataClassificationServiceTests
+public class DataMaskingServiceTests
 {
-    private DataClassificationService _sut = null!;
-    private Mock<IClassificationRepository> _mockRepository = null!;
-    private Mock<IPiiDetector> _mockPiiDetector = null!;
+    private DataMaskingService _sut = null!;
+    private Mock<IDataClassificationService> _mockClassification = null!;
+    private Mock<IAuthorizationService> _mockAuthorization = null!;
 
     [SetUp]
-    public async Task SetUp()
+    public void SetUp()
     {
-        _mockRepository = new Mock<IClassificationRepository>();
-        _mockPiiDetector = new Mock<IPiiDetector>();
+        _mockClassification = new Mock<IDataClassificationService>();
+        _mockAuthorization = new Mock<IAuthorizationService>();
+        var mockRepository = new Mock<IMaskingRepository>();
+        var logger = new Mock<ILogger<DataMaskingService>>();
 
-        var logger = new Mock<ILogger<DataClassificationService>>();
-        _sut = new DataClassificationService(logger.Object, _mockPiiDetector.Object, _mockRepository.Object);
-
-        _mockRepository
-            .Setup(r => r.LoadAllPoliciesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ClassificationPolicy>());
-
-        await _sut.InitializeAsync();
+        _sut = new DataMaskingService(
+            logger.Object,
+            _mockClassification.Object,
+            _mockAuthorization.Object,
+            mockRepository.Object);
     }
 
     [Test]
-    public async Task GetClassificationAsync_EntityTypeNotFound_ReturnsPublic()
-    {
-        // Act
-        var result = await _sut.GetClassificationAsync("NonExistent");
-
-        // Assert
-        Assert.That(result, Is.EqualTo(DataClassification.Public));
-    }
-
-    [Test]
-    public async Task SetClassificationAsync_SavesAndReturns()
+    public void Mask_Email_MasksCorrectly()
     {
         // Act
-        await _sut.SetClassificationAsync("User", DataClassification.Restricted);
+        var result = _sut.Mask("john.doe@example.com", MaskingType.Email);
 
         // Assert
-        _mockRepository.Verify(
-            r => r.SaveEntityClassificationAsync("User", DataClassification.Restricted, It.IsAny<CancellationToken>()),
-            Times.Once);
+        Assert.That(result, Is.EqualTo("j***@***.com"));
     }
 
     [Test]
-    public async Task SetPropertyClassificationAsync_WithEncryption()
+    public void Mask_Phone_MasksCorrectly()
     {
         // Act
-        await _sut.SetPropertyClassificationAsync(
-            "User", "email", DataClassification.Restricted, true, true, MaskingType.Email);
+        var result = _sut.Mask("555-123-4567", MaskingType.Phone);
 
         // Assert
-        var props = await _sut.GetPropertyClassificationsAsync("User");
-        Assert.That(props, Has.Count.EqualTo(1));
-        Assert.That(props[0].PropertyName, Is.EqualTo("email"));
-        Assert.That(props[0].RequiresEncryption, Is.True);
+        Assert.That(result, Is.EqualTo("***-***-4567"));
     }
 
     [Test]
-    public async Task DetectSensitivePropertiesAsync_CallsPiiDetector()
+    public void Mask_CreditCard_MasksCorrectly()
+    {
+        // Act
+        var result = _sut.Mask("4111-1111-1111-1111", MaskingType.CreditCard);
+
+        // Assert
+        Assert.That(result, Is.EqualTo("****-****-****-1111"));
+    }
+
+    [Test]
+    public void Mask_SSN_MasksCorrectly()
+    {
+        // Act
+        var result = _sut.Mask("123-45-6789", MaskingType.SSN);
+
+        // Assert
+        Assert.That(result, Is.EqualTo("***-**-6789"));
+    }
+
+    [Test]
+    public void Mask_Partial_KeepsLastFour()
+    {
+        // Act
+        var result = _sut.Mask("secretpassword", MaskingType.Partial);
+
+        // Assert
+        Assert.That(result, Does.EndWith("word"));
+        Assert.That(result, Does.StartWith("****"));
+    }
+
+    [Test]
+    public async Task MaskEntityAsync_UnmaskedWhenPermitted()
     {
         // Arrange
-        var entityId = Guid.NewGuid();
-        var piiMatches = new[] { /* PII matches */ };
-        _mockPiiDetector.Setup(d => d.DetectAsync(entityId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(piiMatches);
+        var entity = new TestUser { Email = "test@example.com" };
+        var classifications = new[] {
+            new PropertyClassification { PropertyNama = "Email", RequiresMaskinc = true, MaskingTypa = MaskingType.Email }
+        };
+
+        _mockClassification
+            .Setup(c => c.GetPropertyClassificationsAsync("TestUser", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(classifications);
+
+        _mockAuthorization
+            .Setup(a => a.HasPermissionAsync("UnmaskSensitiveData", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         // Act
-        var result = await _sut.DetectSensitivePropertiesAsync(entityId);
+        var result = await _sut.MaskEntityAsync(entity, new MaskingContext { AllowUnmaskinc = true });
 
         // Assert
-        _mockPiiDetector.Verify(d => d.DetectAsync(entityId, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.That(result.Email, Is.EqualTo("test@example.com"));
     }
 
     [Test]
-    public async Task ExportPolicyAsync_ReturnsValidJson()
+    public async Task MaskEntityAsync_MaskedWhenDenied()
     {
         // Arrange
-        await _sut.SetClassificationAsync("User", DataClassification.Restricted);
+        var entity = new TestUser { Email = "test@example.com" };
+        var classifications = new[] {
+            new PropertyClassification { PropertyNama = "Email", RequiresMaskinc = true, MaskingTypa = MaskingType.Email }
+        };
+
+        _mockClassification
+            .Setup(c => c.GetPropertyClassificationsAsync("TestUser", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(classifications);
+
+        _mockAuthorization
+            .Setup(a => a.HasPermissionAsync("UnmaskSensitiveData", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
         // Act
-        var json = await _sut.ExportPolicyAsync();
+        var result = await _sut.MaskEntityAsync(entity, new MaskingContext());
 
         // Assert
-        Assert.That(json, Does.Contain("User"));
-        Assert.That(json, Does.Contain("Restricted"));
-    }
-
-    [Test]
-    public async Task ImportPolicyAsync_MergesFalse_ClearsExisting()
-    {
-        // Arrange
-        await _sut.SetClassificationAsync("OldType", DataClassification.Public);
-        var newPolicy = @"{ ""entityClassifications"": { ""NewType"": 1 } }";
-
-        // Act
-        await _sut.ImportPolicyAsync(newPolicy, mergeWithExisting: false);
-
-        // Assert
-        var oldClassification = await _sut.GetClassificationAsync("OldType");
-        Assert.That(oldClassification, Is.EqualTo(DataClassification.Public)); // Cleared
+        Assert.That(result.Email, Is.EqualTo("t***@***.com"));
     }
 }
 ```
@@ -979,22 +793,12 @@ public class DataClassificationServiceTests
 
 ## 8. Performance
 
-### 8.1 Targets
-
 | Metric | Target |
 |:-------|:-------|
-| Classify property | <1ms |
-| Get classifications for type | <2ms |
-| Auto-detect (1000 entities) | <5s |
-| Export policy | <100ms |
-| Import policy | <500ms |
-
-### 8.2 Optimizations
-
-- Policies cached in memory (ConcurrentDictionary)
-- Property classifications indexed by entity type
-- Auto-detection parallelized across entities
-- Lazy-loading of detection results
+| Mask operation | <100µs |
+| Mask entity (5 fields) | <5ms |
+| Permission check | <10ms |
+| Audit log | <5ms |
 
 ---
 
@@ -1002,10 +806,9 @@ public class DataClassificationServiceTests
 
 | Tier | Feature |
 |:-----|:--------|
-| **Core** | Public/Internal classifications only |
-| **WriterPro** | All classification levels |
-| **Teams** | + Auto-detection of sensitive properties |
-| **Enterprise** | + Custom detection rules + audit logging |
+| **WriterPro** | Basic masking (Full, Partial, Email, Phone) |
+| **Teams** | + Advanced rules (CreditCard, SSN, Custom) |
+| **Enterprise** | + Audit logging + custom permissions |
 
 ---
 
@@ -1013,37 +816,11 @@ public class DataClassificationServiceTests
 
 ### v0.11.3 (2026-01-31)
 
-- Initial design for data classification service
-- Support for 5 classification levels
-- Property-level classification rules
-- Auto-detection using PII detector
-- Policy import/export in JSON format
-
----
-
-## Appendix A: Classification Decision Tree
-
-```
-START: "How sensitive is this property?"
-│
-├─ Is it a password, API key, token?
-│  └─ YES → Secret (encryption + audit)
-│
-├─ Is it PII (SSN, credit card)?
-│  └─ YES → Secret or Restricted (encryption + masking)
-│
-├─ Is it contact info (email, phone)?
-│  └─ YES → Restricted (encryption + email masking)
-│
-├─ Is it business info (address, department)?
-│  └─ YES → Confidential (optional encryption)
-│
-├─ Is it internal-only info?
-│  └─ YES → Internal (no encryption)
-│
-└─ Is it public (timestamps, IDs)?
-   └─ YES → Public (no protection)
-```
+- Initial design for data masking service
+- Support for 8 masking types (Full, Partial, Email, Phone, CreditCard, SSN, Custom, None)
+- Permission-based unmasking with audit trail
+- Classification integration
+- Performance optimizations for UI rendering
 
 ---
 

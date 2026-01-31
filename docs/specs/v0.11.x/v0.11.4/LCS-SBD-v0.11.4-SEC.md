@@ -51,12 +51,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.11.4e | Query Sanitizer | Prevent CKVS-QL injection | 8 |
-| v0.11.4f | Schema Validator | Validate all input schemas | 6 |
-| v0.11.4g | Content Scanner | Detect malicious payloads | 8 |
-| v0.11.4h | Rate Limiter | Request rate limiting | 6 |
-| v0.11.4i | Input Normalizer | Sanitize and normalize inputs | 5 |
-| v0.11.4j | Error Sanitizer | Secure error responses | 4 |
+| v0.11.4a | Query Sanitizer | Prevent CKVS-QL injection | 8 |
+| v0.11.4b | Schema Validator | Validate all input schemas | 6 |
+| v0.11.4c | Content Scanner | Detect malicious payloads | 8 |
+| v0.11.4d | Rate Limiter | Request rate limiting | 6 |
+| v0.11.4e | Input Normalizer | Sanitize and normalize inputs | 5 |
+| v0.11.4f | Error Sanitizer | Secure error responses | 4 |
 | **Total** | | | **37 hours** |
 
 ### 2.2 Key Interfaces
@@ -474,12 +474,12 @@ graph TB
 
 ```csharp
 // ❌ VULNERABLE: String concatenation
-var query = $"FIND Entity WHERE name = '{userInput}'";
+var query = $"FIND Entity WHERE nama = '{userInput}'";
 // Attacker input: "' OR 1=1 --" → returns all entities
 
 // ✅ SECURE: Parameterized query
 var query = _querySanitizer.CreateParameterized(
-    "FIND Entity WHERE name = @name",
+    "FIND Entity WHERE nama = @name",
     new Dictionary<string, object> { ["name"] = userInput });
 ```
 

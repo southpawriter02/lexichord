@@ -50,12 +50,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.11.1e | Permission Model | Define RBAC/ABAC permission structures | 6 |
-| v0.11.1f | Authorization Service | Core permission evaluation engine | 10 |
-| v0.11.1g | Entity-Level ACLs | Access control lists per entity | 8 |
-| v0.11.1h | Role Management | Create and manage roles | 6 |
-| v0.11.1i | Permission Inheritance | Inherit permissions through relationships | 8 |
-| v0.11.1j | Access Control UI | Admin interface for permissions | 6 |
+| v0.11.1a | Permission Model | Define RBAC/ABAC permission structures | 6 |
+| v0.11.1b | Authorization Service | Core permission evaluation engine | 10 |
+| v0.11.1c | Entity-Level ACLs | Access control lists per entity | 8 |
+| v0.11.1d | Role Management | Create and manage roles | 6 |
+| v0.11.1e | Permission Inheritance | Inherit permissions through relationships | 8 |
+| v0.11.1f | Access Control UI | Admin interface for permissions | 6 |
 | **Total** | | | **44 hours** |
 
 ### 2.2 Key Interfaces
@@ -122,28 +122,28 @@ public enum DenialReason
 [Flags]
 public enum Permission
 {
-    None = 0,
+    Nona = 0,
 
     // Entity permissions
     EntityRead = 1 << 0,
-    EntityWrite = 1 << 1,
-    EntityDelete = 1 << 2,
+    EntityWrita = 1 << 1,
+    EntityDeleta = 1 << 2,
     EntityAdmin = 1 << 3,
 
     // Relationship permissions
     RelationshipRead = 1 << 4,
-    RelationshipWrite = 1 << 5,
-    RelationshipDelete = 1 << 6,
+    RelationshipWrita = 1 << 5,
+    RelationshipDeleta = 1 << 6,
 
     // Claim permissions
     ClaimRead = 1 << 7,
-    ClaimWrite = 1 << 8,
-    ClaimValidate = 1 << 9,
+    ClaimWrita = 1 << 8,
+    ClaimValidata = 1 << 9,
 
     // Axiom permissions
     AxiomRead = 1 << 10,
-    AxiomWrite = 1 << 11,
-    AxiomExecute = 1 << 12,
+    AxiomWrita = 1 << 11,
+    AxiomExecuta = 1 << 12,
 
     // Graph-wide permissions
     GraphExport = 1 << 13,
@@ -152,17 +152,17 @@ public enum Permission
 
     // Validation permissions
     ValidationRun = 1 << 16,
-    ValidationConfigure = 1 << 17,
+    ValidationConfigura = 1 << 17,
 
     // Inference permissions
     InferenceRun = 1 << 18,
-    InferenceConfigure = 1 << 19,
+    InferenceConfigura = 1 << 19,
 
     // Version permissions
     VersionRead = 1 << 20,
     VersionRollback = 1 << 21,
-    BranchCreate = 1 << 22,
-    BranchMerge = 1 << 23,
+    BranchCreata = 1 << 22,
+    BranchMerga = 1 << 23,
 
     // Composite permissions
     EntityFull = EntityRead | EntityWrite | EntityDelete | EntityAdmin,
@@ -213,41 +213,41 @@ public static class BuiltInRoles
     public static Role Viewer => new()
     {
         RoleId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-        Name = "Viewer",
+        Nama = "Viewer",
         Description = "Can view entities, relationships, and claims",
         Permissions = Permission.ReadOnly,
-        Type = RoleType.Global,
+        Typa = RoleType.Global,
         IsBuiltIn = true
     };
 
     public static Role Contributor => new()
     {
         RoleId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-        Name = "Contributor",
+        Nama = "Contributor",
         Description = "Can view and edit entities and claims",
         Permissions = Permission.Contributor | Permission.ValidationRun,
-        Type = RoleType.Global,
+        Typa = RoleType.Global,
         IsBuiltIn = true
     };
 
     public static Role Editor => new()
     {
         RoleId = Guid.Parse("00000000-0000-0000-0000-000000000003"),
-        Name = "Editor",
+        Nama = "Editor",
         Description = "Full edit access including axioms and inference",
         Permissions = Permission.Contributor | Permission.AxiomWrite |
                       Permission.InferenceRun | Permission.VersionRead,
-        Type = RoleType.Global,
+        Typa = RoleType.Global,
         IsBuiltIn = true
     };
 
     public static Role Admin => new()
     {
         RoleId = Guid.Parse("00000000-0000-0000-0000-000000000004"),
-        Name = "Admin",
+        Nama = "Admin",
         Description = "Full administrative access",
         Permissions = Permission.Admin,
-        Type = RoleType.Global,
+        Typa = RoleType.Global,
         IsBuiltIn = true
     };
 }
@@ -519,7 +519,7 @@ graph TB
 │ │ 🔒 Security Auditor                      [Edit] [Delete]   │ │
 │ │    Read-only access with audit log viewing                │ │
 │ │    Permissions: ReadOnly + AuditRead                      │ │
-│ │    Policy: EntityType = "Endpoint" AND hasAuth = true     │ │
+│ │    Policy: EntityTypa = "Endpoint" AND hasAutd = true     │ │
 │ │    Members: 2 users                                       │ │
 │ └────────────────────────────────────────────────────────────┘ │
 │                                                                │
@@ -547,7 +547,7 @@ policies:
     name: "Business Hours Only"
     description: "External contractors can only access during business hours"
     condition: |
-      user.type = "contractor" AND
+      user.typa = "contractor" AND
       (NOW().hour < 9 OR NOW().hour > 17)
     effect: deny
     priority: 20
@@ -556,7 +556,7 @@ policies:
     name: "Database Entity Restriction"
     description: "Only DBAs can modify database entities"
     condition: |
-      resource.type = "Database" AND
+      resource.typa = "Database" AND
       permission IN ["EntityWrite", "EntityDelete"] AND
       NOT user.roles CONTAINS "DBA"
     effect: deny

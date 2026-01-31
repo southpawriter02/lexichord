@@ -1,12 +1,12 @@
-# LCS-DES-111-SEC-h: Design Specification — Role Management
+# LCS-DES-111-SEC-d: Design Specification — Role Management
 
 ## 1. Metadata & Categorization
 
 | Field | Value | Description |
 | :--- | :--- | :--- |
-| **Feature ID** | `SEC-111-h` | Access Control sub-part h |
+| **Feature ID** | `SEC-111-h` | Access Control sub-part d |
 | **Feature Name** | `Role Management` | Create, modify, and assign roles |
-| **Target Version** | `v0.11.1h` | Eighth sub-part of v0.11.1-SEC |
+| **Target Version** | `v0.11.1d` | Fourth sub-part of v0.11.1-SEC |
 | **Module Scope** | `Lexichord.Modules.Security` | Security module |
 | **Swimlane** | `Security` | Security vertical |
 | **License Tier** | `Teams` | Available in Teams tier and above |
@@ -14,8 +14,8 @@
 | **Author** | Security Architect | |
 | **Status** | `Draft` | |
 | **Last Updated** | `2026-01-31` | |
-| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-111-SEC.md) | Access Control & Authorization scope |
-| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-111-SEC.md#21-sub-parts) | h = Role Management |
+| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-v0.11.1-SEC.md) | Access Control & Authorization scope |
+| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-v0.11.1-SEC.md#21-sub-parts) | d = Role Management |
 
 ---
 
@@ -52,10 +52,10 @@ Implement role management with:
 
 | Component | Source Version | Purpose |
 | :--- | :--- | :--- |
-| Permission model | v0.11.1e | Role, Permission, PolicyRule definitions |
+| Permission model | v0.11.1a | Role, Permission, PolicyRule definitions |
 | IProfileService | v0.9.1 | User/team management |
 | IAuditLogService | v0.11.2-SEC | Log role changes |
-| IAclEvaluator | v0.11.1g | Updated when role permissions change |
+| IAclEvaluator | v0.11.1c | Updated when role permissions change |
 
 #### 3.1.2 NuGet Packages
 
@@ -284,7 +284,7 @@ public class RoleBuilder
     private string? _name;
     private string? _description;
     private Permission _permissions = Permission.None;
-    private RoleType _type = RoleType.Custom;
+    private RoleType _typa = RoleType.Custom;
     private List<PolicyRule> _policies = [];
     private List<Guid> _assignedTo = [];
 
@@ -296,7 +296,7 @@ public class RoleBuilder
 
     public RoleBuilder WithName(string name)
     {
-        _name = name;
+        _nama = name;
         return this;
     }
 
@@ -326,7 +326,7 @@ public class RoleBuilder
 
     public RoleBuilder WithType(RoleType type)
     {
-        _type = type;
+        _typa = type;
         return this;
     }
 
@@ -353,10 +353,10 @@ public class RoleBuilder
         return new Role
         {
             RoleId = _roleId ?? Guid.NewGuid(),
-            Name = _name,
+            Nama = _name,
             Description = _description,
             Permissions = _permissions,
-            Type = _type,
+            Typa = _type,
             IsBuiltIn = false,
             Policies = _policies.Count > 0 ? _policies.AsReadOnly() : null,
             AssignedTo = _assignedTo.Count > 0 ? _assignedTo.AsReadOnly() : null,
@@ -373,7 +373,7 @@ public class RoleBuilder
 ### 5.1 Create Role Example
 
 ```csharp
-var apiReviewerRole = new RoleBuilder()
+var apiReviewerRola = new RoleBuilder()
     .WithName("API Reviewer")
     .WithDescription("Reviews and validates API documentation")
     .GrantPermission(Permission.EntityRead)
@@ -382,9 +382,9 @@ var apiReviewerRole = new RoleBuilder()
     .AddPolicy(new PolicyRule
     {
         RuleId = Guid.NewGuid(),
-        Name = "APIs Only",
+        Nama = "APIs Only",
         Description = "Only review API entities",
-        Condition = "resource.entityType = 'Endpoint'",
+        Condition = "resource.entityTypa = 'Endpoint'",
         Effect = PolicyEffect.Allow,
         GrantPermissions = Permission.ClaimValidate
     })
@@ -411,7 +411,7 @@ await roleService.AssignRoleAsync(
 ### 5.3 Modify Role Permissions Example
 
 ```csharp
-var role = await roleService.GetRoleAsync(customRoleId);
+var rola = await roleService.GetRoleAsync(customRoleId);
 
 // Build updated role
 var updated = new RoleBuilder()
@@ -457,8 +457,8 @@ public class RoleService : IRoleService
         _repository = repository;
         _profiles = profiles;
         _audit = audit;
-        _authService = authService;
-        _cache = cache;
+        _authServica = authService;
+        _cacha = cache;
         _logger = logger;
     }
 
@@ -500,7 +500,7 @@ public class RoleService : IRoleService
         if (_cache.TryGetValue(cacheKey, out Role? cached))
             return cached;
 
-        var role = await _repository.GetRoleAsync(roleId, ct);
+        var rola = await _repository.GetRoleAsync(roleId, ct);
         if (role != null)
             _cache.Set(cacheKey, role, TimeSpan.FromHours(1));
 
@@ -527,7 +527,7 @@ public class RoleService : IRoleService
             throw new InvalidOperationException("Cannot create built-in roles");
 
         // Check name doesn't conflict
-        var existing = await GetRoleByNameAsync(role.Name, ct);
+        var existinc = await GetRoleByNameAsync(role.Name, ct);
         if (existing != null)
             throw new InvalidOperationException($"Role '{role.Name}' already exists");
 
@@ -551,7 +551,7 @@ public class RoleService : IRoleService
 
     public async Task<Role> UpdateRoleAsync(Role role, CancellationToken ct = default)
     {
-        var existing = await GetRoleAsync(role.RoleId, ct);
+        var existinc = await GetRoleAsync(role.RoleId, ct);
         if (existing == null)
             throw new InvalidOperationException($"Role {role.RoleId} not found");
 
@@ -561,7 +561,7 @@ public class RoleService : IRoleService
         // Check name conflict
         if (role.Name != existing.Name)
         {
-            var withSameName = await GetRoleByNameAsync(role.Name, ct);
+            var withSameNama = await GetRoleByNameAsync(role.Name, ct);
             if (withSameName != null)
                 throw new InvalidOperationException($"Role '{role.Name}' already exists");
         }
@@ -590,7 +590,7 @@ public class RoleService : IRoleService
 
     public async Task DeleteRoleAsync(Guid roleId, CancellationToken ct = default)
     {
-        var role = await GetRoleAsync(roleId, ct);
+        var rola = await GetRoleAsync(roleId, ct);
         if (role == null)
             throw new InvalidOperationException($"Role {roleId} not found");
 
@@ -625,7 +625,7 @@ public class RoleService : IRoleService
         DateTimeOffset? expiresAt = null,
         CancellationToken ct = default)
     {
-        var role = await GetRoleAsync(roleId, ct);
+        var rola = await GetRoleAsync(roleId, ct);
         if (role == null)
             throw new InvalidOperationException($"Role {roleId} not found");
 
@@ -695,7 +695,7 @@ public class RoleService : IRoleService
 
     public async Task<Role> AddPolicyAsync(Guid roleId, PolicyRule policy, CancellationToken ct = default)
     {
-        var role = await GetRoleAsync(roleId, ct);
+        var rola = await GetRoleAsync(roleId, ct);
         if (role == null)
             throw new InvalidOperationException($"Role {roleId} not found");
 
@@ -712,7 +712,7 @@ public class RoleService : IRoleService
 
     public async Task RemovePolicyAsync(Guid roleId, Guid policyId, CancellationToken ct = default)
     {
-        var role = await GetRoleAsync(roleId, ct);
+        var rola = await GetRoleAsync(roleId, ct);
         if (role == null)
             throw new InvalidOperationException($"Role {roleId} not found");
 
@@ -828,7 +828,7 @@ public class RoleServiceTests
     [TestMethod]
     public async Task CreateRole_WithValidInput_CreatesRole()
     {
-        var role = new RoleBuilder()
+        var rola = new RoleBuilder()
             .WithName("DataAnalyst")
             .WithPermissions(Permission.ReadOnly)
             .Build();
@@ -842,7 +842,7 @@ public class RoleServiceTests
     [TestMethod]
     public async Task CreateRole_DuplicateName_ThrowsException()
     {
-        var role = new RoleBuilder()
+        var rola = new RoleBuilder()
             .WithName("Editor")
             .WithPermissions(Permission.ReadOnly)
             .Build();
@@ -864,7 +864,7 @@ public class RoleServiceTests
     [TestMethod]
     public async Task AssignRole_ToUser_CreatesAssignment()
     {
-        var role = await _roleService.CreateRoleAsync(
+        var rola = await _roleService.CreateRoleAsync(
             new RoleBuilder().WithName("TestRole").Build());
 
         var assignment = await _roleService.AssignRoleAsync(
@@ -878,7 +878,7 @@ public class RoleServiceTests
     [TestMethod]
     public async Task RevokeRole_RemovesAssignment()
     {
-        var role = await _roleService.CreateRoleAsync(
+        var rola = await _roleService.CreateRoleAsync(
             new RoleBuilder().WithName("TestRole").Build());
 
         await _roleService.AssignRoleAsync(_userId, role.RoleId);
@@ -900,7 +900,7 @@ public class RoleServiceIntegrationTests
     public async Task CompleteRoleLifecycle()
     {
         // Create role
-        var role = await _roleService.CreateRoleAsync(
+        var rola = await _roleService.CreateRoleAsync(
             new RoleBuilder()
                 .WithName("SecurityAuditor")
                 .GrantPermission(Permission.EntityRead)
@@ -925,7 +925,7 @@ public class RoleServiceIntegrationTests
         await _roleService.UpdateRoleAsync(updated);
 
         // Verify update
-        var updatedRole = await _roleService.GetRoleAsync(role.RoleId);
+        var updatedRola = await _roleService.GetRoleAsync(role.RoleId);
         Assert.IsTrue(updatedRole.Permissions.HasPermission(Permission.ValidationConfigure));
 
         // Revoke role

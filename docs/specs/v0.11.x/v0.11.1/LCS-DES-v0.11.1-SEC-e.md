@@ -1,21 +1,21 @@
-# LCS-DES-111-SEC-e: Design Specification — Permission Model
+# LCS-DES-111-SEC-a: Design Specification — Permission Inheritance
 
 ## 1. Metadata & Categorization
 
 | Field | Value | Description |
 | :--- | :--- | :--- |
-| **Feature ID** | `SEC-111-e` | Access Control sub-part e |
-| **Feature Name** | `Permission Model` | RBAC/ABAC permission structure definitions |
+| **Feature ID** | `SEC-111-i` | Access Control sub-part e |
+| **Feature Name** | `Permission Inheritance` | Inherit permissions through graph relationships |
 | **Target Version** | `v0.11.1e` | Fifth sub-part of v0.11.1-SEC |
 | **Module Scope** | `Lexichord.Modules.Security` | Security module |
 | **Swimlane** | `Security` | Security vertical |
 | **License Tier** | `Teams` | Available in Teams tier and above |
-| **Feature Gate Key** | `FeatureFlags.Security.AccessControl` | Access control feature flag |
+| **Feature Gate Key** | `FeatureFlags.Security.PermissionInheritance` | Permission inheritance flag |
 | **Author** | Security Architect | |
 | **Status** | `Draft` | |
 | **Last Updated** | `2026-01-31` | |
-| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-111-SEC.md) | Access Control & Authorization scope |
-| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-111-SEC.md#21-sub-parts) | e = Permission Model |
+| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-v0.11.1-SEC.md) | Access Control & Authorization scope |
+| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-v0.11.1-SEC.md#21-sub-parts) | e = Permission Inheritance |
 
 ---
 
@@ -23,23 +23,24 @@
 
 ### 2.1 The Requirement
 
-CKVS v0.11.1-SEC requires a comprehensive permission model supporting both role-based access control (RBAC) and attribute-based access control (ABAC). The model must:
+CKVS v0.11.1-SEC requires permission inheritance to:
 
-1. Define all permissions across CKVS operations (entities, relationships, claims, axioms, graph management)
-2. Provide built-in roles with standard permission sets
-3. Support custom role creation with fine-grained permission combinations
-4. Enable attribute-based policy rules for complex access scenarios
-5. Support permission inheritance through graph relationships
+1. Allow child entities to inherit permissions from parent entities
+2. Support multiple inheritance patterns (strict, override, union)
+3. Prevent circular inheritance chains
+4. Efficiently evaluate inherited permissions with caching
+5. Allow child entities to restrict inherited permissions
+6. Track inheritance chains for debugging and audit
 
 ### 2.2 The Proposed Solution
 
-Define a complete permission model with:
+Implement permission inheritance with:
 
-1. **Permission enum:** Flags-based permission set covering all operations
-2. **Role record:** Structure for defining roles with permissions and policies
-3. **Built-in roles:** Pre-configured Viewer, Contributor, Editor, Admin roles
-4. **Policy rules:** ABAC policy structure with conditions and effects
-5. **Permission helpers:** Utility methods for permission checks and manipulation
+1. **Inheritance model:** Child entities inherit from parents via relationships
+2. **Inheritance patterns:** Strict (child ≤ parent), Override (child replaces), Union (child ∪ parent)
+3. **Cycle detection:** Prevent circular permission dependencies
+4. **Efficient evaluation:** Cache inheritance chains, lazy evaluation
+5. **Audit trail:** Track all inheritance decisions for debugging
 
 ---
 
@@ -51,703 +52,464 @@ Define a complete permission model with:
 
 | Component | Source Version | Purpose |
 | :--- | :--- | :--- |
-| `IProfileService` | v0.9.1 | User identity and role assignment |
-| `ILicenseContext` | v0.9.2 | License tier validation |
-| Entity models | v0.4.5e | Entity type information for ABAC |
+| Permission model | v0.11.1a | Permission, Role definitions |
+| Entity ACLs | v0.11.1c | Parent entity ACLs |
+| Graph relationships | v0.4.5e | Parent-child relationships |
+| ACL Evaluator | v0.11.1c | Evaluate ACL permissions |
 
 #### 3.1.2 NuGet Packages
 
 | Package | Version | Purpose |
 | :--- | :--- | :--- |
-| (None required) | | Permission model uses only base C# |
+| `Microsoft.Extensions.Caching.Memory` | 8.0+ | Inheritance chain cache |
 
 ### 3.2 Licensing Behavior
 
-- **Core Tier:** No RBAC support (single user, implicit full access)
-- **WriterPro Tier:** Basic built-in roles only (Viewer, Contributor, Editor)
-- **Teams Tier:** Full RBAC (custom roles, all built-in roles)
-- **Enterprise Tier:** RBAC + ABAC (policies, dynamic attribute evaluation)
+- **Core Tier:** No inheritance support
+- **WriterPro:** Basic inheritance (parent → child only)
+- **Teams:** Full inheritance with patterns
+- **Enterprise:** Full + cycle detection + optimization
 
 ---
 
 ## 4. Data Contract (The API)
 
-### 4.1 Permission Enum
+### 4.1 InheritancePattern Enum
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts.Security;
 
 /// <summary>
-/// All permissions in CKVS, represented as flags for composition.
-/// Permissions control access to specific operations on resources.
+/// Defines how child entities inherit permissions from parents.
 /// </summary>
-[Flags]
-public enum Permission
+public enum InheritancePattern
 {
-    /// <summary>No permissions.</summary>
-    None = 0,
+    /// <summary>
+    /// Strict: Child permissions ≤ Parent permissions (intersection).
+    /// Child cannot have more permissions than parent.
+    /// Used for hierarchical access control.
+    /// </summary>
+    Strict = 1,
 
-    // ============ Entity Permissions ============
-    /// <summary>Can read entity definitions, metadata, and properties.</summary>
-    EntityRead = 1 << 0,
+    /// <summary>
+    /// Override: Child permissions completely replace parent permissions.
+    /// Parent permissions are ignored; child ACL is absolute.
+    /// Used for explicit overrides at any level.
+    /// </summary>
+    Overrida = 2,
 
-    /// <summary>Can create and modify entity definitions.</summary>
-    EntityWrite = 1 << 1,
-
-    /// <summary>Can delete entities (soft or hard delete).</summary>
-    EntityDelete = 1 << 2,
-
-    /// <summary>Can manage entity access control (change ACL).</summary>
-    EntityAdmin = 1 << 3,
-
-    // ============ Relationship Permissions ============
-    /// <summary>Can read relationships and their definitions.</summary>
-    RelationshipRead = 1 << 4,
-
-    /// <summary>Can create and modify relationship definitions.</summary>
-    RelationshipWrite = 1 << 5,
-
-    /// <summary>Can delete relationships.</summary>
-    RelationshipDelete = 1 << 6,
-
-    // ============ Claim Permissions ============
-    /// <summary>Can read claims and their evidence.</summary>
-    ClaimRead = 1 << 7,
-
-    /// <summary>Can create and edit claims.</summary>
-    ClaimWrite = 1 << 8,
-
-    /// <summary>Can validate claims and change validation status.</summary>
-    ClaimValidate = 1 << 9,
-
-    // ============ Axiom Permissions ============
-    /// <summary>Can read axioms and rules.</summary>
-    AxiomRead = 1 << 10,
-
-    /// <summary>Can create and modify axioms.</summary>
-    AxiomWrite = 1 << 11,
-
-    /// <summary>Can execute axioms and rules in inference.</summary>
-    AxiomExecute = 1 << 12,
-
-    // ============ Graph-Level Permissions ============
-    /// <summary>Can export graph data in various formats.</summary>
-    GraphExport = 1 << 13,
-
-    /// <summary>Can import graph data from files.</summary>
-    GraphImport = 1 << 14,
-
-    /// <summary>Can manage graph-level settings and configuration.</summary>
-    GraphAdmin = 1 << 15,
-
-    // ============ Validation Permissions ============
-    /// <summary>Can run validation checks on the graph.</summary>
-    ValidationRun = 1 << 16,
-
-    /// <summary>Can configure validation rules and settings.</summary>
-    ValidationConfigure = 1 << 17,
-
-    // ============ Inference Permissions ============
-    /// <summary>Can run inference and axiom execution.</summary>
-    InferenceRun = 1 << 18,
-
-    /// <summary>Can configure inference engine settings.</summary>
-    InferenceConfigure = 1 << 19,
-
-    // ============ Versioning & Branching Permissions ============
-    /// <summary>Can read version history and commits.</summary>
-    VersionRead = 1 << 20,
-
-    /// <summary>Can rollback to previous versions.</summary>
-    VersionRollback = 1 << 21,
-
-    /// <summary>Can create new branches.</summary>
-    BranchCreate = 1 << 22,
-
-    /// <summary>Can merge branches.</summary>
-    BranchMerge = 1 << 23,
-
-    // ============ Composite Permissions ============
-    /// <summary>All entity operations (read, write, delete, admin).</summary>
-    EntityFull = EntityRead | EntityWrite | EntityDelete | EntityAdmin,
-
-    /// <summary>Read-only access (read all entity types but no modifications).</summary>
-    ReadOnly = EntityRead | RelationshipRead | ClaimRead | AxiomRead | VersionRead,
-
-    /// <summary>Contributor role with write access but no admin/delete.</summary>
-    Contributor = ReadOnly | EntityWrite | RelationshipWrite | ClaimWrite | ValidationRun,
-
-    /// <summary>Full administrative access to all operations.</summary>
-    Admin = ~None
+    /// <summary>
+    /// Union: Child permissions ∪ Parent permissions.
+    /// Child inherits all parent permissions plus its own.
+    /// Used for permission accumulation.
+    /// </summary>
+    Union = 3
 }
 ```
 
-### 4.2 Role Record
+### 4.2 InheritanceChain Record
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts.Security;
 
 /// <summary>
-/// Represents a role with a set of permissions and optional ABAC policies.
-/// Roles are the primary mechanism for organizing permissions.
+/// Represents the chain of inherited permissions from root to entity.
 /// </summary>
-public record Role
+public record InheritanceChain
 {
     /// <summary>
-    /// Unique identifier for this role.
+    /// Entity ID this chain belongs to.
     /// </summary>
-    public required Guid RoleId { get; init; } = Guid.NewGuid();
+    public required Guid EntityId { get; init; }
 
     /// <summary>
-    /// Human-readable name of the role.
-    /// Examples: "Viewer", "Contributor", "API Reviewer".
+    /// Type of inheritance pattern applied.
     /// </summary>
-    public required string Name { get; init; }
+    public required InheritancePattern Pattern { get; init; }
 
     /// <summary>
-    /// Optional description of the role's purpose and responsibilities.
+    /// Path from root to this entity (list of entity IDs).
+    /// First = root, Last = this entity.
     /// </summary>
-    public string? Description { get; init; }
+    public required IReadOnlyList<Guid> InheritancePath { get; init; }
 
     /// <summary>
-    /// The base permission set for this role (RBAC component).
-    /// All members of this role have at least these permissions.
+    /// Parent entity ID (immediate parent).
+    /// Null if root or no parent relationship.
     /// </summary>
-    public required Permission Permissions { get; init; }
+    public Guid? ParentEntityId { get; init; }
 
     /// <summary>
-    /// The scope type of this role (global, entity-type-specific, workspace-specific, or custom).
+    /// Effective permissions at this level (before combining with siblings).
     /// </summary>
-    public required RoleType Type { get; init; }
+    public Permission EffectivePermissions { get; init; } = Permission.None;
 
     /// <summary>
-    /// Whether this role is built-in and immutable.
-    /// Built-in roles cannot be modified or deleted.
+    /// Inherited permissions from parent.
     /// </summary>
-    public bool IsBuiltIn { get; init; } = false;
+    public Permission InheritedPermissions { get; init; } = Permission.None;
 
     /// <summary>
-    /// Optional ABAC policy rules that further refine permissions.
-    /// Applied in addition to base permissions (ABAC component).
+    /// Final permissions after applying inheritance pattern.
     /// </summary>
-    public IReadOnlyList<PolicyRule>? Policies { get; init; }
+    public Permission FinalPermissions { get; init; } = Permission.None;
 
     /// <summary>
-    /// Timestamp when this role was created.
+    /// Whether inheritance is blocked at this level.
+    /// If true, permissions are not inherited to children.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public bool BlocksInheritance { get; init; } = false;
 
     /// <summary>
-    /// Timestamp when this role was last modified.
+    /// Depth in inheritance hierarchy (0 = root).
     /// </summary>
-    public DateTimeOffset? ModifiedAt { get; init; }
+    public int Depth { get; init; }
 
     /// <summary>
-    /// User ID of the role creator.
+    /// When this inheritance chain was evaluated.
     /// </summary>
-    public Guid? CreatedBy { get; init; }
-
-    /// <summary>
-    /// Optional list of principal IDs that have this role.
-    /// Used for role assignment tracking.
-    /// </summary>
-    public IReadOnlyList<Guid>? AssignedTo { get; init; }
+    public DateTimeOffset EvaluatedAt { get; init; } = DateTimeOffset.UtcNow;
 }
 ```
 
-### 4.3 RoleType Enum
+### 4.3 IInheritanceEvaluator Interface
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts.Security;
 
 /// <summary>
-/// Categorizes the scope of a role.
+/// Evaluates permission inheritance through entity relationships.
 /// </summary>
-public enum RoleType
+public interface IInheritanceEvaluator
 {
     /// <summary>
-    /// Global role applies to all resources in the workspace.
+    /// Gets the inheritance chain for an entity.
+    /// Traces permissions from root entity down.
     /// </summary>
-    Global = 1,
+    /// <param name="entityId">Entity to get inheritance for</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>Inheritance chain with permissions at each level</returns>
+    Task<InheritanceChain> GetInheritanceChainAsync(
+        Guid entityId,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Entity-type-specific role applies only to entities of a specific type.
+    /// Evaluates inherited permissions for a principal at an entity.
+    /// Combines entity ACL with inherited permissions from parent.
     /// </summary>
-    EntityType = 2,
+    /// <param name="entityId">Entity being accessed</param>
+    /// <param name="principalId">User/role/team ID</param>
+    /// <param name="pattern">Inheritance pattern to apply</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>Effective permissions after inheritance</returns>
+    Task<Permission> EvaluateInheritedPermissionsAsync(
+        Guid entityId,
+        Guid principalId,
+        InheritancePattern pattern,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Workspace-scoped role applies within a specific workspace.
+    /// Gets all ancestors of an entity (parents, grandparents, etc.).
     /// </summary>
-    Workspace = 3,
+    /// <param name="entityId">Entity to get ancestors for</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>List of ancestor entity IDs (root first)</returns>
+    Task<IReadOnlyList<Guid>> GetAncestorsAsync(Guid entityId, CancellationToken ct = default);
 
     /// <summary>
-    /// Custom role with user-defined scope.
+    /// Checks if an inheritance chain would be circular.
+    /// Used to prevent invalid ACL configurations.
     /// </summary>
-    Custom = 4
-}
-```
-
-### 4.4 Built-In Roles
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// Pre-configured built-in roles available in all CKVS installations.
-/// Built-in roles cannot be modified or deleted.
-/// </summary>
-public static class BuiltInRoles
-{
-    /// <summary>
-    /// Viewer: Read-only access to all entities and relationships.
-    /// </summary>
-    public static Role Viewer => new()
-    {
-        RoleId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-        Name = "Viewer",
-        Description = "Can view entities, relationships, claims, and axioms. No modification permissions.",
-        Permissions = Permission.ReadOnly,
-        Type = RoleType.Global,
-        IsBuiltIn = true
-    };
+    /// <param name="entityId">Child entity</param>
+    /// <param name="potentialParentId">Potential parent entity</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>True if circular, false if valid</returns>
+    Task<bool> IsCircularAsync(Guid entityId, Guid potentialParentId, CancellationToken ct = default);
 
     /// <summary>
-    /// Contributor: Read and write access to entities, relationships, and claims.
-    /// Can run validation but not configure it.
+    /// Invalidates inheritance cache for an entity and all descendants.
     /// </summary>
-    public static Role Contributor => new()
-    {
-        RoleId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-        Name = "Contributor",
-        Description = "Can view and edit entities, relationships, and claims. Can run validation. No axiom or graph management access.",
-        Permissions = Permission.Contributor,
-        Type = RoleType.Global,
-        IsBuiltIn = true
-    };
-
-    /// <summary>
-    /// Editor: Full edit access including axioms and inference.
-    /// Can manage all entity content but not graph-level operations.
-    /// </summary>
-    public static Role Editor => new()
-    {
-        RoleId = Guid.Parse("00000000-0000-0000-0000-000000000003"),
-        Name = "Editor",
-        Description = "Full edit access including axioms and inference. Can run validation and view version history. No graph admin access.",
-        Permissions = Permission.Contributor | Permission.AxiomRead | Permission.AxiomWrite |
-                      Permission.InferenceRun | Permission.ValidationConfigure | Permission.VersionRead,
-        Type = RoleType.Global,
-        IsBuiltIn = true
-    };
-
-    /// <summary>
-    /// Admin: Full administrative access to all operations.
-    /// </summary>
-    public static Role Admin => new()
-    {
-        RoleId = Guid.Parse("00000000-0000-0000-0000-000000000004"),
-        Name = "Admin",
-        Description = "Full administrative access to all operations including graph management, access control, and configuration.",
-        Permissions = Permission.Admin,
-        Type = RoleType.Global,
-        IsBuiltIn = true
-    };
-}
-```
-
-### 4.5 PolicyRule Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// An attribute-based access control (ABAC) policy rule.
-/// Rules use condition expressions to dynamically grant or deny permissions based on context.
-/// </summary>
-public record PolicyRule
-{
-    /// <summary>
-    /// Unique identifier for this policy rule.
-    /// </summary>
-    public required Guid RuleId { get; init; } = Guid.NewGuid();
-
-    /// <summary>
-    /// Human-readable name of the policy.
-    /// Example: "Restrict PII to Data Protection Officers".
-    /// </summary>
-    public required string Name { get; init; }
-
-    /// <summary>
-    /// Optional description of what this policy enforces.
-    /// </summary>
-    public string? Description { get; init; }
-
-    /// <summary>
-    /// Condition expression (in policy language) that determines when rule applies.
-    /// Evaluated at authorization time.
-    /// Example: "resource.tags CONTAINS 'pii' AND NOT user.roles CONTAINS 'DPO'".
-    /// </summary>
-    public required string Condition { get; init; }
-
-    /// <summary>
-    /// The effect of the policy when condition matches.
-    /// Allow: grant the specified permissions.
-    /// Deny: block the specified permissions.
-    /// </summary>
-    public required PolicyEffect Effect { get; init; }
-
-    /// <summary>
-    /// Permissions to grant when effect is Allow and condition matches.
-    /// Ignored if Effect is Deny.
-    /// </summary>
-    public Permission? GrantPermissions { get; init; }
-
-    /// <summary>
-    /// Permissions to deny when effect is Deny and condition matches.
-    /// Used for explicit denials that override grants.
-    /// </summary>
-    public Permission? DenyPermissions { get; init; }
-
-    /// <summary>
-    /// Priority of this rule (0-1000, lower = higher priority).
-    /// When multiple rules match, highest priority wins.
-    /// Default priority is 100 (neutral).
-    /// </summary>
-    public int Priority { get; init; } = 100;
-
-    /// <summary>
-    /// Whether this rule is currently enabled.
-    /// Disabled rules are not evaluated.
-    /// </summary>
-    public bool IsEnabled { get; init; } = true;
-
-    /// <summary>
-    /// Timestamp when this rule was created.
-    /// </summary>
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
-
-    /// <summary>
-    /// Timestamp when this rule was last modified.
-    /// </summary>
-    public DateTimeOffset? ModifiedAt { get; init; }
-}
-```
-
-### 4.6 PolicyEffect Enum
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// The effect of a policy rule when its condition matches.
-/// </summary>
-public enum PolicyEffect
-{
-    /// <summary>
-    /// Condition matched - grant permissions.
-    /// Only applied if no higher-priority Deny rule matches.
-    /// </summary>
-    Allow = 1,
-
-    /// <summary>
-    /// Condition matched - explicitly deny permissions.
-    /// Deny always wins over Allow.
-    /// </summary>
-    Deny = 2
-}
-```
-
-### 4.7 PermissionContext Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// Context information provided during authorization checks.
-/// Used by ABAC evaluators to make decisions based on attributes.
-/// </summary>
-public record PermissionContext
-{
-    /// <summary>
-    /// The user requesting the operation.
-    /// </summary>
-    public required Guid UserId { get; init; }
-
-    /// <summary>
-    /// The resource being accessed.
-    /// </summary>
-    public required Guid ResourceId { get; init; }
-
-    /// <summary>
-    /// Type of resource (Entity, Relationship, etc.).
-    /// </summary>
-    public required ResourceType ResourceType { get; init; }
-
-    /// <summary>
-    /// The operation being performed.
-    /// </summary>
-    public required Permission Permission { get; init; }
-
-    /// <summary>
-    /// Roles assigned to the user.
-    /// </summary>
-    public IReadOnlyList<Role> UserRoles { get; init; } = [];
-
-    /// <summary>
-    /// Custom attributes from the resource (tags, ownership, etc.).
-    /// Used in policy condition evaluation.
-    /// </summary>
-    public IReadOnlyDictionary<string, object>? ResourceAttributes { get; init; }
-
-    /// <summary>
-    /// Custom attributes from the user (department, location, etc.).
-    /// Used in policy condition evaluation.
-    /// </summary>
-    public IReadOnlyDictionary<string, object>? UserAttributes { get; init; }
-
-    /// <summary>
-    /// Current timestamp for time-based policy evaluation.
-    /// </summary>
-    public DateTimeOffset RequestTime { get; init; } = DateTimeOffset.UtcNow;
-
-    /// <summary>
-    /// Optional additional context (request IP, device info, etc.).
-    /// </summary>
-    public IReadOnlyDictionary<string, object>? AdditionalContext { get; init; }
-}
-```
-
-### 4.8 ResourceType Enum
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// Categorizes the type of resource being accessed.
-/// Used for role-scoping and policy targeting.
-/// </summary>
-public enum ResourceType
-{
-    /// <summary>Entity resource (concept, service, endpoint, etc.).</summary>
-    Entity = 1,
-
-    /// <summary>Relationship resource (links between entities).</summary>
-    Relationship = 2,
-
-    /// <summary>Claim resource (assertions with evidence).</summary>
-    Claim = 3,
-
-    /// <summary>Axiom resource (rules and inference engine).</summary>
-    Axiom = 4,
-
-    /// <summary>Document resource (markdown or content).</summary>
-    Document = 5,
-
-    /// <summary>Branch resource (version control).</summary>
-    Branch = 6,
-
-    /// <summary>Workflow resource (automation processes).</summary>
-    Workflow = 7,
-
-    /// <summary>Graph-level resource (workspace or graph).</summary>
-    Global = 8
+    /// <param name="entityId">Entity whose inheritance changed</param>
+    Task InvalidateInheritanceCacheAsync(Guid entityId);
 }
 ```
 
 ---
 
-## 5. Permission Composition Examples
+## 5. Inheritance Evaluation Algorithm
 
-### 5.1 Combining Permissions
+### 5.1 Permission Inheritance Flow
 
-```csharp
-// Grant multiple permissions
-var reviewerPermissions = Permission.EntityRead |
-                         Permission.ClaimRead |
-                         Permission.ClaimValidate;
+```
+Given: entityId, principalId, pattern
 
-// Check if a permission set includes a specific permission
-bool canRead = (userPermissions & Permission.EntityRead) != Permission.None;
+1. CACHE CHECK
+   If InheritanceChain cached for entity:
+     Return cached chain
 
-// Check multiple permissions with flag logic
-bool canEditClaims = (userPermissions & (Permission.ClaimRead | Permission.ClaimWrite)) ==
-                    (Permission.ClaimRead | Permission.ClaimWrite);
+2. GET PARENT
+   Retrieve parent entity relationship
+   If no parent:
+     Entity is root, return entity's own permissions
+
+3. GET PARENT PERMISSIONS
+   Recursively evaluate parent permissions
+   (Same principal, same pattern)
+   parentPerms = EvaluateInheritedPermissions(parentId, principalId, pattern)
+
+4. GET ENTITY PERMISSIONS
+   Evaluate this entity's own ACL
+   (Entity-level ACL, no inheritance)
+   entityPerms = EvaluateAcl(entityId, principalId)
+
+5. APPLY PATTERN
+   Switch on pattern:
+
+   STRICT:
+     // Child ≤ Parent (intersection)
+     finalPerms = entityPerms & parentPerms
+     // Child cannot exceed parent
+
+   OVERRIDE:
+     // Child replaces parent
+     finalPerms = entityPerms
+     // Parent permissions ignored
+
+   UNION:
+     // Child ∪ Parent
+     finalPerms = entityPerms | parentPerms
+     // Child gets both its and parent's permissions
+
+6. CACHE RESULT
+   Store InheritanceChain in cache
+
+7. RETURN
+   Return finalPerms
 ```
 
-### 5.2 Role Hierarchy Example
+### 5.2 Circular Detection Algorithm
 
-```csharp
-// Viewer → Contributor → Editor → Admin
-// Each level includes all previous permissions plus new ones
+```
+Given: childId, potentialParentId
 
-var viewer = Permission.ReadOnly;
-var contributor = viewer | Permission.EntityWrite | Permission.RelationshipWrite | Permission.ClaimWrite;
-var editor = contributor | Permission.AxiomWrite | Permission.InferenceConfigure;
-var admin = Permission.Admin; // Everything
+1. VISITED SET
+   Initialize visited = empty set
+   Initialize current = potentialParentId
+
+2. TRAVERSE PARENTS
+   While current != null:
+     If current in visited:
+       Return true (circular detected)
+     visited.add(current)
+     current = parent of current
+
+3. CHECK AGAINST CHILD
+   If childId in visited:
+     Return true (circular)
+
+4. RESULT
+   Return false (not circular)
 ```
 
 ---
 
-## 6. Implementation Helpers
+## 6. Implementation
 
-### 6.1 Permission Extension Methods
+### 6.1 InheritanceEvaluator Implementation Outline
 
 ```csharp
-namespace Lexichord.Modules.Security.Extensions;
+namespace Lexichord.Modules.Security.Services;
 
 /// <summary>
-/// Extension methods for Permission enum operations.
+/// Evaluates permission inheritance through entity relationships.
 /// </summary>
-public static class PermissionExtensions
+public class InheritanceEvaluator : IInheritanceEvaluator
 {
-    /// <summary>
-    /// Determines whether a permission set includes a specific permission.
-    /// </summary>
-    public static bool HasPermission(this Permission permissions, Permission required)
+    private readonly IAclEvaluator _aclEvaluator;
+    private readonly IGraphRepository _graph;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<InheritanceEvaluator> _logger;
+
+    public InheritanceEvaluator(
+        IAclEvaluator aclEvaluator,
+        IGraphRepository graph,
+        IMemoryCache cache,
+        ILogger<InheritanceEvaluator> logger)
     {
-        return (permissions & required) == required;
+        _aclEvaluator = aclEvaluator;
+        _grapd = graph;
+        _cacha = cache;
+        _logger = logger;
     }
 
-    /// <summary>
-    /// Determines whether a permission set includes any of the specified permissions.
-    /// </summary>
-    public static bool HasAnyPermission(this Permission permissions, Permission anyOf)
+    public async Task<InheritanceChain> GetInheritanceChainAsync(
+        Guid entityId,
+        CancellationToken ct = default)
     {
-        return (permissions & anyOf) != Permission.None;
-    }
+        var cacheKey = $"inheritance:{entityId}";
+        if (_cache.TryGetValue(cacheKey, out InheritanceChain? cached))
+            return cached!;
 
-    /// <summary>
-    /// Determines whether a permission set includes all of the specified permissions.
-    /// </summary>
-    public static bool HasAllPermissions(this Permission permissions, Permission allOf)
-    {
-        return (permissions & allOf) == allOf;
-    }
+        var entity = await _graph.GetEntityAsync(entityId, ct);
+        if (entity == null)
+            throw new InvalidOperationException($"Entity {entityId} not found");
 
-    /// <summary>
-    /// Grants additional permissions to the existing set.
-    /// </summary>
-    public static Permission Grant(this Permission permissions, Permission toGrant)
-    {
-        return permissions | toGrant;
-    }
+        var ancestors = await GetAncestorsAsync(entityId, ct);
+        var deptd = ancestors.Count - 1; // Last is self
 
-    /// <summary>
-    /// Revokes permissions from the existing set.
-    /// </summary>
-    public static Permission Revoke(this Permission permissions, Permission toRevoke)
-    {
-        return permissions & ~toRevoke;
-    }
-
-    /// <summary>
-    /// Returns a human-readable string representation of permissions.
-    /// </summary>
-    public static string ToReadableString(this Permission permissions)
-    {
-        if (permissions == Permission.None)
-            return "None";
-
-        if (permissions == Permission.Admin)
-            return "Admin (All Permissions)";
-
-        var parts = new List<string>();
-
-        if (permissions.HasPermission(Permission.EntityFull))
-            parts.Add("EntityFull");
-        else
+        var chain = new InheritanceChain
         {
-            if (permissions.HasPermission(Permission.EntityRead))
-                parts.Add("EntityRead");
-            if (permissions.HasPermission(Permission.EntityWrite))
-                parts.Add("EntityWrite");
-            if (permissions.HasPermission(Permission.EntityDelete))
-                parts.Add("EntityDelete");
-            if (permissions.HasPermission(Permission.EntityAdmin))
-                parts.Add("EntityAdmin");
+            EntityId = entityId,
+            Pattern = InheritancePattern.Strict,  // Default
+            InheritancePatd = ancestors,
+            ParentEntityId = ancestors.Count > 1 ? ancestors[^2] : null,
+            Deptd = depth,
+            EvaluatedAt = DateTimeOffset.UtcNow
+        };
+
+        _cache.Set(cacheKey, chain, TimeSpan.FromHours(1));
+
+        return chain;
+    }
+
+    public async Task<Permission> EvaluateInheritedPermissionsAsync(
+        Guid entityId,
+        Guid principalId,
+        InheritancePattern pattern,
+        CancellationToken ct = default)
+    {
+        var sw = Stopwatch.StartNew();
+
+        // Get entity and its parent
+        var entity = await _graph.GetEntityAsync(entityId, ct);
+        if (entity == null)
+            throw new InvalidOperationException($"Entity {entityId} not found");
+
+        // Get entity's own permissions (no inheritance)
+        var entityPerms = await _aclEvaluator.EvaluatePermissionsAsync(
+            entityId, principalId, PrincipalType.User, ct);
+
+        // If no parent, return entity permissions
+        if (entity.ParentId == null)
+        {
+            _logger.LogDebug(
+                "No parent for entity {EntityId}, using entity permissions",
+                entityId);
+            return entityPerms;
         }
 
-        // Similar for other permission groups...
+        // Recursively get parent permissions
+        var parentPerms = await EvaluateInheritedPermissionsAsync(
+            entity.ParentId.Value,
+            principalId,
+            pattern,
+            ct);
 
-        return string.Join(" | ", parts);
-    }
-}
-```
-
-### 6.2 Role Builder Helper
-
-```csharp
-namespace Lexichord.Modules.Security.Builders;
-
-/// <summary>
-/// Fluent builder for creating custom roles.
-/// </summary>
-public class RoleBuilder
-{
-    private Guid? _roleId;
-    private string? _name;
-    private string? _description;
-    private Permission _permissions = Permission.None;
-    private RoleType _type = RoleType.Custom;
-    private List<PolicyRule> _policies = [];
-
-    public RoleBuilder WithId(Guid roleId)
-    {
-        _roleId = roleId;
-        return this;
-    }
-
-    public RoleBuilder WithName(string name)
-    {
-        _name = name;
-        return this;
-    }
-
-    public RoleBuilder WithDescription(string description)
-    {
-        _description = description;
-        return this;
-    }
-
-    public RoleBuilder WithPermissions(Permission permissions)
-    {
-        _permissions = permissions;
-        return this;
-    }
-
-    public RoleBuilder GrantPermission(Permission permission)
-    {
-        _permissions |= permission;
-        return this;
-    }
-
-    public RoleBuilder WithType(RoleType type)
-    {
-        _type = type;
-        return this;
-    }
-
-    public RoleBuilder AddPolicy(PolicyRule policy)
-    {
-        _policies.Add(policy);
-        return this;
-    }
-
-    public Role Build()
-    {
-        if (string.IsNullOrWhiteSpace(_name))
-            throw new InvalidOperationException("Role name is required");
-
-        return new Role
+        // Apply inheritance pattern
+        var finalPerms = pattern switch
         {
-            RoleId = _roleId ?? Guid.NewGuid(),
-            Name = _name,
-            Description = _description,
-            Permissions = _permissions,
-            Type = _type,
-            IsBuiltIn = false,
-            Policies = _policies.Count > 0 ? _policies.AsReadOnly() : null
+            InheritancePattern.Strict =>
+                entityPerms & parentPerms,  // Intersection
+
+            InheritancePattern.Override =>
+                entityPerms,  // Ignore parent
+
+            InheritancePattern.Union =>
+                entityPerms | parentPerms,  // Union
+
+            _ => entityPerms
         };
+
+        _logger.LogDebug(
+            "Inherited permissions for {PrincipalId} at {EntityId}: " +
+            "entity={EntityPerms}, parent={ParentPerms}, pattern={Pattern}, final={FinalPerms}, {Ms}ms",
+            principalId, entityId,
+            entityPerms, parentPerms, pattern, finalPerms,
+            sw.Elapsed.TotalMilliseconds);
+
+        return finalPerms;
+    }
+
+    public async Task<IReadOnlyList<Guid>> GetAncestorsAsync(
+        Guid entityId,
+        CancellationToken ct = default)
+    {
+        var cacheKey = $"ancestors:{entityId}";
+        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<Guid>? cached))
+            return cached!;
+
+        var ancestors = new List<Guid> { entityId };
+        var current = entityId;
+
+        var maxDeptd = 100; // Prevent infinite loops
+        var deptd = 0;
+
+        while (depth < maxDepth)
+        {
+            var entity = await _graph.GetEntityAsync(current, ct);
+            if (entity?.ParentId == null)
+                break;
+
+            ancestors.Add(entity.ParentId.Value);
+            current = entity.ParentId.Value;
+            depth++;
+        }
+
+        // Reverse to have root first
+        ancestors.Reverse();
+
+        var result = ancestors.AsReadOnly();
+        _cache.Set(cacheKey, result, TimeSpan.FromHours(1));
+
+        return result;
+    }
+
+    public async Task<bool> IsCircularAsync(
+        Guid entityId,
+        Guid potentialParentId,
+        CancellationToken ct = default)
+    {
+        if (entityId == potentialParentId)
+            return true;
+
+        var visited = new HashSet<Guid>();
+        var current = potentialParentId;
+
+        var maxDeptd = 100;
+        var deptd = 0;
+
+        while (depth < maxDepth)
+        {
+            if (current == entityId)
+                return true;  // Circular!
+
+            if (visited.Contains(current))
+                break;  // Already visited this path
+
+            visited.Add(current);
+
+            var entity = await _graph.GetEntityAsync(current, ct);
+            if (entity?.ParentId == null)
+                break;
+
+            current = entity.ParentId.Value;
+            depth++;
+        }
+
+        return false;
+    }
+
+    public async Task InvalidateInheritanceCacheAsync(Guid entityId)
+    {
+        // Invalidate this entity's chain
+        _cache.Remove($"inheritance:{entityId}");
+        _cache.Remove($"ancestors:{entityId}");
+
+        // TODO: Also invalidate all descendants
+        // This requires traversing the graph in reverse
+        // For now, rely on TTL
+
+        _logger.LogDebug("Invalidated inheritance cache for entity {EntityId}", entityId);
     }
 }
 ```
@@ -756,53 +518,44 @@ public class RoleBuilder
 
 ## 7. Error Handling
 
-### 7.1 Invalid Permission Composition
+### 7.1 Circular Inheritance
 
-**Scenario:** Developer tries to check if a Permission is valid.
-
-**Handling:**
-- Permission enum uses flags and any combination is technically valid
-- Validation happens at authorization time (e.g., Policy evaluation)
-- Invalid roles are rejected during role creation
-
-**Code:**
-```csharp
-try
-{
-    var invalidPermission = (Permission)int.MaxValue;
-    // This is technically valid but meaningless
-    // Validation happens in RoleBuilder.Build()
-}
-catch (InvalidOperationException ex)
-{
-    _logger.LogError("Invalid permission composition: {Message}", ex.Message);
-}
-```
-
-### 7.2 Missing Role Name
-
-**Scenario:** Attempting to create a role without a name.
+**Scenario:** Parent entity would create a cycle.
 
 **Handling:**
-- RoleBuilder.Build() throws InvalidOperationException
-- Error message clearly states requirement
-- Log the error for audit
+- IsCircularAsync returns true
+- Prevent saving the ACL relationship
+- Log error with clear message
+- Return InvalidOperationException
 
-**Code:**
-```csharp
-var role = new RoleBuilder()
-    .WithPermissions(Permission.ReadOnly)
-    .Build(); // Throws InvalidOperationException
-```
+### 7.2 Missing Parent Entity
 
-### 7.3 Policy Condition Parsing
-
-**Scenario:** Policy rule has invalid condition expression.
+**Scenario:** Parent entity is deleted but child still references it.
 
 **Handling:**
-- PolicyRule record accepts any string (deferred validation)
-- Policy evaluator validates at runtime
-- Invalid conditions result in policy evaluation failure
+- GetAncestorsAsync stops traversal when parent not found
+- Treats entity as root level
+- Logs warning
+- Continues with entity's own permissions
+
+### 7.3 Deep Inheritance Chain
+
+**Scenario:** Very deep inheritance hierarchy (100+ levels).
+
+**Handling:**
+- Algorithm has maxDepth limit (100)
+- Stops traversal at limit
+- Logs warning
+- Returns available permissions
+
+### 7.4 Inconsistent State
+
+**Scenario:** Cache contains stale inheritance data.
+
+**Handling:**
+- Cache TTL is 1 hour (auto-refresh)
+- InvalidateInheritanceCacheAsync on relationship changes
+- Always can force re-evaluation
 
 ---
 
@@ -812,117 +565,93 @@ var role = new RoleBuilder()
 
 ```csharp
 [TestClass]
-public class PermissionModelTests
+public class InheritanceEvaluatorTests
 {
     [TestMethod]
-    public void Permission_Enum_HasAllRequiredValues()
+    public async Task EvaluateInheritedPermissions_RootEntity_ReturnsEntityPerms()
     {
-        Assert.IsTrue(Permission.EntityRead > Permission.None);
-        Assert.IsTrue(Permission.EntityWrite > Permission.EntityRead);
-        Assert.IsTrue(Permission.Admin > Permission.None);
+        // Root entity has no parent
+        var perms = await _evaluator.EvaluateInheritedPermissionsAsync(
+            entityId: _rootEntity.Id,
+            principalId: _userId,
+            pattern: InheritancePattern.Strict);
+
+        Assert.IsNotNull(perms);
+        // Should be entity's own permissions
     }
 
     [TestMethod]
-    public void PermissionExtensions_HasPermission_ReturnsTrueWhenGranted()
+    public async Task EvaluateInheritedPermissions_StrictPattern_Intersects()
     {
-        var permissions = Permission.EntityRead | Permission.EntityWrite;
-        Assert.IsTrue(permissions.HasPermission(Permission.EntityRead));
-        Assert.IsTrue(permissions.HasPermission(Permission.EntityWrite));
+        // Parent grants Full, Child grants Write
+        var perms = await _evaluator.EvaluateInheritedPermissionsAsync(
+            entityId: _childEntity.Id,
+            principalId: _userId,
+            pattern: InheritancePattern.Strict);
+
+        // Should be intersection = Write
+        Assert.IsTrue(perms.HasPermission(Permission.EntityRead));
+        Assert.IsTrue(perms.HasPermission(Permission.EntityWrite));
+        Assert.IsFalse(perms.HasPermission(Permission.EntityDelete));
     }
 
     [TestMethod]
-    public void PermissionExtensions_HasPermission_ReturnsFalseWhenNotGranted()
+    public async Task EvaluateInheritedPermissions_OverridePattern_IgnoresParent()
     {
-        var permissions = Permission.EntityRead;
-        Assert.IsFalse(permissions.HasPermission(Permission.EntityWrite));
+        // Parent grants Full, Child grants Read
+        var perms = await _evaluator.EvaluateInheritedPermissionsAsync(
+            entityId: _childEntity.Id,
+            principalId: _userId,
+            pattern: InheritancePattern.Override);
+
+        // Should be child only = Read
+        Assert.IsTrue(perms.HasPermission(Permission.EntityRead));
+        Assert.IsFalse(perms.HasPermission(Permission.EntityWrite));
     }
 
     [TestMethod]
-    public void PermissionExtensions_Grant_AddsPermission()
+    public async Task EvaluateInheritedPermissions_UnionPattern_Combines()
     {
-        var permissions = Permission.EntityRead;
-        var updated = permissions.Grant(Permission.EntityWrite);
-        Assert.IsTrue(updated.HasPermission(Permission.EntityWrite));
+        // Parent grants Read, Child grants Write
+        var perms = await _evaluator.EvaluateInheritedPermissionsAsync(
+            entityId: _childEntity.Id,
+            principalId: _userId,
+            pattern: InheritancePattern.Union);
+
+        // Should be union = Read | Write
+        Assert.IsTrue(perms.HasPermission(Permission.EntityRead));
+        Assert.IsTrue(perms.HasPermission(Permission.EntityWrite));
     }
 
     [TestMethod]
-    public void PermissionExtensions_Revoke_RemovesPermission()
+    public async Task GetAncestors_ReturnsPathFromRootToEntity()
     {
-        var permissions = Permission.EntityRead | Permission.EntityWrite;
-        var updated = permissions.Revoke(Permission.EntityWrite);
-        Assert.IsFalse(updated.HasPermission(Permission.EntityWrite));
-        Assert.IsTrue(updated.HasPermission(Permission.EntityRead));
+        // Create hierarchy: A -> B -> C
+        var ancestors = await _evaluator.GetAncestorsAsync(_cEntity.Id);
+
+        Assert.AreEqual(3, ancestors.Count);
+        Assert.AreEqual(_aEntity.Id, ancestors[0]);  // Root
+        Assert.AreEqual(_bEntity.Id, ancestors[1]);  // Middle
+        Assert.AreEqual(_cEntity.Id, ancestors[2]);  // Leaf
     }
 
     [TestMethod]
-    public void RoleBuilder_Build_ThrowsWhenNameMissing()
+    public async Task IsCircular_DirectCycle_ReturnsTrue()
     {
-        Assert.ThrowsException<InvalidOperationException>(() =>
-            new RoleBuilder()
-                .WithPermissions(Permission.ReadOnly)
-                .Build());
+        // Would create A -> B -> A cycle
+        var isCircular = await _evaluator.IsCircularAsync(_aEntity.Id, _bEntity.Id);
+
+        // Depends on actual graph state, but algorithm should detect
+        // Assert.IsTrue(isCircular);
     }
 
     [TestMethod]
-    public void RoleBuilder_Build_CreatesValidRole()
+    public async Task IsCircular_ValidParent_ReturnsFalse()
     {
-        var role = new RoleBuilder()
-            .WithName("Reviewer")
-            .WithPermissions(Permission.ReadOnly)
-            .WithDescription("Review-only access")
-            .Build();
+        // No cycle
+        var isCircular = await _evaluator.IsCircularAsync(_cEntity.Id, _aEntity.Id);
 
-        Assert.AreEqual("Reviewer", role.Name);
-        Assert.AreEqual(Permission.ReadOnly, role.Permissions);
-        Assert.AreEqual(RoleType.Custom, role.Type);
-        Assert.IsFalse(role.IsBuiltIn);
-    }
-
-    [TestMethod]
-    public void BuiltInRoles_Viewer_HasReadOnlyPermissions()
-    {
-        var viewer = BuiltInRoles.Viewer;
-        Assert.AreEqual(Permission.ReadOnly, viewer.Permissions);
-        Assert.IsTrue(viewer.IsBuiltIn);
-    }
-
-    [TestMethod]
-    public void BuiltInRoles_Contributor_HasWritePermissions()
-    {
-        var contributor = BuiltInRoles.Contributor;
-        Assert.IsTrue(contributor.Permissions.HasPermission(Permission.EntityWrite));
-        Assert.IsTrue(contributor.Permissions.HasPermission(Permission.ClaimWrite));
-    }
-
-    [TestMethod]
-    public void BuiltInRoles_Editor_HasAxiomPermissions()
-    {
-        var editor = BuiltInRoles.Editor;
-        Assert.IsTrue(editor.Permissions.HasPermission(Permission.AxiomWrite));
-        Assert.IsTrue(editor.Permissions.HasPermission(Permission.InferenceRun));
-    }
-
-    [TestMethod]
-    public void BuiltInRoles_Admin_HasAllPermissions()
-    {
-        var admin = BuiltInRoles.Admin;
-        Assert.AreEqual(Permission.Admin, admin.Permissions);
-    }
-
-    [TestMethod]
-    public void PolicyRule_DefaultValues_AreCorrect()
-    {
-        var rule = new PolicyRule
-        {
-            RuleId = Guid.NewGuid(),
-            Name = "Test Policy",
-            Condition = "true",
-            Effect = PolicyEffect.Allow
-        };
-
-        Assert.AreEqual(100, rule.Priority);
-        Assert.IsTrue(rule.IsEnabled);
-        Assert.IsNotNull(rule.CreatedAt);
+        Assert.IsFalse(isCircular);
     }
 }
 ```
@@ -931,38 +660,24 @@ public class PermissionModelTests
 
 ```csharp
 [TestClass]
-public class PermissionModelIntegrationTests
+public class InheritanceEvaluatorIntegrationTests
 {
     [TestMethod]
-    public void RoleHierarchy_Viewer_ToAdmin_Permissions_Increase()
+    public async Task DeepHierarchy_EvaluatesCorrectly()
     {
-        var viewer = BuiltInRoles.Viewer;
-        var contributor = BuiltInRoles.Contributor;
-        var editor = BuiltInRoles.Editor;
-        var admin = BuiltInRoles.Admin;
+        // Create 5-level hierarchy
+        // Evaluate permissions at each level with different patterns
 
-        // Each role should have more permissions than the previous
-        Assert.IsTrue(contributor.Permissions.HasPermission(viewer.Permissions));
-        Assert.IsTrue(editor.Permissions.HasPermission(contributor.Permissions));
-        // Admin has all permissions
-        Assert.AreEqual(Permission.Admin, admin.Permissions);
+        // Test strict pattern flows down correctly
+        // Test override breaks chain
+        // Test union accumulates
     }
 
     [TestMethod]
-    public void CustomRole_Fluent_BuilderCreatesCorrectRole()
+    public async Task CircularDetection_PreventsInvalidStructure()
     {
-        var role = new RoleBuilder()
-            .WithName("API Reviewer")
-            .WithDescription("Reviews API documentation")
-            .GrantPermission(Permission.EntityRead)
-            .GrantPermission(Permission.ClaimValidate)
-            .WithType(RoleType.Custom)
-            .Build();
-
-        Assert.AreEqual("API Reviewer", role.Name);
-        Assert.IsTrue(role.Permissions.HasPermission(Permission.EntityRead));
-        Assert.IsTrue(role.Permissions.HasPermission(Permission.ClaimValidate));
-        Assert.AreEqual(RoleType.Custom, role.Type);
+        // Attempt to create circular relationship
+        // Verify IsCircularAsync prevents it
     }
 }
 ```
@@ -971,12 +686,12 @@ public class PermissionModelIntegrationTests
 
 ## 9. Performance Considerations
 
-| Operation | Target | Implementation |
+| Operation | Target | Strategy |
 | :--- | :--- | :--- |
-| Permission check | <1 microsecond | Flag bitwise operations |
-| Role creation | <10ms | RoleBuilder composition |
-| Permission composition | <1 microsecond | Flags enum operations |
-| Policy rule evaluation | <1ms | Expression evaluation engine |
+| Get inheritance chain | <1ms | Cache with 1-hour TTL |
+| Evaluate inherited perms | <10ms | Recursive with caching at each level |
+| Get ancestors | <5ms | Cache full path |
+| Circular detection | <10ms | Depth-limited traversal |
 
 ---
 
@@ -984,10 +699,10 @@ public class PermissionModelIntegrationTests
 
 | Risk | Level | Mitigation |
 | :--- | :--- | :--- |
-| Permission escalation | Critical | Deny-by-default, explicit grant required |
-| Role tampering | Critical | Immutable built-in roles, audit logging |
-| Policy bypass | High | Multiple evaluation layers, ordering enforced |
-| Invalid composition | Low | Type safety via enums, validation in builders |
+| Circular inheritance | Critical | Explicit detection before save |
+| Permission escalation | High | Pattern enforcement (strict/union bounds) |
+| Cache staleness | Medium | 1-hour TTL + invalidation on changes |
+| Deep recursion | Low | Maxdepth limits (100) |
 
 ---
 
@@ -995,10 +710,10 @@ public class PermissionModelIntegrationTests
 
 | Tier | Support |
 | :--- | :--- |
-| Core | No RBAC (single user only) |
-| WriterPro | Built-in roles only (Viewer, Contributor, Editor) |
-| Teams | Full RBAC (custom roles, all built-in roles) |
-| Enterprise | RBAC + ABAC (policies, dynamic attributes) |
+| Core | No inheritance |
+| WriterPro | Basic inheritance (parent → child) |
+| Teams | Full inheritance with patterns |
+| Enterprise | Full + optimization |
 
 ---
 
@@ -1006,14 +721,14 @@ public class PermissionModelIntegrationTests
 
 | # | Given | When | Then |
 | :--- | :--- | :--- | :--- |
-| 1 | Permission enum | Bitwise operations | All flag combinations valid |
-| 2 | Built-in roles | Access | Viewer/Contributor/Editor/Admin loaded |
-| 3 | Custom role | Built with RoleBuilder | All properties set correctly |
-| 4 | Role without name | Built | InvalidOperationException thrown |
-| 5 | Policy rule | Created | Name, Condition, Effect all required |
-| 6 | Permission composition | HasPermission check | Correct flag evaluation |
-| 7 | Viewer role | Checked | ReadOnly permissions only |
-| 8 | Editor role | Checked | Axiom and inference permissions included |
+| 1 | Root entity | EvaluateInheritedPermissionsAsync called | Returns entity's own permissions |
+| 2 | Child entity with Strict pattern | Permissions evaluated | Child ≤ Parent (intersection) |
+| 3 | Child entity with Override pattern | Permissions evaluated | Child permissions returned (ignores parent) |
+| 4 | Child entity with Union pattern | Permissions evaluated | Child ∪ Parent (combined) |
+| 5 | 3-level hierarchy | GetAncestorsAsync called | Root, middle, child in order |
+| 6 | Circular reference attempt | IsCircularAsync called | Returns true |
+| 7 | Valid parent | IsCircularAsync called | Returns false |
+| 8 | Inheritance chain modified | InvalidateInheritanceCacheAsync | Cache cleared |
 
 ---
 
@@ -1021,4 +736,4 @@ public class PermissionModelIntegrationTests
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| 1.0 | 2026-01-31 | Initial draft - Permission enum, Role record, built-in roles, PolicyRule |
+| 1.0 | 2026-01-31 | Initial draft - Inheritance patterns, circular detection, evaluation algorithm |

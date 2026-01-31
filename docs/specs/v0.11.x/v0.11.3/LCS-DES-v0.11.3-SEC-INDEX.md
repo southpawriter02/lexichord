@@ -10,12 +10,12 @@ This index provides a complete map of the **Data Protection & Encryption** speci
 
 | Document | Title | Purpose | Hours | Status |
 |:---------|:------|:--------|:------|:-------|
-| **LCS-DES-113-SEC-e** | Data Classification | Tag and classify sensitive data by sensitivity level | 6 | Draft |
-| **LCS-DES-113-SEC-f** | Encryption Service | Core AES-256-GCM encryption/decryption engine | 10 | Draft |
-| **LCS-DES-113-SEC-g** | Key Management | Secure key storage, rotation, and lifecycle management | 10 | Draft |
-| **LCS-DES-113-SEC-h** | Field-Level Encryption | Transparent encryption of sensitive entity properties | 8 | Draft |
-| **LCS-DES-113-SEC-i** | Data Masking | Dynamic masking of sensitive data for UI display | 6 | Draft |
-| **LCS-DES-113-SEC-j** | Secure Export | Encrypted export/import with key escrow support | 5 | Draft |
+| **LCS-DES-113-SEC-a** | Data Classification | Tag and classify sensitive data by sensitivity level | 6 | Draft |
+| **LCS-DES-113-SEC-b** | Encryption Service | Core AES-256-GCM encryption/decryption engine | 10 | Draft |
+| **LCS-DES-113-SEC-c** | Key Management | Secure key storage, rotation, and lifecycle management | 10 | Draft |
+| **LCS-DES-113-SEC-d** | Field-Level Encryption | Transparent encryption of sensitive entity properties | 8 | Draft |
+| **LCS-DES-113-SEC-e** | Data Masking | Dynamic masking of sensitive data for UI display | 6 | Draft |
+| **LCS-DES-113-SEC-f** | Secure Export | Encrypted export/import with key escrow support | 5 | Draft |
 | **Total** | | | **45 hours** | |
 
 ---
@@ -473,7 +473,7 @@ ISecureExportService
 
 ### 13.1 Tier Breakdown
 
-| Tier | e-Classification | f-Encryption | g-KeyMgmt | h-FieldEnc | i-Masking | j-Export |
+| Tier | a-Classification | b-Encryption | c-KeyMgmt | d-FieldEnc | e-Masking | f-Export |
 |:-----|:-----------------|:-------------|:----------|:-----------|:----------|:---------|
 | **Core** | Public/Internal only | Database-level | Single key | N/A | N/A | N/A |
 | **WriterPro** | ✓ All levels | ✓ Full | ✓ Full | N/A | ✓ Basic | ✓ Basic |
@@ -633,16 +633,16 @@ await keyMgmt.InitializeAsync();
 
 ### Jump to Specification
 
-- [LCS-DES-113-SEC-e: Data Classification](./LCS-DES-113-SEC-e.md)
-- [LCS-DES-113-SEC-f: Encryption Service](./LCS-DES-113-SEC-f.md)
-- [LCS-DES-113-SEC-g: Key Management](./LCS-DES-113-SEC-g.md)
-- [LCS-DES-113-SEC-h: Field-Level Encryption](./LCS-DES-113-SEC-h.md)
-- [LCS-DES-113-SEC-i: Data Masking](./LCS-DES-113-SEC-i.md)
-- [LCS-DES-113-SEC-j: Secure Export](./LCS-DES-113-SEC-j.md)
+- [LCS-DES-113-SEC-a: Data Classification](./LCS-DES-v0.11.3-SEC-a.md)
+- [LCS-DES-113-SEC-b: Encryption Service](./LCS-DES-v0.11.3-SEC-b.md)
+- [LCS-DES-113-SEC-c: Key Management](./LCS-DES-v0.11.3-SEC-c.md)
+- [LCS-DES-113-SEC-d: Field-Level Encryption](./LCS-DES-v0.11.3-SEC-d.md)
+- [LCS-DES-113-SEC-e: Data Masking](./LCS-DES-v0.11.3-SEC-e.md)
+- [LCS-DES-113-SEC-f: Secure Export](./LCS-DES-v0.11.3-SEC-f.md)
 
 ### Related Documents
 
-- [LCS-SBD-113-SEC: Scope Overview](./LCS-SBD-113-SEC.md)
+- [LCS-SBD-113-SEC: Scope Overview](./LCS-SBD-v0.11.3-SEC.md)
 - [v0.11.1-SEC: Access Control](../v0.11.1/LCS-SBD-111-SEC.md)
 - [v0.11.2-SEC: Audit Logging](../v0.11.2/LCS-SBD-112-SEC.md)
 

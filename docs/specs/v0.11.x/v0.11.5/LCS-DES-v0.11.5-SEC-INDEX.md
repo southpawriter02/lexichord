@@ -21,12 +21,12 @@ The **API Security Gateway** (v0.11.5-SEC) delivers comprehensive API security t
 
 | Spec ID             | Title                  | Hours | Focus Area              |
 | :------------------ | :-------------------- | :---- | :---------------------- |
-| LCS-DES-115-SEC-e   | API Key Management     | 8     | Key authentication      |
-| LCS-DES-115-SEC-f   | OAuth Provider         | 12    | OAuth 2.0 / OIDC        |
-| LCS-DES-115-SEC-g   | Request Signing        | 6     | Request integrity       |
-| LCS-DES-115-SEC-h   | API Versioning         | 5     | Version management      |
-| LCS-DES-115-SEC-i   | API Analytics          | 8     | Usage monitoring        |
-| LCS-DES-115-SEC-j   | Gateway Middleware     | 6     | Request pipeline        |
+| LCS-DES-115-SEC-a   | API Key Management     | 8     | Key authentication      |
+| LCS-DES-115-SEC-b   | OAuth Provider         | 12    | OAuth 2.0 / OIDC        |
+| LCS-DES-115-SEC-c   | Request Signing        | 6     | Request integrity       |
+| LCS-DES-115-SEC-d   | API Versioning         | 5     | Version management      |
+| LCS-DES-115-SEC-e   | API Analytics          | 8     | Usage monitoring        |
+| LCS-DES-115-SEC-f   | Gateway Middleware     | 6     | Request pipeline        |
 | **Total**           |                        | **45** | **Complete Security**   |
 
 ---
@@ -50,25 +50,25 @@ graph TB
 
     subgraph "Authentication & Authorization"
         AUTH[AuthMiddleware]
-        APIKEY["API Key Auth<br/>LCS-DES-115-SEC-e"]
-        OAUTH["OAuth 2.0<br/>LCS-DES-115-SEC-f"]
-        SIGN["Request Signing<br/>LCS-DES-115-SEC-g"]
+        APIKEY["API Key Auth<br/>LCS-DES-115-SEC-a"]
+        OAUTH["OAuth 2.0<br/>LCS-DES-115-SEC-b"]
+        SIGN["Request Signing<br/>LCS-DES-115-SEC-c"]
     end
 
     subgraph "Request Processing"
-        VER["API Versioning<br/>LCS-DES-115-SEC-h"]
+        VER["API Versioning<br/>LCS-DES-115-SEC-d"]
         RL[Rate Limiting]
         VAL[Validation]
         APP[Application]
     end
 
     subgraph "Monitoring"
-        METRICS["Analytics & Metrics<br/>LCS-DES-115-SEC-i"]
+        METRICS["Analytics & Metrics<br/>LCS-DES-115-SEC-e"]
         ALERTS[Alerts]
     end
 
     subgraph "Middleware Pipeline"
-        MW["Gateway Middleware<br/>LCS-DES-115-SEC-j"]
+        MW["Gateway Middleware<br/>LCS-DES-115-SEC-f"]
     end
 
     CLI --> LB
@@ -100,35 +100,35 @@ graph TB
 
 ```mermaid
 graph LR
-    e["SEC-e<br/>API Keys"]
-    f["SEC-f<br/>OAuth"]
-    g["SEC-g<br/>Signing"]
-    h["SEC-h<br/>Versioning"]
-    i["SEC-i<br/>Analytics"]
-    j["SEC-j<br/>Middleware"]
+    a["SEC-a<br/>API Keys"]
+    b["SEC-b<br/>OAuth"]
+    c["SEC-c<br/>Signing"]
+    d["SEC-d<br/>Versioning"]
+    e["SEC-e<br/>Analytics"]
+    f["SEC-f<br/>Middleware"]
 
-    j -->|uses| e
-    j -->|uses| f
-    j -->|uses| g
-    j -->|uses| h
-    j -->|records| i
-    e -->|validates| h
-    f -->|validates| h
-    g -->|validates| h
+    f -->|uses| a
+    f -->|uses| b
+    f -->|uses| c
+    f -->|uses| d
+    f -->|records| e
+    a -->|validates| d
+    b -->|validates| d
+    c -->|validates| d
 
+    style a fill:#22c55e,color:#fff
+    style b fill:#22c55e,color:#fff
+    style c fill:#22c55e,color:#fff
+    style d fill:#4a9eff,color:#fff
     style e fill:#22c55e,color:#fff
-    style f fill:#22c55e,color:#fff
-    style g fill:#22c55e,color:#fff
-    style h fill:#4a9eff,color:#fff
-    style i fill:#22c55e,color:#fff
-    style j fill:#dc2626,color:#fff
+    style f fill:#dc2626,color:#fff
 ```
 
 ---
 
 ## 2. Specification Details
 
-### 2.1 LCS-DES-115-SEC-e: API Key Management
+### 2.1 LCS-DES-115-SEC-a: API Key Management
 
 **Purpose**: Create and manage long-lived API keys with scoped permissions and quotas.
 
@@ -162,7 +162,7 @@ graph LR
 
 ---
 
-### 2.2 LCS-DES-115-SEC-f: OAuth Provider
+### 2.2 LCS-DES-115-SEC-b: OAuth Provider
 
 **Purpose**: Implement OAuth 2.0 and OpenID Connect for delegated access and identity.
 
@@ -202,7 +202,7 @@ graph LR
 
 ---
 
-### 2.3 LCS-DES-115-SEC-g: Request Signing
+### 2.3 LCS-DES-115-SEC-c: Request Signing
 
 **Purpose**: Enable request-level integrity verification with HMAC-SHA256.
 
@@ -250,7 +250,7 @@ SHA256(request body)
 
 ---
 
-### 2.4 LCS-DES-115-SEC-h: API Versioning
+### 2.4 LCS-DES-115-SEC-d: API Versioning
 
 **Purpose**: Manage multiple API versions with clear deprecation paths.
 
@@ -293,7 +293,7 @@ SHA256(request body)
 
 ---
 
-### 2.5 LCS-DES-115-SEC-i: API Analytics
+### 2.5 LCS-DES-115-SEC-e: API Analytics
 
 **Purpose**: Monitor API usage and performance in real-time.
 
@@ -341,7 +341,7 @@ SHA256(request body)
 
 ---
 
-### 2.6 LCS-DES-115-SEC-j: Gateway Middleware
+### 2.6 LCS-DES-115-SEC-f: Gateway Middleware
 
 **Purpose**: Orchestrate all security components in request pipeline.
 
@@ -376,7 +376,7 @@ SHA256(request body)
 - `X-Request-Id`: Correlation tracking
 
 **Dependencies**:
-- All 5 preceding specs (e, f, g, h, i)
+- All 5 preceding specs (a, b, c, d, e)
 - ASP.NET Core middleware pipeline
 - `ILogger<T>`: Request/response logging
 
@@ -393,9 +393,9 @@ SHA256(request body)
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Gateway as API Gateway<br/>SEC-j
+    participant Gateway as API Gateway<br/>SEC-f
     participant Auth as Authentication<br/>Middleware
-    participant KeySvc as API Key Service<br/>SEC-e
+    participant KeySvc as API Key Service<br/>SEC-a
     participant DB as Database
     participant App as Application
 
@@ -420,8 +420,8 @@ sequenceDiagram
 sequenceDiagram
     participant User
     participant Client as OAuth Client<br/>(App)
-    participant Gateway as API Gateway<br/>SEC-j
-    participant OAuth as OAuth Service<br/>SEC-f
+    participant Gateway as API Gateway<br/>SEC-f
+    participant OAuth as OAuth Service<br/>SEC-b
     participant App as Application
 
     User->>Client: Click "Sign In"
@@ -451,15 +451,15 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Gateway as API Gateway<br/>SEC-j
-    participant Sign as Request Signing<br/>SEC-g
+    participant Gateway as API Gateway<br/>SEC-f
+    participant Sign as Request Signing<br/>SEC-c
     participant Cache as Nonce Cache<br/>Redis
     participant App as Application
 
     Client->>Client: Timestamp = now()
-    Client->>Client: Nonce = random()
-    Client->>Client: BaseString = buildSignatureInput(...)
-    Client->>Client: Signature = HMAC-SHA256(secret, baseString)
+    Client->>Client: Nonca = random()
+    Client->>Client: BaseStrinc = buildSignatureInput(...)
+    Client->>Client: Signatura = HMAC-SHA256(secret, baseString)
     Client->>Gateway: POST /api/v1/entities<br/>X-LCS-Key-Id: ...<br/>X-LCS-Timestamp: ...<br/>X-LCS-Nonce: ...<br/>X-LCS-Signature: ...
     Gateway->>Sign: VerifyAsync(request)
     Sign->>Sign: Extract headers
@@ -481,8 +481,8 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Gateway as API Gateway<br/>SEC-j
-    participant Version as Versioning<br/>SEC-h
+    participant Gateway as API Gateway<br/>SEC-f
+    participant Version as Versioning<br/>SEC-d
     participant DB as Database
     participant App as Application
 
@@ -509,8 +509,8 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Gateway as API Gateway<br/>SEC-j
-    participant Metrics as Metrics Middleware<br/>SEC-i
+    participant Gateway as API Gateway<br/>SEC-f
+    participant Metrics as Metrics Middleware<br/>SEC-e
     participant Queue as Message Queue<br/>RabbitMQ
     participant Collector as Metrics Collector
     participant DB as ClickHouse
@@ -538,37 +538,37 @@ sequenceDiagram
 ## 4. Implementation Phases
 
 ### Phase 1: Core Authentication (Week 1)
-- **Spec**: LCS-DES-115-SEC-e (API Key Management)
+- **Spec**: LCS-DES-115-SEC-a (API Key Management)
 - **Deliverables**: `IApiKeyService`, key creation/validation/rotation
 - **Testing**: Unit tests for all scenarios
 - **Hours**: 8
 
 ### Phase 2: OAuth & OpenID (Week 2)
-- **Spec**: LCS-DES-115-SEC-f (OAuth Provider)
+- **Spec**: LCS-DES-115-SEC-b (OAuth Provider)
 - **Deliverables**: Authorization code, client credentials, token refresh flows
 - **Testing**: Integration tests with real browser flow
 - **Hours**: 12
 
 ### Phase 3: Request Integrity (Week 3)
-- **Spec**: LCS-DES-115-SEC-g (Request Signing)
+- **Spec**: LCS-DES-115-SEC-c (Request Signing)
 - **Deliverables**: Signature generation, HMAC verification, nonce protection
 - **Testing**: Unit tests for constant-time comparison
 - **Hours**: 6
 
 ### Phase 4: Version Management (Week 3)
-- **Spec**: LCS-DES-115-SEC-h (API Versioning)
+- **Spec**: LCS-DES-115-SEC-d (API Versioning)
 - **Deliverables**: Version detection, deprecation headers, version matrix
 - **Testing**: E2E tests with multiple versions
 - **Hours**: 5
 
 ### Phase 5: Monitoring (Week 4)
-- **Spec**: LCS-DES-115-SEC-i (API Analytics)
+- **Spec**: LCS-DES-115-SEC-e (API Analytics)
 - **Deliverables**: Metrics collection, time-series queries, dashboards
 - **Testing**: Load tests for high-volume recording
 - **Hours**: 8
 
 ### Phase 6: Integration (Week 4)
-- **Spec**: LCS-DES-115-SEC-j (Gateway Middleware)
+- **Spec**: LCS-DES-115-SEC-f (Gateway Middleware)
 - **Deliverables**: Middleware pipeline, error handling, security headers
 - **Testing**: Full E2E integration tests
 - **Hours**: 6
@@ -582,7 +582,7 @@ sequenceDiagram
 ### Authentication Interfaces
 
 ```csharp
-// API Key Service (SEC-e)
+// API Key Service (SEC-a)
 public interface IApiKeyService
 {
     Task<ApiKeyCreationResult> CreateKeyAsync(CreateApiKeyRequest request);
@@ -592,7 +592,7 @@ public interface IApiKeyService
     Task<ApiKeyCreationResult> RotateKeyAsync(Guid keyId);
 }
 
-// OAuth Service (SEC-f)
+// OAuth Service (SEC-b)
 public interface IOAuthService
 {
     Task<AuthorizationResponse> AuthorizeAsync(AuthorizationRequest request);
@@ -604,7 +604,7 @@ public interface IOAuthService
     Task<JsonWebKeySet> GetJwksAsync();
 }
 
-// Request Signing Service (SEC-g)
+// Request Signing Service (SEC-c)
 public interface IRequestSigningService
 {
     SignedRequest Sign(HttpRequestMessage request, SigningCredentials credentials);
@@ -612,7 +612,7 @@ public interface IRequestSigningService
     Task<SigningCredentials?> GetCredentialsAsync(string keyId);
 }
 
-// Versioning Service (SEC-h)
+// Versioning Service (SEC-d)
 public interface IApiVersioningService
 {
     ApiVersion GetRequestedVersion(HttpRequestMessage request);
@@ -621,7 +621,7 @@ public interface IApiVersioningService
     DeprecationInfo? GetDeprecationInfo(ApiVersion version);
 }
 
-// Analytics Service (SEC-i)
+// Analytics Service (SEC-e)
 public interface IApiAnalyticsService
 {
     void RecordRequest(ApiRequestMetrics metrics);
@@ -696,7 +696,7 @@ public interface IApiAnalyticsService
 - All interfaces thoroughly tested
 - Edge cases and error paths
 
-### Integration Tests (SEC-j)
+### Integration Tests (SEC-f)
 - E2E request flows through entire pipeline
 - Multiple authentication methods
 - Deprecation header injection
@@ -789,4 +789,4 @@ public interface IApiAnalyticsService
 
 | Previous | Up | Next |
 | :------- | :- | :--- |
-| [LCS-SBD-115-SEC](./LCS-SBD-115-SEC.md) | [v0.11.5](.) | [LCS-DES-115-SEC-e](./LCS-DES-115-SEC-e.md) |
+| [LCS-SBD-115-SEC](./LCS-SBD-v0.11.5-SEC.md) | [v0.11.5](.) | [LCS-DES-115-SEC-a](./LCS-DES-v0.11.5-SEC-a.md) |

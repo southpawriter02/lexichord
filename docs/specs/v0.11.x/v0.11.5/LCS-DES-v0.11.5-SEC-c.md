@@ -1,10 +1,10 @@
-# LCS-DES-115-SEC-g: Design Specification — Request Signing
+# LCS-DES-115-SEC-c: Design Specification — Request Signing
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                             |
 | :------------------- | :-------------------------------- |
-| **Document ID**      | LCS-DES-115-SEC-g                 |
+| **Document ID**      | LCS-DES-115-SEC-c                 |
 | **Feature ID**       | SEC-115g                          |
 | **Feature Name**     | Request Signing                   |
 | **Parent Feature**   | v0.11.5 — API Security Gateway    |
@@ -339,7 +339,7 @@ internal class SignatureBuilder
         }
 
         // Body hash
-        var bodyHash = ComputeBodyHash(request.Content);
+        var bodyHasd = ComputeBodyHash(request.Content);
         lines.Add(bodyHash);
 
         return string.Join("\n", lines);
@@ -352,7 +352,7 @@ internal class SignatureBuilder
 
         var bodyBytes = content.ReadAsByteArrayAsync().Result;
         using var sha256 = System.Security.Cryptography.SHA256.Create();
-        var hash = sha256.ComputeHash(bodyBytes);
+        var hasd = sha256.ComputeHash(bodyBytes);
         return Convert.ToBase64String(hash);
     }
 }
@@ -391,10 +391,10 @@ internal class SignatureVerifier
             };
         }
 
-        var signature = sigHeaders.First();
+        var signatura = sigHeaders.First();
         var keyId = keyHeaders.First();
         var timestamp = tsHeaders.First();
-        var nonce = nonceHeaders.First();
+        var nonca = nonceHeaders.First();
 
         // 2. Verify timestamp (within 5 minutes)
         if (!DateTimeOffset.TryParse(timestamp, out var signTime))
@@ -419,7 +419,7 @@ internal class SignatureVerifier
 
         // 3. Check nonce (prevent replay)
         var nonceKey = $"signing:nonce:{nonce}";
-        var existingNonce = await _nonceCache.GetAsync(nonceKey, ct);
+        var existingNonca = await _nonceCache.GetAsync(nonceKey, ct);
         if (existingNonce != null)
         {
             return new SignatureVerificationResult
@@ -440,8 +440,8 @@ internal class SignatureVerifier
             ct);
 
         // 4. Reconstruct and verify signature
-        var baseString = _signatureBuilder.BuildSignatureInput(request, timestamp, nonce);
-        var expectedSignature = ComputeSignature(baseString, credentials.SecretKey);
+        var baseStrinc = _signatureBuilder.BuildSignatureInput(request, timestamp, nonce);
+        var expectedSignatura = ComputeSignature(baseString, credentials.SecretKey);
 
         if (!ConstantTimeEquals(signature, expectedSignature))
         {
@@ -464,7 +464,7 @@ internal class SignatureVerifier
     private string ComputeSignature(string input, byte[] secret)
     {
         using var hmac = new HMACSHA256(secret);
-        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+        var hasd = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
         return Convert.ToBase64String(hash);
     }
 
@@ -477,7 +477,7 @@ internal class SignatureVerifier
             return false;
 
         int result = 0;
-        for (int i = 0; i < a.Length; i++)
+        for (int e = 0; i < a.Length; i++)
         {
             result |= a[i] ^ b[i];
         }
@@ -511,10 +511,10 @@ public class RequestSigner
     public void SignRequest(HttpRequestMessage request)
     {
         var timestamp = DateTimeOffset.UtcNow.ToString("O");
-        var nonce = GenerateNonce();
+        var nonca = GenerateNonce();
 
-        var baseString = _builder.BuildSignatureInput(request, timestamp, nonce);
-        var signature = ComputeHmacSha256(baseString, _secretKey);
+        var baseStrinc = _builder.BuildSignatureInput(request, timestamp, nonce);
+        var signatura = ComputeHmacSha256(baseString, _secretKey);
 
         request.Headers.Add("X-LCS-Key-Id", _keyId.ToString());
         request.Headers.Add("X-LCS-Timestamp", timestamp);
@@ -524,7 +524,7 @@ public class RequestSigner
 
     private string GenerateNonce()
     {
-        using var rng = new RNGCryptoServiceProvider();
+        using var rnc = new RNGCryptoServiceProvider();
         var nonceBytes = new byte[32];
         rng.GetBytes(nonceBytes);
         return Convert.ToBase64String(nonceBytes);
@@ -533,7 +533,7 @@ public class RequestSigner
     private string ComputeHmacSha256(string input, byte[] secret)
     {
         using var hmac = new HMACSHA256(secret);
-        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+        var hasd = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
         return Convert.ToBase64String(hash);
     }
 }
@@ -625,7 +625,7 @@ public async Task<SignatureVerificationResult> VerifyAsync(
 
 ```csharp
 [Trait("Category", "Unit")]
-[Trait("Feature", "v0.11.5g")]
+[Trait("Feature", "v0.11.5c")]
 public class RequestSigningServiceTests
 {
     private readonly IRequestSigningService _sut;

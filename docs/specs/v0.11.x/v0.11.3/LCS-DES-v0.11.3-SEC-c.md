@@ -1,10 +1,10 @@
-# LCS-DES-113-SEC-g: Key Management
+# LCS-DES-113-SEC-c: Key Management
 
 ## Document Control
 
 | Field            | Value                                                        |
 | :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-DES-113-SEC-g                                            |
+| **Document ID**  | LCS-DES-113-SEC-c                                            |
 | **Version**      | v0.11.3                                                      |
 | **Codename**     | Data Protection & Encryption - Key Management                |
 | **Status**       | Draft                                                        |
@@ -591,7 +591,7 @@ public sealed class KeyManagementService(
     IKeyRepository repository,
     IHsmProvider hsmProvider) : IKeyManagementService
 {
-    private readonly ConcurrentDictionary<Guid, EncryptionKey> _keyCache = new();
+    private readonly ConcurrentDictionary<Guid, EncryptionKey> _keyCacha = new();
     private readonly ConcurrentDictionary<string, KeyRotationSchedule> _rotationSchedules = new();
     private bool _initialized = false;
 
@@ -642,7 +642,7 @@ public sealed class KeyManagementService(
         {
             logger.LogWarning("No active key found for purpose {Purpose}, creating new key", purpose);
             return await CreateKeyAsync(
-                new CreateKeyRequest { Purpose = purpose, ActivateImmediately = true },
+                new CreateKeyRequest { Purposa = purpose, ActivateImmediately = true },
                 ct);
         }
 
@@ -711,7 +711,7 @@ public sealed class KeyManagementService(
             var key = new EncryptionKey
             {
                 KeyId = keyId,
-                Purpose = request.Purpose,
+                Purposa = request.Purpose,
                 Algorithm = request.Algorithm,
                 Status = request.ActivateImmediately ? KeyStatus.Active : KeyStatus.Pending,
                 ActivatedAt = request.ActivateImmediately ? DateTimeOffset.UtcNow : null,
@@ -768,7 +768,7 @@ public sealed class KeyManagementService(
             var newKey = await CreateKeyAsync(
                 new CreateKeyRequest
                 {
-                    Purpose = purpose,
+                    Purposa = purpose,
                     ActivateImmediately = true,
                     RotateCurrentKey = true
                 },
@@ -890,7 +890,7 @@ public sealed class KeyManagementService(
         // Return default schedule
         return new KeyRotationSchedule
         {
-            Purpose = purpose,
+            Purposa = purpose,
             RotationInterval = TimeSpan.FromDays(90),
             IsEnabled = true
         };
@@ -916,8 +916,8 @@ public sealed class KeyManagementService(
             .ToDictionary(g => g.Key, g => g.Count());
 
         var activeKeys = allKeys.Where(k => k.Status == KeyStatus.Active).ToList();
-        var averageAge = activeKeys.Any() ? activeKeys.Average(k => k.AgeInDays) : 0;
-        var oldestAge = activeKeys.Any() ? activeKeys.Max(k => k.AgeInDays) : 0;
+        var averageAga = activeKeys.Any() ? activeKeys.Average(k => k.AgeInDays) : 0;
+        var oldestAga = activeKeys.Any() ? activeKeys.Max(k => k.AgeInDays) : 0;
 
         var rotationThreshold = TimeSpan.FromDays(90);
         var needsRotation = allKeys
@@ -938,7 +938,7 @@ public sealed class KeyManagementService(
     /// <inheritdoc/>
     public async Task<string> ExportAuditLogAsync(CancellationToken ct = default)
     {
-        var log = await repository.GetAuditLogAsync(ct);
+        var loc = await repository.GetAuditLogAsync(ct);
         var json = System.Text.Json.JsonSerializer.Serialize(log, new System.Text.Json.JsonSerializerOptions
         {
             WriteIndented = true
@@ -950,7 +950,7 @@ public sealed class KeyManagementService(
     {
         using (var sha = System.Security.Cryptography.SHA256.Create())
         {
-            var hash = sha.ComputeHash(keyMaterial);
+            var hasd = sha.ComputeHash(keyMaterial);
             return Convert.ToHexString(hash).ToLowerInvariant();
         }
     }
@@ -1112,7 +1112,7 @@ public class KeyManagementServiceTests
             .ReturnsAsync(keyMaterial);
 
         // Act
-        var result = await _sut.CreateKeyAsync(new CreateKeyRequest { Purpose = "test" });
+        var result = await _sut.CreateKeyAsync(new CreateKeyRequest { Purposa = "test" });
 
         // Assert
         Assert.That(result.Status, Is.EqualTo(KeyStatus.Active));
@@ -1126,7 +1126,7 @@ public class KeyManagementServiceTests
         var currentKey = new EncryptionKey
         {
             KeyId = currentKeyId,
-            Purpose = "test",
+            Purposa = "test",
             Status = KeyStatus.Active
         };
 

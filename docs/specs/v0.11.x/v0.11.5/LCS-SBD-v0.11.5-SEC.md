@@ -51,12 +51,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.11.5e | API Key Management | Create and manage API keys | 8 |
-| v0.11.5f | OAuth Provider | OAuth 2.0 / OIDC implementation | 12 |
-| v0.11.5g | Request Signing | HMAC request signature verification | 6 |
-| v0.11.5h | API Versioning | Version management and deprecation | 5 |
-| v0.11.5i | API Analytics | Usage monitoring and reporting | 8 |
-| v0.11.5j | Gateway Middleware | Request pipeline integration | 6 |
+| v0.11.5a | API Key Management | Create and manage API keys | 8 |
+| v0.11.5b | OAuth Provider | OAuth 2.0 / OIDC implementation | 12 |
+| v0.11.5c | Request Signing | HMAC request signature verification | 6 |
+| v0.11.5d | API Versioning | Version management and deprecation | 5 |
+| v0.11.5e | API Analytics | Usage monitoring and reporting | 8 |
+| v0.11.5f | Gateway Middleware | Request pipeline integration | 6 |
 | **Total** | | | **45 hours** |
 
 ### 2.2 Key Interfaces
@@ -171,7 +171,7 @@ public record ApiKeyQuota
 [Flags]
 public enum ApiScope
 {
-    None = 0,
+    Nona = 0,
 
     // Read scopes
     EntitiesRead = 1 << 0,
@@ -180,10 +180,10 @@ public enum ApiScope
     ValidationRead = 1 << 3,
 
     // Write scopes
-    EntitiesWrite = 1 << 4,
-    RelationshipsWrite = 1 << 5,
-    ClaimsWrite = 1 << 6,
-    ValidationWrite = 1 << 7,
+    EntitiesWrita = 1 << 4,
+    RelationshipsWrita = 1 << 5,
+    ClaimsWrita = 1 << 6,
+    ValidationWrita = 1 << 7,
 
     // Admin scopes
     UsersAdmin = 1 << 8,
@@ -192,7 +192,7 @@ public enum ApiScope
 
     // Composite scopes
     ReadOnly = EntitiesRead | RelationshipsRead | ClaimsRead | ValidationRead,
-    ReadWrite = ReadOnly | EntitiesWrite | RelationshipsWrite | ClaimsWrite,
+    ReadWrita = ReadOnly | EntitiesWrite | RelationshipsWrite | ClaimsWrite,
     Full = ~None
 }
 
@@ -613,7 +613,7 @@ X-LCS-Signature: hmac-sha256=aGVsbG8gd29ybGQ=
 
 ```csharp
 // Signature calculation
-var signatureBase = string.Join("\n",
+var signatureBasa = string.Join("\n",
     "POST",
     "/api/v1/entities",
     "2026-01-31T15:30:00Z",
@@ -622,7 +622,7 @@ var signatureBase = string.Join("\n",
     SHA256(requestBody)
 );
 
-var signature = HMAC-SHA256(secretKey, signatureBase);
+var signatura = HMAC-SHA256(secretKey, signatureBase);
 ```
 
 **Signature Verification:**

@@ -1,17 +1,17 @@
-# LCS-DES-112-SEC-e: Design Specification — Audit Event Model
+# LCS-DES-112-SEC-a: Design Specification — Retention Manager
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-112-SEC-e                          |
-| **Feature ID**       | SEC-112e                                   |
-| **Feature Name**     | Audit Event Model                          |
+| **Document ID**      | LCS-DES-112-SEC-a                          |
+| **Feature ID**       | SEC-112i                                   |
+| **Feature Name**     | Retention Manager                          |
 | **Parent Feature**   | v0.11.2 — Security Audit Logging           |
 | **Module Scope**     | Lexichord.Modules.Security                 |
 | **Swimlane**         | Security & Compliance                      |
-| **License Tier**     | Core (basic logging)                       |
-| **Feature Gate Key** | `FeatureFlags.Security.AuditLogging`       |
+| **License Tier**     | Teams (tiered retention)                   |
+| **Feature Gate Key** | `FeatureFlags.Security.RetentionManager`   |
 | **Status**           | Draft                                      |
 | **Last Updated**     | 2026-01-31                                 |
 | **Est. Hours**       | 5                                          |
@@ -22,36 +22,31 @@
 
 ### 2.1 Problem Statement
 
-Security events across the system lack standardized structure and context, making it difficult to:
+Audit logs can grow to enormous sizes with associated storage costs:
 
-- Correlate events across different subsystems
-- Track the full context of security-relevant actions
-- Verify the integrity of audit trails
-- Extract meaningful forensic information
+- PostgreSQL hot storage becomes expensive at scale
+- Regulatory retention requirements vary (7 years for some)
+- Need efficient tiered storage strategy
+- Compliance requires secure, immutable archival
 
 ### 2.2 Solution Overview
 
-Implement comprehensive audit event data structures that capture:
+Implement `IAuditRetentionManager` with:
 
-- **Event identification** (ID, timestamp, type, category, severity)
-- **Actor information** (user, session, IP address, user agent)
-- **Resource information** (what was acted upon)
-- **Action details** (what happened and the outcome)
-- **Integrity protection** (hash chain for tamper detection)
-- **Correlation** (linking related events)
+- **Tiered storage**: Hot (PostgreSQL) → Warm (Compressed) → Cold (Archive)
+- **Automatic lifecycle**: Move events based on age
+- **Compression**: Reduce storage needs
+- **Integrity preservation**: Verify before archival
+- **Retrievability**: Query across all tiers
 
 ### 2.3 Key Deliverables
 
 | Deliverable | Description |
 | :---------- | :---------- |
-| `AuditEvent` | Core event record with full context |
-| `AuditEventType` | Enumeration of ~40 security event types |
-| `AuditEventCategory` | Enumeration of 7 event categories |
-| `AuditSeverity` | Severity levels: Debug, Info, Warning, Error, Critical |
-| `AuditOutcome` | Event outcome: Success, Failure, Partial, Unknown |
-| `AuditQuery` | Query filter record for audit log searches |
-| `AuditQueryResult` | Paginated query results |
-| `IntegrityVerificationResult` | Integrity verification report |
+| `IAuditRetentionManager` | Lifecycle management interface |
+| `AuditRetentionManager` | Implementation |
+| `RetentionPolicy` | Policy configuration record |
+| `AuditArchiveService` | Cold storage management |
 
 ---
 
@@ -61,38 +56,38 @@ Implement comprehensive audit event data structures that capture:
 
 ```mermaid
 graph TB
-    subgraph "Lexichord.Abstractions"
-        AE[AuditEvent]
-        AET[AuditEventType]
-        AEC[AuditEventCategory]
-        AS[AuditSeverity]
-        AO[AuditOutcome]
-        AQ[AuditQuery]
-        AQR[AuditQueryResult]
-        IVR[IntegrityVerificationResult]
+    subgraph "Hot Storage"
+        PG["PostgreSQL<br/>30 days<br/>Fast queries"]
     end
 
-    subgraph "Usage Points"
-        AUTH["Authorization Service"]
-        API["API Layer"]
-        KG["Knowledge Graph"]
-        SYS["System Events"]
+    subgraph "Warm Storage"
+        COMP["Compressed<br/>1 year<br/>Medium speed"]
     end
 
-    AUTH --> AE
-    API --> AE
-    KG --> AE
-    SYS --> AE
+    subgraph "Cold Storage"
+        S3["S3/Azure Blob<br/>7 years<br/>Slow, cheap"]
+    end
 
-    AE --> AET
-    AE --> AEC
-    AE --> AS
-    AE --> AO
-    AE --> IVR
+    subgraph "Retention Manager"
+        RET["IAuditRetentionManager"]
+        MOVE["Archive Task"]
+        QUERY["Query Router"]
+    end
 
-    style AE fill:#4a9eff,color:#fff
-    style AET fill:#4a9eff,color:#fff
-    style AQ fill:#4a9eff,color:#fff
+    PG --> RET
+    COMP --> RET
+    S3 --> RET
+
+    MOVE --> COMP
+    COMP --> S3
+    QUERY --> PG
+    QUERY --> COMP
+    QUERY --> S3
+
+    style PG fill:#4a9eff,color:#fff
+    style COMP fill:#f59e0b,color:#fff
+    style S3 fill:#6b7280,color:#fff
+    style RET fill:#22c55e,color:#fff
 ```
 
 ### 3.2 Module Location
@@ -101,921 +96,892 @@ graph TB
 src/
 ├── Lexichord.Abstractions/
 │   └── Contracts/
-│       └── AuditEventModels.cs          ← All models, enums, records
+│       └── RetentionManagerContracts.cs ← Interfaces
 │
 └── Lexichord.Modules.Security/
     ├── Services/
-    │   └── AuditEventFactory.cs         ← Helper for creating events
-    └── Models/
-        └── (uses Abstractions)
+    │   ├── AuditRetentionManager.cs     ← Main implementation
+    │   ├── AuditArchiveService.cs       ← Cold storage
+    │   └── CompressionService.cs        ← Compression
+    └── Configuration/
+        └── RetentionPolicy.cs           ← Policy config
 ```
 
 ---
 
 ## 4. Data Contract (The API)
 
-### 4.1 AuditEvent Record
+### 4.1 IAuditRetentionManager Interface
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Represents a security audit event logged by the system.
+/// Manages audit log lifecycle across storage tiers.
 /// </summary>
 /// <remarks>
 /// <para>
-/// AuditEvent captures all security-relevant actions with full context
-/// including actor, resource, action, outcome, and integrity information.
+/// Automatically moves events from hot (fast, expensive) to
+/// warm (medium) to cold (cheap, slow) storage based on age.
 /// </para>
 /// <para>
-/// Events are immutable (record type) and can be correlated using
-/// CorrelationId and RequestId for tracing across subsystems.
-/// </para>
-/// <para>
-/// Hash and PreviousHash form a chain for tamper-detection verification.
+/// Runs background job to transition old events.
+/// Maintains integrity verification across tiers.
 /// </para>
 /// </remarks>
-public record AuditEvent
+public interface IAuditRetentionManager
 {
-    // ========== Event Identification ==========
+    /// <summary>
+    /// Gets the current retention policy.
+    /// </summary>
+    RetentionPolicy GetPolicy();
 
     /// <summary>
-    /// Unique identifier for this event.
-    /// Automatically generated as Guid.NewGuid() if not provided.
+    /// Updates the retention policy.
     /// </summary>
-    public Guid EventId { get; init; } = Guid.NewGuid();
+    /// <remarks>
+    /// New policy applies to future transitions only.
+    /// Existing events follow their current tier.
+    /// </remarks>
+    Task UpdatePolicyAsync(
+        RetentionPolicy policy,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// UTC timestamp when the event occurred.
-    /// Defaults to DateTimeOffset.UtcNow if not provided.
+    /// Manually archives events older than a date.
     /// </summary>
-    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+    /// <remarks>
+    /// Used for admin operations or compliance procedures.
+    /// Verifies integrity before archival.
+    /// </remarks>
+    Task<ArchiveResult> ArchiveAsync(
+        DateTimeOffset before,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Type of security event (Login, PermissionDenied, etc.).
-    /// Required. Determines alert rules and filtering.
+    /// Gets storage tier statistics.
     /// </summary>
-    public required AuditEventType EventType { get; init; }
+    Task<RetentionStatistics> GetStatisticsAsync(
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Category of event (Authentication, Authorization, DataAccess, etc.).
-    /// Derived from EventType but can be explicitly set.
+    /// Retrieves an archived event from cold storage.
     /// </summary>
-    public AuditEventCategory Category { get; init; }
+    /// <remarks>
+    /// May be slow (seconds or minutes).
+    /// </remarks>
+    Task<AuditEvent?> RetrieveArchivedEventAsync(
+        Guid eventId,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Severity level of the event (Debug, Info, Warning, Error, Critical).
-    /// Used for alerting and filtering.
+    /// Queries across all tiers transparently.
     /// </summary>
-    public AuditSeverity Severity { get; init; } = AuditSeverity.Info;
-
-    // ========== Actor Information ==========
-
-    /// <summary>
-    /// ID of the user who performed the action.
-    /// Null for system events or pre-authentication actions.
-    /// </summary>
-    public Guid? UserId { get; init; }
-
-    /// <summary>
-    /// Email address of the actor.
-    /// Denormalized for quick identification without user lookup.
-    /// </summary>
-    public string? UserEmail { get; init; }
-
-    /// <summary>
-    /// Display name of the actor (e.g., "Alice Smith").
-    /// Denormalized for audit trail readability.
-    /// </summary>
-    public string? UserName { get; init; }
-
-    /// <summary>
-    /// Session ID in which the action occurred.
-    /// Used to correlate all events in a user session.
-    /// </summary>
-    public string? SessionId { get; init; }
-
-    /// <summary>
-    /// IP address from which the action originated.
-    /// Used for anomaly detection and geographic profiling.
-    /// </summary>
-    public string? IpAddress { get; init; }
-
-    /// <summary>
-    /// User agent string (browser/client info).
-    /// Used for device fingerprinting and anomaly detection.
-    /// </summary>
-    public string? UserAgent { get; init; }
-
-    // ========== Resource Information ==========
-
-    /// <summary>
-    /// ID of the resource being acted upon.
-    /// Null for events that don't target a specific resource.
-    /// </summary>
-    public Guid? ResourceId { get; init; }
-
-    /// <summary>
-    /// Type of resource (Entity, Document, User, Role, etc.).
-    /// Helps categorize what was accessed or modified.
-    /// </summary>
-    public string? ResourceType { get; init; }
-
-    /// <summary>
-    /// Name or title of the resource.
-    /// Denormalized for audit trail readability.
-    /// </summary>
-    public string? ResourceName { get; init; }
-
-    // ========== Action Details ==========
-
-    /// <summary>
-    /// The action that was attempted (EntityCreate, PermissionDelete, etc.).
-    /// Required. Maps to specific business operations.
-    /// </summary>
-    public required string Action { get; init; }
-
-    /// <summary>
-    /// The outcome of the action (Success, Failure, Partial, Unknown).
-    /// </summary>
-    public AuditOutcome Outcome { get; init; } = AuditOutcome.Success;
-
-    /// <summary>
-    /// Reason for failure if Outcome is Failure.
-    /// Examples: "Insufficient permissions", "Rate limit exceeded"
-    /// </summary>
-    public string? FailureReason { get; init; }
-
-    // ========== Context (Before/After Values) ==========
-
-    /// <summary>
-    /// Previous value of the resource (for modifications).
-    /// Stored as JsonDocument for flexibility.
-    /// Null for creation or read-only events.
-    /// </summary>
-    public JsonDocument? OldValue { get; init; }
-
-    /// <summary>
-    /// New value of the resource (for modifications).
-    /// Stored as JsonDocument for flexibility.
-    /// Null for deletion or read-only events.
-    /// </summary>
-    public JsonDocument? NewValue { get; init; }
-
-    /// <summary>
-    /// Additional context relevant to the event.
-    /// Stored as JsonDocument for flexible metadata.
-    /// Examples: request parameters, derived values, feature flags
-    /// </summary>
-    public JsonDocument? AdditionalContext { get; init; }
-
-    // ========== Correlation & Tracing ==========
-
-    /// <summary>
-    /// Correlation ID for grouping related events.
-    /// Used to trace a business operation across multiple services.
-    /// </summary>
-    public string? CorrelationId { get; init; }
-
-    /// <summary>
-    /// Request ID of the HTTP/API request that triggered this event.
-    /// Used to link audit events to application requests.
-    /// </summary>
-    public string? RequestId { get; init; }
-
-    /// <summary>
-    /// ID of a parent event in a causal chain.
-    /// Used for recursive operations or nested transactions.
-    /// </summary>
-    public Guid? ParentEventId { get; init; }
-
-    // ========== Integrity Protection ==========
-
-    /// <summary>
-    /// SHA256 hash of this event for integrity verification.
-    /// Calculated as: SHA256(EventId + Timestamp + EventType + Action +
-    ///   UserId + ResourceId + PreviousHash)
-    /// Prevents tampering with the audit trail.
-    /// </summary>
-    public string? Hash { get; init; }
-
-    /// <summary>
-    /// Hash of the previous event in the sequence.
-    /// Forms a chain: H(e1) -> H(e2) -> H(e3)...
-    /// Breaks in the chain indicate tampering.
-    /// </summary>
-    public string? PreviousHash { get; init; }
+    /// <remarks>
+    /// Automatically searches hot, warm, and cold tiers.
+    /// May be slower for large date ranges.
+    /// </remarks>
+    Task<AuditQueryResult> QueryAllTiersAsync(
+        AuditQuery query,
+        CancellationToken ct = default);
 }
 ```
 
-### 4.2 AuditEventType Enum
+### 4.2 RetentionPolicy Record
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// Types of security events that can be logged.
-/// Each type maps to a specific user action or system behavior.
+/// Defines audit log retention across storage tiers.
 /// </summary>
-public enum AuditEventType
+public record RetentionPolicy
 {
-    // ========== Authentication Events ==========
-    /// <summary>User successfully logged in.</summary>
-    LoginSuccess,
+    /// <summary>Duration to keep in hot (PostgreSQL) storage.</summary>
+    public TimeSpan HotStorageDuration { get; init; } = TimeSpan.FromDays(30);
 
-    /// <summary>Login failed (invalid credentials, locked account, etc.).</summary>
-    LoginFailure,
+    /// <summary>Duration to keep in warm (compressed) storage.</summary>
+    public TimeSpan WarmStorageDuration { get; init; } = TimeSpan.FromDays(365);
 
-    /// <summary>User logged out.</summary>
-    Logout,
+    /// <summary>Duration to keep in cold (archive) storage.</summary>
+    public TimeSpan ColdStorageDuration { get; init; } = TimeSpan.FromDays(365 * 7);
 
-    /// <summary>New session created.</summary>
-    SessionCreated,
+    /// <summary>Whether to compress when moving to warm storage.</summary>
+    public bool EnableCompression { get; init; } = true;
 
-    /// <summary>Session expired due to inactivity or timeout.</summary>
-    SessionExpired,
+    /// <summary>Compression algorithm (gzip, brotli, zstd).</summary>
+    public string CompressionAlgorithm { get; init; } = "gzip";
 
-    /// <summary>User changed their password.</summary>
-    PasswordChanged,
+    /// <summary>Whether to encrypt before cold archive.</summary>
+    public bool EnableEncryption { get; init; } = true;
 
-    /// <summary>Multi-factor authentication was enabled.</summary>
-    MfaEnabled,
+    /// <summary>Encryption algorithm (AES-256-GCM, ChaCha20-Poly1305).</summary>
+    public string EncryptionAlgorithm { get; init; } = "AES-256-GCM";
 
-    /// <summary>Multi-factor authentication was disabled.</summary>
-    MfaDisabled,
+    /// <summary>S3 bucket or Azure container for cold storage.</summary>
+    public string? ColdStorageLocation { get; init; }
 
-    // ========== Authorization Events ==========
-    /// <summary>User granted a permission.</summary>
-    PermissionGranted,
+    /// <summary>Automatically delete events after cold duration expires.</summary>
+    public bool AutoDelete { get; init; } = false;
 
-    /// <summary>User denied a permission (authorization failure).</summary>
-    PermissionDenied,
+    /// <summary>Require WORM (Write Once Read Many) compliance.</summary>
+    public bool EnableWorm { get; init; } = true;
 
-    /// <summary>Role assigned to a user.</summary>
-    RoleAssigned,
+    /// <summary>Schedule for archive job (cron expression).</summary>
+    public string ArchiveSchedule { get; init; } = "0 2 * * *";  // 2 AM daily
 
-    /// <summary>Role revoked from a user.</summary>
-    RoleRevoked,
-
-    /// <summary>Access control list modified.</summary>
-    AclModified,
-
-    /// <summary>Policy evaluated (e.g., data classification).</summary>
-    PolicyEvaluated,
-
-    // ========== Entity/Resource Events ==========
-    /// <summary>New entity created.</summary>
-    EntityCreated,
-
-    /// <summary>Entity modified.</summary>
-    EntityModified,
-
-    /// <summary>Entity deleted.</summary>
-    EntityDeleted,
-
-    /// <summary>Entity viewed/accessed.</summary>
-    EntityViewed,
-
-    /// <summary>Entity exported out of system.</summary>
-    EntityExported,
-
-    // ========== Knowledge Graph Events ==========
-    /// <summary>Relationship created between entities.</summary>
-    RelationshipCreated,
-
-    /// <summary>Relationship deleted.</summary>
-    RelationshipDeleted,
-
-    /// <summary>New claim added to knowledge graph.</summary>
-    ClaimCreated,
-
-    /// <summary>Claim modified.</summary>
-    ClaimModified,
-
-    /// <summary>Axiom/rule added to knowledge graph.</summary>
-    AxiomCreated,
-
-    /// <summary>Axiom/rule modified.</summary>
-    AxiomModified,
-
-    // ========== Validation & Inference Events ==========
-    /// <summary>Validation run initiated.</summary>
-    ValidationRun,
-
-    /// <summary>Validation failed (constraints violated).</summary>
-    ValidationFailed,
-
-    /// <summary>Inference engine executed.</summary>
-    InferenceRun,
-
-    // ========== Version & Snapshot Events ==========
-    /// <summary>Snapshot of entity state created.</summary>
-    SnapshotCreated,
-
-    /// <summary>Rollback to previous version executed.</summary>
-    RollbackExecuted,
-
-    /// <summary>Version branch created.</summary>
-    BranchCreated,
-
-    /// <summary>Version branches merged.</summary>
-    BranchMerged,
-
-    // ========== Data Movement Events ==========
-    /// <summary>Data imported from external source.</summary>
-    DataImported,
-
-    /// <summary>Data exported to external destination.</summary>
-    DataExported,
-
-    /// <summary>Bulk operation performed (batch create/update/delete).</summary>
-    BulkOperation,
-
-    // ========== System Events ==========
-    /// <summary>System configuration changed.</summary>
-    ConfigurationChanged,
-
-    /// <summary>License activated.</summary>
-    LicenseActivated,
-
-    /// <summary>License expired.</summary>
-    LicenseExpired,
-
-    /// <summary>System started up.</summary>
-    SystemStartup,
-
-    /// <summary>System shut down.</summary>
-    SystemShutdown,
-
-    // ========== Security Events ==========
-    /// <summary>Suspicious activity detected.</summary>
-    SuspiciousActivity,
-
-    /// <summary>Rate limit exceeded by user/IP.</summary>
-    RateLimitExceeded,
-
-    /// <summary>Intrusion attempt detected.</summary>
-    IntrusionAttempt,
-
-    /// <summary>Data breach or unauthorized access detected.</summary>
-    DataBreach
+    /// <summary>Verify integrity before archival.</summary>
+    public bool VerifyBeforeArchive { get; init; } = true;
 }
 ```
 
-### 4.3 AuditEventCategory Enum
+### 4.3 Archive and Statistics Records
 
 ```csharp
 namespace Lexichord.Abstractions.Contracts;
 
 /// <summary>
-/// High-level categories for grouping audit events.
+/// Result of an archive operation.
 /// </summary>
-public enum AuditEventCategory
+public record ArchiveResult
 {
-    /// <summary>Authentication related (login, logout, MFA, etc.).</summary>
-    Authentication,
+    /// <summary>Number of events archived.</summary>
+    public int EventsArchived { get; init; }
 
-    /// <summary>Authorization and permission related.</summary>
-    Authorization,
+    /// <summary>Number of events that failed to archive.</summary>
+    public int EventsFailed { get; init; }
 
-    /// <summary>Data access and viewing.</summary>
-    DataAccess,
+    /// <summary>Total bytes written to cold storage.</summary>
+    public long BytesWritten { get; init; }
 
-    /// <summary>Data modification (create, update, delete).</summary>
-    DataModification,
+    /// <summary>Compression ratio (original / compressed).</summary>
+    public double CompressionRatio { get; init; }
 
-    /// <summary>System configuration changes.</summary>
-    Configuration,
+    /// <summary>Time taken for archive operation.</summary>
+    public TimeSpan Duration { get; init; }
 
-    /// <summary>Security-specific events (intrusion, breach, etc.).</summary>
-    Security,
-
-    /// <summary>General system events (startup, shutdown).</summary>
-    System
-}
-```
-
-### 4.4 AuditSeverity Enum
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Severity levels for audit events.
-/// Used for alerting, filtering, and retention policies.
-/// </summary>
-public enum AuditSeverity
-{
-    /// <summary>Detailed diagnostic information (very verbose).</summary>
-    Debug = 0,
-
-    /// <summary>General informational event (normal operations).</summary>
-    Info = 1,
-
-    /// <summary>Warning condition that should be reviewed.</summary>
-    Warning = 2,
-
-    /// <summary>Error condition requiring attention.</summary>
-    Error = 3,
-
-    /// <summary>Critical security event requiring immediate action.</summary>
-    Critical = 4
-}
-```
-
-### 4.5 AuditOutcome Enum
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Outcome of an attempted action.
-/// </summary>
-public enum AuditOutcome
-{
-    /// <summary>Action completed successfully.</summary>
-    Success,
-
-    /// <summary>Action failed completely.</summary>
-    Failure,
-
-    /// <summary>Action completed with partial success.</summary>
-    Partial,
-
-    /// <summary>Outcome could not be determined.</summary>
-    Unknown
-}
-```
-
-### 4.6 AuditQuery Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Query parameters for searching audit logs.
-/// </summary>
-public record AuditQuery
-{
-    /// <summary>Start of date range (inclusive).</summary>
-    public DateTimeOffset? From { get; init; }
-
-    /// <summary>End of date range (inclusive).</summary>
-    public DateTimeOffset? To { get; init; }
-
-    /// <summary>Filter by specific event types.</summary>
-    public IReadOnlyList<AuditEventType>? EventTypes { get; init; }
-
-    /// <summary>Filter by event categories.</summary>
-    public IReadOnlyList<AuditEventCategory>? Categories { get; init; }
-
-    /// <summary>Filter by user ID.</summary>
-    public Guid? UserId { get; init; }
-
-    /// <summary>Filter by resource ID.</summary>
-    public Guid? ResourceId { get; init; }
-
-    /// <summary>Filter by resource type.</summary>
-    public string? ResourceType { get; init; }
-
-    /// <summary>Filter by action outcome.</summary>
-    public AuditOutcome? Outcome { get; init; }
-
-    /// <summary>Filter by minimum severity (inclusive).</summary>
-    public AuditSeverity? MinSeverity { get; init; }
-
-    /// <summary>Full-text search in Action, FailureReason, ResourceName.</summary>
-    public string? SearchText { get; init; }
-
-    /// <summary>Pagination offset (0-based).</summary>
-    public int Offset { get; init; } = 0;
-
-    /// <summary>Maximum results to return (1-1000).</summary>
-    public int Limit { get; init; } = 100;
-
-    /// <summary>Sort order for results.</summary>
-    public AuditSortOrder SortOrder { get; init; } = AuditSortOrder.NewestFirst;
-}
-```
-
-### 4.7 AuditSortOrder Enum
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Sort order for audit query results.
-/// </summary>
-public enum AuditSortOrder
-{
-    /// <summary>Most recent events first (descending timestamp).</summary>
-    NewestFirst,
-
-    /// <summary>Oldest events first (ascending timestamp).</summary>
-    OldestFirst
-}
-```
-
-### 4.8 AuditQueryResult Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Paginated results from an audit query.
-/// </summary>
-public record AuditQueryResult
-{
-    /// <summary>Events matching the query.</summary>
-    public IReadOnlyList<AuditEvent> Events { get; init; } = [];
-
-    /// <summary>Total count of matching events (across all pages).</summary>
-    public int TotalCount { get; init; }
-
-    /// <summary>Whether more results are available.</summary>
-    public bool HasMore { get; init; }
-}
-```
-
-### 4.9 Integrity Verification Types
-
-```csharp
-namespace Lexichord.Abstractions.Contracts;
-
-/// <summary>
-/// Result of verifying integrity of an audit log range.
-/// </summary>
-public record IntegrityVerificationResult
-{
-    /// <summary>Whether the entire range passed integrity verification.</summary>
-    public bool IsValid { get; init; }
-
-    /// <summary>Number of events verified.</summary>
-    public int EventsVerified { get; init; }
-
-    /// <summary>Number of breaks detected in the hash chain.</summary>
-    public int ChainBreaks { get; init; }
-
-    /// <summary>Details of each violation found.</summary>
-    public IReadOnlyList<IntegrityViolation> Violations { get; init; } = [];
+    /// <summary>Any errors encountered.</summary>
+    public IReadOnlyList<string> Errors { get; init; } = [];
 }
 
 /// <summary>
-/// Details of a single integrity violation.
+/// Statistics about events across storage tiers.
 /// </summary>
-public record IntegrityViolation
+public record RetentionStatistics
 {
-    /// <summary>ID of the event with the violation.</summary>
-    public Guid EventId { get; init; }
+    /// <summary>Number of events in hot storage.</summary>
+    public long HotStorageEventCount { get; init; }
 
-    /// <summary>Timestamp of the violating event.</summary>
-    public DateTimeOffset Timestamp { get; init; }
+    /// <summary>Size of hot storage in bytes.</summary>
+    public long HotStorageBytes { get; init; }
 
-    /// <summary>Type of violation.</summary>
-    public ViolationType Type { get; init; }
+    /// <summary>Number of events in warm storage.</summary>
+    public long WarmStorageEventCount { get; init; }
 
-    /// <summary>Expected hash value.</summary>
-    public string ExpectedHash { get; init; } = "";
+    /// <summary>Size of warm storage in bytes.</summary>
+    public long WarmStorageBytes { get; init; }
 
-    /// <summary>Actual hash value stored.</summary>
-    public string ActualHash { get; init; } = "";
-}
+    /// <summary>Number of events in cold storage.</summary>
+    public long ColdStorageEventCount { get; init; }
 
-/// <summary>
-/// Types of integrity violations.
-/// </summary>
-public enum ViolationType
-{
-    /// <summary>Event hash doesn't match calculated value.</summary>
-    HashMismatch,
+    /// <summary>Size of cold storage in bytes.</summary>
+    public long ColdStorageBytes { get; init; }
 
-    /// <summary>PreviousHash doesn't match previous event's Hash.</summary>
-    ChainBreak,
+    /// <summary>Date of oldest event in system.</summary>
+    public DateTimeOffset? OldestEventDate { get; init; }
 
-    /// <summary>Expected event is missing from sequence.</summary>
-    MissingEvent,
+    /// <summary>Date of newest event in system.</summary>
+    public DateTimeOffset? NewestEventDate { get; init; }
 
-    /// <summary>Duplicate event ID detected.</summary>
-    DuplicateEvent,
+    /// <summary>Total cost estimate (if using cloud storage).</summary>
+    public decimal? EstimatedMonthlyCost { get; init; }
 
-    /// <summary>Events out of order by timestamp.</summary>
-    OutOfOrder
+    /// <summary>Last time archival job ran.</summary>
+    public DateTimeOffset? LastArchiveTime { get; init; }
+
+    /// <summary>Next scheduled archival time.</summary>
+    public DateTimeOffset? NextArchiveTime { get; init; }
 }
 ```
 
 ---
 
-## 5. AuditEventFactory Helper
+## 5. Implementation
 
-### 5.1 Factory Pattern Usage
+### 5.1 AuditRetentionManager Implementation
 
 ```csharp
 namespace Lexichord.Modules.Security.Services;
 
 /// <summary>
-/// Factory for creating AuditEvent instances with proper defaults.
+/// Manages audit log lifecycle across tiers.
 /// </summary>
-public class AuditEventFactory
+public class AuditRetentionManager : IAuditRetentionManager, IAsyncDisposable
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<AuditEventFactory> _logger;
+    private readonly IAuditStore _store;
+    private readonly AuditArchiveService _archiveService;
+    private readonly CompressionService _compressionService;
+    private readonly ILogger<AuditRetentionManager> _logger;
+    private RetentionPolicy _policy;
+    private PeriodicTimer? _archiveTimer;
+    private CancellationTokenSource _shutdownCts = new();
 
-    public AuditEventFactory(
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<AuditEventFactory> logger)
+    public AuditRetentionManager(
+        IAuditStore store,
+        AuditArchiveService archiveService,
+        CompressionService compressionService,
+        IOptions<RetentionPolicy> policyOptions,
+        ILogger<AuditRetentionManager> logger)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _stora = store;
+        _archiveServica = archiveService;
+        _compressionServica = compressionService;
+        _logger = logger;
+        _policy = policyOptions.Value ?? new();
+
+        StartArchiveScheduler();
+    }
+
+    /// <summary>
+    /// Gets current policy.
+    /// </summary>
+    public RetentionPolicy GetPolicy() => _policy;
+
+    /// <summary>
+    /// Updates retention policy.
+    /// </summary>
+    public async Task UpdatePolicyAsync(
+        RetentionPolicy policy,
+        CancellationToken ct = default)
+    {
+        if (policy == null)
+            throw new ArgumentNullException(nameof(policy));
+
+        _policy = policy;
+
+        _logger.LogInformation(
+            "Retention policy updated: Hot={HotDays}d, " +
+            "Warm={WarmDays}d, Cold={ColdDays}d",
+            policy.HotStorageDuration.Days,
+            policy.WarmStorageDuration.Days,
+            policy.ColdStorageDuration.Days);
+
+        // Restart timer with new schedule
+        _archiveTimer?.Dispose();
+        StartArchiveScheduler();
+    }
+
+    /// <summary>
+    /// Archives events older than specified date.
+    /// </summary>
+    public async Task<ArchiveResult> ArchiveAsync(
+        DateTimeOffset before,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("Beginning archive of events before {Date:O}", before);
+
+        var errors = new List<string>();
+        var archived = 0;
+        var failed = 0;
+        long bytesWritten = 0;
+
+        try
+        {
+            // 1. Query events to archive
+            var query = new AuditQuery
+            {
+                To = before,
+                Limit = 10_000,
+                SortOrder = AuditSortOrder.OldestFirst
+            };
+
+            var allEvents = new List<AuditEvent>();
+            var offset = 0;
+
+            while (true)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                query = query with { Offset = offset };
+                var result = await _store.QueryAsync(query, ct);
+
+                if (result.Events.Count == 0)
+                    break;
+
+                allEvents.AddRange(result.Events);
+
+                if (!result.HasMore)
+                    break;
+
+                offset += result.Events.Count;
+            }
+
+            _logger.LogInformation("Found {Count} events to archive", allEvents.Count);
+
+            if (allEvents.Count == 0)
+                return new ArchiveResult
+                {
+                    EventsArchived = 0,
+                    EventsFailed = 0,
+                    Duration = TimeSpan.Zero
+                };
+
+            // 2. Verify integrity if required
+            if (_policy.VerifyBeforeArchive)
+            {
+                _logger.LogInformation("Verifying integrity before archive...");
+                // Verification would happen here
+            }
+
+            // 3. Compress events
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            byte[] compressedData;
+
+            if (_policy.EnableCompression)
+            {
+                var json = JsonSerializer.Serialize(allEvents);
+                compressedData = _compressionService.Compress(
+                    json,
+                    _policy.CompressionAlgorithm);
+
+                var compressionRatio = (double)Encoding.UTF8.GetByteCount(json) /
+                                      compressedData.Length;
+
+                _logger.LogInformation(
+                    "Compressed {Count} events: {Original}B -> {Compressed}B (ratio: {Ratio:F2})",
+                    allEvents.Count,
+                    Encoding.UTF8.GetByteCount(json),
+                    compressedData.Length,
+                    compressionRatio);
+
+                bytesWritten = compressedData.Length;
+            }
+            else
+            {
+                compressedData = Encoding.UTF8.GetBytes(
+                    JsonSerializer.Serialize(allEvents));
+                bytesWritten = compressedData.Length;
+            }
+
+            // 4. Upload to cold storage
+            _logger.LogInformation(
+                "Uploading {Size}B to cold storage...",
+                compressedData.Length);
+
+            await _archiveService.ArchiveAsync(
+                before,
+                compressedData,
+                ct);
+
+            archived = allEvents.Count;
+            sw.Stop();
+
+            _logger.LogInformation(
+                "Archive complete: {Archived} events, {Size}B written, {Duration}ms",
+                archived, bytesWritten, sw.ElapsedMilliseconds);
+
+            return new ArchiveResult
+            {
+                EventsArchived = archived,
+                EventsFailed = failed,
+                BytesWritten = bytesWritten,
+                Duration = sw.Elapsed,
+                Errors = errors
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Archive operation failed");
+            errors.Add(ex.Message);
+
+            return new ArchiveResult
+            {
+                EventsArchived = archived,
+                EventsFailed = failed,
+                Duration = TimeSpan.Zero,
+                Errors = errors
+            };
+        }
+    }
+
+    /// <summary>
+    /// Gets tier statistics.
+    /// </summary>
+    public async Task<RetentionStatistics> GetStatisticsAsync(
+        CancellationToken ct = default)
+    {
+        var hotQuery = new AuditQuery { Limit = 1 };
+        var hotResult = await _store.QueryAsync(hotQuery, ct);
+
+        var stats = new RetentionStatistics
+        {
+            HotStorageEventCount = hotResult.TotalCount,
+            NewestEventData = hotResult.Events.FirstOrDefault()?.Timestamp,
+            LastArchiveTima = DateTimeOffset.UtcNow,
+            NextArchiveTima = DateTimeOffset.UtcNow.Add(TimeSpan.FromHours(24))
+        };
+
+        return stats;
+    }
+
+    /// <summary>
+    /// Retrieves archived event from cold storage.
+    /// </summary>
+    public async Task<AuditEvent?> RetrieveArchivedEventAsync(
+        Guid eventId,
+        CancellationToken ct = default)
+    {
+        return await _archiveService.RetrieveEventAsync(eventId, ct);
+    }
+
+    /// <summary>
+    /// Queries across all tiers.
+    /// </summary>
+    public async Task<AuditQueryResult> QueryAllTiersAsync(
+        AuditQuery query,
+        CancellationToken ct = default)
+    {
+        // Query hot storage first
+        var result = await _store.QueryAsync(query, ct);
+
+        // If older events requested, also search cold storage
+        if (query.From.HasValue)
+        {
+            var coldEvents = await _archiveService.QueryAsync(query, ct);
+            if (coldEvents.Count > 0)
+            {
+                var combined = result.Events.Concat(coldEvents)
+                    .OrderByDescending(e => e.Timestamp)
+                    .Take(query.Limit)
+                    .ToList();
+
+                return result with
+                {
+                    Events = combined,
+                    TotalCount = result.TotalCount + coldEvents.Count
+                };
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Starts the background archival scheduler.
+    /// </summary>
+    private void StartArchiveScheduler()
+    {
+        // Parse cron expression and create timer
+        var interval = TimeSpan.FromHours(24);  // Default daily
+
+        _archiveTimer = new PeriodicTimer(interval);
+        _ = RunArchiveLoopAsync();
+
+        _logger.LogInformation(
+            "Archive scheduler started: interval={IntervalHours}h",
+            interval.TotalHours);
+    }
+
+    /// <summary>
+    /// Background task that runs archival.
+    /// </summary>
+    private async Task RunArchiveLoopAsync()
+    {
+        try
+        {
+            while (await _archiveTimer!.WaitForNextTickAsync(_shutdownCts.Token))
+            {
+                try
+                {
+                    var cutoffData = DateTimeOffset.UtcNow
+                        .Subtract(_policy.HotStorageDuration);
+
+                    await ArchiveAsync(cutoffDate, _shutdownCts.Token);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error during scheduled archive");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogDebug("Archive scheduler stopped");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _shutdownCts.Cancel();
+        _archiveTimer?.Dispose();
+        _shutdownCts?.Dispose();
+    }
+}
+```
+
+### 5.2 AuditArchiveService Implementation
+
+```csharp
+namespace Lexichord.Modules.Security.Services;
+
+/// <summary>
+/// Manages cold storage archival and retrieval.
+/// </summary>
+public class AuditArchiveService
+{
+    private readonly IAzureStorageService _azureStorage;
+    private readonly IEncryptionService _encryption;
+    private readonly ILogger<AuditArchiveService> _logger;
+
+    public AuditArchiveService(
+        IAzureStorageService azureStorage,
+        IEncryptionService encryption,
+        ILogger<AuditArchiveService> logger)
+    {
+        _azureStoraga = azureStorage;
+        _encryption = encryption;
         _logger = logger;
     }
 
     /// <summary>
-    /// Creates an AuditEvent with automatic context extraction.
+    /// Archives compressed data to cold storage.
     /// </summary>
-    public AuditEvent CreateEvent(
-        AuditEventType eventType,
-        string action,
-        Guid? userId = null,
-        Guid? resourceId = null,
-        string? resourceType = null,
-        AuditOutcome outcome = AuditOutcome.Success,
-        string? failureReason = null)
+    public async Task ArchiveAsync(
+        DateTimeOffset before,
+        byte[] compressedData,
+        CancellationToken ct)
     {
-        var context = _httpContextAccessor.HttpContext;
-        var userEmail = ExtractUserEmail(context);
-        var ipAddress = ExtractIpAddress(context);
-        var userAgent = context?.Request.Headers.UserAgent.ToString();
-        var requestId = context?.TraceIdentifier;
+        // Generate archive name: audit-archive-2026-01-31.bin
+        var archiveNama = $"audit-archive-{before:yyyy-MM-dd}.bin";
 
-        return new AuditEvent
-        {
-            EventType = eventType,
-            Action = action,
-            UserId = userId,
-            UserEmail = userEmail,
-            ResourceId = resourceId,
-            ResourceType = resourceType,
-            Outcome = outcome,
-            FailureReason = failureReason,
-            IpAddress = ipAddress,
-            UserAgent = userAgent,
-            RequestId = requestId,
-            Category = DetermineCategoryFromType(eventType),
-            Severity = DetermineSeverityFromOutcome(outcome, eventType)
-        };
+        // Encrypt if required
+        var dataToStora = compressedData;  // Would encrypt here if enabled
+        // dataToStora = _encryption.Encrypt(compressedData);
+
+        // Upload to blob storage
+        await _azureStorage.UploadBlobAsync(
+            containerName: "audit-archives",
+            blobName: archiveName,
+            data: dataToStore,
+            ct);
+
+        _logger.LogInformation(
+            "Archived data uploaded: {BlobName} ({Size}B)",
+            archiveName, dataToStore.Length);
     }
 
-    private static AuditEventCategory DetermineCategoryFromType(AuditEventType eventType) =>
-        eventType switch
+    /// <summary>
+    /// Retrieves an archived event from cold storage.
+    /// </summary>
+    public async Task<AuditEvent?> RetrieveEventAsync(
+        Guid eventId,
+        CancellationToken ct)
+    {
+        // List all archive blobs
+        var blobs = await _azureStorage.ListBlobsAsync(
+            "audit-archives", ct);
+
+        foreach (var blob in blobs)
         {
-            AuditEventType.LoginSuccess or AuditEventType.LoginFailure or
-            AuditEventType.Logout or AuditEventType.SessionCreated or
-            AuditEventType.SessionExpired or AuditEventType.PasswordChanged or
-            AuditEventType.MfaEnabled or AuditEventType.MfaDisabled =>
-                AuditEventCategory.Authentication,
+            try
+            {
+                var data = await _azureStorage.DownloadBlobAsync(
+                    "audit-archives", blob.Name, ct);
 
-            AuditEventType.PermissionGranted or AuditEventType.PermissionDenied or
-            AuditEventType.RoleAssigned or AuditEventType.RoleRevoked or
-            AuditEventType.AclModified or AuditEventType.PolicyEvaluated =>
-                AuditEventCategory.Authorization,
+                // Decompress and parse
+                var json = Encoding.UTF8.GetString(data);
+                var events = JsonSerializer.Deserialize<List<AuditEvent>>(json);
 
-            AuditEventType.EntityViewed or AuditEventType.EntityExported =>
-                AuditEventCategory.DataAccess,
+                var evt = events?.FirstOrDefault(e => e.EventId == eventId);
+                if (evt != null)
+                {
+                    _logger.LogInformation(
+                        "Retrieved archived event {EventId} from {BlobName}",
+                        eventId, blob.Name);
+                    return evt;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex,
+                    "Error searching blob {BlobName}",
+                    blob.Name);
+            }
+        }
 
-            AuditEventType.EntityCreated or AuditEventType.EntityModified or
-            AuditEventType.EntityDeleted or AuditEventType.RelationshipCreated or
-            AuditEventType.RelationshipDeleted or AuditEventType.ClaimCreated or
-            AuditEventType.ClaimModified or AuditEventType.AxiomCreated or
-            AuditEventType.AxiomModified or AuditEventType.DataImported or
-            AuditEventType.DataExported or AuditEventType.BulkOperation =>
-                AuditEventCategory.DataModification,
+        return null;
+    }
 
-            AuditEventType.ConfigurationChanged or AuditEventType.LicenseActivated or
-            AuditEventType.LicenseExpired =>
-                AuditEventCategory.Configuration,
+    /// <summary>
+    /// Queries archived events.
+    /// </summary>
+    public async Task<List<AuditEvent>> QueryAsync(
+        AuditQuery query,
+        CancellationToken ct)
+    {
+        var results = new List<AuditEvent>();
 
-            AuditEventType.SuspiciousActivity or AuditEventType.RateLimitExceeded or
-            AuditEventType.IntrusionAttempt or AuditEventType.DataBreach =>
-                AuditEventCategory.Security,
+        var blobs = await _azureStorage.ListBlobsAsync(
+            "audit-archives", ct);
 
-            _ => AuditEventCategory.System
+        foreach (var blob in blobs)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            try
+            {
+                var data = await _azureStorage.DownloadBlobAsync(
+                    "audit-archives", blob.Name, ct);
+
+                var json = Encoding.UTF8.GetString(data);
+                var events = JsonSerializer.Deserialize<List<AuditEvent>>(json);
+
+                if (events != null)
+                {
+                    results.AddRange(events);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error querying archive blob");
+            }
+        }
+
+        return results;
+    }
+}
+```
+
+### 5.3 CompressionService Implementation
+
+```csharp
+namespace Lexichord.Modules.Security.Services;
+
+/// <summary>
+/// Handles compression/decompression of audit event archives.
+/// </summary>
+public class CompressionService
+{
+    private readonly ILogger<CompressionService> _logger;
+
+    public CompressionService(ILogger<CompressionService> logger)
+    {
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Compresses data using specified algorithm.
+    /// </summary>
+    public byte[] Compress(string data, string algorithm = "gzip")
+    {
+        var bytes = Encoding.UTF8.GetBytes(data);
+
+        var compressor = algorithm.ToLowerInvariant() switch
+        {
+            "gzip" => CompressGzip(bytes),
+            "brotli" => CompressBrotli(bytes),
+            "zstd" => CompressZstd(bytes),
+            _ => throw new ArgumentException($"Unknown algorithm: {algorithm}")
         };
 
-    private static AuditSeverity DetermineSeverityFromOutcome(
-        AuditOutcome outcome,
-        AuditEventType eventType) =>
-        (outcome, eventType) switch
+        _logger.LogDebug(
+            "Compressed {Original}B -> {Compressed}B using {Algorithm}",
+            bytes.Length, compressor.Length, algorithm);
+
+        return compressor;
+    }
+
+    /// <summary>
+    /// Decompresses data.
+    /// </summary>
+    public string Decompress(byte[] compressedData, string algorithm = "gzip")
+    {
+        var decompressed = algorithm.ToLowerInvariant() switch
         {
-            (AuditOutcome.Failure, AuditEventType.LoginFailure) => AuditSeverity.Warning,
-            (AuditOutcome.Failure, AuditEventType.PermissionDenied) => AuditSeverity.Warning,
-            (_, AuditEventType.IntrusionAttempt) => AuditSeverity.Critical,
-            (_, AuditEventType.DataBreach) => AuditSeverity.Critical,
-            (AuditOutcome.Failure, _) => AuditSeverity.Error,
-            (AuditOutcome.Success, AuditEventType.EntityDeleted) => AuditSeverity.Warning,
-            (AuditOutcome.Success, AuditEventType.RoleAssigned) => AuditSeverity.Info,
-            _ => AuditSeverity.Info
+            "gzip" => DecompressGzip(compressedData),
+            "brotli" => DecompressBrotli(compressedData),
+            "zstd" => DecompressZstd(compressedData),
+            _ => throw new ArgumentException($"Unknown algorithm: {algorithm}")
         };
 
-    private static string? ExtractUserEmail(HttpContext? context) =>
-        context?.User.FindFirst(ClaimTypes.Email)?.Value;
+        return Encoding.UTF8.GetString(decompressed);
+    }
 
-    private static string? ExtractIpAddress(HttpContext? context) =>
-        context?.Connection.RemoteIpAddress?.ToString();
+    private static byte[] CompressGzip(byte[] data)
+    {
+        using var output = new MemoryStream();
+        using (var gzip = new System.IO.Compression.GZipStream(
+            output, System.IO.Compression.CompressionMode.Compress))
+        {
+            gzip.Write(data, 0, data.Length);
+        }
+        return output.ToArray();
+    }
+
+    private static byte[] DecompressGzip(byte[] data)
+    {
+        using var input = new MemoryStream(data);
+        using var gzip = new System.IO.Compression.GZipStream(
+            input, System.IO.Compression.CompressionMode.Decompress);
+        using var output = new MemoryStream();
+        gzip.CopyTo(output);
+        return output.ToArray();
+    }
+
+    private static byte[] CompressBrotli(byte[] data)
+    {
+        // Would use Brotli library here
+        return CompressGzip(data);  // Fallback
+    }
+
+    private static byte[] DecompressBrotli(byte[] data)
+    {
+        return DecompressGzip(data);  // Fallback
+    }
+
+    private static byte[] CompressZstd(byte[] data)
+    {
+        // Would use Zstandard library here
+        return CompressGzip(data);  // Fallback
+    }
+
+    private static byte[] DecompressZstd(byte[] data)
+    {
+        return DecompressGzip(data);  // Fallback
+    }
 }
 ```
 
 ---
 
-## 6. Implementation Notes
+## 6. Storage Tier Strategy
 
-### 6.1 Event Immutability
-
-All audit events are immutable (C# `record` types) to prevent accidental modification:
-
-```csharp
-// This fails at compile time:
-auditEvent.Hash = "tampered"; // ❌ Cannot set Hash property
-
-// Create new event with changes:
-var modifiedEvent = auditEvent with { Hash = newHash }; // ✓ Creates new instance
-```
-
-### 6.2 JsonDocument Usage
-
-OldValue, NewValue, and AdditionalContext use `JsonDocument` to support:
-
-- **Flexible schemas** across different resource types
-- **Efficient serialization** to/from storage
-- **Deep comparison** for change detection
-- **Memory efficiency** compared to `object`
-
-Example:
-
-```csharp
-var jsonOptions = new JsonSerializerOptions { WriteIndented = false };
-var oldValueDoc = JsonSerializer.SerializeToDocument(
-    new { Name = "OldName", Version = 1 },
-    jsonOptions);
-
-var auditEvent = new AuditEvent
-{
-    EventType = AuditEventType.EntityModified,
-    Action = "Update entity metadata",
-    OldValue = oldValueDoc,
-    // ...
-};
-```
-
-### 6.3 Correlation for Distributed Tracing
-
-Events can be correlated across services:
-
-```csharp
-// In service A: Create initial event
-var event1 = new AuditEvent
-{
-    EventType = AuditEventType.EntityCreated,
-    CorrelationId = "corr_abc123",
-    RequestId = "req_xyz789"
-};
-
-// In service B: Related event shares CorrelationId
-var event2 = new AuditEvent
-{
-    EventType = AuditEventType.EntityModified,
-    CorrelationId = "corr_abc123",  // Same as event1
-    ParentEventId = event1.EventId,
-    RequestId = "req_aaa111"
-};
-```
+| Tier | Duration | Storage | Speed | Cost | Query Speed |
+| :--- | :------- | :------- | :------- | :------ | :---------- |
+| Hot | 30 days | PostgreSQL | Fast (SSD) | High | <100ms |
+| Warm | 1 year | Compressed | Medium (HDD) | Medium | <2s |
+| Cold | 7 years | S3/Blob | Slow (Archive) | Low | <1min |
 
 ---
 
-## 7. Validation Rules
+## 7. License Gating
 
-| Field | Validation | Error |
-| :---- | :---------- | :---- |
-| `EventType` | Required (not default enum value) | InvalidOperationException |
-| `Action` | Required, 1-500 characters | ArgumentException |
-| `EventId` | Auto-generated if not provided | N/A |
-| `Timestamp` | Auto-set to UTC now if not provided | N/A |
-| `UserId` | Guid format if provided | InvalidOperationException |
-| `ResourceId` | Guid format if provided | InvalidOperationException |
-| `Limit` in AuditQuery | 1-1000 inclusive | ArgumentOutOfRangeException |
-| `Offset` in AuditQuery | >=0 | ArgumentOutOfRangeException |
+| Tier | Retention |
+| :--- | :---------- |
+| Core | 7 days (hot only) |
+| WriterPro | 30 days (hot) |
+| Teams | 30 days hot + 1 year warm |
+| Enterprise | 30 days hot + 1 year warm + 7 years cold |
 
 ---
 
-## 8. Performance Considerations
-
-- **Timestamp precision**: Uses DateTimeOffset (microsecond precision) for accurate ordering
-- **Hash chain**: Linear O(n) for verification; use batching for large ranges
-- **Query pagination**: Always use Offset/Limit to avoid loading entire audit trail
-- **JSON serialization**: Minimal by default; clients can expand as needed
-
----
-
-## 9. Security & Privacy
-
-- **PII Handling**: Email and name are denormalized for readability but should be encrypted at rest
-- **IP Address**: Log for security but with privacy considerations for GDPR
-- **Hash Verification**: Use SHA256 with constant-time comparison to prevent timing attacks
-- **Immutability**: Records prevent accidental modification of audit events
-
----
-
-## 10. Acceptance Criteria
+## 8. Acceptance Criteria
 
 | #   | Category | Criterion | Verification |
 | :-- | :------- | :-------- | :----------- |
-| 1 | Functional | AuditEvent record with all required fields | Code review |
-| 2 | Functional | 40+ event types defined in AuditEventType enum | Code review |
-| 3 | Functional | All 7 categories in AuditEventCategory | Code review |
-| 4 | Functional | Category auto-determined from EventType | Unit test |
-| 5 | Functional | Severity auto-determined from Outcome and EventType | Unit test |
-| 6 | Functional | Hash field supports tamper detection | Integration test |
-| 7 | Functional | Query filtering on all supported fields | Integration test |
-| 8 | Functional | AuditEventFactory extracts context automatically | Unit test |
-| 9 | Edge Case | Null values handled gracefully | Unit test |
-| 10 | Edge Case | Very large JsonDocument values handled | Stress test |
+| 1 | Functional | Policy can be configured | Unit test |
+| 2 | Functional | Events archive after hot duration | Integration test |
+| 3 | Functional | Compression reduces size | Perf test |
+| 4 | Functional | Integrity verified before archive | Integration test |
+| 5 | Functional | Cold storage retrieval works | Integration test |
+| 6 | Functional | Cross-tier queries work | Integration test |
+| 7 | Performance | Archive 100k events in <10s | Perf test |
+| 8 | Storage | Cold storage cost reduced 50%+ | Calculation |
+| 9 | Compliance | WORM compliance enforced | Code review |
+| 10 | Edge Case | Empty archive handled | Unit test |
 
 ---
 
-## 11. Unit Testing Requirements
+## 9. Unit Testing Requirements
 
 ```csharp
 [Trait("Category", "Unit")]
 [Trait("Feature", "v0.11.2e")]
-public class AuditEventTests
+public class AuditRetentionManagerTests
 {
     [Fact]
-    public void AuditEvent_DefaultValues_AreSet()
+    public void GetPolicy_ReturnsPolicy()
     {
-        var evt = new AuditEvent
-        {
-            EventType = AuditEventType.LoginSuccess,
-            Action = "Login"
-        };
+        var manager = CreateRetentionManager();
+        var policy = manager.GetPolicy();
 
-        evt.EventId.Should().NotBeEmpty();
-        evt.Timestamp.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
-        evt.Outcome.Should().Be(AuditOutcome.Success);
-        evt.Severity.Should().Be(AuditSeverity.Info);
-    }
-
-    [Theory]
-    [InlineData(AuditEventType.LoginSuccess, AuditSeverity.Info)]
-    [InlineData(AuditEventType.LoginFailure, AuditSeverity.Warning)]
-    [InlineData(AuditEventType.DataBreach, AuditSeverity.Critical)]
-    public void AuditEventFactory_DeterminesSeverity(
-        AuditEventType eventType,
-        AuditSeverity expectedSeverity)
-    {
-        var factory = new AuditEventFactory(null, null);
-        var evt = factory.CreateEvent(eventType, "Test", outcome: AuditOutcome.Success);
-
-        evt.Severity.Should().Be(expectedSeverity);
+        policy.Should().NotBeNull();
+        policy.HotStorageDuration.Should().Be(TimeSpan.FromDays(30));
     }
 
     [Fact]
-    public void AuditQuery_ValidatesLimit()
+    public async Task UpdatePolicy_ChangesPolicy()
     {
-        var query = new AuditQuery { Limit = 0 };
-        query.Limit.Should().Be(0);  // Validation happens at service level
+        var manager = CreateRetentionManager();
+        var newPolicy = new RetentionPolicy
+        {
+            HotStorageDuration = TimeSpan.FromDays(60)
+        };
+
+        await manager.UpdatePolicyAsync(newPolicy);
+
+        manager.GetPolicy().HotStorageDuration.Should()
+            .Be(TimeSpan.FromDays(60));
     }
 
     [Fact]
-    public void IntegrityVerificationResult_IndicatesValid()
+    public async Task Archive_CompressesData()
     {
-        var result = new IntegrityVerificationResult
-        {
-            IsValid = true,
-            EventsVerified = 1000,
-            ChainBreaks = 0,
-            Violations = []
-        };
+        var manager = CreateRetentionManager();
+        var befora = DateTimeOffset.UtcNow.AddDays(-60);
 
-        result.IsValid.Should().BeTrue();
-        result.ChainBreaks.Should().Be(0);
+        var result = await manager.ArchiveAsync(before);
+
+        result.EventsArchived.Should().BeGreaterThan(0);
+        result.CompressionRatio.Should().BeGreaterThan(1.0);
+    }
+}
+
+[Trait("Category", "Integration")]
+public class CompressionServiceTests
+{
+    [Fact]
+    public void Compress_ReducesSize()
+    {
+        var servica = new CompressionService(null);
+        var data = string.Concat(Enumerable.Repeat("test data ", 1000));
+
+        var compressed = service.Compress(data, "gzip");
+
+        compressed.Length.Should().BeLessThan(
+            Encoding.UTF8.GetByteCount(data));
+    }
+
+    [Fact]
+    public void Decompress_RecreatesOriginal()
+    {
+        var servica = new CompressionService(null);
+        var original = "test data";
+
+        var compressed = service.Compress(original);
+        var decompressed = service.Decompress(compressed);
+
+        decompressed.Should().Be(original);
     }
 }
 ```
 
 ---
 
-## 12. Deliverable Checklist
+## 10. Deliverable Checklist
 
 | #   | Deliverable | Status |
 | :-- | :---------- | :----- |
-| 1   | AuditEvent record with 30+ fields | [ ] |
-| 2   | AuditEventType enum (40+ types) | [ ] |
-| 3   | AuditEventCategory enum (7 values) | [ ] |
-| 4   | AuditSeverity enum (5 levels) | [ ] |
-| 5   | AuditOutcome enum (4 values) | [ ] |
-| 6   | AuditQuery record with filters | [ ] |
-| 7   | AuditQueryResult pagination record | [ ] |
-| 8   | IntegrityVerificationResult and violations | [ ] |
-| 9   | AuditEventFactory helper class | [ ] |
-| 10  | Unit tests with 95%+ coverage | [ ] |
+| 1   | IAuditRetentionManager interface | [ ] |
+| 2   | AuditRetentionManager implementation | [ ] |
+| 3   | RetentionPolicy configuration | [ ] |
+| 4   | AuditArchiveService (cold storage) | [ ] |
+| 5   | CompressionService (gzip/brotli) | [ ] |
+| 6   | Archive scheduler | [ ] |
+| 7   | Cross-tier query support | [ ] |
+| 8   | Statistics reporting | [ ] |
+| 9   | Unit tests (>95% coverage) | [ ] |
+| 10  | Integration tests with cloud storage | [ ] |
 
 ---
 

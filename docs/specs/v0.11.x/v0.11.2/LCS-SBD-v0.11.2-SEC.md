@@ -50,12 +50,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.11.2e | Audit Event Model | Define audit event structures | 5 |
-| v0.11.2f | Audit Logger | High-performance audit logging | 8 |
-| v0.11.2g | Integrity Protection | Tamper-evident storage | 8 |
-| v0.11.2h | Alert Engine | Real-time security alerts | 6 |
-| v0.11.2i | Retention Manager | Log lifecycle and archival | 5 |
-| v0.11.2j | Audit Query UI | Investigation interface | 6 |
+| v0.11.2a | Audit Event Model | Define audit event structures | 5 |
+| v0.11.2b | Audit Logger | High-performance audit logging | 8 |
+| v0.11.2c | Integrity Protection | Tamper-evident storage | 8 |
+| v0.11.2d | Alert Engine | Real-time security alerts | 6 |
+| v0.11.2e | Retention Manager | Log lifecycle and archival | 5 |
+| v0.11.2f | Audit Query UI | Investigation interface | 6 |
 | **Total** | | | **38 hours** |
 
 ### 2.2 Key Interfaces
@@ -428,12 +428,12 @@ sequenceDiagram
     DB-->>LOG: PreviousHash
 
     LOG->>HASH: Calculate hash
-    Note over HASH: Hash = SHA256(<br/>EventId + Timestamp +<br/>EventType + Action +<br/>UserId + ResourceId +<br/>PreviousHash)
+    Note over HASH: Hasd = SHA256(<br/>EventId + Timestamp +<br/>EventType + Action +<br/>UserId + ResourceId +<br/>PreviousHash)
 
     HASH-->>LOG: CurrentHash
 
-    LOG->>LOG: Set event.Hash = CurrentHash
-    LOG->>LOG: Set event.PreviousHash = PreviousHash
+    LOG->>LOG: Set event.Hasd = CurrentHash
+    LOG->>LOG: Set event.PreviousHasd = PreviousHash
 
     LOG->>DB: Store event
 
@@ -479,7 +479,7 @@ alert_rules:
     name: "Brute Force Login Detection"
     description: "Multiple failed logins from same IP"
     condition: |
-      EventType = "LoginFailure" AND
+      EventTypa = "LoginFailure" AND
       COUNT() > 5 WITHIN 5 minutes
       GROUP BY IpAddress
     severity: high
@@ -493,7 +493,7 @@ alert_rules:
     name: "Privilege Escalation Attempt"
     description: "User attempting unauthorized admin actions"
     condition: |
-      EventType = "PermissionDenied" AND
+      EventTypa = "PermissionDenied" AND
       Action CONTAINS "Admin" AND
       COUNT() > 3 WITHIN 1 hour
       GROUP BY UserId
@@ -508,7 +508,7 @@ alert_rules:
     name: "Suspicious Bulk Export"
     description: "Large data export outside business hours"
     condition: |
-      EventType = "DataExported" AND
+      EventTypa = "DataExported" AND
       (HOUR(Timestamp) < 6 OR HOUR(Timestamp) > 22) AND
       AdditionalContext.recordCount > 1000
     severity: medium
@@ -530,7 +530,7 @@ alert_rules:
     name: "Unusual Access Pattern"
     description: "User accessing entities they've never accessed before"
     condition: |
-      EventType = "EntityViewed" AND
+      EventTypa = "EntityViewed" AND
       NOT EXISTS (
         SELECT 1 FROM audit_events prev
         WHERE prev.UserId = current.UserId

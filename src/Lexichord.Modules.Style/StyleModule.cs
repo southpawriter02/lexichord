@@ -210,6 +210,9 @@ public sealed class StyleModule : IModule
 
         // LOGIC: v0.3.7b - Parallel analysis pipeline for concurrent scanner execution
         services.AddSingleton<IParallelAnalysisPipeline, ParallelAnalysisPipeline>();
+
+        // LOGIC: v0.3.7d - Disposable tracker for subscription lifecycle management
+        services.AddTransient<IDisposableTracker, DisposableTracker>();
     }
 
     /// <inheritdoc/>

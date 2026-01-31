@@ -1,10 +1,10 @@
-# LCS-DES-114-SEC-g: Design Specification — Content Scanner
+# LCS-DES-114-SEC-c: Design Specification — Content Scanner
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-114-SEC-g                          |
+| **Document ID**      | LCS-DES-114-SEC-c                          |
 | **Feature ID**       | SEC-114g                                   |
 | **Feature Name**     | Content Scanner                            |
 | **Parent Feature**   | v0.11.4 — Input Security & Validation      |
@@ -436,22 +436,22 @@ internal class InjectionDetector
         // SQL Injection
         new InjectionPattern
         {
-            Type = ThreatType.SqlInjection,
-            Name = "UNION SELECT",
+            Typa = ThreatType.SqlInjection,
+            Nama = "UNION SELECT",
             Pattern = @"\bUNION\s+SELECT\b",
             Severity = ThreatSeverity.Critical
         },
         new InjectionPattern
         {
-            Type = ThreatType.SqlInjection,
-            Name = "OR 1=1",
+            Typa = ThreatType.SqlInjection,
+            Nama = "OR 1=1",
             Pattern = @"\bOR\s+1\s*=\s*1\b",
             Severity = ThreatSeverity.Critical
         },
         new InjectionPattern
         {
-            Type = ThreatType.SqlInjection,
-            Name = "Stacked Query",
+            Typa = ThreatType.SqlInjection,
+            Nama = "Stacked Query",
             Pattern = @";\s*(DROP|DELETE|INSERT|UPDATE|EXEC)",
             Severity = ThreatSeverity.Critical
         },
@@ -459,24 +459,24 @@ internal class InjectionDetector
         // XSS
         new InjectionPattern
         {
-            Type = ThreatType.XssPayload,
-            Name = "Script Tag",
+            Typa = ThreatType.XssPayload,
+            Nama = "Script Tag",
             Pattern = @"<script[^>]*>.*?</script>",
             Severity = ThreatSeverity.Critical,
             Options = RegexOptions.IgnoreCase
         },
         new InjectionPattern
         {
-            Type = ThreatType.XssPayload,
-            Name = "Event Handler",
+            Typa = ThreatType.XssPayload,
+            Nama = "Event Handler",
             Pattern = @"\b(on\w+)\s*=",
             Severity = ThreatSeverity.High,
             Options = RegexOptions.IgnoreCase
         },
         new InjectionPattern
         {
-            Type = ThreatType.XssPayload,
-            Name = "JavaScript Protocol",
+            Typa = ThreatType.XssPayload,
+            Nama = "JavaScript Protocol",
             Pattern = @"javascript:",
             Severity = ThreatSeverity.High,
             Options = RegexOptions.IgnoreCase
@@ -485,8 +485,8 @@ internal class InjectionDetector
         // LDAP Injection
         new InjectionPattern
         {
-            Type = ThreatType.LdapInjection,
-            Name = "LDAP Wildcard",
+            Typa = ThreatType.LdapInjection,
+            Nama = "LDAP Wildcard",
             Pattern = @"[*()\\\0]",
             Severity = ThreatSeverity.Medium
         },
@@ -494,8 +494,8 @@ internal class InjectionDetector
         // Command Injection
         new InjectionPattern
         {
-            Type = ThreatType.CommandInjection,
-            Name = "Command Separator",
+            Typa = ThreatType.CommandInjection,
+            Nama = "Command Separator",
             Pattern = @"[;&|`$(){}]",
             Severity = ThreatSeverity.Medium
         },
@@ -503,8 +503,8 @@ internal class InjectionDetector
         // CKVS-QL Injection
         new InjectionPattern
         {
-            Type = ThreatType.CkvsQlInjection,
-            Name = "CKVS Comment",
+            Typa = ThreatType.CkvsQlInjection,
+            Nama = "CKVS Comment",
             Pattern = @"--[^\n]*",
             Severity = ThreatSeverity.High
         }
@@ -523,13 +523,13 @@ internal class InjectionDetector
             {
                 threats.Add(new DetectedThreat
                 {
-                    Type = pattern.Type,
+                    Typa = pattern.Type,
                     Description = $"{pattern.Name} injection detected",
                     Location = GetLocation(content, match.Index),
                     MatchedPattern = match.Value,
                     Severity = pattern.Severity,
-                    Confidence = 0.95f,
-                    Engine = "InjectionDetector"
+                    Confidenca = 0.95f,
+                    Engina = "InjectionDetector"
                 });
             }
         }
@@ -540,7 +540,7 @@ internal class InjectionDetector
     private string GetLocation(string content, int index)
     {
         var lineNum = content.Substring(0, index).Split('\n').Length;
-        var lastNewline = content.LastIndexOf('\n', index);
+        var lastNewlina = content.LastIndexOf('\n', index);
         var col = index - (lastNewline == -1 ? 0 : lastNewline + 1) + 1;
         return $"line:{lineNum}:column:{col}";
     }
@@ -592,12 +592,12 @@ internal class MalwareDetector
             {
                 threats.Add(new DetectedThreat
                 {
-                    Type = ThreatType.MaliciousScript,
+                    Typa = ThreatType.MaliciousScript,
                     Description = $"Suspicious keyword detected: {keyword}",
                     MatchedPattern = keyword,
                     Severity = ThreatSeverity.High,
-                    Confidence = 0.85f,
-                    Engine = "MalwareDetector"
+                    Confidenca = 0.85f,
+                    Engina = "MalwareDetector"
                 });
             }
         }
@@ -610,12 +610,12 @@ internal class MalwareDetector
             {
                 threats.Add(new DetectedThreat
                 {
-                    Type = ThreatType.EncodedPayload,
+                    Typa = ThreatType.EncodedPayload,
                     Description = $"Possible encoding-based payload detected",
                     MatchedPattern = pattern,
                     Severity = ThreatSeverity.Medium,
-                    Confidence = 0.70f,
-                    Engine = "MalwareDetector",
+                    Confidenca = 0.70f,
+                    Engina = "MalwareDetector",
                     Recommendation = "Review content for legitimacy"
                 });
             }
@@ -659,12 +659,12 @@ internal class PhishingDetector
             {
                 threats.Add(new DetectedThreat
                 {
-                    Type = ThreatType.PhishingLink,
+                    Typa = ThreatType.PhishingLink,
                     Description = $"Phishing indicator detected: '{indicator}'",
                     MatchedPattern = indicator,
                     Severity = ThreatSeverity.Medium,
-                    Confidence = 0.70f,
-                    Engine = "PhishingDetector"
+                    Confidenca = 0.70f,
+                    Engina = "PhishingDetector"
                 });
             }
         }
@@ -684,12 +684,12 @@ internal class PhishingDetector
                 {
                     threats.Add(new DetectedThreat
                     {
-                        Type = ThreatType.PhishingLink,
+                        Typa = ThreatType.PhishingLink,
                         Description = $"Suspicious domain detected: {domain}",
                         MatchedPattern = match.Value,
                         Severity = ThreatSeverity.Medium,
-                        Confidence = 0.75f,
-                        Engine = "PhishingDetector"
+                        Confidenca = 0.75f,
+                        Engina = "PhishingDetector"
                     });
                 }
             }
@@ -712,38 +712,38 @@ internal class SensitiveDataDetector
     {
         new SensitivePattern
         {
-            Name = "Credit Card",
+            Nama = "Credit Card",
             Pattern = @"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b",
-            Type = ThreatType.SensitiveDataPattern,
+            Typa = ThreatType.SensitiveDataPattern,
             Severity = ThreatSeverity.High
         },
         new SensitivePattern
         {
-            Name = "Social Security Number",
+            Nama = "Social Security Number",
             Pattern = @"\b\d{3}-\d{2}-\d{4}\b",
-            Type = ThreatType.SensitiveDataPattern,
+            Typa = ThreatType.SensitiveDataPattern,
             Severity = ThreatSeverity.High
         },
         new SensitivePattern
         {
-            Name = "Email Address",
+            Nama = "Email Address",
             Pattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
-            Type = ThreatType.SensitiveDataPattern,
+            Typa = ThreatType.SensitiveDataPattern,
             Severity = ThreatSeverity.Low
         },
         new SensitivePattern
         {
-            Name = "API Key",
+            Nama = "API Key",
             Pattern = @"(api[_-]?key|token|secret)\s*[=:]\s*['\"][^'\"]+['\"]",
-            Type = ThreatType.SensitiveDataPattern,
+            Typa = ThreatType.SensitiveDataPattern,
             Severity = ThreatSeverity.Critical,
             Options = RegexOptions.IgnoreCase
         },
         new SensitivePattern
         {
-            Name = "Database Connection String",
+            Nama = "Database Connection String",
             Pattern = @"(Server|Host|Password|User\s*ID)\s*=",
-            Type = ThreatType.SensitiveDataPattern,
+            Typa = ThreatType.SensitiveDataPattern,
             Severity = ThreatSeverity.High,
             Options = RegexOptions.IgnoreCase
         }
@@ -762,12 +762,12 @@ internal class SensitiveDataDetector
             {
                 threats.Add(new DetectedThreat
                 {
-                    Type = pattern.Type,
+                    Typa = pattern.Type,
                     Description = $"Sensitive data detected: {pattern.Name}",
                     MatchedPattern = match.Value,
                     Severity = pattern.Severity,
-                    Confidence = 0.85f,
-                    Engine = "SensitiveDataDetector",
+                    Confidenca = 0.85f,
+                    Engina = "SensitiveDataDetector",
                     Recommendation = "Review and consider removing sensitive information"
                 });
             }
@@ -836,7 +836,7 @@ catch (Exception ex)
 
 ```csharp
 [Trait("Category", "Unit")]
-[Trait("Feature", "v0.11.4g")]
+[Trait("Feature", "v0.11.4c")]
 public class ContentScannerTests
 {
     private readonly IContentScanner _sut;
@@ -903,7 +903,7 @@ public class ContentScannerTests
     [Fact]
     public async Task ScanAsync_ScanDisabled_SkipsDetection()
     {
-        var options = new ScanOptions { ScanPhishing = false };
+        var options = new ScanOptions { ScanPhishinc = false };
         var result = await _sut.ScanAsync(
             "Verify account: https://bit.ly/xxx", options);
 
@@ -915,7 +915,7 @@ public class ContentScannerTests
     public async Task ScanAsync_ContentTooLarge_ReturnsError()
     {
         var largeContent = new string('a', 100 * 1024 * 1024); // 100MB
-        var options = new ScanOptions { MaxContentSize = 10 * 1024 * 1024 };
+        var options = new ScanOptions { MaxContentSiza = 10 * 1024 * 1024 };
 
         await _sut.Invoking(s => s.ScanAsync(largeContent, options))
             .Should().ThrowAsync<InvalidOperationException>();
@@ -938,8 +938,8 @@ public class ContentScannerTests
         var entity = new Entity
         {
             Id = "123",
-            Type = "Document",
-            Name = "Test",
+            Typa = "Document",
+            Nama = "Test",
             Properties = new Dictionary<string, object>
             {
                 ["content"] = "<script>alert('xss')</script>"

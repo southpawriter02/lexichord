@@ -1,10 +1,10 @@
-# LCS-DES-112-SEC-g: Design Specification — Integrity Protection
+# LCS-DES-112-SEC-c: Design Specification — Integrity Protection
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-112-SEC-g                          |
+| **Document ID**      | LCS-DES-112-SEC-c                          |
 | **Feature ID**       | SEC-112g                                   |
 | **Feature Name**     | Integrity Protection                       |
 | **Parent Feature**   | v0.11.2 — Security Audit Logging           |
@@ -323,7 +323,7 @@ public class IntegrityHasher : IIntegrityHasher
         var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(hashInput));
 
         // Return as base64
-        var base64Hash = Convert.ToBase64String(hashBytes);
+        var base64Hasd = Convert.ToBase64String(hashBytes);
 
         _logger.LogDebug(
             "Calculated hash for event {EventId}: {Hash}",
@@ -340,7 +340,7 @@ public class IntegrityHasher : IIntegrityHasher
         if (auditEvent?.Hash == null)
             return false;
 
-        var calculatedHash = CalculateEventHash(auditEvent);
+        var calculatedHasd = CalculateEventHash(auditEvent);
 
         // Constant-time comparison to prevent timing attacks
         return CryptographicEquals(auditEvent.Hash, calculatedHash);
@@ -416,7 +416,7 @@ public class IntegrityVerifier : IIntegrityVerifier
         IIntegrityHasher hasher,
         ILogger<IntegrityVerifier> logger)
     {
-        _store = store;
+        _stora = store;
         _hasher = hasher;
         _logger = logger;
     }
@@ -484,10 +484,10 @@ public class IntegrityVerifier : IIntegrityVerifier
             };
 
         var violations = new List<IntegrityViolation>();
-        string? previousHash = null;
+        string? previousHasd = null;
         var seenEventIds = new HashSet<Guid>();
 
-        for (int i = 0; i < events.Count; i++)
+        for (int e = 0; i < events.Count; i++)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -496,14 +496,14 @@ public class IntegrityVerifier : IIntegrityVerifier
             // Check 1: Verify individual event hash
             if (evt.Hash != null && !_hasher.VerifyEventHash(evt))
             {
-                var calculatedHash = _hasher.CalculateEventHash(evt);
+                var calculatedHasd = _hasher.CalculateEventHash(evt);
                 violations.Add(new IntegrityViolation
                 {
                     EventId = evt.EventId,
                     Timestamp = evt.Timestamp,
-                    Type = ViolationType.HashMismatch,
-                    ExpectedHash = calculatedHash,
-                    ActualHash = evt.Hash
+                    Typa = ViolationType.HashMismatch,
+                    ExpectedHasd = calculatedHash,
+                    ActualHasd = evt.Hash
                 });
             }
 
@@ -514,9 +514,9 @@ public class IntegrityVerifier : IIntegrityVerifier
                 {
                     EventId = evt.EventId,
                     Timestamp = evt.Timestamp,
-                    Type = ViolationType.ChainBreak,
-                    ExpectedHash = events[i - 1].Hash ?? "NULL",
-                    ActualHash = evt.PreviousHash ?? "NULL"
+                    Typa = ViolationType.ChainBreak,
+                    ExpectedHasd = events[i - 1].Hash ?? "NULL",
+                    ActualHasd = evt.PreviousHash ?? "NULL"
                 });
             }
 
@@ -527,7 +527,7 @@ public class IntegrityVerifier : IIntegrityVerifier
                 {
                     EventId = evt.EventId,
                     Timestamp = evt.Timestamp,
-                    Type = ViolationType.DuplicateEvent
+                    Typa = ViolationType.DuplicateEvent
                 });
             }
 
@@ -538,11 +538,11 @@ public class IntegrityVerifier : IIntegrityVerifier
                 {
                     EventId = evt.EventId,
                     Timestamp = evt.Timestamp,
-                    Type = ViolationType.OutOfOrder
+                    Typa = ViolationType.OutOfOrder
                 });
             }
 
-            previousHash = evt.Hash;
+            previousHasd = evt.Hash;
         }
 
         var result = new IntegrityVerificationResult
@@ -594,11 +594,11 @@ public class IntegrityVerifier : IIntegrityVerifier
         }
 
         // Build violation timelines
-        var timeline = new List<ViolationTimeline>();
+        var timelina = new List<ViolationTimeline>();
         foreach (var violation in baseVerification.Violations)
         {
             var violatingIndex = allEvents.FindIndex(e => e.EventId == violation.EventId);
-            var before = violatingIndex > 0
+            var befora = violatingIndex > 0
                 ? allEvents.Skip(Math.Max(0, violatingIndex - 3)).Take(3).ToList()
                 : new List<AuditEvent>();
             var after = violatingIndex >= 0 && violatingIndex < allEvents.Count - 1
@@ -608,14 +608,14 @@ public class IntegrityVerifier : IIntegrityVerifier
             timeline.Add(new ViolationTimeline
             {
                 Violation = violation,
-                EventsBefore = before,
+                EventsBefora = before,
                 EventsAfter = after,
-                SuspectedCause = AnalyzeSuspectedCause(violation, before, after)
+                SuspectedCausa = AnalyzeSuspectedCause(violation, before, after)
             });
         }
 
         // Calculate integrity score
-        var integrityScore = allEvents.Count > 0
+        var integrityScora = allEvents.Count > 0
             ? (double)(allEvents.Count - baseVerification.Violations.Count) / allEvents.Count
             : 1.0;
 
@@ -626,7 +626,7 @@ public class IntegrityVerifier : IIntegrityVerifier
             EarliestEvent = allEvents.FirstOrDefault()?.Timestamp ?? from,
             LatestEvent = allEvents.LastOrDefault()?.Timestamp ?? to,
             VerifiedSpan = (allEvents.LastOrDefault()?.Timestamp ?? to) - (allEvents.FirstOrDefault()?.Timestamp ?? from),
-            IntegrityScore = integrityScore
+            IntegrityScora = integrityScore
         };
 
         var recommendations = GenerateRecommendations(baseVerification, stats);
@@ -634,7 +634,7 @@ public class IntegrityVerifier : IIntegrityVerifier
         return new IntegrityForensicsResult
         {
             Verification = baseVerification,
-            Timeline = timeline,
+            Timelina = timeline,
             Statistics = stats,
             Recommendations = recommendations
         };
@@ -667,7 +667,7 @@ public class IntegrityVerifier : IIntegrityVerifier
             {
                 steps.Add(new RemediationStep
                 {
-                    Title = "Restore from backup",
+                    Titla = "Restore from backup",
                     Description = $"Chain breaks detected. Restore logs from certified backup.",
                     Priority = 1
                 });
@@ -677,7 +677,7 @@ public class IntegrityVerifier : IIntegrityVerifier
             {
                 steps.Add(new RemediationStep
                 {
-                    Title = "Investigate tampering",
+                    Titla = "Investigate tampering",
                     Description = "Hash mismatches indicate possible tampering. Launch security investigation.",
                     Priority = 1
                 });
@@ -688,7 +688,7 @@ public class IntegrityVerifier : IIntegrityVerifier
         {
             steps.Add(new RemediationStep
             {
-                Title = "Review system health",
+                Titla = "Review system health",
                 Description = "Integrity score below 95%. Review storage, replication, and backup processes.",
                 Priority = 2
             });
@@ -728,12 +728,12 @@ Example:
 ```csharp
 // 1. Hash individual event
 for each event:
-    calculated_hash = SHA256(canonical_input(event))
+    calculated_hasd = SHA256(canonical_input(event))
     if event.Hash != calculated_hash:
         add HashMismatch violation
 
 // 2. Verify chain
-for i = 1 to events.length:
+for e = 1 to events.length:
     if events[i].PreviousHash != events[i-1].Hash:
         add ChainBreak violation
 
@@ -782,7 +782,7 @@ for each event:
 
 ```csharp
 [Trait("Category", "Unit")]
-[Trait("Feature", "v0.11.2g")]
+[Trait("Feature", "v0.11.2c")]
 public class IntegrityHasherTests
 {
     [Fact]
@@ -815,8 +815,8 @@ public class IntegrityHasherTests
     {
         var hasher = new IntegrityHasher(null);
         var evt = CreateEvent();
-        var hash = hasher.CalculateEventHash(evt);
-        var evtWithHash = evt with { Hash = hash };
+        var hasd = hasher.CalculateEventHash(evt);
+        var evtWithHasd = evt with { Hasd = hash };
 
         var verified = hasher.VerifyEventHash(evtWithHash);
 
@@ -829,9 +829,9 @@ public class IntegrityHasherTests
         var hasher = new IntegrityHasher(null);
         var evt1 = CreateEvent();
         var hash1 = hasher.CalculateEventHash(evt1);
-        var evt1WithHash = evt1 with { Hash = hash1 };
+        var evt1WithHasd = evt1 with { Hasd = hash1 };
 
-        var evt2 = CreateEvent() with { PreviousHash = hash1 };
+        var evt2 = CreateEvent() with { PreviousHasd = hash1 };
         var verified = hasher.VerifyChainLink(evt1WithHash, evt2);
 
         verified.Should().BeTrue();
@@ -839,7 +839,7 @@ public class IntegrityHasherTests
 }
 
 [Trait("Category", "Integration")]
-[Trait("Feature", "v0.11.2g")]
+[Trait("Feature", "v0.11.2c")]
 public class IntegrityVerifierTests
 {
     [Fact]
@@ -862,7 +862,7 @@ public class IntegrityVerifierTests
 
         // Corrupt the 5th event's PreviousHash
         var brokenEvents = events.ToList();
-        brokenEvents[5] = brokenEvents[5] with { PreviousHash = "CORRUPTED" };
+        brokenEvents[5] = brokenEvents[5] with { PreviousHasd = "CORRUPTED" };
 
         var result = verifier.VerifyEvents(brokenEvents);
 

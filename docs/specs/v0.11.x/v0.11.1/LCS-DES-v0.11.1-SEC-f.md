@@ -1,21 +1,21 @@
-# LCS-DES-111-SEC-f: Design Specification — Authorization Service
+# LCS-DES-111-SEC-b: Design Specification — Access Control UI
 
 ## 1. Metadata & Categorization
 
 | Field | Value | Description |
 | :--- | :--- | :--- |
-| **Feature ID** | `SEC-111-f` | Access Control sub-part f |
-| **Feature Name** | `Authorization Service` | Core permission evaluation engine |
+| **Feature ID** | `SEC-111-j` | Access Control sub-part f |
+| **Feature Name** | `Access Control UI` | Administrative interface for permissions |
 | **Target Version** | `v0.11.1f` | Sixth sub-part of v0.11.1-SEC |
-| **Module Scope** | `Lexichord.Modules.Security` | Security module |
+| **Module Scope** | `Lexichord.Web.Security` | Web module for security admin |
 | **Swimlane** | `Security` | Security vertical |
 | **License Tier** | `Teams` | Available in Teams tier and above |
-| **Feature Gate Key** | `FeatureFlags.Security.AuthorizationEngine` | Authorization engine flag |
+| **Feature Gate Key** | `FeatureFlags.Security.AdminUI` | Security admin UI flag |
 | **Author** | Security Architect | |
 | **Status** | `Draft` | |
 | **Last Updated** | `2026-01-31` | |
-| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-111-SEC.md) | Access Control & Authorization scope |
-| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-111-SEC.md#21-sub-parts) | f = Authorization Service |
+| **Parent Document** | [LCS-SBD-111-SEC](./LCS-SBD-v0.11.1-SEC.md) | Access Control & Authorization scope |
+| **Scope Breakdown** | [LCS-SBD-111-SEC S2.1](./LCS-SBD-v0.11.1-SEC.md#21-sub-parts) | f = Access Control UI |
 
 ---
 
@@ -23,24 +23,26 @@
 
 ### 2.1 The Requirement
 
-CKVS v0.11.1-SEC requires a high-performance, multi-layered authorization service that:
+CKVS v0.11.1-SEC requires an administrative user interface to:
 
-1. Evaluates permissions using RBAC, ABAC, and entity-level ACLs
-2. Supports permission inheritance through graph relationships
-3. Caches permission decisions for performance (<10ms P95)
-4. Integrates with license tier restrictions
-5. Provides audit logging for all authorization decisions
-6. Filters collections based on user permissions
+1. View and manage entity-level access control lists
+2. Create, modify, and delete roles
+3. Assign and revoke roles to/from users and teams
+4. View effective permissions for any user
+5. Create and configure policy rules
+6. Visualize permission inheritance chains
+7. Audit access control changes
 
 ### 2.2 The Proposed Solution
 
-Implement an Authorization Service with:
+Implement an admin UI with:
 
-1. **IAuthorizationService interface:** Public API for permission checks
-2. **Multi-layer evaluation:** RBAC → ACL → ABAC → Aggregation
-3. **Permission caching:** In-memory cache with smart invalidation
-4. **License integration:** Tier-based feature restrictions
-5. **Audit logging:** Track all access decisions
+1. **Access Control Panel:** Per-entity ACL editor
+2. **Role Management:** Role CRUD and assignments
+3. **Permission Viewer:** Show effective permissions
+4. **Policy Editor:** Create/edit ABAC policies
+5. **Inheritance Visualization:** Show permission chains
+6. **Audit Log:** Track all access control changes
 
 ---
 
@@ -52,751 +54,457 @@ Implement an Authorization Service with:
 
 | Component | Source Version | Purpose |
 | :--- | :--- | :--- |
-| `IProfileService` | v0.9.1 | User identity and roles |
-| `ILicenseContext` | v0.9.2 | License tier checks |
-| `IGraphRepository` | v0.4.5e | Entity metadata and relationships |
-| `IAuditLogService` | v0.11.2-SEC | Log authorization decisions |
-| Permission model | v0.11.1e | Permission, Role, PolicyRule definitions |
-| Entity ACLs | v0.11.1g | Entity-level access control lists |
+| IAuthorizationService | v0.11.1b | Check UI permissions |
+| IRoleService | v0.11.1d | Role management |
+| IAclEvaluator | v0.11.1c | ACL evaluation |
+| IInheritanceEvaluator | v0.11.1e | Inheritance visualization |
+| IAuditLogService | v0.11.2-SEC | Access control audit logs |
+| IProfileService | v0.9.1 | User/team information |
 
 #### 3.1.2 NuGet Packages
 
 | Package | Version | Purpose |
 | :--- | :--- | :--- |
-| `Microsoft.Extensions.Caching.Memory` | 8.0+ | In-memory permission cache |
+| `Microsoft.AspNetCore.Mvc` | 8.0+ | Web API controllers |
+| `Swashbuckle.AspNetCore` | 6.4+ | API documentation |
 
 ### 3.2 Licensing Behavior
 
-- **Core Tier:** Bypass authorization (implicit admin for single user)
-- **WriterPro:** Basic RBAC only (no ABAC, no custom roles)
-- **Teams:** Full RBAC + ACLs
-- **Enterprise:** RBAC + ABAC + ACLs + policies
+- **Core Tier:** No admin UI
+- **WriterPro:** View-only role information
+- **Teams:** Full admin UI with role and ACL management
+- **Enterprise:** Full + policy editing
 
 ---
 
-## 4. Data Contract (The API)
+## 4. UI Components & Layout
 
-### 4.1 IAuthorizationService Interface
+### 4.1 Entity Access Control Panel
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│ Access Control: UserService                         [Close]    │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│ Owner: alice@company.com                    [Change Owner]     │
+│                                                                │
+│ Default Access: [Inherit from Workspace ▼]                    │
+│ ☑ Inherit permissions from parent entities                    │
+│                                                                │
+│ ═══════════════════════════════════════════════════════════   │
+│ Access Control Entries                                         │
+│ ═══════════════════════════════════════════════════════════   │
+│                                                                │
+│ ┌────────────────────────────────────────────────────────────┐ │
+│ │ Principal          │ Type  │ Allow      │ Deny   │ Expires │ │
+│ ├────────────────────────────────────────────────────────────┤ │
+│ │ API Team           │ Team  │ Full       │ —      │ —       │ │
+│ │ bob@company.com    │ User  │ Read/Write │ Delete │ —       │ │
+│ │ External Auditors  │ Role  │ Read       │ —      │ 30 days │ │
+│ │ ci-service-account │ Svc   │ Read       │ —      │ —       │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│                                                                │
+│ [+ Add Entry]                                                  │
+│                                                                │
+│ ═══════════════════════════════════════════════════════════   │
+│ Effective Permissions (for current user)                       │
+│ ═══════════════════════════════════════════════════════════   │
+│                                                                │
+│ ☑ Read   ☑ Write   ☐ Delete   ☐ Admin                        │
+│                                                                │
+│ Applied through:                                               │
+│ ├── Role: Editor (EntityRead, EntityWrite)                    │
+│ └── ACL: API Team (Full)                                      │
+│                                                                │
+│ [Cancel] [Save Changes]                                        │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Role Management Panel
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│ Role Management                                     [+ New]    │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│ Built-in Roles:                                                │
+│ ┌────────────────────────────────────────────────────────────┐ │
+│ │ 👤 Viewer                                         [View]   │ │
+│ │    Can view entities, relationships, and claims           │ │
+│ │    Permissions: EntityRead, RelationshipRead, ClaimRead   │ │
+│ ├────────────────────────────────────────────────────────────┤ │
+│ │ ✏️ Contributor                                    [View]   │ │
+│ │    Can view and edit entities and claims                  │ │
+│ │    Permissions: ReadOnly + Write permissions              │ │
+│ ├────────────────────────────────────────────────────────────┤ │
+│ │ 📝 Editor                                         [View]   │ │
+│ │    Full edit access including axioms and inference        │ │
+│ │    Permissions: Contributor + Axiom + Inference           │ │
+│ ├────────────────────────────────────────────────────────────┤ │
+│ │ 🔑 Admin                                          [View]   │ │
+│ │    Full administrative access                             │ │
+│ │    Permissions: All                                       │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│                                                                │
+│ Custom Roles:                                                  │
+│ ┌────────────────────────────────────────────────────────────┐ │
+│ │ 📋 API Reviewer                          [Edit] [Delete]   │ │
+│ │    Can review and validate API documentation              │ │
+│ │    Permissions: ReadOnly + ValidationRun                  │ │
+│ │    Members: 5 users                                       │ │
+│ ├────────────────────────────────────────────────────────────┤ │
+│ │ 🔒 Security Auditor                      [Edit] [Delete]   │ │
+│ │    Read-only access with audit log viewing                │ │
+│ │    Permissions: ReadOnly + AuditRead                      │ │
+│ │    Policy: EntityTypa = "Endpoint" AND hasAutd = true     │ │
+│ │    Members: 2 users                                       │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3 Effective Permissions Viewer
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│ Effective Permissions: bob@company.com                        │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│ Roles:                                                         │
+│ • Contributor (assigned by admin, never expires)             │
+│ • API Reviewer (assigned by admin, expires 2026-03-31)       │
+│                                                                │
+│ ════════════════════════════════════════════════════════════  │
+│ Base Role Permissions (from roles):                            │
+│ ════════════════════════════════════════════════════════════  │
+│                                                                │
+│ ☑ EntityRead       ☑ EntityWrite      ☐ EntityDelete         │
+│ ☑ RelationshipRead ☑ RelationshipWrite ☐ RelationshipDelete  │
+│ ☑ ClaimRead        ☑ ClaimWrite        ☑ ClaimValidate       │
+│ ☑ ValidationRun    ☐ ValidationConfigure                      │
+│                                                                │
+│ ════════════════════════════════════════════════════════════  │
+│ Entity-Specific ACLs (current entity):                         │
+│ ════════════════════════════════════════════════════════════  │
+│                                                                │
+│ UserService entity:                                            │
+│ • Direct: ☑ EntityRead ☑ EntityWrite ☐ EntityDelete         │
+│ • From Role "API Team": ☑ EntityFull                          │
+│ • Result: ☑ Read ☑ Write ☐ Delete (limited by entity ACL)   │
+│                                                                │
+│ ════════════════════════════════════════════════════════════  │
+│ Policy Rules Applied:                                          │
+│ ════════════════════════════════════════════════════════════  │
+│                                                                │
+│ ✓ "APIs Only" (Allow): Grants EntityRead to Endpoint types   │
+│ ✗ "Restricted PII" (Deny): Denies all access to PII entities │
+│                                                                │
+│ ════════════════════════════════════════════════════════════  │
+│ Final Effective Permissions:                                   │
+│ ════════════════════════════════════════════════════════════  │
+│                                                                │
+│ ☑ EntityRead       ☑ EntityWrite      ☐ EntityDelete         │
+│ ☑ RelationshipRead ☑ RelationshipWrite ☐ RelationshipDelete  │
+│ ☑ ClaimRead        ☑ ClaimWrite        ☑ ClaimValidate       │
+│ ☑ ValidationRun    ☐ ValidationConfigure                      │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Permission Inheritance Visualization
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│ Permission Inheritance: AuthenticationService                 │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│ Inheritance Chain (Path from root to this entity):             │
+│                                                                │
+│           ┌─────────────┐                                      │
+│           │ Workspace   │ Permissions: Full                   │
+│           │ (Root)      │ Alice: Full                          │
+│           └──────┬──────┘                                      │
+│                  │                                             │
+│           ┌──────▼──────┐                                      │
+│           │ Security    │ Permissions: Read/Write (inherited)  │
+│           │ Component   │ Bob: Read (ACL override)             │
+│           └──────┬──────┘                                      │
+│                  │                                             │
+│    ┌─────────────┼─────────────┐                              │
+│    │             │             │                              │
+│ ┌──▼──┐      ┌──▼──┐      ┌──▼──┐                             │
+│ │Auth │      │Crypt│      │Audit│                             │
+│ │Svc  │      │ Service    │Svc  │                             │
+│ └─────┘      └─────┘      └─────┘                             │
+│                                                                │
+│ Inheritance Pattern: Strict (child ≤ parent)                  │
+│ Blocks Inheritance: ☐ No                                      │
+│                                                                │
+│ Alice's Effective Permissions:                                │
+│ • Via Workspace: Full                                         │
+│ • Result: Full (inherited)                                    │
+│                                                                │
+│ Bob's Effective Permissions:                                  │
+│ • Via inherited chain: Read/Write                             │
+│ • Via local ACL override: Read only (explicit deny on Write)  │
+│ • Result: Read (intersection of inherited and local)          │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. API Endpoints
+
+### 5.1 Entity Access Control Endpoints
 
 ```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
+namespace Lexichord.Web.Security.Controllers;
 
-/// <summary>
-/// Primary interface for evaluating permissions and checking authorization.
-/// Core engine for access control decisions in CKVS.
-/// </summary>
-public interface IAuthorizationService
+[ApiController]
+[Route("api/v1/entities/{entityId}/access-control")]
+[Authorize]
+public class EntityAccessControlController : ControllerBase
 {
-    /// <summary>
-    /// Checks if the current user can perform a specified operation.
-    /// Uses multi-layer evaluation (RBAC → ACL → ABAC).
-    /// </summary>
-    /// <param name="request">Authorization request with permission and resource details</param>
-    /// <param name="ct">Cancellation token</param>
-    /// <returns>Authorization result with decision and reasoning</returns>
-    Task<AuthorizationResult> AuthorizeAsync(
-        AuthorizationRequest request,
-        CancellationToken ct = default);
+    /// <summary>GET entity ACL</summary>
+    [HttpGet]
+    public async Task<ActionResult<EntityAcl>> GetAcl(Guid entityId)
 
-    /// <summary>
-    /// Gets all permissions for a specific user.
-    /// Returns effective permissions after aggregating all sources.
-    /// </summary>
-    /// <param name="userId">User to get permissions for; if null, uses current user</param>
-    /// <param name="ct">Cancellation token</param>
-    /// <returns>User's effective permission set</returns>
-    Task<UserPermissions> GetUserPermissionsAsync(
-        Guid? userId = null,
-        CancellationToken ct = default);
+    /// <summary>PATCH update entity ACL</summary>
+    [HttpPatch]
+    public async Task<ActionResult<EntityAcl>> UpdateAcl(
+        Guid entityId,
+        [FromBody] EntityAcl updates)
 
-    /// <summary>
-    /// Filters a collection to only include items the user can access.
-    /// Applies required permission check to each item.
-    /// </summary>
-    /// <typeparam name="T">Type of items (must implement ISecurable)</typeparam>
-    /// <param name="items">Items to filter</param>
-    /// <param name="requiredPermission">Permission required to include item</param>
-    /// <param name="ct">Cancellation token</param>
-    /// <returns>Filtered list of accessible items</returns>
-    Task<IReadOnlyList<T>> FilterAccessibleAsync<T>(
-        IReadOnlyList<T> items,
-        Permission requiredPermission,
-        CancellationToken ct = default) where T : ISecurable;
+    /// <summary>POST add ACL entry</summary>
+    [HttpPost("entries")]
+    public async Task<ActionResult<AclEntry>> AddEntry(
+        Guid entityId,
+        [FromBody] AclEntry entry)
 
-    /// <summary>
-    /// Evaluates all policies attached to a role.
-    /// Returns effective permissions after policy evaluation.
-    /// </summary>
-    /// <param name="role">Role to evaluate policies for</param>
-    /// <param name="context">Authorization context for policy evaluation</param>
-    /// <param name="ct">Cancellation token</param>
-    /// <returns>Permission modifications (grants and denials) from policies</returns>
-    Task<PolicyEvaluationResult> EvaluatePoliciesAsync(
-        Role role,
-        PermissionContext context,
-        CancellationToken ct = default);
+    /// <summary>DELETE ACL entry</summary>
+    [HttpDelete("entries/{entryId}")]
+    public async Task<ActionResult> RemoveEntry(Guid entityId, Guid entryId)
 
-    /// <summary>
-    /// Invalidates cached permissions for a user.
-    /// Called when roles or ACLs change.
-    /// </summary>
-    /// <param name="userId">User whose permissions should be invalidated</param>
-    Task InvalidateUserPermissionsCacheAsync(Guid userId);
+    /// <summary>PATCH update ACL entry</summary>
+    [HttpPatch("entries/{entryId}")]
+    public async Task<ActionResult<AclEntry>> UpdateEntry(
+        Guid entityId,
+        Guid entryId,
+        [FromBody] AclEntry updates)
+
+    /// <summary>GET entity owner and default access</summary>
+    [HttpGet("settings")]
+    public async Task<ActionResult<EntityAccessSettings>> GetSettings(Guid entityId)
+
+    /// <summary>PATCH update owner and default access</summary>
+    [HttpPatch("settings")]
+    public async Task<ActionResult<EntityAccessSettings>> UpdateSettings(
+        Guid entityId,
+        [FromBody] EntityAccessSettings settings)
 }
 ```
 
-### 4.2 AuthorizationRequest Record
+### 5.2 Role Management Endpoints
 
 ```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
+namespace Lexichord.Web.Security.Controllers;
 
-/// <summary>
-/// Request to check if a user can perform an operation.
-/// </summary>
-public record AuthorizationRequest
+[ApiController]
+[Route("api/v1/roles")]
+[Authorize]
+public class RoleManagementController : ControllerBase
 {
-    /// <summary>
-    /// User ID to check authorization for; null = current user.
-    /// </summary>
-    public Guid? UserId { get; init; }
+    /// <summary>GET all roles</summary>
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<Role>>> GetRoles(
+        [FromQuery] bool includeBuiltIn = true)
 
-    /// <summary>
-    /// The permission being checked (e.g., EntityRead, EntityWrite).
-    /// </summary>
-    public required Permission Permission { get; init; }
+    /// <summary>GET specific role</summary>
+    [HttpGet("{roleId}")]
+    public async Task<ActionResult<Role>> GetRole(Guid roleId)
 
-    /// <summary>
-    /// The resource being accessed; null for global checks.
-    /// </summary>
-    public Guid? ResourceId { get; init; }
+    /// <summary>POST create custom role</summary>
+    [HttpPost]
+    public async Task<ActionResult<Role>> CreateRole([FromBody] CreateRoleRequest request)
 
-    /// <summary>
-    /// Type of resource (Entity, Relationship, etc.).
-    /// </summary>
-    public ResourceType? ResourceType { get; init; }
+    /// <summary>PATCH update custom role</summary>
+    [HttpPatch("{roleId}")]
+    public async Task<ActionResult<Role>> UpdateRole(
+        Guid roleId,
+        [FromBody] UpdateRoleRequest request)
 
-    /// <summary>
-    /// Additional context for policy evaluation.
-    /// May include resource attributes, request metadata, etc.
-    /// </summary>
-    public IReadOnlyDictionary<string, object>? Context { get; init; }
+    /// <summary>DELETE custom role</summary>
+    [HttpDelete("{roleId}")]
+    public async Task<ActionResult> DeleteRole(Guid roleId)
 
-    /// <summary>
-    /// Whether to bypass cache and evaluate fresh.
-    /// Default false; set true for real-time checks.
-    /// </summary>
-    public bool BypassCache { get; init; } = false;
+    /// <summary>POST assign role to principal</summary>
+    [HttpPost("{roleId}/assign")]
+    public async Task<ActionResult<RoleAssignment>> AssignRole(
+        Guid roleId,
+        [FromBody] AssignRoleRequest request)
 
-    /// <summary>
-    /// Whether to return detailed reason for denial.
-    /// Default false; set true for audit logging.
-    /// </summary>
-    public bool IncludeReasoning { get; init; } = false;
+    /// <summary>DELETE revoke role from principal</summary>
+    [HttpDelete("{roleId}/assign")]
+    public async Task<ActionResult> RevokeRole(
+        Guid roleId,
+        [FromQuery] Guid principalId)
+
+    /// <summary>GET role assignments</summary>
+    [HttpGet("{roleId}/assignments")]
+    public async Task<ActionResult<IReadOnlyList<RoleAssignment>>> GetAssignments(
+        Guid roleId)
+
+    /// <summary>GET principal roles</summary>
+    [HttpGet("principals/{principalId}")]
+    public async Task<ActionResult<IReadOnlyList<Role>>> GetPrincipalRoles(
+        Guid principalId)
 }
 ```
 
-### 4.3 AuthorizationResult Record
+### 5.3 Permissions Viewer Endpoints
 
 ```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
+namespace Lexichord.Web.Security.Controllers;
 
-/// <summary>
-/// Result of an authorization check.
-/// </summary>
-public record AuthorizationResult
+[ApiController]
+[Route("api/v1/permissions")]
+[Authorize]
+public class PermissionsController : ControllerBase
 {
-    /// <summary>
-    /// Whether the user is authorized for the requested operation.
-    /// </summary>
-    public required bool IsAuthorized { get; init; }
+    /// <summary>GET effective permissions for user</summary>
+    [HttpGet("users/{userId}")]
+    public async Task<ActionResult<UserPermissions>> GetUserPermissions(Guid userId)
 
-    /// <summary>
-    /// Reason for denial if IsAuthorized = false.
-    /// </summary>
-    public DenialReason? DenialReason { get; init; }
+    /// <summary>GET effective permissions at entity</summary>
+    [HttpGet("users/{userId}/entities/{entityId}")]
+    public async Task<ActionResult<EntityPermissions>> GetEntityPermissions(
+        Guid userId,
+        Guid entityId)
 
-    /// <summary>
-    /// Human-readable message explaining the denial.
-    /// </summary>
-    public string? DenialMessage { get; init; }
-
-    /// <summary>
-    /// Names of policies that were applied in this decision.
-    /// Useful for debugging and audit logging.
-    /// </summary>
-    public IReadOnlyList<string> AppliedPolicies { get; init; } = [];
-
-    /// <summary>
-    /// How the permission was granted (Role, ACL, Policy, etc.).
-    /// Populated if IsAuthorized = true.
-    /// </summary>
-    public IReadOnlyList<string> AppliedGrants { get; init; } = [];
-
-    /// <summary>
-    /// Timestamp when this decision was made.
-    /// </summary>
-    public DateTimeOffset EvaluatedAt { get; init; } = DateTimeOffset.UtcNow;
-
-    /// <summary>
-    /// Whether this result was retrieved from cache.
-    /// </summary>
-    public bool WasFromCache { get; init; } = false;
-
-    /// <summary>
-    /// Time taken to evaluate permission (in milliseconds).
-    /// </summary>
-    public double EvaluationTimeMs { get; init; }
+    /// <summary>GET permission explanation</summary>
+    [HttpGet("explain")]
+    public async Task<ActionResult<PermissionExplanation>> ExplainPermission(
+        [FromQuery] Guid userId,
+        [FromQuery] Guid entityId,
+        [FromQuery] Permission permission)
 }
 ```
 
-### 4.4 DenialReason Enum
+### 5.4 Inheritance Visualization Endpoints
 
 ```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
+namespace Lexichord.Web.Security.Controllers;
 
-/// <summary>
-/// Categorizes why an authorization was denied.
-/// </summary>
-public enum DenialReason
+[ApiController]
+[Route("api/v1/inheritance")]
+[Authorize]
+public class InheritanceController : ControllerBase
 {
-    /// <summary>User does not have the required permission.</summary>
-    NoPermission = 1,
+    /// <summary>GET inheritance chain for entity</summary>
+    [HttpGet("entities/{entityId}/chain")]
+    public async Task<ActionResult<InheritanceChain>> GetInheritanceChain(
+        Guid entityId)
 
-    /// <summary>User's role does not grant the permission.</summary>
-    InsufficientRole = 2,
+    /// <summary>GET ancestors of entity</summary>
+    [HttpGet("entities/{entityId}/ancestors")]
+    public async Task<ActionResult<IReadOnlyList<AncestorInfo>>> GetAncestors(
+        Guid entityId)
 
-    /// <summary>Entity ACL explicitly denies the permission.</summary>
-    EntityRestricted = 3,
-
-    /// <summary>Policy rule matched and denied the permission.</summary>
-    PolicyViolation = 4,
-
-    /// <summary>License tier does not include this feature.</summary>
-    LicenseRestriction = 5,
-
-    /// <summary>Rate limit or quota exceeded.</summary>
-    RateLimited = 6,
-
-    /// <summary>Generic authorization denied.</summary>
-    Unauthorized = 7
+    /// <summary>GET descendants of entity</summary>
+    [HttpGet("entities/{entityId}/descendants")]
+    public async Task<ActionResult<IReadOnlyList<DescendantInfo>>> GetDescendants(
+        Guid entityId)
 }
 ```
 
-### 4.5 UserPermissions Record
+### 5.5 Audit Log Endpoints
 
 ```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
+namespace Lexichord.Web.Security.Controllers;
 
-/// <summary>
-/// Complete permission information for a user.
-/// </summary>
-public record UserPermissions
+[ApiController]
+[Route("api/v1/access-control/audit")]
+[Authorize]
+public class AccessControlAuditController : ControllerBase
 {
-    /// <summary>
-    /// The user these permissions belong to.
-    /// </summary>
-    public required Guid UserId { get; init; }
+    /// <summary>GET access control audit log</summary>
+    [HttpGet]
+    public async Task<ActionResult<PaginatedList<AuditLog>>> GetAuditLog(
+        [FromQuery] AuditLogFilter filter,
+        [FromQuery] int pageSiza = 50,
+        [FromQuery] int pageNumber = 1)
 
-    /// <summary>
-    /// Roles assigned to the user.
-    /// </summary>
-    public required IReadOnlyList<Role> Roles { get; init; }
+    /// <summary>GET entity access control changes</summary>
+    [HttpGet("entities/{entityId}")]
+    public async Task<ActionResult<PaginatedList<AuditLog>>> GetEntityAuditLog(
+        Guid entityId,
+        [FromQuery] int pageSiza = 50)
 
-    /// <summary>
-    /// Effective permissions from roles (RBAC).
-    /// </summary>
-    public required Permission RolePermissions { get; init; }
-
-    /// <summary>
-    /// Additional permissions granted via policies (ABAC).
-    /// </summary>
-    public Permission PolicyPermissions { get; init; } = Permission.None;
-
-    /// <summary>
-    /// Permissions denied explicitly by policies.
-    /// Takes precedence over grants.
-    /// </summary>
-    public Permission DeniedPermissions { get; init; } = Permission.None;
-
-    /// <summary>
-    /// Effective permissions after aggregation.
-    /// </summary>
-    public Permission EffectivePermissions { get; init; } = Permission.None;
-
-    /// <summary>
-    /// Whether this user has admin access.
-    /// </summary>
-    public bool IsAdmin { get; init; }
-
-    /// <summary>
-    /// When this permission set was last evaluated.
-    /// </summary>
-    public DateTimeOffset EvaluatedAt { get; init; } = DateTimeOffset.UtcNow;
-
-    /// <summary>
-    /// Resource-specific permissions if applicable.
-    /// Key = ResourceId, Value = ResourcePermissions
-    /// </summary>
-    public IReadOnlyDictionary<Guid, ResourcePermissions>? ResourceSpecificPermissions { get; init; }
+    /// <summary>GET role changes</summary>
+    [HttpGet("roles/{roleId}")]
+    public async Task<ActionResult<PaginatedList<AuditLog>>> GetRoleAuditLog(
+        Guid roleId,
+        [FromQuery] int pageSiza = 50)
 }
 ```
 
-### 4.6 ResourcePermissions Record
+---
+
+## 6. Implementation Notes
+
+### 6.1 Authorization Checks
+
+All endpoints require authorization checks:
 
 ```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
+// Entity ACL modification requires EntityAdmin permission
+[Authorize(Policy = "EntityAdmin")]
 
-/// <summary>
-/// Permissions for a specific resource for a specific user.
-/// </summary>
-public record ResourcePermissions
+// Role management requires Admin role
+[Authorize(Policy = "AdminRole")]
+
+// Viewing permissions requires EntityRead at minimum
+[Authorize(Policy = "EntityRead")]
+```
+
+### 6.2 Audit Logging
+
+All modifications are logged:
+
+```csharp
+await _auditLog.LogAsync(
+    action: "AclEntryAdded",
+    resourceId: entityId,
+    resourceType: "EntityAcl",
+    details: $"Added ACL entry: {entry.PrincipalId}");
+```
+
+### 6.3 Request/Response Types
+
+```csharp
+public record CreateRoleRequest
 {
-    /// <summary>
-    /// The resource ID.
-    /// </summary>
-    public required Guid ResourceId { get; init; }
-
-    /// <summary>
-    /// Type of resource.
-    /// </summary>
-    public required ResourceType ResourceType { get; init; }
-
-    /// <summary>
-    /// Effective permissions for this resource.
-    /// </summary>
+    public required string Name { get; init; }
+    public string? Description { get; init; }
     public required Permission Permissions { get; init; }
-
-    /// <summary>
-    /// How the permission was granted.
-    /// </summary>
-    public PermissionSource GrantSource { get; init; }
-
-    /// <summary>
-    /// Owner of this resource.
-    /// </summary>
-    public Guid? OwnerId { get; init; }
+    public RoleType Type { get; init; } = RoleType.Custom;
 }
-```
 
-### 4.7 PermissionSource Enum
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// Indicates how a permission was granted.
-/// </summary>
-public enum PermissionSource
+public record AssignRoleRequest
 {
-    /// <summary>Granted via role assignment.</summary>
-    Role = 1,
-
-    /// <summary>Granted via entity ACL.</summary>
-    Acl = 2,
-
-    /// <summary>Granted via policy rule.</summary>
-    Policy = 3,
-
-    /// <summary>Granted via ownership.</summary>
-    Ownership = 4,
-
-    /// <summary>Inherited from parent entity.</summary>
-    Inheritance = 5
+    public required Guid PrincipalId { get; init; }
+    public PrincipalType PrincipalType { get; init; } = PrincipalType.User;
+    public DateTimeOffset? ExpiresAt { get; init; }
+    public string? Reason { get; init; }
 }
-```
 
-### 4.8 PolicyEvaluationResult Record
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// Result of evaluating policies for a role.
-/// </summary>
-public record PolicyEvaluationResult
+public record PermissionExplanation
 {
-    /// <summary>
-    /// Permissions to grant based on matching Allow policies.
-    /// </summary>
-    public Permission GrantedPermissions { get; init; } = Permission.None;
-
-    /// <summary>
-    /// Permissions to deny based on matching Deny policies.
-    /// </summary>
-    public Permission DeniedPermissions { get; init; } = Permission.None;
-
-    /// <summary>
-    /// Policies that matched and were applied.
-    /// </summary>
-    public IReadOnlyList<PolicyRule> MatchedPolicies { get; init; } = [];
-
-    /// <summary>
-    /// Whether any Deny policy matched.
-    /// </summary>
-    public bool HasDenial { get; init; }
-
-    /// <summary>
-    /// Time taken to evaluate policies (ms).
-    /// </summary>
-    public double EvaluationTimeMs { get; init; }
-}
-```
-
-### 4.9 ISecurable Interface
-
-```csharp
-namespace Lexichord.Abstractions.Contracts.Security;
-
-/// <summary>
-/// Interface for resources that have access control.
-/// Implemented by Entity, Relationship, Claim, etc.
-/// </summary>
-public interface ISecurable
-{
-    /// <summary>
-    /// Unique identifier for this resource.
-    /// </summary>
-    Guid Id { get; }
-
-    /// <summary>
-    /// Type of this resource.
-    /// </summary>
-    ResourceType ResourceType { get; }
-
-    /// <summary>
-    /// Optional owner of this resource.
-    /// </summary>
-    Guid? OwnerId { get; }
-
-    /// <summary>
-    /// Optional access control list for this resource.
-    /// </summary>
-    EntityAcl? Acl { get; }
-}
-```
-
----
-
-## 5. Authorization Evaluation Flow
-
-```csharp
-// Conceptual flow of AuthorizeAsync()
-
-public async Task<AuthorizationResult> AuthorizeAsync(
-    AuthorizationRequest request,
-    CancellationToken ct = default)
-{
-    var sw = Stopwatch.StartNew();
-
-    // 1. EARLY EXIT: Global admin bypass
-    if (await IsUserAdminAsync(request.UserId, ct))
-        return Authorized("User is administrator", sw);
-
-    // 2. LICENSE CHECK: Deny if license doesn't allow feature
-    if (!await CheckLicenseTierAsync(request, ct))
-        return Denied(DenialReason.LicenseRestriction, "License tier insufficient", sw);
-
-    // 3. RBAC LAYER: Check role-based permissions
-    var (rolePermissions, roleGrants) = await EvaluateRbacAsync(request, ct);
-    if (!rolePermissions.HasPermission(request.Permission))
-        return Denied(DenialReason.InsufficientRole, "User role does not have permission", sw);
-
-    // 4. ACL LAYER: Check entity-level access control
-    if (request.ResourceId.HasValue)
-    {
-        var (aclPermissions, aclGrants) = await EvaluateAclAsync(
-            request.ResourceId.Value,
-            request.UserId,
-            ct);
-
-        if (!aclPermissions.HasPermission(request.Permission))
-            return Denied(DenialReason.EntityRestricted, "Entity ACL denies access", sw);
-
-        // Narrow permissions to intersection of role and ACL
-        rolePermissions &= aclPermissions;
-    }
-
-    // 5. ABAC LAYER: Evaluate attribute-based policies
-    var (policyGrants, policyDenials) = await EvaluatePoliciesAsync(
-        request,
-        new PermissionContext
-        {
-            UserId = request.UserId ?? CurrentUserId,
-            ResourceId = request.ResourceId ?? Guid.Empty,
-            ResourceType = request.ResourceType ?? ResourceType.Global,
-            Permission = request.Permission
-        },
-        ct);
-
-    // 6. AGGREGATION: Combine all sources (Deny wins)
-    var effectivePermissions = rolePermissions | policyGrants;
-    effectivePermissions &= ~policyDenials;  // Remove denied permissions
-
-    if (!effectivePermissions.HasPermission(request.Permission))
-        return Denied(DenialReason.PolicyViolation, "Policy rules denied access", sw);
-
-    // 7. AUDIT LOG: Log successful authorization
-    await LogAuthorizationAsync(request, true, sw.Elapsed);
-
-    return new AuthorizationResult
-    {
-        IsAuthorized = true,
-        AppliedGrants = CombineGrants(roleGrants, aclGrants, policyGrants),
-        EvaluationTimeMs = sw.Elapsed.TotalMilliseconds
-    };
-}
-```
-
----
-
-## 6. Implementation
-
-### 6.1 AuthorizationService Implementation Outline
-
-```csharp
-namespace Lexichord.Modules.Security.Services;
-
-/// <summary>
-/// Core authorization service implementation.
-/// </summary>
-public class AuthorizationService : IAuthorizationService
-{
-    private readonly IProfileService _profiles;
-    private readonly ILicenseContext _license;
-    private readonly IGraphRepository _graph;
-    private readonly IAuditLogService _audit;
-    private readonly IMemoryCache _cache;
-    private readonly IPolicyEvaluator _policyEvaluator;
-    private readonly IAclEvaluator _aclEvaluator;
-    private readonly ILogger<AuthorizationService> _logger;
-
-    public AuthorizationService(
-        IProfileService profiles,
-        ILicenseContext license,
-        IGraphRepository graph,
-        IAuditLogService audit,
-        IMemoryCache cache,
-        IPolicyEvaluator policyEvaluator,
-        IAclEvaluator aclEvaluator,
-        ILogger<AuthorizationService> logger)
-    {
-        _profiles = profiles;
-        _license = license;
-        _graph = graph;
-        _audit = audit;
-        _cache = cache;
-        _policyEvaluator = policyEvaluator;
-        _aclEvaluator = aclEvaluator;
-        _logger = logger;
-    }
-
-    public async Task<AuthorizationResult> AuthorizeAsync(
-        AuthorizationRequest request,
-        CancellationToken ct = default)
-    {
-        var sw = Stopwatch.StartNew();
-        try
-        {
-            var userId = request.UserId ?? await GetCurrentUserIdAsync(ct);
-            var cacheKey = BuildCacheKey(userId, request);
-
-            // Check cache unless bypassed
-            if (!request.BypassCache && _cache.TryGetValue(cacheKey, out AuthorizationResult? cached))
-            {
-                _logger.LogDebug("Authorization decision from cache for user {UserId}", userId);
-                return cached with { WasFromCache = true };
-            }
-
-            // License check
-            if (!await CheckLicenseTierAsync(request, ct))
-            {
-                return CreateDenialResult(
-                    DenialReason.LicenseRestriction,
-                    "License tier insufficient for this operation",
-                    sw);
-            }
-
-            // Multi-layer evaluation
-            var rbacResult = await EvaluateRbacAsync(userId, request, ct);
-            if (!rbacResult.IsAuthorized)
-                return CreateDenialResult(DenialReason.InsufficientRole, rbacResult.Message, sw);
-
-            // Entity ACL evaluation
-            if (request.ResourceId.HasValue)
-            {
-                var aclResult = await EvaluateAclAsync(request.ResourceId.Value, userId, ct);
-                if (!aclResult.IsAuthorized)
-                    return CreateDenialResult(DenialReason.EntityRestricted, aclResult.Message, sw);
-            }
-
-            // ABAC policy evaluation
-            var policyResult = await EvaluatePoliciesAsync(userId, request, ct);
-            if (!policyResult.IsAuthorized)
-                return CreateDenialResult(DenialReason.PolicyViolation, policyResult.Message, sw);
-
-            var result = new AuthorizationResult
-            {
-                IsAuthorized = true,
-                AppliedGrants = rbacResult.AppliedGrants.Concat(policyResult.AppliedGrants).ToList(),
-                AppliedPolicies = policyResult.AppliedPolicies,
-                EvaluatedAt = DateTimeOffset.UtcNow,
-                WasFromCache = false,
-                EvaluationTimeMs = sw.Elapsed.TotalMilliseconds
-            };
-
-            // Cache the result (with appropriate TTL)
-            _cache.Set(cacheKey, result, TimeSpan.FromMinutes(5));
-
-            // Audit log
-            await LogAuthorizationAsync(userId, request, result, ct);
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error evaluating authorization");
-            throw;
-        }
-    }
-
-    public async Task<UserPermissions> GetUserPermissionsAsync(
-        Guid? userId = null,
-        CancellationToken ct = default)
-    {
-        userId ??= await GetCurrentUserIdAsync(ct);
-
-        var cacheKey = $"user-permissions:{userId}";
-        if (_cache.TryGetValue(cacheKey, out UserPermissions? cached))
-            return cached!;
-
-        // Get user's roles
-        var roles = await _profiles.GetUserRolesAsync(userId.Value, ct);
-
-        // Aggregate RBAC permissions
-        var rolePerms = Permission.None;
-        foreach (var role in roles)
-            rolePerms |= role.Permissions;
-
-        // Evaluate policies
-        var policyPerms = Permission.None;
-        var deniedPerms = Permission.None;
-
-        // Aggregate
-        var effective = (rolePerms | policyPerms) & ~deniedPerms;
-
-        var result = new UserPermissions
-        {
-            UserId = userId.Value,
-            Roles = roles,
-            RolePermissions = rolePerms,
-            PolicyPermissions = policyPerms,
-            DeniedPermissions = deniedPerms,
-            EffectivePermissions = effective,
-            IsAdmin = effective.HasPermission(Permission.Admin),
-            EvaluatedAt = DateTimeOffset.UtcNow
-        };
-
-        _cache.Set(cacheKey, result, TimeSpan.FromMinutes(5));
-        return result;
-    }
-
-    public async Task<IReadOnlyList<T>> FilterAccessibleAsync<T>(
-        IReadOnlyList<T> items,
-        Permission requiredPermission,
-        CancellationToken ct = default) where T : ISecurable
-    {
-        var accessible = new List<T>();
-
-        foreach (var item in items)
-        {
-            var request = new AuthorizationRequest
-            {
-                Permission = requiredPermission,
-                ResourceId = item.Id,
-                ResourceType = item.ResourceType
-            };
-
-            var result = await AuthorizeAsync(request, ct);
-            if (result.IsAuthorized)
-                accessible.Add(item);
-        }
-
-        return accessible.AsReadOnly();
-    }
-
-    public async Task<PolicyEvaluationResult> EvaluatePoliciesAsync(
-        Role role,
-        PermissionContext context,
-        CancellationToken ct = default)
-    {
-        if (role.Policies?.Count == 0)
-            return new PolicyEvaluationResult();
-
-        var sw = Stopwatch.StartNew();
-        var grantedPerms = Permission.None;
-        var deniedPerms = Permission.None;
-        var matched = new List<PolicyRule>();
-
-        foreach (var policy in role.Policies ?? [])
-        {
-            if (!policy.IsEnabled)
-                continue;
-
-            var matches = await _policyEvaluator.EvaluateAsync(policy.Condition, context, ct);
-            if (!matches)
-                continue;
-
-            matched.Add(policy);
-
-            if (policy.Effect == PolicyEffect.Allow && policy.GrantPermissions.HasValue)
-                grantedPerms |= policy.GrantPermissions.Value;
-
-            if (policy.Effect == PolicyEffect.Deny && policy.DenyPermissions.HasValue)
-                deniedPerms |= policy.DenyPermissions.Value;
-        }
-
-        return new PolicyEvaluationResult
-        {
-            GrantedPermissions = grantedPerms,
-            DeniedPermissions = deniedPerms,
-            MatchedPolicies = matched,
-            HasDenial = deniedPerms != Permission.None,
-            EvaluationTimeMs = sw.Elapsed.TotalMilliseconds
-        };
-    }
-
-    public async Task InvalidateUserPermissionsCacheAsync(Guid userId)
-    {
-        var keysToRemove = new[]
-        {
-            $"user-permissions:{userId}",
-            $"user-roles:{userId}",
-            $"user-acls:{userId}"
-        };
-
-        foreach (var key in keysToRemove)
-            _cache.Remove(key);
-
-        _logger.LogDebug("Invalidated permission cache for user {UserId}", userId);
-    }
-
-    // Private helper methods...
-    private string BuildCacheKey(Guid userId, AuthorizationRequest request) =>
-        $"auth:{userId}:{request.Permission}:{request.ResourceId}";
-
-    private AuthorizationResult CreateDenialResult(
-        DenialReason reason,
-        string message,
-        Stopwatch sw) =>
-        new()
-        {
-            IsAuthorized = false,
-            DenialReason = reason,
-            DenialMessage = message,
-            EvaluationTimeMs = sw.Elapsed.TotalMilliseconds
-        };
-
-    // TODO: Implement private helpers for RBAC, ACL, policy evaluation
+    public bool IsAuthorized { get; init; }
+    public Permission UserPermissions { get; init; }
+    public IReadOnlyList<string> Sources { get; init; } = [];
+    public string? Reason { get; init; }
 }
 ```
 
@@ -804,162 +512,72 @@ public class AuthorizationService : IAuthorizationService
 
 ## 7. Error Handling
 
-### 7.1 User Not Found
+### 7.1 Unauthorized Access
 
-**Scenario:** User ID references non-existent user.
-
-**Handling:**
-- Treat as unauthorized (return Denied)
-- Log error for audit
-- Don't expose "user not found" to client
-
-### 7.2 Invalid Context
-
-**Scenario:** Authorization request has invalid resource type or ID.
+**Scenario:** User lacks permission to manage ACL.
 
 **Handling:**
-- Return Denied with clear message
-- Log issue for debugging
-- Don't proceed with authorization
+- Return 403 Forbidden
+- Log unauthorized attempt
+- Include error message in response
 
-### 7.3 Policy Evaluation Error
+### 7.2 Invalid Entity
 
-**Scenario:** Policy condition expression fails to parse/evaluate.
-
-**Handling:**
-- Treat policy as non-matching (fail open, but deny as safer)
-- Log parsing error with policy details
-- Mark policy as requiring attention
-
-### 7.4 Cache Corruption
-
-**Scenario:** Cached permission result is stale.
+**Scenario:** Entity ID doesn't exist.
 
 **Handling:**
-- Automatic cache TTL (5 minutes default)
-- InvalidateUserPermissionsCacheAsync for forced refresh
-- Always allow bypass via request flag
+- Return 404 Not Found
+- Log error
+- Return empty data
+
+### 7.3 Built-In Role Modification
+
+**Scenario:** Attempt to modify built-in role.
+
+**Handling:**
+- Return 400 Bad Request
+- Include error message
+- Log attempt for audit
+
+### 7.4 Circular Inheritance
+
+**Scenario:** Parent assignment would create cycle.
+
+**Handling:**
+- Return 400 Bad Request
+- Clear error message about circular relationship
+- Prevent save
 
 ---
 
 ## 8. Testing
 
-### 8.1 Unit Tests
+### 8.1 Controller Tests
 
 ```csharp
 [TestClass]
-public class AuthorizationServiceTests
-{
-    private Mock<IProfileService> _mockProfiles;
-    private Mock<ILicenseContext> _mockLicense;
-    private Mock<IGraphRepository> _mockGraph;
-    private Mock<IAuditLogService> _mockAudit;
-    private IMemoryCache _cache;
-    private AuthorizationService _service;
-
-    [TestInitialize]
-    public void Setup()
-    {
-        _mockProfiles = new Mock<IProfileService>();
-        _mockLicense = new Mock<ILicenseContext>();
-        _mockGraph = new Mock<IGraphRepository>();
-        _mockAudit = new Mock<IAuditLogService>();
-        _cache = new MemoryCache(new MemoryCacheOptions());
-
-        _service = new AuthorizationService(
-            _mockProfiles.Object,
-            _mockLicense.Object,
-            _mockGraph.Object,
-            _mockAudit.Object,
-            _cache,
-            new MockPolicyEvaluator(),
-            new MockAclEvaluator(),
-            new MockLogger<AuthorizationService>());
-    }
-
-    [TestMethod]
-    public async Task AuthorizeAsync_AdminUser_ReturnsAuthorized()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var adminRole = BuiltInRoles.Admin;
-        _mockProfiles.Setup(x => x.GetUserRolesAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync([adminRole]);
-
-        var request = new AuthorizationRequest
-        {
-            UserId = userId,
-            Permission = Permission.EntityDelete
-        };
-
-        // Act
-        var result = await _service.AuthorizeAsync(request);
-
-        // Assert
-        Assert.IsTrue(result.IsAuthorized);
-    }
-
-    [TestMethod]
-    public async Task AuthorizeAsync_NoPermission_ReturnsDenied()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var viewerRole = BuiltInRoles.Viewer;
-        _mockProfiles.Setup(x => x.GetUserRolesAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync([viewerRole]);
-
-        var request = new AuthorizationRequest
-        {
-            UserId = userId,
-            Permission = Permission.EntityDelete
-        };
-
-        // Act
-        var result = await _service.AuthorizeAsync(request);
-
-        // Assert
-        Assert.IsFalse(result.IsAuthorized);
-        Assert.AreEqual(DenialReason.InsufficientRole, result.DenialReason);
-    }
-
-    [TestMethod]
-    public async Task FilterAccessibleAsync_FiltersBasedOnPermission()
-    {
-        // Arrange
-        var items = new[]
-        {
-            new MockSecurable { Id = Guid.NewGuid(), ResourceType = ResourceType.Entity },
-            new MockSecurable { Id = Guid.NewGuid(), ResourceType = ResourceType.Entity },
-            new MockSecurable { Id = Guid.NewGuid(), ResourceType = ResourceType.Entity }
-        };
-
-        // Act - only first is accessible
-        var result = await _service.FilterAccessibleAsync(items, Permission.EntityRead);
-
-        // Assert
-        Assert.IsTrue(result.Count <= items.Length);
-    }
-}
-```
-
-### 8.2 Integration Tests
-
-```csharp
-[TestClass]
-public class AuthorizationServiceIntegrationTests
+public class EntityAccessControlControllerTests
 {
     [TestMethod]
-    public async Task AuthorizeAsync_CompleteFlow_WithAclAndPolicies()
+    public async Task GetAcl_ReturnsEntityAcl()
     {
-        // Full integration test with real ACL and policy evaluation
-        // TODO: Implement full flow test
+        var result = await _controller.GetAcl(_entityId);
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
     }
 
     [TestMethod]
-    public async Task CacheInvalidation_RefreshesPermissions()
+    public async Task AddEntry_UnauthorizedUser_Returns403()
     {
-        // Test that cache invalidation forces re-evaluation
-        // TODO: Implement cache invalidation test
+        // Setup: user without EntityAdmin permission
+        var result = await _controller.AddEntry(_entityId, _entry);
+        Assert.IsInstanceOfType(result.Result, typeof(ForbiddenResult));
+    }
+
+    [TestMethod]
+    public async Task UpdateAcl_ValidChanges_Succeeds()
+    {
+        var result = await _controller.UpdateAcl(_entityId, _aclUpdates);
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
     }
 }
 ```
@@ -968,25 +586,24 @@ public class AuthorizationServiceIntegrationTests
 
 ## 9. Performance Considerations
 
-| Operation | Target | Strategy |
+| Operation | Target | Browser |
 | :--- | :--- | :--- |
-| Auth check (cached) | <1ms | In-memory cache with 5min TTL |
-| Auth check (fresh) | <10ms P95 | Multi-layer evaluation with early exits |
-| Filter 1000 items | <100ms | Batch evaluation with parallel where possible |
-| Policy evaluation | <20ms | Expression caching, lazy evaluation |
-| User permissions | <5ms | Aggregate and cache |
+| Load ACL panel | <500ms | Real-time fetch + cache |
+| Save ACL changes | <1s | Validation + database |
+| List roles | <500ms | Server-side pagination |
+| Render inheritance tree | <1s | Lazy load descendants |
 
 ---
 
-## 10. Security & Safety
+## 10. Accessibility & UX
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| Unauthorized access | Critical | Deny-by-default, explicit grant required |
-| Permission escalation | Critical | Multiple evaluation layers, deny wins |
-| Cache poisoning | High | Short TTL, invalidation on changes |
-| Audit bypass | High | Always audit decisions, immutable logs |
-| Policy bypass | Medium | Proper condition evaluation, error handling |
+| Aspect | Implementation |
+| :--- | :--- |
+| Keyboard navigation | Full tab support, enter to submit |
+| Screen readers | ARIA labels, semantic HTML |
+| Error messages | Clear, actionable messages |
+| Color contrast | WCAG AAA compliant |
+| Responsive design | Mobile and desktop support |
 
 ---
 
@@ -994,10 +611,10 @@ public class AuthorizationServiceIntegrationTests
 
 | Tier | Support |
 | :--- | :--- |
-| Core | Implicit admin (no RBAC) |
-| WriterPro | Built-in roles only |
-| Teams | Full RBAC + ACLs |
-| Enterprise | RBAC + ABAC + policies |
+| Core | No UI |
+| WriterPro | View-only |
+| Teams | Full management |
+| Enterprise | Full + policy editing |
 
 ---
 
@@ -1005,14 +622,14 @@ public class AuthorizationServiceIntegrationTests
 
 | # | Given | When | Then |
 | :--- | :--- | :--- | :--- |
-| 1 | Admin user | AuthorizeAsync called | Always returns IsAuthorized = true |
-| 2 | Viewer role | EntityDelete permission checked | Returns Denied |
-| 3 | Multiple roles | GetUserPermissionsAsync | All role permissions aggregated |
-| 4 | List of entities | FilterAccessibleAsync | Only accessible items returned |
-| 5 | Decision cached | Bypass flag false | Returns cached result |
-| 6 | Decision cached | Bypass flag true | Re-evaluates fresh |
-| 7 | Valid policy | Authorization checked | Policy applied correctly |
-| 8 | License tier insufficient | Authorization checked | Returns LicenseRestriction denial |
+| 1 | Entity with ACL | Access Control panel opened | ACL entries displayed |
+| 2 | User with EntityAdmin permission | Add entry clicked | New entry added to ACL |
+| 3 | Valid ACL changes | Save clicked | Changes persisted, audit logged |
+| 4 | Custom role exists | Role Management opened | Role listed with edit/delete options |
+| 5 | Role selected | Assign clicked | Principal selection modal appears |
+| 6 | Principal and role selected | Assign confirmed | Assignment created |
+| 7 | User selected | Effective Permissions viewed | All sources and final permissions shown |
+| 8 | Entity with parent | Inheritance panel opened | Chain visualized with inheritance type |
 
 ---
 
@@ -1020,4 +637,4 @@ public class AuthorizationServiceIntegrationTests
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| 1.0 | 2026-01-31 | Initial draft - Core service, multi-layer evaluation, caching, filtering |
+| 1.0 | 2026-01-31 | Initial draft - Access control panel, role management, permissions viewer, inheritance visualization, audit log |

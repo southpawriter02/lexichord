@@ -55,12 +55,12 @@ In v0.10.x, we delivered advanced Knowledge Graph capabilities including version
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.11.1e | Permission Model | 6 |
-| v0.11.1f | Authorization Service | 10 |
-| v0.11.1g | Entity-Level ACLs | 8 |
-| v0.11.1h | Role Management | 6 |
-| v0.11.1i | Permission Inheritance | 8 |
-| v0.11.1j | Access Control UI | 6 |
+| v0.11.1a | Permission Model | 6 |
+| v0.11.1b | Authorization Service | 10 |
+| v0.11.1c | Entity-Level ACLs | 8 |
+| v0.11.1d | Role Management | 6 |
+| v0.11.1e | Permission Inheritance | 8 |
+| v0.11.1f | Access Control UI | 6 |
 
 ### Key Interfaces
 
@@ -112,12 +112,12 @@ public enum Permission
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.11.2e | Audit Event Model | 5 |
-| v0.11.2f | Audit Logger | 8 |
-| v0.11.2g | Integrity Protection | 8 |
-| v0.11.2h | Alert Engine | 6 |
-| v0.11.2i | Retention Manager | 5 |
-| v0.11.2j | Audit Query UI | 6 |
+| v0.11.2a | Audit Event Model | 5 |
+| v0.11.2b | Audit Logger | 8 |
+| v0.11.2c | Integrity Protection | 8 |
+| v0.11.2d | Alert Engine | 6 |
+| v0.11.2e | Retention Manager | 5 |
+| v0.11.2f | Audit Query UI | 6 |
 
 ### Key Interfaces
 
@@ -169,12 +169,12 @@ public interface ISecurityAlertService
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.11.3e | Data Classification | 6 |
-| v0.11.3f | Encryption Service | 10 |
-| v0.11.3g | Key Management | 10 |
-| v0.11.3h | Field-Level Encryption | 8 |
-| v0.11.3i | Data Masking | 6 |
-| v0.11.3j | Secure Export | 5 |
+| v0.11.3a | Data Classification | 6 |
+| v0.11.3b | Encryption Service | 10 |
+| v0.11.3c | Key Management | 10 |
+| v0.11.3d | Field-Level Encryption | 8 |
+| v0.11.3e | Data Masking | 6 |
+| v0.11.3f | Secure Export | 5 |
 
 ### Key Interfaces
 
@@ -227,12 +227,12 @@ public interface IDataMaskingService
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.11.4e | Query Sanitizer | 8 |
-| v0.11.4f | Schema Validator | 6 |
-| v0.11.4g | Content Scanner | 8 |
-| v0.11.4h | Rate Limiter | 6 |
-| v0.11.4i | Input Normalizer | 5 |
-| v0.11.4j | Error Sanitizer | 4 |
+| v0.11.4a | Query Sanitizer | 8 |
+| v0.11.4b | Schema Validator | 6 |
+| v0.11.4c | Content Scanner | 8 |
+| v0.11.4d | Rate Limiter | 6 |
+| v0.11.4e | Input Normalizer | 5 |
+| v0.11.4f | Error Sanitizer | 4 |
 
 ### Key Interfaces
 
@@ -281,12 +281,12 @@ public interface IRateLimiter
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.11.5e | API Key Management | 8 |
-| v0.11.5f | OAuth Provider | 12 |
-| v0.11.5g | Request Signing | 6 |
-| v0.11.5h | API Versioning | 5 |
-| v0.11.5i | API Analytics | 8 |
-| v0.11.5j | Gateway Middleware | 6 |
+| v0.11.5a | API Key Management | 8 |
+| v0.11.5b | OAuth Provider | 12 |
+| v0.11.5c | Request Signing | 6 |
+| v0.11.5d | API Versioning | 5 |
+| v0.11.5e | API Analytics | 8 |
+| v0.11.5f | Gateway Middleware | 6 |
 
 ### Key Interfaces
 

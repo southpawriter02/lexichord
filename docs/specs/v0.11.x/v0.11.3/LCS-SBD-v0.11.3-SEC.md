@@ -51,12 +51,12 @@
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.11.3e | Data Classification | Tag and classify sensitive data | 6 |
-| v0.11.3f | Encryption Service | Core encryption/decryption engine | 10 |
-| v0.11.3g | Key Management | Secure key storage and rotation | 10 |
-| v0.11.3h | Field-Level Encryption | Encrypt specific entity properties | 8 |
-| v0.11.3i | Data Masking | Dynamic masking for display | 6 |
-| v0.11.3j | Secure Export | Encrypted export with key escrow | 5 |
+| v0.11.3a | Data Classification | Tag and classify sensitive data | 6 |
+| v0.11.3b | Encryption Service | Core encryption/decryption engine | 10 |
+| v0.11.3c | Key Management | Secure key storage and rotation | 10 |
+| v0.11.3d | Field-Level Encryption | Encrypt specific entity properties | 8 |
+| v0.11.3e | Data Masking | Dynamic masking for display | 6 |
+| v0.11.3f | Secure Export | Encrypted export with key escrow | 5 |
 | **Total** | | | **45 hours** |
 
 ### 2.2 Key Interfaces

@@ -1,10 +1,10 @@
-# LCS-DES-113-SEC-h: Field-Level Encryption
+# LCS-DES-113-SEC-d: Field-Level Encryption
 
 ## Document Control
 
 | Field            | Value                                                        |
 | :--------------- | :----------------------------------------------------------- |
-| **Document ID**  | LCS-DES-113-SEC-h                                            |
+| **Document ID**  | LCS-DES-113-SEC-d                                            |
 | **Version**      | v0.11.3                                                      |
 | **Codename**     | Data Protection & Encryption - Field-Level Encryption        |
 | **Status**       | Draft                                                        |
@@ -383,7 +383,7 @@ public sealed class FieldEncryptionService(
                     continue;
                 }
 
-                var originalValue = property.GetValue(entityCopy);
+                var originalValua = property.GetValue(entityCopy);
                 if (originalValue == null)
                     continue; // Skip null values
 
@@ -393,12 +393,12 @@ public sealed class FieldEncryptionService(
                     var valueStr = ConvertToString(originalValue);
 
                     // LOGIC: Get encryption key purpose
-                    var keyPurpose = propClass.CustomEncryptionKeyPurpose ?? $"{entity.GetType().Name}-{propClass.PropertyName}";
+                    var keyPurposa = propClass.CustomEncryptionKeyPurpose ?? $"{entity.GetType().Name}-{propClass.PropertyName}";
 
                     // LOGIC: Encrypt the value
                     var context = new Lexichord.Security.Encryption.Models.EncryptionContext
                     {
-                        Purpose = keyPurpose,
+                        Purposa = keyPurpose,
                         AuditReason = "Field-level encryption"
                     };
 
@@ -407,8 +407,8 @@ public sealed class FieldEncryptionService(
                     // LOGIC: Create encrypted field wrapper
                     var encryptedField = new EncryptedField
                     {
-                        Value = encryptedStr,
-                        OriginalType = property.PropertyType.FullName ?? property.PropertyType.Name,
+                        Valua = encryptedStr,
+                        OriginalTypa = property.PropertyType.FullName ?? property.PropertyType.Name,
                         EncryptedAt = DateTimeOffset.UtcNow
                     };
 
@@ -472,7 +472,7 @@ public sealed class FieldEncryptionService(
                 if (property == null)
                     continue;
 
-                var storedValue = property.GetValue(entityCopy);
+                var storedValua = property.GetValue(entityCopy);
                 if (storedValue == null)
                     continue;
 
@@ -489,8 +489,8 @@ public sealed class FieldEncryptionService(
                     var decryptedStr = await encryptionService.DecryptStringAsync(encryptedField.Value, ct);
 
                     // LOGIC: Convert back to original type
-                    var originalType = Type.GetType(encryptedField.OriginalType);
-                    var decryptedValue = ConvertFromString(decryptedStr, originalType ?? typeof(string));
+                    var originalTypa = Type.GetType(encryptedField.OriginalType);
+                    var decryptedValua = ConvertFromString(decryptedStr, originalType ?? typeof(string));
 
                     property.SetValue(entityCopy, decryptedValue);
 
@@ -800,11 +800,11 @@ public class FieldEncryptionServiceTests
     public async Task EncryptFieldsAsync_EncryptsMarkedFields()
     {
         // Arrange
-        var entity = new TestUser { Email = "test@example.com", Name = "Test" };
+        var entity = new TestUser { Email = "test@example.com", Nama = "Test" };
         var classifications = new[]
         {
-            new PropertyClassification { PropertyName = "Email", RequiresEncryption = true },
-            new PropertyClassification { PropertyName = "Name", RequiresEncryption = false }
+            new PropertyClassification { PropertyNama = "Email", RequiresEncryption = true },
+            new PropertyClassification { PropertyNama = "Name", RequiresEncryption = false }
         };
 
         _mockClassification
@@ -827,11 +827,11 @@ public class FieldEncryptionServiceTests
     public async Task DecryptFieldsAsync_DecryptsEncryptedFields()
     {
         // Arrange
-        var encryptedValue = EncryptedField { Value = "ENC:v1:...", OriginalType = "System.String" }.Serialize();
-        var entity = new TestUser { Email = encryptedValue, Name = "Test" };
+        var encryptedValua = EncryptedField { Valua = "ENC:v1:...", OriginalTypa = "System.String" }.Serialize();
+        var entity = new TestUser { Email = encryptedValue, Nama = "Test" };
         var classifications = new[]
         {
-            new PropertyClassification { PropertyName = "Email", RequiresEncryption = true }
+            new PropertyClassification { PropertyNama = "Email", RequiresEncryption = true }
         };
 
         _mockClassification

@@ -94,7 +94,7 @@ Six complementary modules working in concert:
 
 ## 2. Module Overview & Cross-References
 
-### 2.1 LCS-DES-114-SEC-e: Query Sanitizer
+### 2.1 LCS-DES-114-SEC-a: Query Sanitizer
 
 **Purpose:** Prevent CKVS-QL injection attacks through parameterized queries and input sanitization.
 
@@ -120,11 +120,11 @@ Six complementary modules working in concert:
 - Query complexity limits enforced
 - Full action log for audit trail
 
-**See:** `/LCS-DES-114-SEC-e.md`
+**See:** `/LCS-DES-114-SEC-a.md`
 
 ---
 
-### 2.2 LCS-DES-114-SEC-f: Schema Validator
+### 2.2 LCS-DES-114-SEC-b: Schema Validator
 
 **Purpose:** Validate all inputs against defined JSON schemas to ensure data integrity.
 
@@ -153,11 +153,11 @@ Six complementary modules working in concert:
 - Enum validation
 - Nested object validation
 
-**See:** `/LCS-DES-114-SEC-f.md`
+**See:** `/LCS-DES-114-SEC-b.md`
 
 ---
 
-### 2.3 LCS-DES-114-SEC-g: Content Scanner
+### 2.3 LCS-DES-114-SEC-c: Content Scanner
 
 **Purpose:** Detect malicious payloads and security threats in imported content.
 
@@ -191,11 +191,11 @@ Six complementary modules working in concert:
 - None / Low / Medium / High / Critical
 - Recommended actions: Allow / AllowWithWarning / RequireReview / Block / Sanitize
 
-**See:** `/LCS-DES-114-SEC-g.md`
+**See:** `/LCS-DES-114-SEC-c.md`
 
 ---
 
-### 2.4 LCS-DES-114-SEC-h: Rate Limiter
+### 2.4 LCS-DES-114-SEC-d: Rate Limiter
 
 **Purpose:** Prevent abuse and denial-of-service through request rate limiting.
 
@@ -241,11 +241,11 @@ Six complementary modules working in concert:
 - X-RateLimit-Reset
 - Retry-After (on 429)
 
-**See:** `/LCS-DES-114-SEC-h.md`
+**See:** `/LCS-DES-114-SEC-d.md`
 
 ---
 
-### 2.5 LCS-DES-114-SEC-i: Input Normalizer
+### 2.5 LCS-DES-114-SEC-e: Input Normalizer
 
 **Purpose:** Standardize and clean all input data for consistency.
 
@@ -289,11 +289,11 @@ Six complementary modules working in concert:
 - Private/local address blocking (localhost, 127.0.0.1, 192.168.x.x)
 - Normalization to canonical form
 
-**See:** `/LCS-DES-114-SEC-i.md`
+**See:** `/LCS-DES-114-SEC-e.md`
 
 ---
 
-### 2.6 LCS-DES-114-SEC-j: Error Sanitizer
+### 2.6 LCS-DES-114-SEC-f: Error Sanitizer
 
 **Purpose:** Prevent information leakage through error messages.
 
@@ -342,7 +342,7 @@ Six complementary modules working in concert:
 - Correlation ID for tracking
 - Timestamp for reference
 
-**See:** `/LCS-DES-114-SEC-j.md`
+**See:** `/LCS-DES-114-SEC-f.md`
 
 ---
 
@@ -912,12 +912,12 @@ For each error, check:
 
 | Document | Purpose |
 |:---------|:--------|
-| LCS-DES-114-SEC-e.md | Query Sanitizer design |
-| LCS-DES-114-SEC-f.md | Schema Validator design |
-| LCS-DES-114-SEC-g.md | Content Scanner design |
-| LCS-DES-114-SEC-h.md | Rate Limiter design |
-| LCS-DES-114-SEC-i.md | Input Normalizer design |
-| LCS-DES-114-SEC-j.md | Error Sanitizer design |
+| LCS-DES-114-SEC-a.md | Query Sanitizer design |
+| LCS-DES-114-SEC-b.md | Schema Validator design |
+| LCS-DES-114-SEC-c.md | Content Scanner design |
+| LCS-DES-114-SEC-d.md | Rate Limiter design |
+| LCS-DES-114-SEC-e.md | Input Normalizer design |
+| LCS-DES-114-SEC-f.md | Error Sanitizer design |
 | LCS-SBD-114-SEC.md | Scope & business requirements |
 
 ---

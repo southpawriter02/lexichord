@@ -204,6 +204,9 @@
 | `AnalysisBufferOptions` | v0.3.7a    | Abstractions  | Buffer configuration (idle period, limits) |
 | `IAnalysisBuffer`       | v0.3.7a    | Abstractions  | Reactive request debouncing and buffering  |
 | `AnalysisBuffer`        | v0.3.7a    | Modules.Style | System.Reactive GroupBy+Throttle impl      |
+| `IDisposableTracker`    | v0.3.7d    | Abstractions  | Subscription lifecycle tracking            |
+| `DisposableTracker`     | v0.3.7d    | Abstractions  | Thread-safe composite disposal impl        |
+| `DisposableViewModel`   | v0.3.7d    | Abstractions  | ViewModel base class with auto-disposal    |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 

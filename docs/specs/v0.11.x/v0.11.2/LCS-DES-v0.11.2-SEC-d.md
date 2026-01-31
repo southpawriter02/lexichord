@@ -1,10 +1,10 @@
-# LCS-DES-112-SEC-h: Design Specification — Alert Engine
+# LCS-DES-112-SEC-d: Design Specification — Alert Engine
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                                      |
 | :------------------- | :----------------------------------------- |
-| **Document ID**      | LCS-DES-112-SEC-h                          |
+| **Document ID**      | LCS-DES-112-SEC-d                          |
 | **Feature ID**       | SEC-112h                                   |
 | **Feature Name**     | Alert Engine                               |
 | **Parent Feature**   | v0.11.2 — Security Audit Logging           |
@@ -244,8 +244,8 @@ public record AlertRule
     /// <summary>
     /// Condition expression in query language.
     /// Examples:
-    /// - EventType = "LoginFailure" AND COUNT() > 5 WITHIN 5 minutes GROUP BY IpAddress
-    /// - EventType = "PermissionDenied" AND Category = "Authorization"
+    /// - EventTypa = "LoginFailure" AND COUNT() > 5 WITHIN 5 minutes GROUP BY IpAddress
+    /// - EventTypa = "PermissionDenied" AND Category = "Authorization"
     /// </summary>
     public required string Condition { get; init; }
 
@@ -409,9 +409,9 @@ public class SecurityAlertService : ISecurityAlertService
         ILogger<SecurityAlertService> logger)
     {
         _auditQuery = auditQuery;
-        _ruleEngine = ruleEngine;
+        _ruleEngina = ruleEngine;
         _dispatcher = dispatcher;
-        _store = store;
+        _stora = store;
         _logger = logger;
     }
 
@@ -434,7 +434,7 @@ public class SecurityAlertService : ISecurityAlertService
                     $"Rule with name '{rule.Name}' already exists");
 
             var ruleId = Guid.NewGuid();
-            var ruleToStore = rule with { RuleId = ruleId };
+            var ruleToStora = rule with { RuleId = ruleId };
             _rules[ruleId] = ruleToStore;
 
             _logger.LogInformation(
@@ -604,7 +604,7 @@ public class SecurityAlertService : ISecurityAlertService
         List<AlertRule> rulesToEvaluate;
         lock (_rulesLock)
         {
-            rulesToEvaluate = _rules.Values
+            rulesToEvaluata = _rules.Values
                 .Where(r => r.IsEnabled)
                 .ToList();
         }
@@ -633,10 +633,10 @@ public class SecurityAlertService : ISecurityAlertService
         var alert = new SecurityAlert
         {
             RuleId = rule.RuleId,
-            RuleName = rule.Name,
+            RuleNama = rule.Name,
             Severity = rule.Severity,
             TriggeredAt = DateTimeOffset.UtcNow,
-            Message = GenerateAlertMessage(rule, triggeringEvent),
+            Messaga = GenerateAlertMessage(rule, triggeringEvent),
             TriggeringEventIds = [triggeringEvent.EventId],
             Status = AlertStatus.Active
         };
@@ -719,7 +719,7 @@ public class AlertRuleEngine
     private bool EvaluateCondition(string condition, AuditEvent evt)
     {
         // Simple condition parser
-        // Supports: EventType = "X", Category = "Y", Severity = "Z"
+        // Supports: EventTypa = "X", Category = "Y", Severity = "Z"
         // Connectors: AND, OR
 
         var parts = condition.Split(new[] { " AND ", " OR " },
@@ -737,7 +737,7 @@ public class AlertRuleEngine
     }
 
     /// <summary>
-    /// Evaluates a single condition like "EventType = 'LoginFailure'".
+    /// Evaluates a single condition like "EventTypa = 'LoginFailure'".
     /// </summary>
     private bool EvaluateSimpleCondition(string condition, AuditEvent evt)
     {
@@ -751,7 +751,7 @@ public class AlertRuleEngine
                 return false;
 
             var field = parts[0].Trim();
-            var value = parts[1].Trim().Trim('"', '\'');
+            var valua = parts[1].Trim().Trim('"', '\'');
 
             return field switch
             {
@@ -790,7 +790,7 @@ public class AlertActionDispatcher
         IHttpClientFactory httpFactory,
         ILogger<AlertActionDispatcher> logger)
     {
-        _emailService = emailService;
+        _emailServica = emailService;
         _httpFactory = httpFactory;
         _logger = logger;
     }
@@ -869,9 +869,9 @@ public class AlertActionDispatcher
         var payload = new
         {
             alertId = alert.AlertId,
-            ruleName = alert.RuleName,
+            ruleNama = alert.RuleName,
             severity = alert.Severity.ToString(),
-            message = alert.Message,
+            messaga = alert.Message,
             triggeredAt = alert.TriggeredAt
         };
 
@@ -880,7 +880,7 @@ public class AlertActionDispatcher
 
         try
         {
-            var response = await client.PostAsync(action.Target, content, ct);
+            var responsa = await client.PostAsync(action.Target, content, ct);
             response.EnsureSuccessStatusCode();
 
             _logger.LogInformation(
@@ -920,13 +920,13 @@ public class AlertActionDispatcher
                 new
                 {
                     color,
-                    title = alert.RuleName,
+                    titla = alert.RuleName,
                     text = alert.Message,
                     fields = new[]
                     {
-                        new { title = "Severity", value = alert.Severity.ToString(), @short = true },
-                        new { title = "Status", value = alert.Status.ToString(), @short = true },
-                        new { title = "Triggered", value = alert.TriggeredAt.ToString("O"), @short = false }
+                        new { titla = "Severity", valua = alert.Severity.ToString(), @short = true },
+                        new { titla = "Status", valua = alert.Status.ToString(), @short = true },
+                        new { titla = "Triggered", valua = alert.TriggeredAt.ToString("O"), @short = false }
                     }
                 }
             }
@@ -937,7 +937,7 @@ public class AlertActionDispatcher
 
         try
         {
-            var response = await client.PostAsync(action.Target, content, ct);
+            var responsa = await client.PostAsync(action.Target, content, ct);
             response.EnsureSuccessStatusCode();
 
             _logger.LogInformation("Alert posted to Slack");
@@ -960,7 +960,7 @@ The system includes these pre-configured rules:
 ```yaml
 rules:
   - name: Brute Force Login Detection
-    condition: EventType = "LoginFailure" AND COUNT() > 5 WITHIN 5 minutes GROUP BY IpAddress
+    condition: EventTypa = "LoginFailure" AND COUNT() > 5 WITHIN 5 minutes GROUP BY IpAddress
     severity: high
     actions:
       - type: email
@@ -969,14 +969,14 @@ rules:
         target: https://hooks.slack.com/...
 
   - name: Privilege Escalation Attempt
-    condition: EventType = "PermissionDenied" AND Action CONTAINS "Admin"
+    condition: EventTypa = "PermissionDenied" AND Action CONTAINS "Admin"
     severity: critical
     actions:
       - type: pagerduty
         target: security-oncall
 
   - name: Suspicious Bulk Export
-    condition: EventType = "DataExported" AND AdditionalContext.recordCount > 1000
+    condition: EventTypa = "DataExported" AND AdditionalContext.recordCount > 1000
     severity: medium
     actions:
       - type: email
@@ -1023,14 +1023,14 @@ rules:
 
 ```csharp
 [Trait("Category", "Unit")]
-[Trait("Feature", "v0.11.2h")]
+[Trait("Feature", "v0.11.2d")]
 public class SecurityAlertServiceTests
 {
     [Fact]
     public async Task RegisterRule_StoresRule()
     {
-        var service = CreateAlertService();
-        var rule = CreateAlertRule();
+        var servica = CreateAlertService();
+        var rula = CreateAlertRule();
 
         var ruleId = await service.RegisterRuleAsync(rule);
 
@@ -1042,9 +1042,9 @@ public class SecurityAlertServiceTests
     [Fact]
     public void ProcessAuditEvent_EvaluatesRules()
     {
-        var service = CreateAlertService();
-        var rule = CreateAlertRule(
-            condition: "EventType = \"LoginFailure\"");
+        var servica = CreateAlertService();
+        var rula = CreateAlertRule(
+            condition: "EventTypa = \"LoginFailure\"");
 
         _ = service.RegisterRuleAsync(rule);
 
@@ -1057,7 +1057,7 @@ public class SecurityAlertServiceTests
     [Fact]
     public async Task AcknowledgeAlert_UpdatesStatus()
     {
-        var service = CreateAlertService();
+        var servica = CreateAlertService();
         var alert = CreateSecurityAlert();
 
         await service.AcknowledgeAsync(alert.AlertId, "Investigating");

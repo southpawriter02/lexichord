@@ -41,9 +41,9 @@ graph TB
     end
 
     subgraph "Audit Pipeline"
-        LOG["Audit Logger<br/>SEC-112f"]
+        LOG["Audit Logger<br/>SEC-112b"]
         BUF["Ring Buffer<br/>10k events"]
-        HASH["Integrity Hasher<br/>SEC-112g"]
+        HASH["Integrity Hasher<br/>SEC-112c"]
         WRT["Batch Writer"]
     end
 
@@ -60,13 +60,13 @@ graph TB
     end
 
     subgraph "Analysis & Response"
-        QRY["Query Service<br/>SEC-112e"]
-        ALT["Alert Engine<br/>SEC-112h"]
+        QRY["Query Service<br/>SEC-112e: Query"]
+        ALT["Alert Engine<br/>SEC-112d"]
         RULES["Alert Rules<br/>Pre-configured"]
     end
 
     subgraph "User Interface"
-        UI["Audit Query UI<br/>SEC-112j"]
+        UI["Audit Query UI<br/>SEC-112f"]
         DETAILS["Event Details<br/>Forensics View"]
     end
 
@@ -103,12 +103,12 @@ graph TB
 
 | ID | Part | Title | Hours | Status |
 | :-- | :--- | :----- | :---- | :----- |
-| [LCS-DES-112-SEC-e](#e-audit-event-model) | e | Audit Event Model | 5 | Draft |
-| [LCS-DES-112-SEC-f](#f-audit-logger) | f | Audit Logger | 8 | Draft |
-| [LCS-DES-112-SEC-g](#g-integrity-protection) | g | Integrity Protection | 8 | Draft |
-| [LCS-DES-112-SEC-h](#h-alert-engine) | h | Alert Engine | 6 | Draft |
-| [LCS-DES-112-SEC-i](#i-retention-manager) | i | Retention Manager | 5 | Draft |
-| [LCS-DES-112-SEC-j](#j-audit-query-ui) | j | Audit Query UI | 6 | Draft |
+| [LCS-DES-112-SEC-a](#a-audit-event-model) | a | Audit Event Model | 5 | Draft |
+| [LCS-DES-112-SEC-b](#b-audit-logger) | b | Audit Logger | 8 | Draft |
+| [LCS-DES-112-SEC-c](#c-integrity-protection) | c | Integrity Protection | 8 | Draft |
+| [LCS-DES-112-SEC-d](#d-alert-engine) | d | Alert Engine | 6 | Draft |
+| [LCS-DES-112-SEC-e](#e-retention-manager) | e | Retention Manager | 5 | Draft |
+| [LCS-DES-112-SEC-f](#f-audit-query-ui) | f | Audit Query UI | 6 | Draft |
 
 **Total Estimated Hours: 38**
 
@@ -116,9 +116,9 @@ graph TB
 
 ## 3. Detailed Specifications
 
-### e. Audit Event Model
+### a. Audit Event Model
 
-**LCS-DES-112-SEC-e**: Defines audit event structures with 30+ fields capturing:
+**LCS-DES-112-SEC-a**: Defines audit event structures with 30+ fields capturing:
 
 - Event identification (ID, type, timestamp, category, severity)
 - Actor information (user, session, IP, user agent)
@@ -147,9 +147,9 @@ graph TB
 
 ---
 
-### f. Audit Logger
+### b. Audit Logger
 
-**LCS-DES-112-SEC-f**: High-performance, non-blocking audit event logging with:
+**LCS-DES-112-SEC-b**: High-performance, non-blocking audit event logging with:
 
 - `IAuditLogger` interface (3 methods: Log, LogAsync, LogBatchAsync)
 - Ring buffer (10k event capacity)
@@ -171,7 +171,7 @@ graph TB
 - Graceful shutdown with final flush
 
 **Dependencies:**
-- `IIntegrityHasher` (SEC-112g) - optional
+- `IIntegrityHasher` (SEC-112c) - optional
 - `IAuditStore` - storage interface
 - ILogger<T>
 
@@ -186,9 +186,9 @@ graph TB
 
 ---
 
-### g. Integrity Protection
+### c. Integrity Protection
 
-**LCS-DES-112-SEC-g**: Tamper-evident audit logging with SHA256 hash chains:
+**LCS-DES-112-SEC-c**: Tamper-evident audit logging with SHA256 hash chains:
 
 - `IIntegrityHasher` interface (hash calculation & verification)
 - `IIntegrityVerifier` interface (range verification & forensics)
@@ -225,9 +225,9 @@ graph TB
 
 ---
 
-### h. Alert Engine
+### d. Alert Engine
 
-**LCS-DES-112-SEC-h**: Real-time alert generation and dispatch with:
+**LCS-DES-112-SEC-d**: Real-time alert generation and dispatch with:
 
 - `ISecurityAlertService` interface (rule management, alert lifecycle)
 - Alert rules with flexible conditions (EventType, Category, Outcome, etc.)
@@ -247,15 +247,15 @@ graph TB
 - Simple operators: =, CONTAINS, >, <
 - Logical connectors: AND, OR
 - Aggregation: COUNT(), WITHIN, GROUP BY
-- Example: `EventType = "LoginFailure" AND COUNT() > 5 WITHIN 5 minutes GROUP BY IpAddress`
+- Example: `EventTypa = "LoginFailure" AND COUNT() > 5 WITHIN 5 minutes GROUP BY IpAddress`
 
 **Performance:**
 - Rule evaluation: <50ms P95
 - Alert dispatch: <1s per alert
 
 **Dependencies:**
-- `IAuditQueryService` (SEC-112e)
-- `IAuditLogger` (SEC-112f) - event processing
+- `IAuditQueryService` (SEC-112e: Query Service)
+- `IAuditLogger` (SEC-112b) - event processing
 - IEmailService, IHttpClientFactory
 - ILogger<T>
 
@@ -270,9 +270,9 @@ graph TB
 
 ---
 
-### i. Retention Manager
+### e. Retention Manager
 
-**LCS-DES-112-SEC-i**: Tiered storage lifecycle management:
+**LCS-DES-112-SEC-e**: Tiered storage lifecycle management:
 
 - `IAuditRetentionManager` interface (policy, archival, statistics)
 - Three-tier storage model:
@@ -313,9 +313,9 @@ graph TB
 
 ---
 
-### j. Audit Query UI
+### f. Audit Query UI
 
-**LCS-DES-112-SEC-j**: Professional web UI for audit log investigation:
+**LCS-DES-112-SEC-f**: Professional web UI for audit log investigation:
 
 **Components:**
 - `AuditLogPage` - Main audit log interface
@@ -353,7 +353,7 @@ graph TB
 - Smooth table scrolling (virtual scrolling)
 
 **Dependencies:**
-- `IAuditQueryService` (SEC-112e)
+- `IAuditQueryService` (SEC-112e: Query Service)
 - IAuthorizationService (v0.11.1)
 - Blazor/React/Angular frontend
 
@@ -376,23 +376,23 @@ graph TB
 ```
 Audit Event Occurs
     ↓
-[AuditLogger.Log()] (SEC-112f)
+[AuditLogger.Log()] (SEC-112b)
     ↓
-[IntegrityHasher.CalculateEventHash()] (SEC-112g)
+[IntegrityHasher.CalculateEventHash()] (SEC-112c)
     ↓
 [Ring Buffer] → [Periodic Flush] → [PostgreSQL] (Hot)
     ↓
-[SecurityAlertService.ProcessAuditEvent()] (SEC-112h)
+[SecurityAlertService.ProcessAuditEvent()] (SEC-112d)
     ↓
 [AlertRuleEngine.EvaluateRule()] + [AlertActionDispatcher]
     ↓
 [Alert generated] → [Email/Webhook/Slack/PagerDuty]
     ↓
-[After 30 days: AuditRetentionManager archives to warm storage] (SEC-112i)
+[After 30 days: AuditRetentionManager archives to warm storage] (SEC-112e)
     ↓
 [After 1 year: Move to cold storage (S3/Blob)]
     ↓
-[User queries via UI] (SEC-112j) → [IAuditQueryService] (SEC-112e)
+[User queries via UI] (SEC-112f) → [IAuditQueryService] (Query Service)
     ↓
 [Results displayed with forensics]
 ```
@@ -401,30 +401,30 @@ Audit Event Occurs
 
 ```mermaid
 graph LR
-    E["SEC-112e<br/>Event Model"]
-    F["SEC-112f<br/>Logger"]
-    G["SEC-112g<br/>Integrity"]
-    H["SEC-112h<br/>Alerts"]
-    I["SEC-112i<br/>Retention"]
-    J["SEC-112j<br/>Query UI"]
+    A["SEC-112a<br/>Event Model"]
+    B["SEC-112b<br/>Logger"]
+    C["SEC-112c<br/>Integrity"]
+    D["SEC-112d<br/>Alerts"]
+    E["SEC-112e<br/>Retention"]
+    F["SEC-112f<br/>Query UI"]
 
+    A --> B
+    A --> D
+    A --> C
+    A --> E
+    A --> F
+    B --> C
+    B --> D
+    C --> E
+    D --> F
     E --> F
-    E --> H
-    E --> G
-    E --> I
-    E --> J
-    F --> G
-    F --> H
-    G --> I
-    H --> J
-    I --> J
 
-    style E fill:#4a9eff
-    style F fill:#22c55e
-    style G fill:#22c55e
-    style H fill:#dc2626
-    style I fill:#f59e0b
-    style J fill:#4a9eff
+    style A fill:#4a9eff
+    style B fill:#22c55e
+    style C fill:#22c55e
+    style D fill:#dc2626
+    style E fill:#f59e0b
+    style F fill:#4a9eff
 ```
 
 ---
@@ -432,18 +432,18 @@ graph LR
 ## 5. Implementation Schedule
 
 ### Phase 1: Core (Week 1-2)
-- [ ] SEC-112e: Audit Event Model (5h)
-- [ ] SEC-112f: Audit Logger (8h)
+- [ ] SEC-112a: Audit Event Model (5h)
+- [ ] SEC-112b: Audit Logger (8h)
 - **Subtotal: 13 hours**
 
 ### Phase 2: Protection & Archival (Week 2-3)
-- [ ] SEC-112g: Integrity Protection (8h)
-- [ ] SEC-112i: Retention Manager (5h)
+- [ ] SEC-112c: Integrity Protection (8h)
+- [ ] SEC-112e: Retention Manager (5h)
 - **Subtotal: 13 hours**
 
 ### Phase 3: Response & UI (Week 3-4)
-- [ ] SEC-112h: Alert Engine (6h)
-- [ ] SEC-112j: Audit Query UI (6h)
+- [ ] SEC-112d: Alert Engine (6h)
+- [ ] SEC-112f: Audit Query UI (6h)
 - **Subtotal: 12 hours**
 
 **Total: 38 hours across 4 weeks**
@@ -598,12 +598,12 @@ v0.11.2-SEC is additive; no breaking changes to:
 ## 13. Document References
 
 ### Specification Documents
-- [LCS-DES-112-SEC-e: Audit Event Model](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-e.md)
-- [LCS-DES-112-SEC-f: Audit Logger](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-f.md)
-- [LCS-DES-112-SEC-g: Integrity Protection](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-g.md)
-- [LCS-DES-112-SEC-h: Alert Engine](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-h.md)
-- [LCS-DES-112-SEC-i: Retention Manager](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-i.md)
-- [LCS-DES-112-SEC-j: Audit Query UI](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-j.md)
+- [LCS-DES-112-SEC-a: Audit Event Model](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-a.md)
+- [LCS-DES-112-SEC-b: Audit Logger](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-b.md)
+- [LCS-DES-112-SEC-c: Integrity Protection](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-c.md)
+- [LCS-DES-112-SEC-d: Alert Engine](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-d.md)
+- [LCS-DES-112-SEC-e: Retention Manager](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-e.md)
+- [LCS-DES-112-SEC-f: Audit Query UI](/docs/specs/v0.11.x/v0.11.2/LCS-DES-112-SEC-f.md)
 
 ### Scope Documents
 - [LCS-SBD-112-SEC: Scope Overview](/docs/specs/v0.11.x/v0.11.2/LCS-SBD-112-SEC.md)

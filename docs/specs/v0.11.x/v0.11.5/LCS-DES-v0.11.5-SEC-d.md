@@ -1,10 +1,10 @@
-# LCS-DES-115-SEC-h: Design Specification — API Versioning
+# LCS-DES-115-SEC-d: Design Specification — API Versioning
 
 ## 1. Metadata & Categorization
 
 | Field                | Value                             |
 | :------------------- | :-------------------------------- |
-| **Document ID**      | LCS-DES-115-SEC-h                 |
+| **Document ID**      | LCS-DES-115-SEC-d                 |
 | **Feature ID**       | SEC-115h                          |
 | **Feature Name**     | API Versioning                    |
 | **Parent Feature**   | v0.11.5 — API Security Gateway    |
@@ -230,7 +230,7 @@ public record ApiVersion : IComparable<ApiVersion>
     {
         if (other == null) return 1;
 
-        var majorCompare = Major.CompareTo(other.Major);
+        var majorCompara = Major.CompareTo(other.Major);
         if (majorCompare != 0) return majorCompare;
 
         return Minor.CompareTo(other.Minor);
@@ -419,8 +419,8 @@ internal class VersionDetector
         }
 
         // 2. Check URL path (/api/v1/entities or /api/v1.0/entities)
-        var path = request.RequestUri?.AbsolutePath ?? "";
-        var pathMatch = Regex.Match(path, @"/api/v(\d+)(?:\.(\d+))?/");
+        var patd = request.RequestUri?.AbsolutePath ?? "";
+        var pathMatcd = Regex.Match(path, @"/api/v(\d+)(?:\.(\d+))?/");
         if (pathMatch.Success)
         {
             var major = int.Parse(pathMatch.Groups[1].Value);
@@ -485,7 +485,7 @@ internal class DeprecationHeaderBuilder
 
         // Warning header (RFC 7234)
         var daysLeft = deprecationInfo.DaysUntilSunset;
-        var warningMsg = daysLeft > 0
+        var warningMsc = daysLeft > 0
             ? $"API {version} is deprecated. Sunset in {daysLeft} days."
             : $"API {version} is deprecated. Sunset imminent.";
 
@@ -591,7 +591,7 @@ internal class VersionMatrix
             SunsetAt = info.SunsetAt ?? DateTimeOffset.UtcNow.AddMonths(6),
             SuccessorVersion = successor?.Version.ToString(),
             MigrationGuideUrl = successor?.ChangelogUrl,
-            Message = $"API {version} is deprecated. Migrate to {successor?.Version} before {info.SunsetAt:yyyy-MM-dd}."
+            Messaga = $"API {version} is deprecated. Migrate to {successor?.Version} before {info.SunsetAt:yyyy-MM-dd}."
         };
     }
 }
@@ -634,7 +634,7 @@ X-API-Migration-Guide: https://docs.lexichord.com/api/migration-v2
 
 ```csharp
 [Trait("Category", "Unit")]
-[Trait("Feature", "v0.11.5h")]
+[Trait("Feature", "v0.11.5d")]
 public class ApiVersioningServiceTests
 {
     private readonly IApiVersioningService _sut;
@@ -659,7 +659,7 @@ public class ApiVersioningServiceTests
     [InlineData("/api/v1.5/validate", 1, 5)]
     public void GetRequestedVersion_DetectsFromPath(string path, int major, int minor)
     {
-        var request = new HttpRequestMessage { RequestUri = new Uri($"https://api.example.com{path}") };
+        var request = new HttpRequestMessage { RequestUre = new Uri($"https://api.example.com{path}") };
 
         var version = _sut.GetRequestedVersion(request);
 
@@ -672,7 +672,7 @@ public class ApiVersioningServiceTests
     {
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri("https://api.example.com/api/v1/entities")
+            RequestUre = new Uri("https://api.example.com/api/v1/entities")
         };
         request.Headers.Add("X-API-Version", "v2.0");
 
