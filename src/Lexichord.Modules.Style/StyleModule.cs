@@ -204,6 +204,12 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.3.7a - Analysis buffer for request debouncing
         services.Configure<AnalysisBufferOptions>(options => { });
         services.AddSingleton<IAnalysisBuffer, AnalysisBuffer>();
+
+        // LOGIC: v0.3.7b - Voice analyzer facade combining passive voice and weak word analysis
+        services.AddSingleton<IVoiceAnalyzer, VoiceAnalyzer>();
+
+        // LOGIC: v0.3.7b - Parallel analysis pipeline for concurrent scanner execution
+        services.AddSingleton<IParallelAnalysisPipeline, ParallelAnalysisPipeline>();
     }
 
     /// <inheritdoc/>

@@ -217,6 +217,8 @@ This release introduces infrastructure for optimizing typing responsiveness with
 
 - **Analysis Request Buffering** — New `IAnalysisBuffer` service debounces document analysis requests using System.Reactive. Per-document debouncing ensures rapid edits only trigger analysis after a configurable idle period (default 300ms). Latest-wins semantics automatically discard intermediate requests.
 
+- **Parallel Scanner Execution** — New `IParallelAnalysisPipeline` executes all four scanners (Regex, Fuzzy, Readability, Voice) concurrently via `Task.WhenAll()`. Reduces analysis latency from sequential sum to longest scanner duration. Error isolation ensures partial results when individual scanners fail.
+
 - **Snapshot Semantics** — New `AnalysisRequest` record captures document content at request time with associated cancellation token. Immutable design ensures thread-safe sharing across the async pipeline.
 
 - **Configurable Buffer Options** — New `AnalysisBufferOptions` configuration class controls idle period timing, maximum buffered documents, and enable/disable toggle for bypass mode.
@@ -226,6 +228,7 @@ This release introduces infrastructure for optimizing typing responsiveness with
 | Version                                 | Title                | Status      |
 | --------------------------------------- | -------------------- | ----------- |
 | [v0.3.7a](v0.3.x/v0.3.7/LCS-CL-037a.md) | Background Buffering | ✅ Complete |
+| [v0.3.7b](v0.3.x/v0.3.7/LCS-CL-037b.md) | Parallelization      | ✅ Complete |
 
 ---
 
