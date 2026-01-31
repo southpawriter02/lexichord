@@ -121,6 +121,10 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.5b - Term filter service for grid filtering
         services.AddSingleton<ITermFilterService, TermFilterService>();
 
+        // LOGIC: v0.3.4a - Voice Profile repository and service
+        services.AddSingleton<IVoiceProfileRepository, VoiceProfileRepository>();
+        services.AddSingleton<IVoiceProfileService, VoiceProfileService>();
+
         // LOGIC: v0.2.5b - Filter ViewModel for filter bar UI
         services.AddTransient<FilterViewModel>();
 

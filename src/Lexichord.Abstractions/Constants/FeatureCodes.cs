@@ -97,4 +97,18 @@ public static class FeatureCodes
     public const string ReadabilityHud = "Feature.ReadabilityHud";
 
     #endregion
+
+    #region Voice Profile Features (v0.3.4)
+
+    /// <summary>
+    /// The Custom Profiles feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: Teams
+    /// Controls access to creating and managing custom Voice Profiles.
+    /// Built-in profiles are available to all Writer Pro users.
+    /// </remarks>
+    public const string CustomProfiles = "Feature.CustomProfiles";
+
+    #endregion
 }

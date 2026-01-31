@@ -103,3 +103,19 @@ public enum StyleWatcherErrorType
     /// <summary>Unknown or unclassified error.</summary>
     Unknown
 }
+
+/// <summary>
+/// Published when the active Voice Profile changes.
+/// </summary>
+/// <remarks>
+/// LOGIC: v0.3.4a - Enables consumers to re-analyze the current document
+/// with the new profile constraints when the active profile changes.
+/// </remarks>
+/// <param name="PreviousProfileId">The ID of the previously active profile.</param>
+/// <param name="NewProfileId">The ID of the newly active profile.</param>
+/// <param name="NewProfileName">The name of the newly active profile.</param>
+public sealed record ProfileChangedEvent(
+    Guid PreviousProfileId,
+    Guid NewProfileId,
+    string NewProfileName
+) : DomainEventBase, INotification;

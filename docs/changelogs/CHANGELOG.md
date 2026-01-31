@@ -101,6 +101,35 @@ This release introduces algorithmic readability analysis to compute text complex
 
 ---
 
+## [v0.3.4] - 2026-01 (In Progress)
+
+### The Writing Coach (Voice Profiles)
+
+This release introduces Voice Profiles for context-aware style enforcement based on content type.
+
+#### What's New
+
+- **Voice Profile Definition** — New `VoiceProfile` record defines target style constraints including grade level, sentence length, passive voice tolerance, and adverb/weasel word flagging. Includes validation for constraint boundaries.
+
+- **Built-In Profiles** — 5 predefined profiles tailored to different writing styles:
+    - **Technical** — Direct, precise documentation (Grade 11, no passive voice, flags adverbs/weasel words)
+    - **Marketing** — Engaging, persuasive copy (Grade 9, allows passive voice, flags weasel words)
+    - **Academic** — Formal, scholarly writing (Grade 13, allows passive voice, no style flags)
+    - **Narrative** — Creative, flowing prose (Grade 9, allows passive voice, no style flags)
+    - **Casual** — Conversational, friendly content (Grade 7, allows passive voice, no style flags)
+
+- **Voice Profile Service** — New `IVoiceProfileService` manages profile selection and CRUD operations. Includes in-memory caching, license gating for custom profiles (Teams+), and MediatR event publishing on profile changes.
+
+- **Profile Changed Event** — New `ProfileChangedEvent` notification enables reactive UI updates when the active profile changes.
+
+#### Sub-Part Changelogs
+
+| Version                                 | Title                    | Status      |
+| --------------------------------------- | ------------------------ | ----------- |
+| [v0.3.4a](v0.3.x/v0.3.4/LCS-CL-034a.md) | Voice Profile Definition | ✅ Complete |
+
+---
+
 ## [v0.2.7] - 2026-01 (In Progress)
 
 ### The Turbo (Performance Optimization)
