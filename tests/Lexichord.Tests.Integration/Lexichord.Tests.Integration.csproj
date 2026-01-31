@@ -23,6 +23,8 @@
 
     <!-- PostgreSQL Client (for connection verification) -->
     <PackageReference Include="Npgsql" Version="9.0.3" />
+    <!-- v0.4.1a: pgvector extension for vector type support -->
+    <PackageReference Include="Pgvector" Version="0.3.0" />
 
     <!-- Code Coverage -->
     <PackageReference Include="coverlet.collector" Version="6.0.0">

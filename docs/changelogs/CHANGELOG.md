@@ -39,6 +39,27 @@ This release integrates the linting engine with the editor, providing visual fee
 
 ---
 
+## [v0.4.1] - 2026-01 (In Progress)
+
+### The Vector Foundation
+
+This release introduces PostgreSQL with pgvector for vector storage, enabling semantic search capabilities.
+
+#### What's New
+
+- **pgvector Docker Configuration** — PostgreSQL 16 with pgvector extension for high-dimensional vector storage. Includes automated extension setup, health checks, and performance tuning for vector workloads.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                   | Status      |
+| ----------------------------------- | ----------------------- | ----------- |
+| [v0.4.1a](v0.4.x/LCS-CL-v0.4.1a.md) | pgvector Docker Config  | ✅ Complete |
+| v0.4.1b                             | Schema Migration        | 🔜 Planned  |
+| v0.4.1c                             | Repository Abstractions | 🔜 Planned  |
+| v0.4.1d                             | Dapper Implementation   | 🔜 Planned  |
+
+---
+
 ## [v0.3.8] - 2026-01 (In Progress)
 
 ### The Hardening (Unit Testing)

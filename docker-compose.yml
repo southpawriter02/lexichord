@@ -4,14 +4,16 @@
 
 services:
     # ============================================================================
-    # PostgreSQL 16 Database
+    # PostgreSQL 16 Database with pgvector Extension
     # ============================================================================
-    # LOGIC: We use the Alpine variant for minimal image size (~80MB vs ~400MB).
+    # LOGIC: We use pgvector/pgvector:pg16 for vector storage support (v0.4.1a).
+    # This enables semantic search via high-dimensional vector embeddings.
     # Data is persisted to a named volume to survive container recreation.
-    # The health check ensures dependent services wait for PostgreSQL to be ready.
+    # The health check ensures dependent services wait for PostgreSQL to be ready
+    # AND verifies the vector extension is available.
     # ============================================================================
     postgres:
-        image: postgres:16-alpine
+        image: pgvector/pgvector:pg16
         container_name: lexichord-postgres
         restart: unless-stopped
 
@@ -38,13 +40,14 @@ services:
             - ./scripts/db-init:/docker-entrypoint-initdb.d:ro
 
         # Health check configuration
-        # LOGIC: pg_isready is the standard PostgreSQL readiness probe.
+        # LOGIC: We verify both PostgreSQL readiness AND pgvector extension availability.
+        # The vector extension check ensures semantic search features are usable.
         # Dependent services can use 'depends_on' with 'condition: service_healthy'.
         healthcheck:
             test:
                 [
                     "CMD-SHELL",
-                    "pg_isready -U ${POSTGRES_USER:-lexichord} -d ${POSTGRES_DB:-lexichord}",
+                    "pg_isready -U ${POSTGRES_USER:-lexichord} -d ${POSTGRES_DB:-lexichord} && psql -U ${POSTGRES_USER:-lexichord} -d ${POSTGRES_DB:-lexichord} -c \"SELECT 1 FROM pg_extension WHERE extname = 'vector';\" | grep -q 1",
                 ]
             interval: 10s
             timeout: 5s
