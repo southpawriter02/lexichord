@@ -172,6 +172,32 @@ This release introduces the charting infrastructure for visualizing writing metr
 
 ---
 
+## [v0.3.6] - 2026-01 (In Progress)
+
+### The Global Dictionary (Project Settings)
+
+This release introduces project-level configuration management with hierarchical settings.
+
+#### What's New
+
+- **Layered Configuration Provider** — New `ILayeredConfigurationProvider` merges configuration from three sources (System → User → Project) with "higher wins" precedence. Enables project-specific style customization stored in `.lexichord/style.yaml`.
+
+- **Style Configuration Record** — New `StyleConfiguration` record captures all style settings including readability constraints, voice analysis thresholds, and terminology overrides. Immutable design ensures thread safety.
+
+- **License-Gated Project Config** — Project-level configuration is gated behind Writer Pro license (`Feature.GlobalDictionary`). Core users receive merged System + User configuration only.
+
+- **Configuration Caching** — 5-second cache with manual invalidation via `InvalidateCache()`. Reduces file I/O overhead for frequently accessed configuration.
+
+- **Security Safeguards** — 100KB file size limit prevents denial-of-service via oversized config files. Graceful YAML parse error handling with fallback to defaults.
+
+#### Sub-Part Changelogs
+
+| Version                                 | Title                 | Status      |
+| --------------------------------------- | --------------------- | ----------- |
+| [v0.3.6a](v0.3.x/v0.3.6/LCS-CL-036a.md) | Layered Configuration | ✅ Complete |
+
+---
+
 ## [v0.2.7] - 2026-01 (In Progress)
 
 ### The Turbo (Performance Optimization)

@@ -126,4 +126,19 @@ public static class FeatureCodes
     public const string ResonanceDashboard = "Feature.ResonanceDashboard";
 
     #endregion
+
+    #region Global Dictionary Features (v0.3.6)
+
+    /// <summary>
+    /// The Global Dictionary feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to project-level configuration settings.
+    /// This feature enables .lexichord/style.yaml project configuration,
+    /// .lexichordignore file patterns, and per-project rule overrides.
+    /// </remarks>
+    public const string GlobalDictionary = "Feature.GlobalDictionary";
+
+    #endregion
 }

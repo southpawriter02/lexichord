@@ -185,6 +185,9 @@ public sealed class StyleModule : IModule
         // LOGIC: v0.2.7b - Content filter for code block detection (priority 200)
         services.AddSingleton<IContentFilter, MarkdownCodeBlockFilter>();
         services.AddSingleton<MarkdownCodeBlockFilter>();
+
+        // LOGIC: v0.3.6a - Layered configuration provider for hierarchical settings
+        services.AddSingleton<ILayeredConfigurationProvider, LayeredConfigurationProvider>();
     }
 
     /// <inheritdoc/>

@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.3.5c added)                                             |
+| **Last Updated** | 2026-01-31 (v0.3.6a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -174,6 +174,17 @@
 | `ChartUpdateEvent`          | v0.3.5c    | Abstractions  | MediatR notification for chart updates    |
 | `ChartUpdateEventArgs`      | v0.3.5c    | Abstractions  | Update event context record               |
 | `ResonanceUpdateService`    | v0.3.5c    | Modules.Style | Rx-based debounced update service         |
+
+### 1.10 v0.3.6 Global Dictionary Interfaces
+
+| Interface                       | Defined In | Module        | Purpose                                     |
+| :------------------------------ | :--------- | :------------ | :------------------------------------------ |
+| `ConfigurationSource`           | v0.3.6a    | Abstractions  | Enum: System, User, Project hierarchy       |
+| `StyleConfiguration`            | v0.3.6a    | Abstractions  | Record with all style settings              |
+| `TermAddition`                  | v0.3.6a    | Abstractions  | Record for project-specific term patterns   |
+| `ILayeredConfigurationProvider` | v0.3.6a    | Abstractions  | Hierarchical configuration access           |
+| `ConfigurationChangedEventArgs` | v0.3.6a    | Abstractions  | Event args for configuration changes        |
+| `LayeredConfigurationProvider`  | v0.3.6a    | Modules.Style | Implementation with merge logic and caching |
 
 ### 1.8 v0.2.5 Dictionary Manager Interfaces (Consolidated)
 
