@@ -5,6 +5,7 @@
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Modules.Style.Services;
+using Lexichord.Tests.Unit.Modules.Style.TestData;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
@@ -404,6 +405,180 @@ public class PassiveVoiceDetectorTests
             EndIndex: 16);
 
         match.Length.Should().Be(11);
+    }
+
+    #endregion
+
+    #region v0.3.8c Accuracy Tests
+
+    /// <summary>
+    /// Tests that ClearPassive corpus sentences are detected with ≥95% accuracy.
+    /// </summary>
+    [Fact]
+    [Trait("Version", "v0.3.8c")]
+    public void ClearPassive_CorpusAccuracy_ExceedsThreshold()
+    {
+        // Arrange
+        var corpus = LabeledSentenceCorpus.ClearPassive;
+        var detectedCount = 0;
+
+        // Act
+        foreach (var sentence in corpus)
+        {
+            if (_sut.ContainsPassiveVoice(sentence))
+            {
+                detectedCount++;
+            }
+        }
+
+        // Assert
+        var accuracy = (double)detectedCount / corpus.Length * 100.0;
+        accuracy.Should().BeGreaterOrEqualTo(95.0,
+            $"Expected ≥95% detection accuracy, but got {accuracy:F1}% ({detectedCount}/{corpus.Length})");
+    }
+
+    /// <summary>
+    /// Tests that ClearActive corpus sentences produce no false positives.
+    /// </summary>
+    [Fact]
+    [Trait("Version", "v0.3.8c")]
+    public void ClearActive_NoFalsePositives()
+    {
+        // Arrange
+        var corpus = LabeledSentenceCorpus.ClearActive;
+        var falsePositives = new List<string>();
+
+        // Act
+        foreach (var sentence in corpus)
+        {
+            if (_sut.ContainsPassiveVoice(sentence))
+            {
+                falsePositives.Add(sentence);
+            }
+        }
+
+        // Assert
+        falsePositives.Should().BeEmpty(
+            $"Expected 0 false positives, but found {falsePositives.Count}: [{string.Join(", ", falsePositives.Take(3))}...]");
+    }
+
+    /// <summary>
+    /// Tests that linking verb sentences are not flagged as passive.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("The door is closed.")]
+    [InlineData("She seemed tired.")]
+    [InlineData("The window appears broken.")]
+    [InlineData("He looks worried.")]
+    [InlineData("They remain concerned.")]
+    public void LinkingVerb_NotFlaggedAsPassive(string sentence)
+    {
+        var result = _sut.ContainsPassiveVoice(sentence);
+
+        result.Should().BeFalse($"'{sentence}' is a linking verb, not passive voice");
+    }
+
+    /// <summary>
+    /// Tests that participial adjective sentences are not flagged as passive.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("I am tired from the long journey.")]
+    [InlineData("She is bored with the lecture.")]
+    [InlineData("The children are excited about the trip.")]
+    public void AdjectiveComplement_NotFlaggedAsPassive(string sentence)
+    {
+        var result = _sut.ContainsPassiveVoice(sentence);
+
+        result.Should().BeFalse($"'{sentence}' has a participial adjective, not passive voice");
+    }
+
+    /// <summary>
+    /// Tests that active progressive sentences are not flagged as passive.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("The team is reviewing the project.")]
+    [InlineData("She is writing the documentation.")]
+    [InlineData("They are implementing the feature.")]
+    [InlineData("He was debugging the code.")]
+    [InlineData("We were testing the application.")]
+    public void ProgressiveActive_NotFlaggedAsPassive(string sentence)
+    {
+        var result = _sut.ContainsPassiveVoice(sentence);
+
+        result.Should().BeFalse($"'{sentence}' is active progressive, not passive voice");
+    }
+
+    /// <summary>
+    /// Tests that get-passive constructions are detected as passive.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("She got fired last week.")]
+    [InlineData("He got promoted to senior developer.")]
+    [InlineData("The code got reviewed by the lead.")]
+    public void GetPassive_Detected(string sentence)
+    {
+        var result = _sut.ContainsPassiveVoice(sentence);
+
+        result.Should().BeTrue($"'{sentence}' is get-passive and should be detected");
+    }
+
+    /// <summary>
+    /// Tests that modal passive constructions are detected as passive.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("The file will be deleted tomorrow.")]
+    [InlineData("The code should be reviewed before merge.")]
+    [InlineData("The tests must be executed before release.")]
+    [InlineData("The feature can be enabled in settings.")]
+    public void ModalPassive_Detected(string sentence)
+    {
+        var result = _sut.ContainsPassiveVoice(sentence);
+
+        result.Should().BeTrue($"'{sentence}' is modal passive and should be detected");
+    }
+
+    /// <summary>
+    /// Tests that Detect method returns correct match details.
+    /// </summary>
+    [Fact]
+    [Trait("Version", "v0.3.8c")]
+    public void Detect_ReturnsMatchDetails()
+    {
+        // Arrange
+        var sentence = "The code was written by the developer.";
+        SetupTokenizer(sentence, sentence);
+
+        // Act
+        var matches = _sut.Detect(sentence);
+
+        // Assert
+        matches.Should().ContainSingle();
+        var match = matches[0];
+        match.PassiveConstruction.Should().Contain("was written");
+        match.StartIndex.Should().BeGreaterOrEqualTo(0);
+        match.EndIndex.Should().BeGreaterThan(match.StartIndex);
+        match.Type.Should().Be(PassiveType.ToBe);
+        match.Confidence.Should().BeGreaterThan(0.5);
+    }
+
+    /// <summary>
+    /// Tests that passive voice detection is case-insensitive.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("THE CODE WAS WRITTEN BY THE USER.")]
+    [InlineData("The Code Was Written By The User.")]
+    [InlineData("the code was written by the user.")]
+    public void ContainsPassiveVoice_CaseInsensitive(string sentence)
+    {
+        var result = _sut.ContainsPassiveVoice(sentence);
+
+        result.Should().BeTrue($"'{sentence}' should be detected regardless of case");
     }
 
     #endregion

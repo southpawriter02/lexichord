@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.12.x added)                                             |
+| **Last Updated** | 2026-01-31 (v0.13.x added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2095,3 +2095,243 @@ v0.12.5-AGT (Tool System)
 - [ ] ToolResult record (v0.12.5e)
 - [ ] Side effect tracking (v0.12.5e)
 - [ ] Tool management UI (v0.12.5f)
+
+---
+
+## 14. v0.13.x Orchestration Engine Interfaces
+
+### 14.1 v0.13.1-ORC Task Decomposition Engine Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `ITaskDecomposer` | v0.13.1-ORC-a | Modules.Orchestration | Intent parsing and task decomposition |
+| `DecompositionRequest` | v0.13.1-ORC-a | Abstractions | Decomposition request parameters |
+| `DecompositionOptions` | v0.13.1-ORC-a | Abstractions | Max depth/tasks, strategy preferences |
+| `DecompositionResult` | v0.13.1-ORC-a | Abstractions | Task graph with confidence score |
+| `TaskGraph` | v0.13.1-ORC-b | Abstractions | DAG of tasks with dependencies |
+| `TaskNode` | v0.13.1-ORC-b | Abstractions | Single task in decomposition graph |
+| `TaskNodeId` | v0.13.1-ORC-b | Abstractions | Task node identifier |
+| `TaskType` | v0.13.1-ORC-b | Abstractions | Research/Generation/Analysis/etc. enum |
+| `TaskPriority` | v0.13.1-ORC-b | Abstractions | Low/Normal/High/Critical enum |
+| `TaskObjective` | v0.13.1-ORC-b | Abstractions | Goal and success criteria |
+| `TaskEdge` | v0.13.1-ORC-c | Abstractions | Dependency edge in graph |
+| `EdgeType` | v0.13.1-ORC-c | Abstractions | Dependency/DataFlow/Conditional/Parallel enum |
+| `ComplexityEstimate` | v0.13.1-ORC-d | Abstractions | Token/time/agent estimates |
+| `DecompositionStrategy` | v0.13.1-ORC-e | Abstractions | Sequential/Parallel/Hierarchical/Pipeline/MapReduce/Iterative/Adaptive enum |
+
+### 14.2 v0.13.2-ORC Agent Selection & Dispatch Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IAgentDispatcher` | v0.13.2-ORC-a | Modules.Orchestration | Agent selection and dispatch |
+| `DispatchOptions` | v0.13.2-ORC-a | Abstractions | Strategy, concurrency limits |
+| `SelectionStrategy` | v0.13.2-ORC-a | Abstractions | BestMatch/LeastBusy/BestPerformer/RoundRobin/Cheapest/Fastest/Balanced enum |
+| `DispatchPlan` | v0.13.2-ORC-d | Abstractions | Task-to-agent assignments |
+| `TaskAssignment` | v0.13.2-ORC-d | Abstractions | Single task assignment |
+| `AgentCandidate` | v0.13.2-ORC-a | Abstractions | Candidate agent with scores |
+| `ICapabilityMatcher` | v0.13.2-ORC-a | Modules.Orchestration | Task-to-capability matching |
+| `MatchResult` | v0.13.2-ORC-a | Abstractions | Matching candidates list |
+| `IAgentPerformanceTracker` | v0.13.2-ORC-c | Modules.Orchestration | Performance tracking |
+| `ExecutionOutcome` | v0.13.2-ORC-c | Abstractions | Task execution outcome |
+| `AgentPerformanceProfile` | v0.13.2-ORC-c | Abstractions | Agent performance stats |
+| `ILoadBalancer` | v0.13.2-ORC-b | Modules.Orchestration | Agent load management |
+
+### 14.3 v0.13.3-ORC Execution Coordinator Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IExecutionCoordinator` | v0.13.3-ORC-a | Modules.Orchestration | Task graph execution |
+| `ExecutionId` | v0.13.3-ORC-a | Abstractions | Execution identifier |
+| `ExecutionOptions` | v0.13.3-ORC-a | Abstractions | Concurrency, checkpoints, failure policy |
+| `FailurePolicy` | v0.13.3-ORC-d | Abstractions | Retry/skip/reassign configuration |
+| `FailureAction` | v0.13.3-ORC-d | Abstractions | Retry/Skip/Reassign/Pause/Abort/Fallback enum |
+| `Execution` | v0.13.3-ORC-a | Abstractions | Execution state record |
+| `ExecutionState` | v0.13.3-ORC-a | Abstractions | Pending/Running/Paused/WaitingForHuman/Completed/Failed/Cancelled enum |
+| `ExecutionProgress` | v0.13.3-ORC-e | Abstractions | Progress tracking |
+| `TaskExecution` | v0.13.3-ORC-a | Abstractions | Single task execution state |
+| `TaskExecutionState` | v0.13.3-ORC-a | Abstractions | Pending/Queued/Running/Completed/Failed/Skipped/Cancelled enum |
+| `TaskOutput` | v0.13.3-ORC-a | Abstractions | Task execution output |
+| `ICheckpointManager` | v0.13.3-ORC-b | Modules.Orchestration | Checkpoint create/restore |
+| `ExecutionCheckpoint` | v0.13.3-ORC-b | Abstractions | Checkpoint state snapshot |
+| `ExecutionEvent` | v0.13.3-ORC-e | Abstractions | Base execution event |
+
+### 14.4 v0.13.4-ORC Result Aggregation & Synthesis Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IResultAggregator` | v0.13.4-ORC-a | Modules.Orchestration | Result aggregation and synthesis |
+| `AggregationOptions` | v0.13.4-ORC-a | Abstractions | Conflict strategy, quality threshold |
+| `ConflictResolutionStrategy` | v0.13.4-ORC-b | Abstractions | BestQuality/MostRecent/Consensus/Manual/Merge enum |
+| `AggregationResult` | v0.13.4-ORC-a | Abstractions | Aggregated chunks and conflicts |
+| `OutputChunk` | v0.13.4-ORC-a | Abstractions | Single output with provenance |
+| `ChunkProvenance` | v0.13.4-ORC-a | Abstractions | Output source tracking |
+| `Conflict` | v0.13.4-ORC-b | Abstractions | Detected conflict |
+| `ConflictType` | v0.13.4-ORC-b | Abstractions | Factual/Stylistic/Structural/Terminology/Overlap/Gap enum |
+| `ConflictSeverity` | v0.13.4-ORC-b | Abstractions | Low/Medium/High/Critical enum |
+| `ConflictResolution` | v0.13.4-ORC-b | Abstractions | Resolution outcome |
+| `IQualityAssessor` | v0.13.4-ORC-c | Modules.Orchestration | Quality assessment |
+| `QualityAssessment` | v0.13.4-ORC-c | Abstractions | Multi-dimensional quality scores |
+| `QualityDimension` | v0.13.4-ORC-c | Abstractions | Completeness/Accuracy/Consistency/Style/Clarity/Structure enum |
+| `ISynthesisEngine` | v0.13.4-ORC-d | Modules.Orchestration | Final output synthesis |
+| `SynthesisStrategy` | v0.13.4-ORC-d | Abstractions | Concatenate/Interleave/Intelligent/Template enum |
+| `SynthesisResult` | v0.13.4-ORC-d | Abstractions | Synthesized output |
+
+### 14.5 v0.13.5-ORC Orchestration Patterns & Templates Interfaces
+
+| Interface | Defined In | Module | Purpose |
+| :--- | :--- | :--- | :--- |
+| `IPatternLibrary` | v0.13.5-ORC-a | Modules.Orchestration | Pattern management |
+| `OrchestrationPattern` | v0.13.5-ORC-a | Abstractions | Reusable pattern definition |
+| `PatternCategory` | v0.13.5-ORC-a | Abstractions | Documentation/Research/Analysis/Transformation/Review/Publishing/Custom enum |
+| `TaskGraphTemplate` | v0.13.5-ORC-a | Abstractions | Parameterized task graph |
+| `TaskNodeTemplate` | v0.13.5-ORC-a | Abstractions | Template node with placeholders |
+| `IEnsembleTemplates` | v0.13.5-ORC-b | Modules.Orchestration | Ensemble instantiation |
+| `EnsembleTemplate` | v0.13.5-ORC-b | Abstractions | Pre-built ensemble configuration |
+| `AgentRole` | v0.13.5-ORC-b | Abstractions | Role in ensemble |
+| `Ensemble` | v0.13.5-ORC-b | Abstractions | Configured agent ensemble |
+| `EnsembleState` | v0.13.5-ORC-b | Abstractions | Inactive/Activating/Ready/Working/Paused enum |
+| `IWorkflowDesigner` | v0.13.5-ORC-c | Modules.Orchestration | Visual workflow design |
+| `WorkflowDefinition` | v0.13.5-ORC-d | Abstractions | Saved workflow |
+| `WorkflowTrigger` | v0.13.5-ORC-d | Abstractions | Trigger configuration |
+| `TriggerType` | v0.13.5-ORC-d | Abstractions | Manual/Scheduled/Event/Webhook enum |
+
+---
+
+## 15. v0.13.x Dependency Graph
+
+### 15.1 v0.13.x Internal Dependencies
+
+```
+v0.13.1-ORC (Task Decomposition)
+├── v0.12.1-AGT (Agent Definition)
+├── v0.6.1a (LLM Integration)
+├── v0.11.1-SEC (Authorization)
+└── v0.0.7a (MediatR)
+
+v0.13.2-ORC (Agent Selection)
+├── v0.13.1-ORC (Task Decomposition)
+├── v0.12.1-AGT (Agent Definition)
+├── v0.12.2-AGT (Lifecycle Manager)
+└── v0.11.2-SEC (Audit Logging)
+
+v0.13.3-ORC (Execution Coordinator)
+├── v0.13.2-ORC (Agent Selection)
+├── v0.12.2-AGT (Lifecycle Manager)
+├── v0.12.3-AGT (Communication Bus)
+├── v0.12.4-AGT (Memory)
+└── PostgreSQL (execution state)
+
+v0.13.4-ORC (Result Aggregation)
+├── v0.13.3-ORC (Execution Coordinator)
+├── v0.6.5-KG (Validation Engine)
+├── v0.2.3 (Style Checker)
+└── v0.6.1a (LLM for synthesis)
+
+v0.13.5-ORC (Patterns & Templates)
+├── v0.13.1-v0.13.4-ORC (all orchestration)
+├── v0.12.1-AGT (Agent Definition)
+├── Cronos (scheduling)
+└── BlazorDiagram (visual designer)
+```
+
+### 15.2 v0.13.x Feature Gates
+
+| Version | Feature Gate | License Tier |
+| :--- | :--- | :--- |
+| v0.13.1-ORC | `FeatureFlags.Orchestration.Decomposition` | Core (sequential, 5 tasks), WriterPro (+parallel, 15), Teams (+all strategies, 50), Enterprise (unlimited) |
+| v0.13.2-ORC | `FeatureFlags.Orchestration.Selection` | Core (manual), WriterPro (auto, 3 strategies), Teams (+performance tracking), Enterprise (+custom + API) |
+| v0.13.3-ORC | `FeatureFlags.Orchestration.Execution` | Core (sequential), WriterPro (+3 parallel, checkpoints), Teams (+full concurrency), Enterprise (+distributed) |
+| v0.13.4-ORC | `FeatureFlags.Orchestration.Aggregation` | Core (concatenate), WriterPro (+conflict detection), Teams (+auto resolution), Enterprise (+AI synthesis) |
+| v0.13.5-ORC | `FeatureFlags.Orchestration.Patterns` | Core (3 patterns), WriterPro (+5 custom), Teams (+ensembles + designer), Enterprise (+marketplace) |
+
+---
+
+## 16. v0.13.x Implementation Checklist
+
+### v0.13.1-ORC Prerequisites for v0.13.2+
+
+- [ ] ITaskDecomposer interface (v0.13.1a)
+- [ ] DecompositionRequest/Options/Result records (v0.13.1a)
+- [ ] LLM-based intent parsing (v0.13.1a)
+- [ ] TaskGraph record with DAG operations (v0.13.1b)
+- [ ] TaskNode record (v0.13.1b)
+- [ ] TaskType and TaskPriority enums (v0.13.1b)
+- [ ] TaskEdge record (v0.13.1c)
+- [ ] EdgeType enum (v0.13.1c)
+- [ ] Dependency cycle detection (v0.13.1c)
+- [ ] ComplexityEstimate record (v0.13.1d)
+- [ ] Token/duration estimation (v0.13.1d)
+- [ ] DecompositionStrategy enum (v0.13.1e)
+- [ ] All 7 strategy implementations (v0.13.1e)
+- [ ] Task graph preview UI (v0.13.1f)
+
+### v0.13.2-ORC Prerequisites for v0.13.3+
+
+- [ ] IAgentDispatcher interface (v0.13.2a)
+- [ ] ICapabilityMatcher interface (v0.13.2a)
+- [ ] SelectionStrategy enum (v0.13.2a)
+- [ ] ILoadBalancer interface (v0.13.2b)
+- [ ] Load tracking and updates (v0.13.2b)
+- [ ] IAgentPerformanceTracker interface (v0.13.2c)
+- [ ] ExecutionOutcome record (v0.13.2c)
+- [ ] AgentPerformanceProfile record (v0.13.2c)
+- [ ] DispatchPlan record (v0.13.2d)
+- [ ] TaskAssignment record (v0.13.2d)
+- [ ] Fallback strategy implementations (v0.13.2e)
+- [ ] Selection dashboard UI (v0.13.2f)
+
+### v0.13.3-ORC Prerequisites for v0.13.4+
+
+- [ ] IExecutionCoordinator interface (v0.13.3a)
+- [ ] ExecutionId record struct (v0.13.3a)
+- [ ] ExecutionOptions record (v0.13.3a)
+- [ ] Execution and ExecutionState (v0.13.3a)
+- [ ] TaskExecution and TaskExecutionState (v0.13.3a)
+- [ ] ICheckpointManager interface (v0.13.3b)
+- [ ] ExecutionCheckpoint record (v0.13.3b)
+- [ ] Checkpoint persistence (v0.13.3b)
+- [ ] Parallel execution engine (v0.13.3c)
+- [ ] Concurrency limiting (v0.13.3c)
+- [ ] FailurePolicy record (v0.13.3d)
+- [ ] FailureAction enum (v0.13.3d)
+- [ ] Retry/skip/reassign handlers (v0.13.3d)
+- [ ] ExecutionProgress record (v0.13.3e)
+- [ ] ExecutionEvent hierarchy (v0.13.3e)
+- [ ] Execution monitor UI (v0.13.3f)
+
+### v0.13.4-ORC Prerequisites for v0.13.5+
+
+- [ ] IResultAggregator interface (v0.13.4a)
+- [ ] AggregationOptions record (v0.13.4a)
+- [ ] OutputChunk and ChunkProvenance (v0.13.4a)
+- [ ] Conflict record (v0.13.4b)
+- [ ] ConflictType enum (v0.13.4b)
+- [ ] ConflictResolutionStrategy enum (v0.13.4b)
+- [ ] Conflict detection algorithms (v0.13.4b)
+- [ ] IQualityAssessor interface (v0.13.4c)
+- [ ] QualityAssessment record (v0.13.4c)
+- [ ] QualityDimension enum (v0.13.4c)
+- [ ] ISynthesisEngine interface (v0.13.4d)
+- [ ] SynthesisStrategy enum (v0.13.4d)
+- [ ] SynthesisResult record (v0.13.4d)
+- [ ] Human handoff workflow (v0.13.4e)
+- [ ] Results dashboard UI (v0.13.4f)
+
+### v0.13.5-ORC Prerequisites for v0.14.x+
+
+- [ ] IPatternLibrary interface (v0.13.5a)
+- [ ] OrchestrationPattern record (v0.13.5a)
+- [ ] PatternCategory enum (v0.13.5a)
+- [ ] TaskGraphTemplate record (v0.13.5a)
+- [ ] Built-in patterns (7) (v0.13.5a)
+- [ ] IEnsembleTemplates interface (v0.13.5b)
+- [ ] EnsembleTemplate record (v0.13.5b)
+- [ ] AgentRole record (v0.13.5b)
+- [ ] Built-in ensembles (4) (v0.13.5b)
+- [ ] IWorkflowDesigner interface (v0.13.5c)
+- [ ] Visual workflow editor (v0.13.5c)
+- [ ] WorkflowDefinition record (v0.13.5d)
+- [ ] WorkflowTrigger record (v0.13.5d)
+- [ ] Workflow persistence (v0.13.5d)
+- [ ] Conductor dashboard (v0.13.5e)
+- [ ] Ensemble marketplace (v0.13.5f)

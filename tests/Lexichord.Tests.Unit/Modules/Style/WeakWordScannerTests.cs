@@ -464,4 +464,138 @@ public class WeakWordScannerTests
     }
 
     #endregion
+
+    #region v0.3.8c Enhanced Tests
+
+    /// <summary>
+    /// Tests that all intensity adverbs are detected.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("This is very important.", "very")]
+    [InlineData("The result was extremely positive.", "extremely")]
+    [InlineData("It was incredibly fast.", "incredibly")]
+    [InlineData("She was totally convinced.", "totally")]
+    public void IntensityAdverbs_AllDetected(string text, string expectedWord)
+    {
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        matches.Should().Contain(m =>
+            m.Word == expectedWord.ToLowerInvariant() &&
+            m.Category == WeakWordCategory.Adverb);
+    }
+
+    /// <summary>
+    /// Tests that all hedging words are detected.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("Perhaps we could try again.", "perhaps")]
+    [InlineData("Maybe it will work this time.", "maybe")]
+    [InlineData("The result is probably correct.", "probably")]
+    [InlineData("It seems to be working.", "seems")]
+    public void HedgingWords_AllDetected(string text, string expectedWord)
+    {
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        matches.Should().Contain(m =>
+            m.Word == expectedWord.ToLowerInvariant() &&
+            m.Category == WeakWordCategory.WeaselWord);
+    }
+
+    /// <summary>
+    /// Tests that vague qualifiers are detected as weasel words.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("Many users prefer this option.", "many")]
+    [InlineData("Some developers disagree.", "some")]
+    [InlineData("Few people understand this.", "few")]
+    public void VagueQualifiers_AllDetected(string text, string expectedWord)
+    {
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        matches.Should().Contain(m =>
+            m.Word == expectedWord.ToLowerInvariant() &&
+            m.Category == WeakWordCategory.WeaselWord);
+    }
+
+    /// <summary>
+    /// Tests that clean sentences produce no false positives.
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("The code compiles and the tests pass.")]
+    [InlineData("This function returns a valid result.")]
+    [InlineData("The server processes requests efficiently.")]
+    [InlineData("Developers write code to solve problems.")]
+    public void CleanSentence_NoFalsePositives(string text)
+    {
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        matches.Should().BeEmpty($"'{text}' should not contain weak words");
+    }
+
+    /// <summary>
+    /// Tests that all weak words in a sentence are detected.
+    /// </summary>
+    [Fact]
+    [Trait("Version", "v0.3.8c")]
+    public void MultipleWeakWords_AllDetected()
+    {
+        // Arrange - sentence with 3 different weak word categories
+        // Note: Avoid 'should' as it's also flagged as WeaselWord
+        var text = "It is very true that perhaps we basically need to start over.";
+
+        // Act
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        // Assert
+        matches.Should().HaveCount(3);
+        matches.Should().Contain(m => m.Word == "very");
+        matches.Should().Contain(m => m.Word == "perhaps");
+        matches.Should().Contain(m => m.Word == "basically");
+    }
+
+    /// <summary>
+    /// Tests that word boundaries are respected (no partial matches).
+    /// </summary>
+    [Theory]
+    [Trait("Version", "v0.3.8c")]
+    [InlineData("The interview went well.", "very")]       // "interview" should not match "very"
+    [InlineData("She has manyfold duties.", "many")]       // "manyfold" should not match "many"
+    [InlineData("The software is good.", "some")]          // "software" should not match "some"
+    public void WordBoundary_NoPartialMatches(string text, string word)
+    {
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        matches.Should().NotContain(m => m.Word == word,
+            $"'{word}' should not be matched as a substring within another word");
+    }
+
+    /// <summary>
+    /// Tests that Scan returns correct match details.
+    /// </summary>
+    [Fact]
+    [Trait("Version", "v0.3.8c")]
+    public void Scan_ReturnsCorrectMatchDetails()
+    {
+        // Arrange
+        var text = "The very best solution.";
+        //          0123456789...
+
+        // Act
+        var matches = _sut.Scan(text, _defaultProfile);
+
+        // Assert
+        matches.Should().ContainSingle();
+        var match = matches[0];
+        match.Word.Should().Be("very");
+        match.Category.Should().Be(WeakWordCategory.Adverb);
+        match.StartIndex.Should().Be(4);
+        match.EndIndex.Should().Be(8);
+        match.Length.Should().Be(4);
+    }
+
+    #endregion
 }

@@ -63,12 +63,19 @@ This release introduces comprehensive unit testing to verify algorithm accuracy 
 
 - **Readability Formula Accuracy Tests** — 50 tests ensuring Flesch-Kincaid Grade Level, Gunning Fog Index, and Flesch Reading Ease calculations match reference values within tolerance.
 
+- **Passive Voice Detection Accuracy Tests** — 9 new tests validating passive voice detection with 95% accuracy threshold on labeled corpus. Includes false positive prevention for linking verbs, adjectives, and active progressive patterns.
+
+- **Weak Word Scanner Enhanced Tests** — 8 new tests verifying intensity adverbs, hedging words, and vague qualifier detection with word boundary matching.
+
+- **LabeledSentenceCorpus Test Fixture** — Reusable corpus with 8 categories (ClearPassive, ClearActive, LinkingVerb, AdjectiveComplement, ProgressiveActive, GetPassive, ModalPassive, EdgeCase) for accuracy testing.
+
 #### Sub-Part Changelogs
 
-| Version                                    | Title                  | Status      |
-| ------------------------------------------ | ---------------------- | ----------- |
-| [v0.3.8a](v0.3.x/v0.3.8/LCS-CL-v0.3.8a.md) | Fuzzy Test Suite       | ✅ Complete |
-| [v0.3.8b](v0.3.x/v0.3.8/LCS-CL-v0.3.8b.md) | Readability Test Suite | ✅ Complete |
+| Version                                    | Title                    | Status      |
+| ------------------------------------------ | ------------------------ | ----------- |
+| [v0.3.8a](v0.3.x/v0.3.8/LCS-CL-v0.3.8a.md) | Fuzzy Test Suite         | ✅ Complete |
+| [v0.3.8b](v0.3.x/v0.3.8/LCS-CL-v0.3.8b.md) | Readability Test Suite   | ✅ Complete |
+| [v0.3.8c](v0.3.x/v0.3.8/LCS-CL-v0.3.8c.md) | Passive Voice Test Suite | ✅ Complete |
 
 ---
 
