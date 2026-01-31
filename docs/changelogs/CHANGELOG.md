@@ -122,11 +122,14 @@ This release introduces Voice Profiles for context-aware style enforcement based
 
 - **Profile Changed Event** — New `ProfileChangedEvent` notification enables reactive UI updates when the active profile changes.
 
+- **Passive Voice Detector** — New `IPassiveVoiceDetector` uses regex pattern matching with confidence scoring to identify passive constructions (to-be, modal, progressive, get-passive). Distinguishes true passive voice from predicate adjectives like "The door is closed" using a confidence threshold (≥0.5).
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                    | Status      |
 | --------------------------------------- | ------------------------ | ----------- |
 | [v0.3.4a](v0.3.x/v0.3.4/LCS-CL-034a.md) | Voice Profile Definition | ✅ Complete |
+| [v0.3.4b](v0.3.x/v0.3.4/LCS-CL-034b.md) | Passive Voice Detector   | ✅ Complete |
 
 ---
 
