@@ -315,8 +315,19 @@ public partial class ResonanceDashboardViewModel : ObservableObject, IResonanceD
 
                 if (overlay?.HasData == true)
                 {
+                    // LOGIC: v0.3.5d - Convert TargetDataPoint to ResonanceDataPoint for series builder
+                    var resonancePoints = overlay.DataPoints
+                        .Select(p => new ResonanceDataPoint(
+                            AxisName: p.AxisName,
+                            NormalizedValue: p.NormalizedValue,
+                            RawValue: p.RawValue,
+                            Unit: p.Unit,
+                            Description: p.Description))
+                        .ToList()
+                        .AsReadOnly();
+
                     var overlayData = new ResonanceChartData(
-                        overlay.DataPoints,
+                        resonancePoints,
                         overlay.ComputedAt);
 
                     var targetSeries = _seriesBuilder.BuildTargetSeries(overlayData, profile.Name);

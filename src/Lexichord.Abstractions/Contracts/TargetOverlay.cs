@@ -15,12 +15,12 @@ namespace Lexichord.Abstractions.Contracts;
 /// <remarks>
 /// <para>LOGIC: Immutable record for thread-safe overlay data transfer.</para>
 /// <para>Data points are pre-normalized to 0-100 scale.</para>
-/// <para>Introduced in v0.3.5b.</para>
+/// <para>Introduced in v0.3.5b, enhanced in v0.3.5d with tolerance bands.</para>
 /// </remarks>
 public record TargetOverlay(
     string ProfileId,
     string ProfileName,
-    IReadOnlyList<ResonanceDataPoint> DataPoints,
+    IReadOnlyList<TargetDataPoint> DataPoints,
     DateTimeOffset ComputedAt)
 {
     /// <summary>
@@ -32,13 +32,21 @@ public record TargetOverlay(
     public static TargetOverlay Empty => new(
         ProfileId: string.Empty,
         ProfileName: string.Empty,
-        DataPoints: Array.Empty<ResonanceDataPoint>(),
+        DataPoints: Array.Empty<TargetDataPoint>(),
         ComputedAt: DateTimeOffset.MinValue);
 
     /// <summary>
     /// Gets whether this overlay has any target data.
     /// </summary>
     public bool HasData => DataPoints.Count > 0;
+
+    /// <summary>
+    /// Gets whether any data point has a tolerance band defined.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.5d - Used to determine if tolerance band rendering is needed.
+    /// </remarks>
+    public bool HasAnyToleranceBands => DataPoints.Any(p => p.HasToleranceBand);
 
     /// <summary>
     /// Gets all normalized values as an array (for chart series binding).

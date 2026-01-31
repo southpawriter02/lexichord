@@ -44,6 +44,17 @@ public interface ITargetOverlayService
     void InvalidateCache(string profileId);
 
     /// <summary>
+    /// Synchronous version for UI binding scenarios.
+    /// Uses cached data if available, otherwise computes and caches.
+    /// </summary>
+    /// <param name="profile">The profile to get overlay for.</param>
+    /// <returns>Cached or computed target overlay, or null if profile has no targets.</returns>
+    /// <remarks>
+    /// LOGIC: v0.3.5d - Provides synchronous access for immediate UI updates.
+    /// </remarks>
+    TargetOverlay? GetOverlaySync(VoiceProfile profile);
+
+    /// <summary>
     /// Invalidates all cached overlays.
     /// </summary>
     /// <remarks>

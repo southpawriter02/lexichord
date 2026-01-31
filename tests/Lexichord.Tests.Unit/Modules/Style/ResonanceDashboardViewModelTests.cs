@@ -275,6 +275,10 @@ public class ResonanceDashboardViewModelTests : IDisposable
         // GetActiveProfileAsync never returns null (returns Technical profile as default)
         _voiceProfileServiceMock.Setup(x => x.GetActiveProfileAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateTestProfile());
+
+        // v0.3.5d: UpdateRequested must return an observable for ViewModel constructor
+        _updateServiceMock.Setup(x => x.UpdateRequested)
+            .Returns(System.Reactive.Linq.Observable.Empty<ChartUpdateEventArgs>());
     }
 
     private ResonanceDashboardViewModel CreateSut()
@@ -333,14 +337,14 @@ public class ResonanceDashboardViewModelTests : IDisposable
 
     private static TargetOverlay CreateTestOverlay(VoiceProfile profile)
     {
-        var dataPoints = new List<ResonanceDataPoint>
+        var dataPoints = new List<TargetDataPoint>
         {
-            new("Readability", 80, 80, "score", "Reading Ease"),
-            new("Clarity", 90, 0.10, "%", "Passive Voice"),
-            new("Precision", 85, 2.0, "%", "Weak Words"),
-            new("Accessibility", 60, 10, "grade", "Grade Level"),
-            new("Density", 70, 20, "words", "Words/Sentence"),
-            new("Flow", 75, 50, "variance", "Sentence Variance")
+            new("Readability", 80, 80, Description: "Reading Ease") { Unit = "score" },
+            new("Clarity", 90, 0.10, Description: "Passive Voice") { Unit = "%" },
+            new("Precision", 85, 2.0, Description: "Weak Words") { Unit = "%" },
+            new("Accessibility", 60, 10, Description: "Grade Level") { Unit = "grade" },
+            new("Density", 70, 20, Description: "Words/Sentence") { Unit = "words" },
+            new("Flow", 75, 50, Description: "Sentence Variance") { Unit = "variance" }
         };
 
         return new TargetOverlay(

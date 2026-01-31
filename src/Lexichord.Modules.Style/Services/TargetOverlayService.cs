@@ -58,7 +58,7 @@ public sealed partial class TargetOverlayService : ITargetOverlayService
 
         // LOGIC: Compute target data points from profile constraints
         var axes = _axisProvider.GetAxes();
-        var dataPoints = new List<ResonanceDataPoint>();
+        var dataPoints = new List<TargetDataPoint>();
 
         foreach (var axis in axes)
         {
@@ -67,22 +67,22 @@ public sealed partial class TargetOverlayService : ITargetOverlayService
             if (targetValue is null)
             {
                 // LOGIC: Axis has no target - use 50 as neutral value
-                dataPoints.Add(new ResonanceDataPoint(
+                dataPoints.Add(new TargetDataPoint(
                     AxisName: axis.Name,
                     NormalizedValue: 50,
                     RawValue: 0,
-                    Unit: axis.Unit,
-                    Description: $"No target for {axis.Name}"));
+                    Description: $"No target for {axis.Name}")
+                { Unit = axis.Unit });
                 continue;
             }
 
             var normalized = axis.Normalize(targetValue.Value);
-            dataPoints.Add(new ResonanceDataPoint(
+            dataPoints.Add(new TargetDataPoint(
                 AxisName: axis.Name,
                 NormalizedValue: normalized,
                 RawValue: targetValue.Value,
-                Unit: axis.Unit,
-                Description: axis.Description));
+                Description: axis.Description)
+            { Unit = axis.Unit });
 
             LogAxisTarget(axis.Name, targetValue.Value, normalized);
         }
@@ -116,6 +116,65 @@ public sealed partial class TargetOverlayService : ITargetOverlayService
         var count = _cache.Count;
         _cache.Clear();
         LogAllCachesInvalidated(count);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: v0.3.5d - Synchronous accessor for UI binding.
+    /// Uses cached data if available, otherwise computes synchronously.
+    /// </remarks>
+    public TargetOverlay? GetOverlaySync(VoiceProfile profile)
+    {
+        var profileIdStr = profile.Id.ToString();
+
+        // LOGIC: Fast path - return cached overlay
+        if (_cache.TryGetValue(profileIdStr, out var cached))
+        {
+            LogCacheHit(profile.Name);
+            return cached;
+        }
+
+        // LOGIC: Compute synchronously (same logic as async)
+        LogComputingOverlay(profile.Name);
+        var axes = _axisProvider.GetAxes();
+        var dataPoints = new List<TargetDataPoint>();
+
+        foreach (var axis in axes)
+        {
+            var targetValue = GetTargetValue(axis, profile);
+
+            if (targetValue is null)
+            {
+                dataPoints.Add(new TargetDataPoint(
+                    AxisName: axis.Name,
+                    NormalizedValue: 50,
+                    RawValue: 0,
+                    Description: $"No target for {axis.Name}")
+                { Unit = axis.Unit });
+                continue;
+            }
+
+            var normalized = axis.Normalize(targetValue.Value);
+            dataPoints.Add(new TargetDataPoint(
+                AxisName: axis.Name,
+                NormalizedValue: normalized,
+                RawValue: targetValue.Value,
+                Description: axis.Description)
+            { Unit = axis.Unit });
+
+            LogAxisTarget(axis.Name, targetValue.Value, normalized);
+        }
+
+        var overlay = new TargetOverlay(
+            ProfileId: profileIdStr,
+            ProfileName: profile.Name,
+            DataPoints: dataPoints.AsReadOnly(),
+            ComputedAt: DateTimeOffset.UtcNow);
+
+        _cache.TryAdd(profileIdStr, overlay);
+        LogOverlayComputed(profile.Name, dataPoints.Count);
+
+        return overlay;
     }
 
     /// <summary>

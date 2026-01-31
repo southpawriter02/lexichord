@@ -168,6 +168,7 @@ This release introduces the charting infrastructure for visualizing writing metr
 | [v0.3.5a](v0.3.x/v0.3.5/LCS-CL-035a.md) | Charting Infrastructure | ✅ Complete |
 | [v0.3.5b](v0.3.x/v0.3.5/LCS-CL-035b.md) | Spider Chart            | ✅ Complete |
 | [v0.3.5c](v0.3.x/v0.3.5/LCS-CL-035c.md) | Real-Time Updates       | ✅ Complete |
+| [v0.3.5d](v0.3.x/v0.3.5/LCS-CL-035d.md) | Target Overlays         | ✅ Complete |
 
 ---
 

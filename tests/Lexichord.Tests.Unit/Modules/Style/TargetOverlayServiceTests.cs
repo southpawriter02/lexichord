@@ -179,6 +179,146 @@ public class TargetOverlayServiceTests
 
     #endregion
 
+    #region v0.3.5d GetOverlaySync Tests
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void GetOverlaySync_WithValidProfile_ReturnsOverlay()
+    {
+        // Arrange
+        var profile = CreateTestProfile();
+
+        // Act
+        var result = _sut.GetOverlaySync(profile);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.ProfileId.Should().Be(profile.Id.ToString());
+        result.ProfileName.Should().Be(profile.Name);
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void GetOverlaySync_ReturnsCachedOverlay()
+    {
+        // Arrange
+        var profile = CreateTestProfile();
+
+        // Act
+        var result1 = _sut.GetOverlaySync(profile);
+        var result2 = _sut.GetOverlaySync(profile);
+
+        // Assert
+        result1.Should().BeSameAs(result2);
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public async Task GetOverlaySync_SharesCacheWithAsync()
+    {
+        // Arrange
+        var profile = CreateTestProfile();
+
+        // Pre-populate cache via async method
+        var asyncResult = await _sut.GetOverlayAsync(profile);
+
+        // Act - sync should return same cached instance
+        var syncResult = _sut.GetOverlaySync(profile);
+
+        // Assert
+        asyncResult.Should().BeSameAs(syncResult);
+    }
+
+    #endregion
+
+    #region v0.3.5d TargetDataPoint Tests
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void TargetDataPoint_HasToleranceBand_WhenBothBoundsSet()
+    {
+        // Arrange
+        var dataPoint = new TargetDataPoint(
+            AxisName: "Test",
+            NormalizedValue: 50,
+            RawValue: 50,
+            ToleranceMin: 40,
+            ToleranceMax: 60);
+
+        // Act & Assert
+        dataPoint.HasToleranceBand.Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void TargetDataPoint_NoToleranceBand_WhenMissingMin()
+    {
+        // Arrange
+        var dataPoint = new TargetDataPoint(
+            AxisName: "Test",
+            NormalizedValue: 50,
+            RawValue: 50,
+            ToleranceMax: 60);
+
+        // Act & Assert
+        dataPoint.HasToleranceBand.Should().BeFalse();
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void TargetDataPoint_NoToleranceBand_WhenMissingMax()
+    {
+        // Arrange
+        var dataPoint = new TargetDataPoint(
+            AxisName: "Test",
+            NormalizedValue: 50,
+            RawValue: 50,
+            ToleranceMin: 40);
+
+        // Act & Assert
+        dataPoint.HasToleranceBand.Should().BeFalse();
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void TargetOverlay_HasAnyToleranceBands_ReturnsTrueWhenPresent()
+    {
+        // Arrange
+        var overlay = new TargetOverlay(
+            ProfileId: Guid.NewGuid().ToString(),
+            ProfileName: "Test",
+            DataPoints:
+            [
+                new TargetDataPoint("Axis1", 50, 50),
+                new TargetDataPoint("Axis2", 60, 60, ToleranceMin: 50, ToleranceMax: 70)
+            ],
+            ComputedAt: DateTimeOffset.UtcNow);
+
+        // Act & Assert
+        overlay.HasAnyToleranceBands.Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.3.5d")]
+    public void TargetOverlay_HasAnyToleranceBands_ReturnsFalseWhenNone()
+    {
+        // Arrange
+        var overlay = new TargetOverlay(
+            ProfileId: Guid.NewGuid().ToString(),
+            ProfileName: "Test",
+            DataPoints:
+            [
+                new TargetDataPoint("Axis1", 50, 50),
+                new TargetDataPoint("Axis2", 60, 60)
+            ],
+            ComputedAt: DateTimeOffset.UtcNow);
+
+        // Act & Assert
+        overlay.HasAnyToleranceBands.Should().BeFalse();
+    }
+
+    #endregion
+
     #region Test Helpers
 
     private void SetupDefaultAxes()
