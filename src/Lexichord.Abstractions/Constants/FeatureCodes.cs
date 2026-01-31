@@ -83,4 +83,18 @@ public static class FeatureCodes
     ];
 
     #endregion
+
+    #region Readability Engine Features (v0.3.3)
+
+    /// <summary>
+    /// The Readability HUD feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Readability HUD Widget for displaying
+    /// Flesch-Kincaid Grade Level, Gunning Fog Index, and Flesch Reading Ease.
+    /// </remarks>
+    public const string ReadabilityHud = "Feature.ReadabilityHud";
+
+    #endregion
 }

@@ -46,6 +46,15 @@ public sealed partial class ProblemsPanelViewModel : ObservableObject,
     private readonly Dictionary<ViolationSeverity, ProblemGroupViewModel> _groupsBySeverity;
     private bool _isDisposed;
 
+    /// <summary>
+    /// Gets the Readability HUD ViewModel for displaying readability metrics.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: v0.3.3d - Injected via constructor for display in the Problems Panel header.
+    /// License checked internally by the ReadabilityHudViewModel.
+    /// </remarks>
+    public IReadabilityHudViewModel ReadabilityHud { get; }
+
     #region Observable Properties
 
     /// <summary>
@@ -111,14 +120,17 @@ public sealed partial class ProblemsPanelViewModel : ObservableObject,
     public ProblemsPanelViewModel(
         IViolationAggregator violationAggregator,
         IEditorNavigationService navigationService,
+        IReadabilityHudViewModel readabilityHud,
         ILogger<ProblemsPanelViewModel> logger)
     {
         ArgumentNullException.ThrowIfNull(violationAggregator);
         ArgumentNullException.ThrowIfNull(navigationService);
+        ArgumentNullException.ThrowIfNull(readabilityHud);
         ArgumentNullException.ThrowIfNull(logger);
 
         _violationAggregator = violationAggregator;
         _navigationService = navigationService;
+        ReadabilityHud = readabilityHud;
         _logger = logger;
 
         // LOGIC: Pre-create groups in severity order (Error first, Hint last)

@@ -17,6 +17,7 @@ public class ProblemsPanelViewModelTests : IDisposable
 {
     private readonly Mock<IViolationAggregator> _violationAggregatorMock = new();
     private readonly Mock<IEditorNavigationService> _navigationServiceMock = new();
+    private readonly Mock<IReadabilityHudViewModel> _readabilityHudMock = new();
     private readonly Mock<ILogger<ProblemsPanelViewModel>> _loggerMock = new();
 
     public void Dispose()
@@ -34,6 +35,7 @@ public class ProblemsPanelViewModelTests : IDisposable
         return new ProblemsPanelViewModel(
             _violationAggregatorMock.Object,
             _navigationServiceMock.Object,
+            _readabilityHudMock.Object,
             _loggerMock.Object);
     }
 
@@ -115,7 +117,11 @@ public class ProblemsPanelViewModelTests : IDisposable
     public void Constructor_ThrowsArgumentNullException_WhenAggregatorIsNull()
     {
         // Act
-        var act = () => new ProblemsPanelViewModel(null!, _navigationServiceMock.Object, _loggerMock.Object);
+        var act = () => new ProblemsPanelViewModel(
+            null!,
+            _navigationServiceMock.Object,
+            _readabilityHudMock.Object,
+            _loggerMock.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -126,7 +132,11 @@ public class ProblemsPanelViewModelTests : IDisposable
     public void Constructor_ThrowsArgumentNullException_WhenNavigationServiceIsNull()
     {
         // Act
-        var act = () => new ProblemsPanelViewModel(_violationAggregatorMock.Object, null!, _loggerMock.Object);
+        var act = () => new ProblemsPanelViewModel(
+            _violationAggregatorMock.Object,
+            null!,
+            _readabilityHudMock.Object,
+            _loggerMock.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -137,7 +147,11 @@ public class ProblemsPanelViewModelTests : IDisposable
     public void Constructor_ThrowsArgumentNullException_WhenLoggerIsNull()
     {
         // Act
-        var act = () => new ProblemsPanelViewModel(_violationAggregatorMock.Object, _navigationServiceMock.Object, null!);
+        var act = () => new ProblemsPanelViewModel(
+            _violationAggregatorMock.Object,
+            _navigationServiceMock.Object,
+            _readabilityHudMock.Object,
+            null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()

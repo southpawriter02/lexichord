@@ -1,0 +1,243 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Style.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="350"
+             d:DesignHeight="200"
+             x:Class="Lexichord.Modules.Style.Views.ReadabilityHudWidget"
+             x:DataType="vm:ReadabilityHudViewModel">
+    
+    <!-- 
+    ReadabilityHudWidget: Displays readability metrics in a compact HUD.
+    
+    LOGIC: Shows three key readability indicators:
+    - Reading Ease (0-100) in a circular score ring
+    - Flesch-Kincaid Grade Level in a color-coded pill
+    - Gunning Fog Index badge
+    - Words/Sentence metric
+    - Human-readable interpretation
+    
+    Layout: 350×200px compact card fitting in Problems Panel header.
+    Color-coded by difficulty (green = easy, red = hard).
+    
+    Version: v0.3.3d
+    License: Writer Pro tier (soft-gated)
+    -->
+    
+    <UserControl.Styles>
+        <!-- Metric label styles -->
+        <Style Selector="TextBlock.MetricLabel">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Metric value styles -->
+        <Style Selector="TextBlock.MetricValue">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Large score display -->
+        <Style Selector="TextBlock.ScoreText">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Badge styles -->
+        <Style Selector="Border.GradeBadge">
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="4"/>
+        </Style>
+        
+        <Style Selector="Border.FogBadge">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="4"/>
+        </Style>
+        
+        <!-- Separator line -->
+        <Style Selector="Border.Separator">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+            <Setter Property="Margin" Value="8,8"/>
+        </Style>
+        
+        <!-- Interpretation text -->
+        <Style Selector="TextBlock.Interpretation">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Style>
+        
+        <!-- Unlicensed overlay -->
+        <Style Selector="Border.UnlicensedOverlay">
+            <Setter Property="Background" Value="#80000000"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <!-- Main container -->
+    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+            CornerRadius="6"
+            Padding="12"
+            Margin="8,4">
+        
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            
+            <!-- Row 0: Header with Reading Ease Ring -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+                
+                <!-- Reading Ease Score Ring -->
+                <Border Grid.Column="0"
+                        Width="64"
+                        Height="64"
+                        CornerRadius="32"
+                        BorderThickness="4"
+                        Background="Transparent"
+                        ToolTip.Tip="Flesch Reading Ease (0-100, higher = easier)"
+                        IsVisible="{Binding HasMetrics}">
+                    <Border.BorderBrush>
+                        <SolidColorBrush Color="{Binding ReadingEaseColor}"/>
+                    </Border.BorderBrush>
+                    <TextBlock Text="{Binding ReadingEaseDisplay}"
+                               Classes="ScoreText">
+                        <TextBlock.Foreground>
+                            <SolidColorBrush Color="{Binding ReadingEaseColor}"/>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </Border>
+                
+                <!-- Placeholder when no metrics -->
+                <Border Grid.Column="0"
+                        Width="64"
+                        Height="64"
+                        CornerRadius="32"
+                        BorderThickness="4"
+                        Background="Transparent"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                        IsVisible="{Binding !HasMetrics}">
+                    <TextBlock Text="--"
+                               Classes="ScoreText"
+                               Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+                </Border>
+                
+                <!-- Middle section: Grade Level and Fog badges -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Vertical"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="4">
+                    
+                    <!-- Grade Level Pill -->
+                    <Border Classes="GradeBadge"
+                            HorizontalAlignment="Center"
+                            ToolTip.Tip="{Binding GradeLevelDescription}">
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding GradeLevelColor}"/>
+                        </Border.Background>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Grade"
+                                       FontSize="10"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding GradeLevelDisplay}"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- Fog Index Badge -->
+                    <Border Classes="FogBadge"
+                            HorizontalAlignment="Center"
+                            ToolTip.Tip="Gunning Fog Index (years of education)">
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding FogIndexColor}"/>
+                        </Border.Background>
+                        <StackPanel Orientation="Horizontal" Spacing="3">
+                            <TextBlock Text="Fog"
+                                       FontSize="9"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding FogIndexDisplay}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                
+                <!-- Loading indicator -->
+                <ProgressBar Grid.Column="2"
+                             Width="24"
+                             Height="24"
+                             IsIndeterminate="True"
+                             VerticalAlignment="Center"
+                             IsVisible="{Binding IsAnalyzing}"/>
+            </Grid>
+            
+            <!-- Row 1: Separator -->
+            <Border Grid.Row="1" Classes="Separator"/>
+            
+            <!-- Row 2: Metrics grid -->
+            <Grid Grid.Row="2" 
+                  ColumnDefinitions="Auto,*"
+                  RowDefinitions="Auto,Auto"
+                  Margin="8,0">
+                
+                <!-- Word Count -->
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Words:"
+                           Classes="MetricLabel"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Text="{Binding WordCount}"
+                           Classes="MetricValue"
+                           HorizontalAlignment="Right"/>
+                
+                <!-- Words per Sentence -->
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Words/Sentence:"
+                           Classes="MetricLabel"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Text="{Binding WordsPerSentenceDisplay}"
+                           Classes="MetricValue"
+                           HorizontalAlignment="Right"/>
+            </Grid>
+            
+            <!-- Row 3: Interpretation -->
+            <Border Grid.Row="3" Classes="Separator"/>
+            
+            <TextBlock Grid.Row="3"
+                       Text="{Binding InterpretationDisplay}"
+                       Classes="Interpretation"
+                       HorizontalAlignment="Center"
+                       Margin="0,8,0,0"/>
+            
+            <!-- Unlicensed Overlay -->
+            <Border Grid.RowSpan="4"
+                    Classes="UnlicensedOverlay"
+                    IsVisible="{Binding !IsLicensed}">
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="8">
+                    <TextBlock Text="🔒"
+                               FontSize="24"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Upgrade to Writer Pro"
+                               FontSize="12"
+                               Foreground="White"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

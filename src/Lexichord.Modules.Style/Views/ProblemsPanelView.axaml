@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Lexichord.Modules.Style.ViewModels"
+             xmlns:local="clr-namespace:Lexichord.Modules.Style.Views"
              mc:Ignorable="d"
              d:DesignWidth="350"
              d:DesignHeight="450"
@@ -133,7 +134,7 @@
                 BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="8">
-            <Grid RowDefinitions="Auto,Auto">
+            <Grid RowDefinitions="Auto,Auto,Auto">
                 
                 <!-- Title and scope -->
                 <StackPanel Grid.Row="0"
@@ -197,6 +198,11 @@
                                IsVisible="{Binding !TotalCount}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
+                
+                <!-- v0.3.3d - Readability HUD Widget -->
+                <local:ReadabilityHudWidget Grid.Row="2"
+                                            DataContext="{Binding ReadabilityHud}"
+                                            Margin="0,4,0,0"/>
             </Grid>
         </Border>
         

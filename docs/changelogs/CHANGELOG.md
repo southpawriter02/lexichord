@@ -88,6 +88,8 @@ This release introduces algorithmic readability analysis to compute text complex
 
 - **Readability Calculator** — New `IReadabilityService` computes Flesch-Kincaid Grade Level, Gunning Fog Index, and Flesch Reading Ease scores. Uses Sentence Tokenizer and Syllable Counter for accurate analysis. Includes `ReadabilityMetrics` record with computed properties and human-readable interpretation of reading ease.
 
+- **Readability HUD Widget** — New `ReadabilityHudViewModel` and `ReadabilityHudView` display real-time readability metrics in the Problems Panel header. Features color-coded grade levels, fog index, and reading ease with tooltip descriptions. Writer Pro tier license gating via `FeatureCodes.ReadabilityHud`.
+
 #### Sub-Part Changelogs
 
 | Version                                 | Title                  | Status      |
@@ -95,7 +97,7 @@ This release introduces algorithmic readability analysis to compute text complex
 | [v0.3.3a](v0.3.x/v0.3.3/LCS-CL-033a.md) | Sentence Tokenizer     | ✅ Complete |
 | [v0.3.3b](v0.3.x/v0.3.3/LCS-CL-033b.md) | Syllable Counter       | ✅ Complete |
 | [v0.3.3c](v0.3.x/v0.3.3/LCS-CL-033c.md) | Readability Calculator | ✅ Complete |
-| v0.3.3d                                 | HUD Widget             | 🚧 Planned  |
+| [v0.3.3d](v0.3.x/v0.3.3/LCS-CL-033d.md) | HUD Widget             | ✅ Complete |
 
 ---
 

@@ -144,6 +144,10 @@ public sealed class StyleModule : IModule
         services.AddTransient<IScorecardViewModel, ScorecardViewModel>();
         services.AddTransient<ScorecardWidget>();
 
+        // LOGIC: v0.3.3d - Readability HUD Widget components
+        services.AddSingleton<IReadabilityHudViewModel, ReadabilityHudViewModel>();
+        services.AddTransient<ReadabilityHudWidget>();
+
         // LOGIC: v0.2.6d - Project linting service for scope filtering
         services.AddSingleton<IProjectLintingService, ProjectLintingService>();
 
