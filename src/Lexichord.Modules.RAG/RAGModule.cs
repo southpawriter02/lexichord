@@ -119,6 +119,10 @@ public sealed class RAGModule : IModule
         // LOGIC: Register FixedSizeChunkingStrategy as singleton - it is stateless and thread-safe.
         // This is the foundational chunking algorithm for the RAG pipeline (v0.4.3b).
         services.AddSingleton<FixedSizeChunkingStrategy>();
+
+        // LOGIC: Register ParagraphChunkingStrategy as singleton - it is stateless and thread-safe.
+        // This strategy splits on paragraph boundaries and uses FixedSizeChunkingStrategy as fallback (v0.4.3c).
+        services.AddSingleton<ParagraphChunkingStrategy>();
     }
 
     /// <inheritdoc/>

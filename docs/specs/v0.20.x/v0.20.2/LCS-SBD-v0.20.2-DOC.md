@@ -1328,3 +1328,1883 @@ TERMINAL STATES:
 
 ## Tutorial Step Types Specification
 
+### Step Type Definitions
+
+#### 1. Introduction Step
+Introduces the tutorial goal, prerequisites, and estimated time. Sets user expectations.
+
+```json
+{
+  "stepType": "introduction",
+  "stepNumber": 1,
+  "title": "Getting Started with Collaboration",
+  "duration": "2 minutes",
+  "content": "In this tutorial, you'll learn how to...",
+  "prerequisites": ["Workspace created", "At least one project"],
+  "estimatedTotalTime": "15 minutes",
+  "skills": ["Beginner"]
+}
+```
+
+#### 2. Text & Content Step
+Displays informational content with text, images, videos, and callout boxes.
+
+```json
+{
+  "stepType": "content",
+  "stepNumber": 2,
+  "title": "Understanding Workspace Roles",
+  "content": "Markdown/HTML content here",
+  "sections": [
+    {
+      "heading": "Admin Role",
+      "body": "Admins have full control...",
+      "type": "info"
+    },
+    {
+      "heading": "Editor Role",
+      "body": "Editors can modify content...",
+      "type": "warning"
+    }
+  ],
+  "images": ["url1", "url2"],
+  "videos": ["videoId1"]
+}
+```
+
+#### 3. Interactive Input Step
+Requires user input validation before proceeding.
+
+```json
+{
+  "stepType": "input",
+  "stepNumber": 3,
+  "title": "Create Your First Workspace",
+  "instructions": "Enter a workspace name...",
+  "form": {
+    "fields": [
+      {
+        "name": "workspaceName",
+        "label": "Workspace Name",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g., My Team Workspace",
+        "validation": {
+          "minLength": 3,
+          "maxLength": 50,
+          "pattern": "^[a-zA-Z0-9-_\\s]+$",
+          "errorMessage": "Name must be 3-50 characters..."
+        }
+      }
+    ]
+  },
+  "submitButton": "Create Workspace",
+  "validationMessage": "Workspace created successfully!"
+}
+```
+
+#### 4. Hands-On Exercise Step
+Guides user through performing an action in the application.
+
+```json
+{
+  "stepType": "exercise",
+  "stepNumber": 4,
+  "title": "Invite Team Members",
+  "instructions": "Follow these steps to invite your team...",
+  "steps": [
+    "Click the 'Settings' button in the top navigation",
+    "Select 'Team Members' from the sidebar",
+    "Click 'Invite Member' button",
+    "Enter email addresses (comma-separated)",
+    "Click 'Send Invitations'"
+  ],
+  "validation": {
+    "type": "actionCompleted",
+    "triggerElement": "button[data-test='invite-submit']",
+    "expectedState": "Team members successfully invited",
+    "message": "Great! Team members have been invited."
+  },
+  "hint": "Can't find the Settings button? It's in the top-right corner next to your profile."
+}
+```
+
+#### 5. Quiz/Knowledge Check Step
+Tests user understanding with multiple choice or true/false questions.
+
+```json
+{
+  "stepType": "quiz",
+  "stepNumber": 5,
+  "title": "Knowledge Check",
+  "instructions": "Answer the following questions...",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What permission level allows editing but not deletion?",
+      "type": "multipleChoice",
+      "options": [
+        {"id": "a", "text": "Viewer"},
+        {"id": "b", "text": "Editor"},
+        {"id": "c", "text": "Admin"},
+        {"id": "d", "text": "Guest"}
+      ],
+      "correctAnswer": "b",
+      "feedback": {
+        "correct": "Correct! Editors can modify content but cannot delete it.",
+        "incorrect": "Not quite. Remember, Editors can modify but not delete."
+      }
+    }
+  ],
+  "passingScore": 0.8,
+  "failureMessage": "Please review the previous steps and try again."
+}
+```
+
+#### 6. Code Example Step
+Displays code snippets with copy-to-clipboard and optional syntax highlighting.
+
+```json
+{
+  "stepType": "code",
+  "stepNumber": 6,
+  "title": "Using the API",
+  "instructions": "Here's how to call the collaboration API...",
+  "codeExamples": [
+    {
+      "language": "csharp",
+      "title": "C# Example",
+      "code": "var collaboration = new CollaborationService();\nawait collaboration.InviteMemberAsync(\"email@example.com\");",
+      "copyable": true
+    },
+    {
+      "language": "javascript",
+      "title": "JavaScript Example",
+      "code": "const collaboration = new CollaborationService();\nawait collaboration.inviteMember('email@example.com');",
+      "copyable": true
+    }
+  ],
+  "notes": "API keys required. See authentication documentation."
+}
+```
+
+#### 7. Video Step
+Embeds video content with optional transcript and chapters.
+
+```json
+{
+  "stepType": "video",
+  "stepNumber": 7,
+  "title": "Video: Advanced Collaboration Features",
+  "videoId": "youtube-video-id",
+  "platform": "youtube",
+  "duration": "5:30",
+  "transcript": "Here's the full transcript...",
+  "chapters": [
+    {"timestamp": "0:00", "title": "Introduction"},
+    {"timestamp": "1:30", "title": "Real-time Editing"},
+    {"timestamp": "3:00", "title": "Comments & Feedback"}
+  ],
+  "autoplay": false,
+  "subtitles": true
+}
+```
+
+#### 8. Branching Step
+Presents conditional paths based on user choice or context.
+
+```json
+{
+  "stepType": "branching",
+  "stepNumber": 8,
+  "title": "Choose Your Setup Path",
+  "instructions": "Which best describes your use case?",
+  "branches": [
+    {
+      "id": "branch_team",
+      "label": "I'm setting up a team",
+      "nextStep": 9,
+      "description": "Multiple team members collaborating"
+    },
+    {
+      "id": "branch_solo",
+      "label": "I'm working solo",
+      "nextStep": 15,
+      "description": "Individual user with optional guests"
+    },
+    {
+      "id": "branch_enterprise",
+      "label": "I'm an enterprise user",
+      "nextStep": 20,
+      "description": "SSO, advanced permissions, compliance"
+    }
+  ]
+}
+```
+
+#### 9. Completion Step
+Celebrates user completion and shows achievement badge.
+
+```json
+{
+  "stepType": "completion",
+  "stepNumber": 10,
+  "title": "Congratulations!",
+  "content": "You've successfully completed this tutorial!",
+  "achievements": [
+    {
+      "id": "collab_master",
+      "name": "Collaboration Master",
+      "icon": "🎯",
+      "description": "Completed the collaboration tutorial"
+    }
+  ],
+  "nextSteps": [
+    {"title": "Advanced Collaboration Features", "tutorialId": "adv-collab"},
+    {"title": "Team Management", "tutorialId": "team-mgmt"}
+  ],
+  "shareButton": true,
+  "feedbackForm": true
+}
+```
+
+---
+
+## Guided Tour Specification
+
+### Tour Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    GUIDED TOUR ARCHITECTURE                     │
+└─────────────────────────────────────────────────────────────────┘
+
+TOUR DEFINITION (WYSIWYG Builder)
+    │
+    ├─ Tour Name: "Workspace Setup Tour"
+    ├─ Trigger: "first_login" or "manual"
+    ├─ Target Audience: "new_users"
+    ├─ Feature Flags: ["workspace_collaboration"]
+    │
+    ↓
+TOUR STEPS (Tour Stops)
+    │
+    Step 1: Highlight "Create Workspace" button
+    Step 2: Highlight "Settings" menu
+    Step 3: Highlight "Team Members" section
+    Step 4: Highlight "Invite Button"
+    │
+    ↓
+ELEMENT TARGETING
+    │
+    ├─ CSS Selector: "#create-workspace-btn"
+    ├─ Fallback DOM Path: "html > body > div#app > header > button"
+    ├─ Data Attributes: "data-tour='workspace-create'"
+    ├─ Coordinates: {x: 500, y: 100} (for resilience)
+    │
+    ↓
+OVERLAY & POSITIONING
+    │
+    ├─ Spotlight Effect: Circle around element
+    ├─ Tooltip Position: "bottom" (auto-adjust if off-screen)
+    ├─ Z-Index: 10000 (ensure above all content)
+    ├─ Padding: 8px around highlighted element
+    │
+    ↓
+TOUR EXECUTION
+    │
+    ├─ Render overlay
+    ├─ Highlight target element
+    ├─ Display tooltip with text
+    ├─ Wait for user interaction (next, skip, etc.)
+    ├─ Handle dynamic content (re-evaluate selectors)
+    │
+    ↓
+PERSISTENCE & STATE
+    │
+    ├─ Save tour progress in localStorage
+    ├─ Track completed tours in user_settings
+    ├─ Suppress repeat tours (unless forced)
+    │
+    ↓
+ANALYTICS
+    │
+    ├─ Log: tour view, step changes, skips
+    ├─ Measure: completion rate, drop-off points
+    ├─ Track: conversions (did user complete action after tour?)
+```
+
+### Tour Step Definition
+
+```json
+{
+  "tourId": "tour-workspace-setup",
+  "tourName": "Workspace Setup Tour",
+  "description": "Learn how to set up your workspace",
+  "version": 1,
+  "enabled": true,
+  "triggers": [
+    {
+      "type": "firstLogin",
+      "delay": "3 seconds"
+    }
+  ],
+  "targeting": {
+    "userRole": ["user"],
+    "isNewUser": true,
+    "featureFlags": ["workspace_collaboration"],
+    "audience": "new_users"
+  },
+  "stops": [
+    {
+      "stopNumber": 1,
+      "title": "Welcome to Your Workspace!",
+      "description": "Let's set up your workspace. First, click here to create a new workspace.",
+      "elementSelector": "#create-workspace-btn",
+      "elementFallback": "[data-tour='workspace-create']",
+      "position": "bottom",
+      "offsetX": 0,
+      "offsetY": 10,
+      "highlightPadding": 8,
+      "actionType": "click",
+      "expectedAction": "createElement",
+      "nextCondition": "always",
+      "skipAllowed": true,
+      "duration": null
+    },
+    {
+      "stopNumber": 2,
+      "title": "Workspace Settings",
+      "description": "Configure your workspace settings here.",
+      "elementSelector": "#settings-menu",
+      "position": "right",
+      "actionType": "hover",
+      "expectedAction": "menuOpen",
+      "nextCondition": "manual",
+      "skipAllowed": true
+    }
+  ],
+  "styling": {
+    "primaryColor": "#0066FF",
+    "tooltipWidth": 320,
+    "darkMode": true,
+    "fontFamily": "system-ui"
+  },
+  "analytics": {
+    "trackViews": true,
+    "trackCompletions": true,
+    "trackSkips": true,
+    "conversionTracking": true
+  }
+}
+```
+
+---
+
+## Knowledge Base Article Schema
+
+### Article Structure
+
+```json
+{
+  "articleId": "kb-article-collab-001",
+  "title": "How to Set Up Team Collaboration",
+  "slug": "setup-team-collaboration",
+  "description": "Step-by-step guide for setting up collaboration in your workspace",
+  "category": {
+    "id": "collab",
+    "name": "Collaboration",
+    "path": "Features > Collaboration"
+  },
+  "tags": ["collaboration", "team", "setup", "beginner"],
+  "skillLevel": "beginner",
+  "contentType": "how-to",
+  "author": {
+    "id": "user-123",
+    "name": "John Doe",
+    "avatar": "url"
+  },
+  "created": "2025-01-15T10:00:00Z",
+  "updated": "2025-01-20T14:30:00Z",
+  "status": "published",
+  "body": {
+    "markdown": "## Setting Up Collaboration\n\n1. Navigate to workspace settings\n2. Click on Team Members\n3. Invite your team...",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Prerequisites",
+        "content": "...",
+        "level": 2
+      },
+      {
+        "id": "section-2",
+        "heading": "Step-by-Step Instructions",
+        "content": "...",
+        "subsections": [...]
+      }
+    ]
+  },
+  "media": {
+    "images": [
+      {
+        "url": "s3://bucket/image1.png",
+        "alt": "Workspace settings screen",
+        "caption": "Navigate to workspace settings"
+      }
+    ],
+    "videos": [
+      {
+        "videoId": "yt-123",
+        "platform": "youtube",
+        "title": "Setting Up Team Collaboration",
+        "timestamp": "1:30"
+      }
+    ]
+  },
+  "relatedArticles": [
+    {
+      "id": "kb-article-collab-002",
+      "title": "Managing Team Permissions",
+      "score": 0.95
+    }
+  ],
+  "faq": [
+    {
+      "question": "Can I change permissions after inviting?",
+      "answer": "Yes, you can always modify team member permissions..."
+    }
+  ],
+  "metadata": {
+    "wordCount": 1250,
+    "estimatedReadTime": "5 minutes",
+    "views": 5432,
+    "helpfulCount": 342,
+    "unhelpfulCount": 18,
+    "helpfulRatio": 0.95,
+    "lastViewedBy": "user-456",
+    "lastViewedAt": "2025-02-01T09:15:00Z"
+  },
+  "seo": {
+    "metaDescription": "Learn how to set up team collaboration...",
+    "keywords": ["collaboration", "team", "setup"],
+    "canonicalUrl": "https://help.example.com/collab/setup"
+  },
+  "searchTerms": [
+    "how to collaborate",
+    "team setup",
+    "sharing permissions"
+  ]
+}
+```
+
+---
+
+## PostgreSQL Schema
+
+### Tables
+
+```sql
+-- Help Articles (Knowledge Base)
+CREATE TABLE help_articles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    body TEXT NOT NULL,
+    body_html TEXT,
+    category_id UUID REFERENCES help_categories(id),
+    status VARCHAR(50) DEFAULT 'draft', -- draft, review, published, archived
+    author_id UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    published_at TIMESTAMP,
+    word_count INT,
+    estimated_read_time_minutes INT,
+    views_count INT DEFAULT 0,
+    helpful_votes INT DEFAULT 0,
+    unhelpful_votes INT DEFAULT 0,
+    last_viewed_at TIMESTAMP,
+    search_vector tsvector GENERATED ALWAYS AS (
+        to_tsvector('english', COALESCE(title, '') || ' ' || COALESCE(description, '') || ' ' || COALESCE(body, ''))
+    ) STORED,
+    INDEX idx_slug ON help_articles(slug),
+    INDEX idx_category ON help_articles(category_id),
+    INDEX idx_status ON help_articles(status),
+    INDEX idx_search_vector ON help_articles USING gin(search_vector),
+    INDEX idx_created_at ON help_articles(created_at DESC)
+);
+
+-- Help Categories
+CREATE TABLE help_categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    parent_id UUID REFERENCES help_categories(id),
+    display_order INT,
+    icon_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_parent ON help_categories(parent_id),
+    INDEX idx_display_order ON help_categories(display_order)
+);
+
+-- Tutorials
+CREATE TABLE tutorials (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    category_id UUID REFERENCES help_categories(id),
+    skill_level VARCHAR(50), -- beginner, intermediate, advanced
+    estimated_duration_minutes INT,
+    status VARCHAR(50) DEFAULT 'draft',
+    author_id UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    published_at TIMESTAMP,
+    views_count INT DEFAULT 0,
+    completions_count INT DEFAULT 0,
+    average_rating NUMERIC(3, 2),
+    INDEX idx_slug ON tutorials(slug),
+    INDEX idx_category ON tutorials(category_id),
+    INDEX idx_status ON tutorials(status)
+);
+
+-- Tutorial Steps
+CREATE TABLE tutorial_steps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tutorial_id UUID NOT NULL REFERENCES tutorials(id) ON DELETE CASCADE,
+    step_number INT NOT NULL,
+    step_type VARCHAR(50) NOT NULL, -- introduction, content, input, exercise, quiz, code, video, branching, completion
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    content_html TEXT,
+    instructions TEXT,
+    form_schema JSONB,
+    validation_rules JSONB,
+    code_examples JSONB,
+    video_id VARCHAR(255),
+    video_platform VARCHAR(50),
+    branches JSONB,
+    hints TEXT[],
+    duration_minutes INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tutorial_id, step_number),
+    INDEX idx_tutorial ON tutorial_steps(tutorial_id),
+    INDEX idx_step_number ON tutorial_steps(step_number)
+);
+
+-- User Tutorial Progress
+CREATE TABLE user_tutorial_progress (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tutorial_id UUID NOT NULL REFERENCES tutorials(id) ON DELETE CASCADE,
+    session_id UUID,
+    current_step_number INT,
+    completed_steps INT[],
+    status VARCHAR(50), -- in_progress, completed, abandoned, paused
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    time_spent_minutes INT,
+    variant_id VARCHAR(255),
+    UNIQUE(user_id, tutorial_id),
+    INDEX idx_user ON user_tutorial_progress(user_id),
+    INDEX idx_tutorial ON user_tutorial_progress(tutorial_id),
+    INDEX idx_status ON user_tutorial_progress(status)
+);
+
+-- Guided Tours
+CREATE TABLE guided_tours (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    trigger_type VARCHAR(50), -- first_login, manual, contextual, feature_unlock
+    trigger_delay_seconds INT,
+    target_user_role VARCHAR(50)[],
+    is_new_user_only BOOLEAN DEFAULT false,
+    feature_flags VARCHAR(255)[],
+    enabled BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    published_at TIMESTAMP,
+    views_count INT DEFAULT 0,
+    completions_count INT DEFAULT 0,
+    INDEX idx_enabled ON guided_tours(enabled),
+    INDEX idx_trigger_type ON guided_tours(trigger_type)
+);
+
+-- Tour Stops (Steps in a tour)
+CREATE TABLE tour_stops (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tour_id UUID NOT NULL REFERENCES guided_tours(id) ON DELETE CASCADE,
+    stop_number INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    element_selector VARCHAR(500),
+    element_fallback VARCHAR(500),
+    position VARCHAR(50), -- top, bottom, left, right
+    offset_x INT DEFAULT 0,
+    offset_y INT DEFAULT 10,
+    highlight_padding INT DEFAULT 8,
+    action_type VARCHAR(50), -- click, hover, manual
+    expected_action VARCHAR(50),
+    next_condition VARCHAR(50), -- always, manual, conditional
+    skip_allowed BOOLEAN DEFAULT true,
+    duration_seconds INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tour_id, stop_number),
+    INDEX idx_tour ON tour_stops(tour_id)
+);
+
+-- User Tour Progress
+CREATE TABLE user_tour_progress (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tour_id UUID NOT NULL REFERENCES guided_tours(id) ON DELETE CASCADE,
+    session_id UUID,
+    current_stop_number INT,
+    completed_stops INT[],
+    status VARCHAR(50), -- in_progress, completed, skipped
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    suppressed_until TIMESTAMP,
+    UNIQUE(user_id, tour_id),
+    INDEX idx_user ON user_tour_progress(user_id),
+    INDEX idx_tour ON user_tour_progress(tour_id)
+);
+
+-- FAQ Entries
+CREATE TABLE faq_entries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    article_id UUID REFERENCES help_articles(id),
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    display_order INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_article ON faq_entries(article_id)
+);
+
+-- Video Content
+CREATE TABLE video_content (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    video_id VARCHAR(255) NOT NULL UNIQUE,
+    platform VARCHAR(50), -- youtube, vimeo, custom
+    duration_seconds INT,
+    thumbnail_url VARCHAR(255),
+    transcript TEXT,
+    transcript_vector tsvector,
+    chapters JSONB,
+    categories VARCHAR(255)[],
+    tags VARCHAR(100)[],
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    views_count INT DEFAULT 0,
+    watch_time_seconds INT DEFAULT 0,
+    INDEX idx_video_id ON video_content(video_id),
+    INDEX idx_transcript_vector ON video_content USING gin(transcript_vector)
+);
+
+-- Help Article Feedback
+CREATE TABLE help_article_feedback (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    article_id UUID NOT NULL REFERENCES help_articles(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id),
+    helpful BOOLEAN NOT NULL,
+    feedback_text TEXT,
+    rating INT, -- 1-5 stars
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_article ON help_article_feedback(article_id),
+    INDEX idx_user ON help_article_feedback(user_id),
+    INDEX idx_helpful ON help_article_feedback(helpful)
+);
+
+-- Search Events (Analytics)
+CREATE TABLE help_search_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id),
+    search_query VARCHAR(500),
+    filters JSONB,
+    result_count INT,
+    clicked_results INT[],
+    first_click_position INT,
+    time_to_click_seconds INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    session_id UUID,
+    INDEX idx_user ON help_search_events(user_id),
+    INDEX idx_created_at ON help_search_events(created_at DESC),
+    INDEX idx_query ON help_search_events(search_query)
+);
+
+-- Help Analytics Events
+CREATE TABLE help_analytics_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id),
+    event_type VARCHAR(100), -- help_search, tutorial_start, tutorial_complete, tour_view, etc.
+    event_data JSONB,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    session_id UUID,
+    INDEX idx_user ON help_analytics_events(user_id),
+    INDEX idx_event_type ON help_analytics_events(event_type),
+    INDEX idx_timestamp ON help_analytics_events(timestamp DESC)
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_help_search_events_query_ts ON help_search_events(search_query, created_at DESC);
+CREATE INDEX idx_article_feedback_helpful_ts ON help_article_feedback(helpful, created_at DESC);
+CREATE INDEX idx_tutorial_steps_tutorial_order ON tutorial_steps(tutorial_id, step_number);
+```
+
+---
+
+## UI Mockups Description
+
+### 1. Help Center Search Interface
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  Help Center                                                   🔍 │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ 🔍 How to set up collaboration...  [search filters ▼]    │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                   │
+│  SUGGESTED SEARCHES: workspaces • team • permissions            │
+│                                                                   │
+├─────────────────────────────────────────────────────────────────┤
+│ FILTERS                           SEARCH RESULTS (24)            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│ Category                          ┌────────────────────────────┐ │
+│ ☐ Getting Started                 │ ★ How to Set Up Collab     │ │
+│ ☑ Features (3)                    │ Features > Collaboration   │ │
+│ ☐ Troubleshooting                 │ 95% helpful | Updated 2d   │ │
+│ ☐ Integration                     │ Set up collaboration in... │ │
+│                                    │ [Read Article] [Video]     │ │
+│ Article Type                       └────────────────────────────┘ │
+│ ☑ How-To (12)                      ┌────────────────────────────┐ │
+│ ☑ FAQ (8)                          │ Managing Team Permissions  │ │
+│ ☐ Troubleshooting                 │ Features > Collaboration   │ │
+│ ☐ Video                            │ 92% helpful | Updated 5d   │ │
+│                                    │ Learn how to modify team... │ │
+│ Skill Level                        │ [Read Article]             │ │
+│ ☐ Beginner                         └────────────────────────────┘ │
+│ ☑ Intermediate (10)                ┌────────────────────────────┐ │
+│ ☑ Advanced (6)                     │ Troubleshooting: Member... │ │
+│                                    │ Troubleshooting            │ │
+│ Updated                            │ 78% helpful | Updated 1w   │ │
+│ ☑ Last 7 days (18)                │ If team members can't...   │ │
+│ ☐ Last 30 days (5)                │ [Read Article]             │ │
+│ ☐ Last 90 days (1)                └────────────────────────────┘ │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 2. Tutorial Player Interface
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ Getting Started with Collaboration  [50% Complete]         [ ] │ │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  TUTORIAL OUTLINE                 TUTORIAL CONTENT              │
+│  ──────────────────────────────    ──────────────────────────  │
+│  1. Introduction            ✓      Step 3 of 6: Add Members    │
+│  2. Workspace Setup         ✓      ────────────────────────    │
+│  3. Add Members             ● (now)                             │
+│  4. Set Permissions                 Now that your workspace is   │
+│  5. Best Practices          ⚪      set up, let's invite your    │
+│  6. Completion              ⚪      team members!               │
+│                                                                   │
+│                                    ┌─────────────────┐           │
+│                                    │ 💡 HINT (click) │           │
+│                                    └─────────────────┘           │
+│                                                                   │
+│                                    INTERACTIVE FORM:             │
+│                                    ─────────────────             │
+│                                    Email addresses:              │
+│                                    [jane@company.com]            │
+│                                    [bob@company.com ]            │
+│                                    [_______________]             │
+│                                                                   │
+│                                    Role: [Admin  ▼]              │
+│                                                                   │
+│                                    [+ Add another] [Submit]     │
+│                                                                   │
+│  [Estimated time: 3 min left]      [Skip] [← Prev] [Next →]    │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 3. Guided Tour Overlay
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    MAIN APPLICATION UI                           │
+│                                                                   │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Workspace: My Team                 [Settings] [Profile]│   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                   │
+│  [Projects] [Team] [Analytics] [Help]                           │
+│                                                                   │
+│  ╔════════════════════════════════════════════════════════╗     │
+│  ║                                                        ║     │
+│  ║  ┌──────────────────────────────────────────────────┐ ║     │
+│  ║  │                                                  │ ║     │
+│  ║  │         ⭐ SPOTLIGHT ON FEATURE ⭐             │ ║     │
+│  ║  │                                                  │ ║     │
+│  ║  │  ┌────────────────────────────────────────────┐ │ ║     │
+│  ║  │  │ Step 2 of 4: Team Management              │ │ ║     │
+│  ║  │  │                                            │ │ ║     │
+│  ║  │  │ Click the "Team" menu to manage team      │ │ ║     │
+│  ║  │  │ members and permissions.                  │ │ ║     │
+│  ║  │  │                                            │ │ ║     │
+│  ║  │  │              [Skip]   [Next ▶]            │ │ ║     │
+│  ║  │  └────────────────────────────────────────────┘ │ ║     │
+│  ║  │                                                  │ ║     │
+│  ║  │  [Team] ◄── HIGHLIGHTED ELEMENT                │ ║     │
+│  ║  │   • Members                                     │ ║     │
+│  ║  │   • Roles                                       │ ║     │
+│  ║  │   • Permissions                                 │ ║     │
+│  ║  │                                                  │ ║     │
+│  ║  └──────────────────────────────────────────────────┘ ║     │
+│  ║                                                        ║     │
+│  ║  (background dimmed and blurred)                      ║     │
+│  ║                                                        ║     │
+│  ╚════════════════════════════════════════════════════════╝     │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 4. Knowledge Base Browser
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  Knowledge Base                                                  │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│ CATEGORIES                                                       │
+│ ──────────────────────────────────────────────────────────────  │
+│ ▼ Features (23 articles)                                        │
+│   ▼ Collaboration (8)                                            │
+│     • How to Set Up Collaboration    [5 min read] [95% helpful] │
+│     • Managing Team Permissions      [7 min read]               │
+│     • Best Practices                 [6 min read]               │
+│   ▼ Analytics (10)                                               │
+│   ▼ Library (5)                                                  │
+│ ▶ Getting Started (12 articles)                                  │
+│ ▶ Troubleshooting (8 articles)                                   │
+│ ▶ Integration (6 articles)                                       │
+│                                                                   │
+├──────────────────────────────────────────────────────────────────┤
+│                      ARTICLE CONTENT VIEW                        │
+│                                                                   │
+│ HOME > FEATURES > COLLABORATION > SETUP                          │
+│                                                                   │
+│ How to Set Up Team Collaboration                    ★★★★★      │
+│ By John Doe  •  Updated Jan 20  •  5 min read  •  5.4K views   │
+│                                                                   │
+│ TABLE OF CONTENTS:                                               │
+│ 1. Prerequisites                                                │
+│ 2. Step-by-Step Instructions                                   │
+│ 3. Troubleshooting                                             │
+│ 4. FAQ                                                         │
+│                                                                   │
+│ [Article body with rich formatting]                             │
+│                                                                   │
+│ ────────────────────────────────────────────────────────────   │
+│                                                                   │
+│ Was this helpful?  [👍 Yes] [👎 No] [Comments ...]             │
+│                                                                   │
+│ RELATED ARTICLES:                                               │
+│ • Managing Team Permissions                                     │
+│ • Troubleshooting: Member Access Issues                        │
+│ • Best Practices for Collaboration                             │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Dependency Chain
+
+### Component Dependencies
+
+```
+help_system/
+├── HelpCenter
+│   ├── Depends: IHelpSearch
+│   ├── Depends: IKnowledgeBase
+│   ├── Depends: IArticleFeedback
+│   ├── Depends: IHelpAnalytics
+│   └── Depends: SearchEngine (Elasticsearch or PostgreSQL)
+│
+├── TutorialSystem
+│   ├── Depends: ITutorialRepository
+│   ├── Depends: IUserProgressRepository
+│   ├── Depends: ICodeValidator
+│   ├── Depends: IQuizEngine
+│   └── Depends: IHelpAnalytics
+│
+├── GuidedTourService
+│   ├── Depends: ITourRepository
+│   ├── Depends: IUserTourProgressRepository
+│   ├── Depends: IElementTargetingService
+│   ├── Depends: ITriggerEvaluationService
+│   └── Depends: IHelpAnalytics
+│
+├── KnowledgeBaseService
+│   ├── Depends: IArticleRepository
+│   ├── Depends: IArticleVersionRepository
+│   ├── Depends: IContentRenderer
+│   ├── Depends: ISearchService
+│   └── Depends: IRecommendationEngine
+│
+├── VideoHelpService
+│   ├── Depends: IVideoRepository
+│   ├── Depends: ITranscriptService
+│   ├── Depends: IVideoHostingProvider
+│   └── Depends: IHelpAnalytics
+│
+└── HelpAnalytics
+    ├── Depends: IEventStore
+    ├── Depends: IAnalyticsRepository
+    ├── Depends: IReportingService
+    └── Depends: IAlertingService
+
+INFRASTRUCTURE DEPENDENCIES:
+├── PostgreSQL (data storage)
+├── Elasticsearch/Meilisearch (full-text search)
+├── Redis (caching, session state)
+├── S3/CloudStorage (media storage)
+├── Video Platform API (YouTube/Vimeo)
+├── Speech-to-Text Service (AWS Transcribe, Google Cloud Speech)
+├── MediatR (event publishing)
+└── AutoMapper (DTO mapping)
+```
+
+---
+
+## License Gating
+
+### Feature Availability by License Tier
+
+| Feature | Free | Pro | Enterprise |
+|---------|------|-----|------------|
+| **Searchable Help Center** | ✓ Limited (100 articles) | ✓ Full | ✓ Full |
+| **Knowledge Base** | ✓ Read-only | ✓ Contribute | ✓ Full Control |
+| **Interactive Tutorials** | ✓ Basic (5 tutorials) | ✓ All (50+ tutorials) | ✓ Custom |
+| **Tutorial Analytics** | ✗ | ✓ | ✓ |
+| **Guided Tours** | ✓ Auto-triggered | ✓ All triggers | ✓ All triggers + Custom |
+| **Video Help** | ✓ Platform videos | ✓ Platform + Custom | ✓ Unlimited |
+| **Search Analytics** | ✗ | ✓ Basic | ✓ Advanced |
+| **Content Feedback** | ✓ View feedback | ✗ | ✓ Full Access |
+| **Custom Help Content** | ✗ | ✗ | ✓ |
+| **Help Analytics Dashboard** | ✗ | ✓ Basic Dashboard | ✓ Advanced Reports |
+| **API Access** | ✗ | ✓ Read-only | ✓ Full |
+| **SSO for Help** | ✗ | ✗ | ✓ |
+| **Custom Branding** | ✗ | ✗ | ✓ |
+
+---
+
+## Performance Targets
+
+### Response Time Targets
+
+| Operation | Target | Metric | Notes |
+|-----------|--------|--------|-------|
+| Help Search | < 100ms | P95 | Includes network latency |
+| Article Load | < 300ms | P95 | Full page render |
+| Tutorial Load | < 500ms | P95 | First paint + content render |
+| Tour Initialization | < 200ms | P95 | Overlay + element targeting |
+| Video Embed Load | < 1000ms | P95 | YouTube/Vimeo embed ready |
+| Transcript Search | < 150ms | P95 | Video transcript indexed search |
+| Analytics Event Log | < 50ms | P99 | Async, non-blocking |
+| Related Articles | < 200ms | P95 | Recommendation engine |
+| Guided Tour Render | < 150ms | P95 | Overlay rendering |
+
+### Scalability Targets
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Help Articles | 10,000+ | Searchable, indexed |
+| Concurrent Users | 10,000+ | Simultaneous help access |
+| Search QPS | 5,000+ | Queries per second |
+| Article Views/Day | 1M+ | Analytics tracking |
+| Tutorial Completions/Day | 100K+ | Progress tracking |
+| Tour Views/Day | 500K+ | Distributed load |
+| Video Content | 1,000+ | With transcripts |
+
+### Availability & Reliability
+
+| Metric | Target |
+|--------|--------|
+| Help System Uptime | 99.9% |
+| Search Engine Availability | 99.95% |
+| Database Availability | 99.95% |
+| CDN Availability | 99.99% |
+| Help Content Sync | Real-time (< 30 sec) |
+
+---
+
+## Testing Strategy
+
+### Unit Testing
+
+```csharp
+[TestFixture]
+public class HelpSearchServiceTests
+{
+    private IHelpCenter _helpCenter;
+    private Mock<ISearchEngine> _mockSearchEngine;
+
+    [SetUp]
+    public void Setup()
+    {
+        _mockSearchEngine = new Mock<ISearchEngine>();
+        _helpCenter = new HelpCenterService(_mockSearchEngine.Object, new Mock<IHelpAnalytics>().Object);
+    }
+
+    [Test]
+    public async Task SearchAsync_WithValidQuery_ReturnsResults()
+    {
+        // Arrange
+        var query = new HelpSearchQuery { SearchText = "collaboration" };
+        var expectedResults = new List<HelpSearchResult> { /* mock data */ };
+        _mockSearchEngine.Setup(x => x.SearchAsync(It.IsAny<string>()))
+            .ReturnsAsync(expectedResults);
+
+        // Act
+        var result = await _helpCenter.SearchAsync(query);
+
+        // Assert
+        Assert.That(result.Count, Is.EqualTo(expectedResults.Count));
+        _mockSearchEngine.Verify(x => x.SearchAsync("collaboration"), Times.Once);
+    }
+
+    [Test]
+    public async Task SearchAsync_WithZeroResults_LogsContentGap()
+    {
+        // Arrange
+        var query = new HelpSearchQuery { SearchText = "nonexistent-feature" };
+        var emptyResults = new List<HelpSearchResult>();
+        _mockSearchEngine.Setup(x => x.SearchAsync(It.IsAny<string>()))
+            .ReturnsAsync(emptyResults);
+
+        // Act & Assert
+        var result = await _helpCenter.SearchAsync(query);
+        Assert.That(result.Count, Is.EqualTo(0));
+        // Verify content gap logging
+    }
+}
+
+[TestFixture]
+public class TutorialProgressTests
+{
+    [Test]
+    public async Task UpdateStepProgress_WithValidation_AdvancesToNextStep()
+    {
+        // Arrange
+        var tutorialService = new TutorialSystemService();
+        var tutorialId = Guid.NewGuid().ToString();
+        var stepProgress = new TutorialStepProgress { StepNumber = 1, IsCompleted = true };
+
+        // Act
+        var result = await tutorialService.UpdateStepProgressAsync(tutorialId, 1, stepProgress);
+
+        // Assert
+        Assert.That(result.CurrentStepNumber, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task UpdateStepProgress_WithFailedValidation_DoesNotAdvance()
+    {
+        // Arrange
+        var tutorialService = new TutorialSystemService();
+        var tutorialId = Guid.NewGuid().ToString();
+        var stepProgress = new TutorialStepProgress { StepNumber = 1, IsCompleted = false };
+
+        // Act
+        var result = await tutorialService.UpdateStepProgressAsync(tutorialId, 1, stepProgress);
+
+        // Assert
+        Assert.That(result.CurrentStepNumber, Is.EqualTo(1));
+    }
+}
+```
+
+### Integration Testing
+
+```csharp
+[TestFixture]
+public class HelpCenterIntegrationTests
+{
+    private IServiceCollection _services;
+    private IHelpCenter _helpCenter;
+
+    [OneTimeSetUp]
+    public void Setup()
+    {
+        _services = new ServiceCollection();
+        _services.AddHelpSystemServices();
+        _services.AddScoped<IHelpCenter, HelpCenterService>();
+
+        var provider = _services.BuildServiceProvider();
+        _helpCenter = provider.GetRequiredService<IHelpCenter>();
+    }
+
+    [Test]
+    public async Task SearchAndViewArticle_TracksAnalytics()
+    {
+        // Arrange
+        var searchQuery = new HelpSearchQuery { SearchText = "collaboration" };
+
+        // Act
+        var searchResult = await _helpCenter.SearchAsync(searchQuery);
+        var articleDetail = await _helpCenter.GetArticleAsync(searchResult.FirstOrDefault()?.ArticleId);
+
+        // Assert
+        Assert.That(articleDetail, Is.Not.Null);
+        // Verify analytics events were logged
+    }
+}
+```
+
+### End-to-End Testing
+
+```gherkin
+Scenario: User searches help and finds article
+  Given user is on help center
+  When user searches for "collaboration"
+  Then search results display relevant articles
+    And first result is "How to Set Up Collaboration"
+    And result shows helpful votes and read time
+
+  When user clicks first result
+  Then article opens with full content
+    And table of contents is visible
+    And related articles display
+    And helpful/not helpful button is available
+
+  When user clicks "Helpful"
+  Then feedback is recorded
+    And helpful vote count increments
+
+Scenario: User completes tutorial
+  Given user starts "Getting Started" tutorial
+  When user navigates to first step
+  Then introduction displays with estimated time
+
+  When user completes each step
+  Then progress bar updates
+    And step counter shows current/total
+
+  When user completes final step
+  Then completion page displays
+    And badge is awarded
+    And completion is recorded in history
+
+Scenario: Guided tour appears for new user
+  Given new user logs in for first time
+  When application loads
+  Then "Workspace Setup" tour auto-triggers after 3 seconds
+
+  When user hovers over highlighted element
+  Then tooltip shows guidance
+
+  When user clicks "Next"
+  Then tour advances to next step
+
+  When user clicks "Skip Tour"
+  Then tour dismisses
+    And suppression is recorded
+```
+
+### Performance Testing
+
+```csharp
+[TestFixture]
+[Explicit]
+public class HelpSystemPerformanceTests
+{
+    [Test]
+    public async Task SearchPerformance_ConcurrentUsers()
+    {
+        // Test with 1000 concurrent search requests
+        var options = new ParallelOptions { MaxDegreeOfParallelism = 1000 };
+        var stopwatch = Stopwatch.StartNew();
+
+        var searchTasks = Enumerable.Range(1, 1000)
+            .Select(i => _helpCenter.SearchAsync(new HelpSearchQuery { SearchText = "collaboration" }))
+            .ToList();
+
+        await Task.WhenAll(searchTasks);
+        stopwatch.Stop();
+
+        Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(100 * 10)); // 100ms target with buffer
+    }
+
+    [Test]
+    public async Task TutorialLoadPerformance_WithLargeContent()
+    {
+        // Test loading tutorial with 50 steps and rich content
+        var stopwatch = Stopwatch.StartNew();
+        var tutorial = await _tutorialService.GetTutorialAsync("large-tutorial-id");
+        stopwatch.Stop();
+
+        Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(500));
+        Assert.That(tutorial.Steps.Count, Is.EqualTo(50));
+    }
+}
+```
+
+### User Testing
+
+#### Usability Testing Plan
+
+1. **Task Completion Testing**
+   - User finds and reads article on specific topic
+   - User completes tutorial end-to-end
+   - User dismisses tour and continues with work
+
+2. **Search Effectiveness Testing**
+   - User searches for common questions
+   - Track search query patterns
+   - Identify zero-result searches
+   - Measure click-through rates
+
+3. **Tutorial Effectiveness Testing**
+   - User completes tutorial without guidance
+   - Measure dropout rate per step
+   - Track time spent per step
+   - Gather feedback on clarity
+
+4. **Navigation & Discoverability Testing**
+   - User discovers help resources organically
+   - Tour triggers appropriately
+   - Related articles are relevant
+   - Recommendations appear at right time
+
+---
+
+## Risks & Mitigations
+
+### Risk 1: Search Index Staleness
+
+**Risk**: Search index becomes out-of-sync with database, returning stale results
+
+**Probability**: Medium
+**Impact**: High (users get outdated information)
+
+**Mitigation**:
+- Implement real-time indexing with < 30 second latency
+- Add monitoring/alerts for index sync lag
+- Periodic full-index rebuild (daily off-peak)
+- Dual-write pattern for critical updates
+- Fallback to database full-text search if index unavailable
+
+### Risk 2: Tutorial Progress Loss
+
+**Risk**: User's tutorial progress is lost due to session timeout or crash
+
+**Probability**: Low
+**Impact**: High (user frustration)
+
+**Mitigation**:
+- Auto-save progress every 30 seconds
+- Store progress in persistent database (not just localStorage)
+- Implement offline caching with sync on reconnect
+- Clear error messages and recovery instructions
+- Test recovery with network disconnection simulation
+
+### Risk 3: Element Targeting Failures in Tours
+
+**Risk**: Tour elements can't be found due to UI changes or dynamic content
+
+**Probability**: High (constant UI evolution)
+**Impact**: Medium (tour fails silently)
+
+**Mitigation**:
+- Use multiple targeting strategies (CSS selector, DOM path, data attributes, coordinates)
+- Implement element validation before tour starts
+- Log element targeting failures for monitoring
+- Graceful degradation (show tour hint without highlight if element not found)
+- Add automated testing to catch DOM changes
+
+### Risk 4: Help Content Quality
+
+**Risk**: Outdated, inaccurate, or low-quality help content reduces trust
+
+**Probability**: High
+**Impact**: High (damages credibility)
+
+**Mitigation**:
+- Establish content ownership and review process
+- Flag articles older than 90 days for review
+- Monitor helpful/unhelpful votes for quality issues
+- Surface low-engagement content for improvement
+- Link articles to feature releases and deprecations
+- Community feedback and rating system
+
+### Risk 5: Tutorial Accessibility Issues
+
+**Risk**: Tutorial content not accessible to users with disabilities
+
+**Probability**: Medium
+**Impact**: High (accessibility liability)
+
+**Mitigation**:
+- WCAG 2.1 AA compliance for all tutorial content
+- Alt text for images and descriptions for videos
+- Keyboard navigation support (Tab, Enter, Arrow keys)
+- Screen reader testing with NVDA/JAWS
+- Color contrast requirements
+- Caption and transcript for video content
+- Code examples with proper syntax highlighting
+
+### Risk 6: Video Transcript Quality
+
+**Risk**: Auto-generated transcripts contain errors, making search unreliable
+
+**Probability**: Medium
+**Impact**: Medium (search effectiveness)
+
+**Mitigation**:
+- Use high-quality speech-to-text service (AWS Transcribe with custom vocab)
+- Manual review/correction of transcripts for critical videos
+- Display confidence scores for auto-generated transcripts
+- Allow user corrections and community contributions
+- Monitor search query matches against transcript quality
+
+### Risk 7: Analytics Data Privacy
+
+**Risk**: Help system analytics expose sensitive user/workspace information
+
+**Probability**: Low
+**Impact**: High (GDPR/compliance violation)
+
+**Mitigation**:
+- Redact PII from search queries and event data
+- Encrypt analytics data at rest and in transit
+- Implement data retention and purge policies
+- Use analytics service account (not user identity) when possible
+- Regular privacy audits and compliance reviews
+- User consent for analytics tracking
+
+---
+
+## MediatR Events
+
+### Event Definitions
+
+```csharp
+// ============== SEARCH EVENTS ==============
+
+/// <summary>
+/// Fired when user performs a help center search
+/// </summary>
+public class HelpSearchedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string SearchQuery { get; set; }
+    public Dictionary<string, object> Filters { get; set; }
+    public int ResultCount { get; set; }
+    public DateTime SearchedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user clicks a search result
+/// </summary>
+public class SearchResultClickedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string SearchQuery { get; set; }
+    public string ResultId { get; set; }
+    public int ResultPosition { get; set; }
+    public int SecondsToClick { get; set; }
+    public DateTime ClickedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when search returns zero results
+/// </summary>
+public class ZeroResultSearchEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string SearchQuery { get; set; }
+    public Dictionary<string, object> Filters { get; set; }
+    public DateTime SearchedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+// ============== ARTICLE EVENTS ==============
+
+/// <summary>
+/// Fired when user views a help article
+/// </summary>
+public class ArticleViewedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string ArticleId { get; set; }
+    public string ArticleTitle { get; set; }
+    public string Source { get; set; } // search, direct, related, recommendation
+    public DateTime ViewedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user leaves a help article after reading
+/// </summary>
+public class ArticleExitedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string ArticleId { get; set; }
+    public int TimeSpentSeconds { get; set; }
+    public decimal ScrollDepthPercentage { get; set; }
+    public DateTime ExitedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user submits helpful/not helpful feedback
+/// </summary>
+public class ArticleFeedbackSubmittedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string ArticleId { get; set; }
+    public bool IsHelpful { get; set; }
+    public string? FeedbackText { get; set; }
+    public DateTime SubmittedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user rates an article
+/// </summary>
+public class ArticleRatedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string ArticleId { get; set; }
+    public int Rating { get; set; } // 1-5
+    public string? Comment { get; set; }
+    public DateTime RatedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+// ============== TUTORIAL EVENTS ==============
+
+/// <summary>
+/// Fired when user starts a tutorial
+/// </summary>
+public class TutorialStartedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TutorialId { get; set; }
+    public string TutorialTitle { get; set; }
+    public string VariantId { get; set; }
+    public DateTime StartedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user completes a tutorial step
+/// </summary>
+public class TutorialStepCompletedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TutorialId { get; set; }
+    public int StepNumber { get; set; }
+    public string StepTitle { get; set; }
+    public int TimeSpentSeconds { get; set; }
+    public bool ValidationPassed { get; set; }
+    public DateTime CompletedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user abandons a tutorial step
+/// </summary>
+public class TutorialStepSkippedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TutorialId { get; set; }
+    public int StepNumber { get; set; }
+    public string SkipReason { get; set; }
+    public int TimeSpentSeconds { get; set; }
+    public DateTime SkippedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user completes entire tutorial
+/// </summary>
+public class TutorialCompletedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TutorialId { get; set; }
+    public string TutorialTitle { get; set; }
+    public int TotalTimeSpentSeconds { get; set; }
+    public int SkippedStepsCount { get; set; }
+    public DateTime CompletedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user abandons a tutorial
+/// </summary>
+public class TutorialAbandonedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TutorialId { get; set; }
+    public int LastCompletedStep { get; set; }
+    public int TotalSteps { get; set; }
+    public int TimeSpentSeconds { get; set; }
+    public string AbandonReason { get; set; }
+    public DateTime AbandonedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+// ============== GUIDED TOUR EVENTS ==============
+
+/// <summary>
+/// Fired when a guided tour is shown to user
+/// </summary>
+public class GuidedTourStartedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TourId { get; set; }
+    public string TourName { get; set; }
+    public string StartReason { get; set; } // auto, manual, contextual
+    public DateTime StartedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user advances to next tour step
+/// </summary>
+public class TourStepAdvancedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TourId { get; set; }
+    public int CurrentStep { get; set; }
+    public int TotalSteps { get; set; }
+    public int TimeOnStepSeconds { get; set; }
+    public DateTime AdvancedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user completes a guided tour
+/// </summary>
+public class GuidedTourCompletedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TourId { get; set; }
+    public string TourName { get; set; }
+    public int TotalTimeSpentSeconds { get; set; }
+    public int StepsCompleted { get; set; }
+    public int StepsSkipped { get; set; }
+    public DateTime CompletedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user skips/dismisses a guided tour
+/// </summary>
+public class GuidedTourSkippedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string TourId { get; set; }
+    public int StepReachedWhenSkipped { get; set; }
+    public int TotalSteps { get; set; }
+    public bool SuppressInFuture { get; set; }
+    public DateTime SkippedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+// ============== VIDEO EVENTS ==============
+
+/// <summary>
+/// Fired when user starts watching help video
+/// </summary>
+public class VideoPlayedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string VideoId { get; set; }
+    public string VideoTitle { get; set; }
+    public DateTime PlayedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired periodically as user watches video
+/// </summary>
+public class VideoEngagementEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string VideoId { get; set; }
+    public int CurrentPositionSeconds { get; set; }
+    public int TotalDurationSeconds { get; set; }
+    public decimal CompletionPercentage { get; set; }
+    public DateTime RecordedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+/// <summary>
+/// Fired when user searches video transcripts
+/// </summary>
+public class VideoTranscriptSearchedEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string SearchQuery { get; set; }
+    public int ResultCount { get; set; }
+    public DateTime SearchedAt { get; set; }
+    public string SessionId { get; set; }
+}
+
+// ============== ANALYTICS EVENTS ==============
+
+/// <summary>
+/// Base event for help system analytics
+/// </summary>
+public abstract class HelpAnalyticsEvent : INotification
+{
+    public Guid UserId { get; set; }
+    public string EventType { get; set; }
+    public Dictionary<string, object> EventData { get; set; }
+    public DateTime Timestamp { get; set; }
+    public string SessionId { get; set; }
+}
+```
+
+### Event Handlers
+
+```csharp
+/// <summary>
+/// Handles search analytics logging
+/// </summary>
+public class HelpSearchedEventHandler : INotificationHandler<HelpSearchedEvent>
+{
+    private readonly IHelpAnalyticsRepository _repository;
+    private readonly ILogger<HelpSearchedEventHandler> _logger;
+
+    public HelpSearchedEventHandler(
+        IHelpAnalyticsRepository repository,
+        ILogger<HelpSearchedEventHandler> logger)
+    {
+        _repository = repository;
+        _logger = logger;
+    }
+
+    public async Task Handle(HelpSearchedEvent notification, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _repository.LogSearchEventAsync(
+                notification.UserId,
+                notification.SearchQuery,
+                notification.Filters,
+                notification.ResultCount,
+                notification.SessionId,
+                cancellationToken);
+
+            _logger.LogInformation(
+                "Help search logged: Query={Query}, UserId={UserId}, Results={Count}",
+                notification.SearchQuery,
+                notification.UserId,
+                notification.ResultCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error logging help search event");
+            // Don't throw - analytics shouldn't break user experience
+        }
+    }
+}
+
+/// <summary>
+/// Handles tutorial completion analytics and follow-ups
+/// </summary>
+public class TutorialCompletedEventHandler : INotificationHandler<TutorialCompletedEvent>
+{
+    private readonly IHelpAnalyticsRepository _analyticsRepository;
+    private readonly IUserAchievementService _achievementService;
+    private readonly INotificationService _notificationService;
+    private readonly ILogger<TutorialCompletedEventHandler> _logger;
+
+    public TutorialCompletedEventHandler(
+        IHelpAnalyticsRepository analyticsRepository,
+        IUserAchievementService achievementService,
+        INotificationService notificationService,
+        ILogger<TutorialCompletedEventHandler> logger)
+    {
+        _analyticsRepository = analyticsRepository;
+        _achievementService = achievementService;
+        _notificationService = notificationService;
+        _logger = logger;
+    }
+
+    public async Task Handle(TutorialCompletedEvent notification, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Log analytics
+            await _analyticsRepository.LogTutorialCompletionAsync(
+                notification.UserId,
+                notification.TutorialId,
+                notification.TotalTimeSpentSeconds,
+                notification.SkippedStepsCount,
+                cancellationToken);
+
+            // Award achievement badge
+            await _achievementService.AwardBadgeAsync(
+                notification.UserId,
+                "tutorial_completed",
+                $"Completed: {notification.TutorialTitle}",
+                cancellationToken);
+
+            // Recommend next tutorial
+            var nextTutorials = await _achievementService.GetRecommendedTutorialsAsync(
+                notification.UserId,
+                cancellationToken);
+
+            // Send notification if enabled
+            await _notificationService.SendAsync(
+                notification.UserId,
+                "Congratulations!",
+                $"You completed {notification.TutorialTitle}",
+                "tutorial_completion",
+                cancellationToken);
+
+            _logger.LogInformation(
+                "Tutorial completed: UserId={UserId}, TutorialId={TutorialId}, Time={TimeSpent}s",
+                notification.UserId,
+                notification.TutorialId,
+                notification.TotalTimeSpentSeconds);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error handling tutorial completion event");
+        }
+    }
+}
+
+/// <summary>
+/// Handles tour completion tracking and suppression
+/// </summary>
+public class GuidedTourCompletedEventHandler : INotificationHandler<GuidedTourCompletedEvent>
+{
+    private readonly IHelpAnalyticsRepository _analyticsRepository;
+    private readonly IUserTourProgressRepository _progressRepository;
+    private readonly ILogger<GuidedTourCompletedEventHandler> _logger;
+
+    public GuidedTourCompletedEventHandler(
+        IHelpAnalyticsRepository analyticsRepository,
+        IUserTourProgressRepository progressRepository,
+        ILogger<GuidedTourCompletedEventHandler> logger)
+    {
+        _analyticsRepository = analyticsRepository;
+        _progressRepository = progressRepository;
+        _logger = logger;
+    }
+
+    public async Task Handle(GuidedTourCompletedEvent notification, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Log tour completion
+            await _analyticsRepository.LogTourCompletionAsync(
+                notification.UserId,
+                notification.TourId,
+                notification.TotalTimeSpentSeconds,
+                notification.StepsCompleted,
+                cancellationToken);
+
+            // Mark tour as completed (don't show auto-trigger again)
+            await _progressRepository.MarkTourCompletedAsync(
+                notification.UserId,
+                notification.TourId,
+                cancellationToken);
+
+            _logger.LogInformation(
+                "Tour completed: UserId={UserId}, TourId={TourId}, Steps={Steps}",
+                notification.UserId,
+                notification.TourId,
+                notification.StepsCompleted);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error handling tour completion event");
+        }
+    }
+}
+```
+
+---
+
+## Implementation Timeline
+
+### Sprint 1 (Week 1)
+
+**Days 1-2: Setup & Infrastructure (4 hours)**
+- Set up PostgreSQL schema and migrations
+- Configure Elasticsearch/search infrastructure
+- Set up MediatR event handlers
+- Create base interfaces and repository implementations
+
+**Days 2-3: Searchable Help Center (8 hours)**
+- Implement IHelpCenter interface
+- Build search engine integration
+- Create search API endpoints
+- Implement search analytics logging
+
+**Day 4: Code Review & Integration (3 hours)**
+- Review code quality and test coverage
+- Integration testing with database
+- Performance baseline testing
+
+### Sprint 2 (Week 2)
+
+**Days 1-2: Interactive Tutorials (12 hours)**
+- Implement ITutorialSystem interface
+- Build tutorial player UI components
+- Implement step validation and progress tracking
+- Create tutorial analytics
+
+**Days 3-4: Guided Tours & Knowledge Base (20 hours)**
+- Implement IGuidedTourService
+- Build tour overlay components
+- Implement IKnowledgeBase
+- Build knowledge base UI
+
+**Day 5: Video & Analytics (10 hours)**
+- Implement IVideoHelpService
+- Build video integration and transcript search
+- Implement IHelpAnalytics
+- Create analytics dashboard
+
+**Final Day: Testing & Documentation (5 hours)**
+- E2E testing and UAT
+- Performance testing
+- Documentation and release notes
+
+---
+
+## Conclusion
+
+v0.20.2-DOC represents a significant investment in user success through a comprehensive help system. By combining searchable content, interactive guidance, and data-driven improvement, Lexichord will dramatically improve user self-service capability and satisfaction.
+
+### Success Metrics
+
+1. **Help Center Usage**: Target 1M+ article views per month
+2. **Tutorial Adoption**: Target 50K+ tutorial starts per month, 80%+ completion rate
+3. **Support Impact**: Target 40% reduction in support tickets related to onboarding
+4. **User Satisfaction**: Target +15 point increase in NPS
+5. **Search Effectiveness**: Target 95%+ of searches return helpful results
+

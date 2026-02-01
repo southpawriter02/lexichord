@@ -107,13 +107,15 @@ This release introduces a flexible chunking system for breaking documents into s
 
 - **Fixed-Size Chunker** — `FixedSizeChunkingStrategy` splits text into chunks of configurable target size with overlap for context continuity. Two-phase word boundary search (backward 20%, forward 10%) avoids mid-word splits. Supports whitespace trimming, Unicode characters, and proper metadata (Index, TotalChunks, IsFirst/IsLast).
 
+- **Paragraph Chunker** — `ParagraphChunkingStrategy` splits text on paragraph boundaries (double newlines). Short paragraphs are merged until reaching `TargetSize`, while oversized paragraphs use `FixedSizeChunkingStrategy` as fallback.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                   | Status      |
 | ----------------------------------- | ----------------------- | ----------- |
 | [v0.4.3a](v0.4.x/LCS-CL-v0.4.3a.md) | Chunking Abstractions   | ✅ Complete |
 | [v0.4.3b](v0.4.x/LCS-CL-v0.4.3b.md) | Fixed-Size Chunker      | ✅ Complete |
-| v0.4.3c                             | Paragraph Chunker       | 🔜 Planned  |
+| [v0.4.3c](v0.4.x/LCS-CL-v0.4.3c.md) | Paragraph Chunker       | ✅ Complete |
 | v0.4.3d                             | Markdown Header Chunker | 🔜 Planned  |
 
 ---
