@@ -123,6 +123,11 @@ public sealed class RAGModule : IModule
         // LOGIC: Register ParagraphChunkingStrategy as singleton - it is stateless and thread-safe.
         // This strategy splits on paragraph boundaries and uses FixedSizeChunkingStrategy as fallback (v0.4.3c).
         services.AddSingleton<ParagraphChunkingStrategy>();
+
+        // LOGIC: Register MarkdownHeaderChunkingStrategy as singleton - it is stateless and thread-safe.
+        // This strategy splits on Markdown header boundaries with ParagraphChunkingStrategy as 
+        // fallback for no-header content and FixedSizeChunkingStrategy for oversized sections (v0.4.3d).
+        services.AddSingleton<MarkdownHeaderChunkingStrategy>();
     }
 
     /// <inheritdoc/>

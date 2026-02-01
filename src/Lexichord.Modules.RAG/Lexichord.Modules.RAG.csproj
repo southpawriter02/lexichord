@@ -35,6 +35,9 @@
     
     <!-- v0.4.1d: pgvector support for vector embeddings -->
     <PackageReference Include="Pgvector" Version="0.3.0" />
+    
+    <!-- v0.4.3d: Markdig for Markdown header parsing -->
+    <PackageReference Include="Markdig" Version="0.37.0" />
   </ItemGroup>
 
   <ItemGroup>

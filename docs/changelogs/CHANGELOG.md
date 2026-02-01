@@ -116,7 +116,7 @@ This release introduces a flexible chunking system for breaking documents into s
 | [v0.4.3a](v0.4.x/LCS-CL-v0.4.3a.md) | Chunking Abstractions   | ✅ Complete |
 | [v0.4.3b](v0.4.x/LCS-CL-v0.4.3b.md) | Fixed-Size Chunker      | ✅ Complete |
 | [v0.4.3c](v0.4.x/LCS-CL-v0.4.3c.md) | Paragraph Chunker       | ✅ Complete |
-| v0.4.3d                             | Markdown Header Chunker | 🔜 Planned  |
+| [v0.4.3d](v0.4.x/LCS-CL-v0.4.3d.md) | Markdown Header Chunker | ✅ Complete |
 
 ---
 
