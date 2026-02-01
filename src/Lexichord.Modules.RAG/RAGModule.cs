@@ -6,6 +6,7 @@
 // LOGIC: Registers all RAG-related services and initializes the vector type handler.
 //   - VectorTypeHandler must be registered before any repository operations.
 //   - DocumentRepository and ChunkRepository are scoped for per-request lifecycle.
+//   - IngestionQueue and IngestionBackgroundService handle queued file processing (v0.4.2d).
 // =============================================================================
 
 using Dapper;
@@ -15,6 +16,7 @@ using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Modules.RAG.Data;
 using Lexichord.Modules.RAG.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Modules.RAG;
@@ -36,6 +38,8 @@ namespace Lexichord.Modules.RAG;
 ///   <item><description><see cref="DocumentRepository"/>: Document CRUD operations.</description></item>
 ///   <item><description><see cref="ChunkRepository"/>: Chunk storage and vector search.</description></item>
 ///   <item><description><see cref="FileWatcherIngestionHandler"/>: File change detection for auto-indexing (v0.4.2c).</description></item>
+///   <item><description><see cref="IngestionQueue"/>: Priority-based processing queue for file ingestion (v0.4.2d).</description></item>
+///   <item><description><see cref="IngestionBackgroundService"/>: Background processor for the ingestion queue (v0.4.2d).</description></item>
 /// </list>
 /// <para>
 /// <b>Database Requirements:</b> The PostgreSQL database must have the pgvector
@@ -95,6 +99,21 @@ public sealed class RAGModule : IModule
         services.AddSingleton<FileWatcherIngestionHandler>();
         services.AddSingleton<MediatR.INotificationHandler<Lexichord.Abstractions.Events.ExternalFileChangesEvent>>(
             sp => sp.GetRequiredService<FileWatcherIngestionHandler>());
+
+        // LOGIC: Configure IngestionQueueOptions with defaults using Options pattern.
+        // The defaults are set via Options.Create which allows proper IOptions<T> injection.
+        // These can be overridden via configuration binding in the host (v0.4.2d).
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(IngestionQueueOptions.Default));
+
+        // LOGIC: Register IngestionQueue as singleton.
+        // The queue must be singleton to maintain state across the application lifetime.
+        // It handles priority ordering, duplicate detection, and capacity management (v0.4.2d).
+        services.AddSingleton<IIngestionQueue, IngestionQueue>();
+
+        // LOGIC: Register IngestionBackgroundService as a hosted service.
+        // It continuously processes items from the queue using IIngestionService (v0.4.2d).
+        // Note: IIngestionService itself is registered by downstream consumers (e.g., v0.4.2e).
+        services.AddHostedService<IngestionBackgroundService>();
     }
 
     /// <inheritdoc/>

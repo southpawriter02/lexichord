@@ -26,6 +26,9 @@
     
     <!-- v0.4.2c: MediatR for event publishing -->
     <PackageReference Include="MediatR" Version="12.4.0" />
+    
+    <!-- v0.4.2d: Hosting abstractions for BackgroundService -->
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
 
     <!-- v0.4.1d: Dapper for database access -->
     <PackageReference Include="Dapper" Version="2.1.35" />

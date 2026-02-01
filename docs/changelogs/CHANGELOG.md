@@ -82,6 +82,8 @@ This release establishes the file ingestion pipeline for processing documents in
 
 - **File Watcher Integration** — `FileWatcherIngestionHandler` bridges the workspace file watcher with the RAG pipeline, publishing `FileIndexingRequestedEvent` for files matching configured extensions. Features per-file debouncing and directory exclusion.
 
+- **Ingestion Queue** — Priority-based queue using `System.Threading.Channels` for thread-safe file processing. Features configurable priority levels (user action → recent change → normal → background), duplicate detection with sliding window, backpressure handling, and graceful shutdown. Background service continuously processes queue items through the ingestion pipeline.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                       | Status      |
@@ -89,7 +91,7 @@ This release establishes the file ingestion pipeline for processing documents in
 | [v0.4.2a](v0.4.x/LCS-CL-v0.4.2a.md) | Ingestion Service Interface | ✅ Complete |
 | [v0.4.2b](v0.4.x/LCS-CL-v0.4.2b.md) | Hash-Based Change Detection | ✅ Complete |
 | [v0.4.2c](v0.4.x/LCS-CL-v0.4.2c.md) | File Watcher Integration    | ✅ Complete |
-| v0.4.2d                             | Ingestion Queue             | 🔜 Planned  |
+| [v0.4.2d](v0.4.x/LCS-CL-v0.4.2d.md) | Ingestion Queue             | ✅ Complete |
 
 ---
 
