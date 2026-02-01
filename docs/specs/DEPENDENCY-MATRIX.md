@@ -1100,12 +1100,12 @@ graph TB
 
 ### v0.4.2 Prerequisites for v0.4.3+
 
-- [ ] IIngestionService (v0.4.2a)
-- [ ] IngestionResult, IngestionProgressEventArgs, IngestionOptions records (v0.4.2a)
-- [ ] IngestionPhase enum (v0.4.2a)
-- [ ] IFileHashService (v0.4.2b)
-- [ ] FileMetadata, FileMetadataWithHash records (v0.4.2b)
-- [ ] FileHashService implementation (v0.4.2b)
+- [x] IIngestionService (v0.4.2a)
+- [x] IngestionResult, IngestionProgressEventArgs, IngestionOptions records (v0.4.2a)
+- [x] IngestionPhase enum (v0.4.2a)
+- [x] IFileHashService (v0.4.2b)
+- [x] FileMetadata, FileMetadataWithHash records (v0.4.2b)
+- [x] FileHashService implementation (v0.4.2b)
 - [ ] FileIndexingRequestedEvent (v0.4.2c)
 - [ ] FileChangeType enum (v0.4.2c)
 - [ ] IFileWatcherIngestionHandler (v0.4.2c)
@@ -1114,7 +1114,7 @@ graph TB
 - [ ] IngestionQueue implementation (v0.4.2d)
 - [ ] IngestionBackgroundService (v0.4.2d)
 - [ ] System.Threading.Channels NuGet (v0.4.2d)
-- [ ] System.IO.Hashing NuGet (v0.4.2b)
+- [x] System.IO.Hashing NuGet (v0.4.2b)
 
 ### v0.4.3 Prerequisites for v0.4.4+
 

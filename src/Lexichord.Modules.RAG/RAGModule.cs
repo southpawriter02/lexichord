@@ -12,10 +12,12 @@ using Dapper;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Modules.RAG.Data;
+using Lexichord.Modules.RAG.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Modules.RAG;
+
 
 /// <summary>
 /// Module registration for the RAG (Retrieval-Augmented Generation) subsystem.
@@ -74,6 +76,10 @@ public sealed class RAGModule : IModule
         // IDbConnectionFactory is expected to be registered by Infrastructure.
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IChunkRepository, ChunkRepository>();
+
+        // LOGIC: Register FileHashService as singleton - it is stateless and thread-safe.
+        // Used for hash-based change detection in the ingestion pipeline (v0.4.2b).
+        services.AddSingleton<IFileHashService, FileHashService>();
     }
 
     /// <inheritdoc/>

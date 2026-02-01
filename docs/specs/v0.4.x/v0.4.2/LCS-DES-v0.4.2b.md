@@ -2,20 +2,20 @@
 
 ## 1. Metadata & Categorization
 
-| Field | Value | Description |
-| :--- | :--- | :--- |
-| **Feature ID** | `RAG-042b` | Sub-part of RAG-042 |
-| **Feature Name** | `Hash-Based Change Detection` | SHA-256 file comparison |
-| **Target Version** | `v0.4.2b` | Second sub-part of v0.4.2 |
-| **Module Scope** | `Lexichord.Modules.RAG` | RAG module implementation |
-| **Swimlane** | `Memory` | Part of RAG vertical |
-| **License Tier** | `Core` | Infrastructure for all tiers |
-| **Feature Gate Key** | `FeatureFlags.RAG.Ingestion` | Shared with parent feature |
-| **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-27` | |
-| **Parent Document** | [LCS-DES-042-INDEX](./LCS-DES-042-INDEX.md) | |
-| **Scope Breakdown** | [LCS-SBD-042 §3.2](./LCS-SBD-042.md#32-v042b-hash-based-change-detection) | |
+| Field                | Value                                                                     | Description                  |
+| :------------------- | :------------------------------------------------------------------------ | :--------------------------- |
+| **Feature ID**       | `RAG-042b`                                                                | Sub-part of RAG-042          |
+| **Feature Name**     | `Hash-Based Change Detection`                                             | SHA-256 file comparison      |
+| **Target Version**   | `v0.4.2b`                                                                 | Second sub-part of v0.4.2    |
+| **Module Scope**     | `Lexichord.Modules.RAG`                                                   | RAG module implementation    |
+| **Swimlane**         | `Memory`                                                                  | Part of RAG vertical         |
+| **License Tier**     | `Core`                                                                    | Infrastructure for all tiers |
+| **Feature Gate Key** | `FeatureFlags.RAG.Ingestion`                                              | Shared with parent feature   |
+| **Author**           | Lead Architect                                                            |                              |
+| **Status**           | `Implemented`                                                             |                              |
+| **Last Updated**     | `2026-01-31`                                                              |                              |
+| **Parent Document**  | [LCS-DES-042-INDEX](./LCS-DES-042-INDEX.md)                               |                              |
+| **Scope Breakdown**  | [LCS-SBD-042 §3.2](./LCS-SBD-042.md#32-v042b-hash-based-change-detection) |                              |
 
 ---
 
@@ -45,16 +45,16 @@ This minimizes hash computation for obvious cases while ensuring accurate detect
 
 #### 3.1.1 Upstream Dependencies
 
-| Component | Source | Purpose |
-| :--- | :--- | :--- |
+| Component             | Source  | Purpose                |
+| :-------------------- | :------ | :--------------------- |
 | `IDocumentRepository` | v0.4.1c | Retrieve stored hashes |
-| `Document` | v0.4.1c | Stored file metadata |
+| `Document`            | v0.4.1c | Stored file metadata   |
 
 #### 3.1.2 NuGet Packages
 
-| Package | Version | Purpose |
-| :--- | :--- | :--- |
-| `System.IO.Hashing` | 9.0.x | SHA-256 streaming computation |
+| Package             | Version | Purpose                       |
+| :------------------ | :------ | :---------------------------- |
+| `System.IO.Hashing` | 9.0.x   | SHA-256 streaming computation |
 
 ### 3.2 Licensing Behavior
 
@@ -240,25 +240,25 @@ flowchart TD
 
 ## 8. Observability & Logging
 
-| Level | Source | Message |
-| :--- | :--- | :--- |
-| Debug | FileHashService | `Computing hash for: {FilePath} ({FileSize} bytes)` |
-| Debug | FileHashService | `Hash computed in {ElapsedMs}ms: {Hash}` |
-| Debug | FileHashService | `Quick check: size changed {OldSize} → {NewSize}` |
-| Debug | FileHashService | `Quick check: timestamp unchanged, skipping hash` |
-| Info | FileHashService | `File changed (hash mismatch): {FilePath}` |
-| Debug | FileHashService | `File unchanged (hash match): {FilePath}` |
-| Warning | FileHashService | `File no longer exists: {FilePath}` |
+| Level   | Source          | Message                                             |
+| :------ | :-------------- | :-------------------------------------------------- |
+| Debug   | FileHashService | `Computing hash for: {FilePath} ({FileSize} bytes)` |
+| Debug   | FileHashService | `Hash computed in {ElapsedMs}ms: {Hash}`            |
+| Debug   | FileHashService | `Quick check: size changed {OldSize} → {NewSize}`   |
+| Debug   | FileHashService | `Quick check: timestamp unchanged, skipping hash`   |
+| Info    | FileHashService | `File changed (hash mismatch): {FilePath}`          |
+| Debug   | FileHashService | `File unchanged (hash match): {FilePath}`           |
+| Warning | FileHashService | `File no longer exists: {FilePath}`                 |
 
 ---
 
 ## 9. Security & Safety
 
-| Risk | Level | Mitigation |
-| :--- | :--- | :--- |
-| Hash collision | Very Low | SHA-256 has no known practical collisions |
-| Large file memory | Low | Streaming computation, no full load |
-| Locked file access | Medium | Retry with backoff, share read access |
+| Risk               | Level    | Mitigation                                |
+| :----------------- | :------- | :---------------------------------------- |
+| Hash collision     | Very Low | SHA-256 has no known practical collisions |
+| Large file memory  | Low      | Streaming computation, no full load       |
+| Locked file access | Medium   | Retry with backoff, share read access     |
 
 ---
 
@@ -266,24 +266,24 @@ flowchart TD
 
 ### 10.1 Functional Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 1 | Valid file | `ComputeHashAsync` called | Returns 64-char hex hash |
-| 2 | Same content | Hash computed twice | Same hash returned |
-| 3 | Different content | Hash computed for each | Different hashes |
-| 4 | Unchanged file | `HasChangedAsync` with same hash | Returns false |
-| 5 | Changed file | `HasChangedAsync` with different content | Returns true |
-| 6 | Different size | `HasChangedAsync` called | Returns true (skip hash) |
-| 7 | Same timestamp | `HasChangedAsync` called | Returns false (skip hash) |
-| 8 | Non-existent file | `HasChangedAsync` called | Returns true |
+| #   | Given             | When                                     | Then                      |
+| :-- | :---------------- | :--------------------------------------- | :------------------------ |
+| 1   | Valid file        | `ComputeHashAsync` called                | Returns 64-char hex hash  |
+| 2   | Same content      | Hash computed twice                      | Same hash returned        |
+| 3   | Different content | Hash computed for each                   | Different hashes          |
+| 4   | Unchanged file    | `HasChangedAsync` with same hash         | Returns false             |
+| 5   | Changed file      | `HasChangedAsync` with different content | Returns true              |
+| 6   | Different size    | `HasChangedAsync` called                 | Returns true (skip hash)  |
+| 7   | Same timestamp    | `HasChangedAsync` called                 | Returns false (skip hash) |
+| 8   | Non-existent file | `HasChangedAsync` called                 | Returns true              |
 
 ### 10.2 Performance Criteria
 
-| # | Given | When | Then |
-| :--- | :--- | :--- | :--- |
-| 9 | 1MB file | Hash computed | < 50ms |
-| 10 | 10MB file | Hash computed | < 200ms |
-| 11 | Unchanged file (same timestamp) | `HasChangedAsync` | < 1ms (no hash) |
+| #   | Given                           | When              | Then            |
+| :-- | :------------------------------ | :---------------- | :-------------- |
+| 9   | 1MB file                        | Hash computed     | < 50ms          |
+| 10  | 10MB file                       | Hash computed     | < 200ms         |
+| 11  | Unchanged file (same timestamp) | `HasChangedAsync` | < 1ms (no hash) |
 
 ---
 
@@ -693,14 +693,14 @@ services.AddSingleton<IFileHashService, FileHashService>();
 
 ## 14. Deliverable Checklist
 
-| # | Deliverable | Status |
-| :--- | :--- | :--- |
-| 1 | `IFileHashService` interface | [ ] |
-| 2 | `FileMetadata` record | [ ] |
-| 3 | `FileMetadataWithHash` record | [ ] |
-| 4 | `FileHashService` implementation | [ ] |
-| 5 | Unit tests for hash computation | [ ] |
-| 6 | Unit tests for change detection | [ ] |
+| #   | Deliverable                      | Status |
+| :-- | :------------------------------- | :----- |
+| 1   | `IFileHashService` interface     | [x]    |
+| 2   | `FileMetadata` record            | [x]    |
+| 3   | `FileMetadataWithHash` record    | [x]    |
+| 4   | `FileHashService` implementation | [x]    |
+| 5   | Unit tests for hash computation  | [x]    |
+| 6   | Unit tests for change detection  | [x]    |
 
 ---
 
@@ -739,15 +739,15 @@ dotnet test --filter "Category=Unit&FullyQualifiedName~FileHash"
 
 ## 17. Deferred Features
 
-| Feature | Deferred To | Reason |
-| :--- | :--- | :--- |
-| Incremental hashing | v0.5.x | Optimization for very large files |
-| Hash caching | v0.4.8 | Performance optimization phase |
+| Feature             | Deferred To | Reason                            |
+| :------------------ | :---------- | :-------------------------------- |
+| Incremental hashing | v0.5.x      | Optimization for very large files |
+| Hash caching        | v0.4.8      | Performance optimization phase    |
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-| :--- | :--- | :--- | :--- |
-| 1.0 | 2026-01-27 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 1.0     | 2026-01-27 | Lead Architect | Initial draft |

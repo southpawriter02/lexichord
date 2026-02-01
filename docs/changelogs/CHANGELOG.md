@@ -78,12 +78,14 @@ This release establishes the file ingestion pipeline for processing documents in
 
 - **Pipeline Phase Model** — `IngestionPhase` enum defining 7 discrete stages (Scanning → Hashing → Reading → Chunking → Embedding → Storing → Complete) enabling granular progress tracking.
 
+- **Hash-Based Change Detection** — `IFileHashService` with SHA-256 streaming hash computation and tiered change detection (size → timestamp → hash) to minimize unnecessary re-indexing of unchanged files.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                       | Status      |
 | ----------------------------------- | --------------------------- | ----------- |
 | [v0.4.2a](v0.4.x/LCS-CL-v0.4.2a.md) | Ingestion Service Interface | ✅ Complete |
-| v0.4.2b                             | File Hashing Service        | 🔜 Planned  |
+| [v0.4.2b](v0.4.x/LCS-CL-v0.4.2b.md) | Hash-Based Change Detection | ✅ Complete |
 | v0.4.2c                             | File Watcher                | 🔜 Planned  |
 | v0.4.2d                             | Ingestion Queue             | 🔜 Planned  |
 
