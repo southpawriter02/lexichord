@@ -105,12 +105,14 @@ This release implements semantic search capabilities enabling natural language q
 
 - **Search Abstractions** — `ISemanticSearchService` interface defining the semantic search contract with `SearchAsync` method. `SearchOptions` record for configurable TopK, MinScore, DocumentFilter, abbreviation expansion, and embedding caching. `SearchResult` container with ranked hits, timing, and truncation metadata. `SearchHit` for individual matches with score formatting helpers (`ScorePercent`, `ScoreDecimal`) and content previews.
 
+- **Vector Search Query** — `PgVectorSearchService` implementing `ISemanticSearchService` using pgvector's cosine similarity (`<=>` operator) for semantic search against indexed document chunks. Includes `SearchLicenseGuard` for WriterPro tier enforcement with three validation modes (throw, try/publish, property check), `IQueryPreprocessor` interface with passthrough stub, `ChunkSearchRow` for Dapper result mapping, and MediatR events (`SemanticSearchExecutedEvent`, `SearchDeniedEvent`) for telemetry and license denial tracking.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title               | Status      |
 | ----------------------------------- | ------------------- | ----------- |
 | [v0.4.5a](v0.4.x/LCS-CL-v0.4.5a.md) | Search Abstractions | ✅ Complete |
-| v0.4.5b                            | Vector Search Query | 🔜 Planned  |
+| [v0.4.5b](v0.4.x/LCS-CL-v0.4.5b.md) | Vector Search Query | ✅ Complete |
 | v0.4.5c                            | Query Preprocessing | 🔜 Planned  |
 | v0.4.5d                            | License Gating      | 🔜 Planned  |
 

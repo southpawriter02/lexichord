@@ -1148,13 +1148,13 @@ graph TB
 
 ### v0.4.5 Prerequisites for v0.4.6+
 
-- [ ] ISemanticSearchService (v0.4.5a)
-- [ ] SearchOptions, SearchResult, SearchHit records (v0.4.5a)
-- [ ] PgVectorSearchService implementation (v0.4.5b)
-- [ ] IQueryPreprocessor (v0.4.5c)
+- [x] ISemanticSearchService (v0.4.5a)
+- [x] SearchOptions, SearchResult, SearchHit records (v0.4.5a)
+- [x] PgVectorSearchService implementation (v0.4.5b)
+- [x] IQueryPreprocessor interface (v0.4.5b — interface defined; full implementation in v0.4.5c)
 - [ ] QueryPreprocessor implementation (v0.4.5c)
-- [ ] SearchLicenseGuard helper class (v0.4.5d)
-- [ ] SearchDeniedEvent, SemanticSearchExecutedEvent (v0.4.5d)
+- [x] SearchLicenseGuard helper class (v0.4.5b)
+- [x] SearchDeniedEvent, SemanticSearchExecutedEvent (v0.4.5b)
 
 ### v0.4.6 Prerequisites for v0.4.7+
 

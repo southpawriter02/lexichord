@@ -1176,22 +1176,22 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Search"
 
 | #   | Deliverable                                | Status |
 | :-- | :----------------------------------------- | :----- |
-| 1   | `ISemanticSearchService` interface         | [ ]    |
-| 2   | `SearchOptions` record                     | [ ]    |
-| 3   | `SearchResult` record                      | [ ]    |
-| 4   | `SearchHit` record                         | [ ]    |
-| 5   | `PgVectorSearchService` implementation     | [ ]    |
-| 6   | `IQueryPreprocessor` interface             | [ ]    |
+| 1   | `ISemanticSearchService` interface         | [x]    |
+| 2   | `SearchOptions` record                     | [x]    |
+| 3   | `SearchResult` record                      | [x]    |
+| 4   | `SearchHit` record                         | [x]    |
+| 5   | `PgVectorSearchService` implementation     | [x]    |
+| 6   | `IQueryPreprocessor` interface             | [x]    |
 | 7   | `QueryPreprocessor` implementation         | [ ]    |
 | 8   | Query embedding cache                      | [ ]    |
-| 9   | `SearchLicenseGuard` helper                | [ ]    |
-| 10  | `SearchDeniedEvent` notification           | [ ]    |
-| 11  | `SemanticSearchExecutedEvent` notification | [ ]    |
-| 12  | Unit tests for search service              | [ ]    |
+| 9   | `SearchLicenseGuard` helper                | [x]    |
+| 10  | `SearchDeniedEvent` notification           | [x]    |
+| 11  | `SemanticSearchExecutedEvent` notification | [x]    |
+| 12  | Unit tests for search service              | [x]    |
 | 13  | Unit tests for preprocessor                | [ ]    |
-| 14  | Unit tests for license guard               | [ ]    |
+| 14  | Unit tests for license guard               | [x]    |
 | 15  | Integration tests for full search flow     | [ ]    |
-| 16  | DI registration in RAGModule.cs            | [ ]    |
+| 16  | DI registration in RAGModule.cs            | [x]    |
 
 > **Note:** `FeatureNotLicensedException` is reused from v0.4.4d.
 

@@ -1,0 +1,117 @@
+// =============================================================================
+// File: SearchEvents.cs
+// Project: Lexichord.Modules.RAG
+// Description: MediatR notification events for the semantic search pipeline.
+// =============================================================================
+// LOGIC: Defines domain events published during semantic search operations.
+//   - SemanticSearchExecutedEvent: Published on successful search completion
+//     for telemetry and analytics.
+//   - SearchDeniedEvent: Published when a search is blocked due to
+//     insufficient license tier for audit and upgrade prompt triggers.
+// =============================================================================
+
+using Lexichord.Abstractions.Contracts;
+using MediatR;
+
+namespace Lexichord.Modules.RAG.Search;
+
+/// <summary>
+/// Published when a semantic search query is successfully executed.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This event is published by <see cref="PgVectorSearchService"/> after a search
+/// completes successfully. It captures telemetry data including the query text,
+/// result count, and total duration for analytics and monitoring.
+/// </para>
+/// <para>
+/// <b>Consumers:</b>
+/// </para>
+/// <list type="bullet">
+///   <item><description>Telemetry handlers for search usage analytics.</description></item>
+///   <item><description>UI handlers for search history tracking (v0.4.6).</description></item>
+///   <item><description>Performance monitoring for search latency alerts.</description></item>
+/// </list>
+/// <para>
+/// <b>MediatR Pattern:</b> This is an <see cref="INotification"/> (fire-and-forget).
+/// Handlers do not return values and failures do not affect the search result.
+/// </para>
+/// <para>
+/// <b>Introduced:</b> v0.4.5b.
+/// </para>
+/// </remarks>
+public record SemanticSearchExecutedEvent : INotification
+{
+    /// <summary>
+    /// The original query text submitted by the user.
+    /// </summary>
+    /// <value>The raw query string before preprocessing.</value>
+    public required string Query { get; init; }
+
+    /// <summary>
+    /// The number of search hits returned.
+    /// </summary>
+    /// <value>Count of <see cref="SearchHit"/> items in the result.</value>
+    public required int ResultCount { get; init; }
+
+    /// <summary>
+    /// The total duration of the search operation.
+    /// </summary>
+    /// <value>Elapsed time from query submission to result assembly.</value>
+    public required TimeSpan Duration { get; init; }
+
+    /// <summary>
+    /// The UTC timestamp when the search was executed.
+    /// </summary>
+    /// <value>Defaults to <see cref="DateTimeOffset.UtcNow"/> at creation time.</value>
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>
+/// Published when a semantic search is denied due to insufficient license tier.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This event is published by <see cref="SearchLicenseGuard"/> when a user attempts
+/// to execute a semantic search without the required <see cref="LicenseTier.WriterPro"/>
+/// license tier. It enables:
+/// </para>
+/// <list type="bullet">
+///   <item><description>UI handlers to display upgrade prompts.</description></item>
+///   <item><description>Telemetry handlers to track upgrade opportunities.</description></item>
+///   <item><description>Audit logging of access control decisions.</description></item>
+/// </list>
+/// <para>
+/// <b>MediatR Pattern:</b> This is an <see cref="INotification"/> (fire-and-forget).
+/// Handlers do not return values.
+/// </para>
+/// <para>
+/// <b>Introduced:</b> v0.4.5b.
+/// </para>
+/// </remarks>
+public record SearchDeniedEvent : INotification
+{
+    /// <summary>
+    /// The user's current license tier at the time of denial.
+    /// </summary>
+    /// <value>The <see cref="LicenseTier"/> that was insufficient.</value>
+    public required LicenseTier CurrentTier { get; init; }
+
+    /// <summary>
+    /// The minimum license tier required for semantic search.
+    /// </summary>
+    /// <value>Always <see cref="LicenseTier.WriterPro"/> for semantic search.</value>
+    public required LicenseTier RequiredTier { get; init; }
+
+    /// <summary>
+    /// The name of the feature that was denied.
+    /// </summary>
+    /// <value>The feature identifier (e.g., "Semantic Search").</value>
+    public required string FeatureName { get; init; }
+
+    /// <summary>
+    /// The UTC timestamp when the denial occurred.
+    /// </summary>
+    /// <value>Defaults to <see cref="DateTimeOffset.UtcNow"/> at creation time.</value>
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+}

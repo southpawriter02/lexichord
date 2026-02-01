@@ -8,6 +8,7 @@
 //   - DocumentRepository and ChunkRepository are scoped for per-request lifecycle.
 //   - IngestionQueue and IngestionBackgroundService handle queued file processing (v0.4.2d).
 //   - Embedding services and document indexing pipeline (v0.4.4).
+//   - Semantic search service with license gating (v0.4.5).
 // =============================================================================
 
 using Dapper;
@@ -18,6 +19,7 @@ using Lexichord.Modules.RAG.Chunking;
 using Lexichord.Modules.RAG.Data;
 using Lexichord.Modules.RAG.Embedding;
 using Lexichord.Modules.RAG.Indexing;
+using Lexichord.Modules.RAG.Search;
 using Lexichord.Modules.RAG.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -49,6 +51,8 @@ namespace Lexichord.Modules.RAG;
 ///   <item><description><see cref="OpenAIEmbeddingService"/>: OpenAI embeddings with Polly retry (v0.4.4b).</description></item>
 ///   <item><description><see cref="ChunkingStrategyFactory"/>: Strategy selection for document chunking (v0.4.4d).</description></item>
 ///   <item><description><see cref="DocumentIndexingPipeline"/>: Full indexing workflow orchestration (v0.4.4d).</description></item>
+///   <item><description><see cref="SearchLicenseGuard"/>: License validation for semantic search (v0.4.5b).</description></item>
+///   <item><description><see cref="PgVectorSearchService"/>: pgvector cosine similarity search (v0.4.5b).</description></item>
 /// </list>
 /// <para>
 /// <b>Database Requirements:</b> The PostgreSQL database must have the pgvector
@@ -63,7 +67,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 4, 4),
+        Version: new Version(0, 4, 5),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -173,6 +177,25 @@ public sealed class RAGModule : IModule
         // The pipeline orchestrates chunking, embedding, and storage.
         // Scoped to align with repository lifetimes and database transaction boundaries.
         services.AddScoped<DocumentIndexingPipeline>();
+
+        // =============================================================================
+        // v0.4.5: Semantic Search (The Searcher)
+        // =============================================================================
+
+        // LOGIC: Register SearchLicenseGuard as singleton (v0.4.5b).
+        // Thread-safe and stateless — reads license tier on each check via ILicenseContext.
+        // Used by PgVectorSearchService to enforce WriterPro+ tier before search execution.
+        services.AddSingleton<SearchLicenseGuard>();
+
+        // LOGIC: Register PassthroughQueryPreprocessor as singleton (v0.4.5b).
+        // This is a temporary no-op stub that trims whitespace and performs no abbreviation
+        // expansion or caching. Will be replaced by full QueryPreprocessor in v0.4.5c.
+        services.AddSingleton<IQueryPreprocessor, PassthroughQueryPreprocessor>();
+
+        // LOGIC: Register PgVectorSearchService as scoped (v0.4.5b).
+        // Scoped to align with IDbConnectionFactory and repository lifetimes.
+        // Executes pgvector cosine similarity search against indexed document chunks.
+        services.AddScoped<ISemanticSearchService, PgVectorSearchService>();
     }
 
     /// <inheritdoc/>
