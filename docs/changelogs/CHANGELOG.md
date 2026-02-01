@@ -51,13 +51,15 @@ This release introduces PostgreSQL with pgvector for vector storage, enabling se
 
 - **Schema Migration** — FluentMigrator migration creating `Documents` and `Chunks` tables with pgvector embeddings. Features HNSW index for efficient similarity search, cascade delete behavior, and auto-updating timestamps.
 
+- **Repository Abstractions** — `IDocumentRepository` and `IChunkRepository` interfaces defining the data access contracts for the RAG subsystem. Includes `Document`, `Chunk`, `ChunkSearchResult` records and `DocumentStatus` enum with comprehensive XML documentation.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                   | Status      |
 | ----------------------------------- | ----------------------- | ----------- |
 | [v0.4.1a](v0.4.x/LCS-CL-v0.4.1a.md) | pgvector Docker Config  | ✅ Complete |
 | [v0.4.1b](v0.4.x/LCS-CL-v0.4.1b.md) | Schema Migration        | ✅ Complete |
-| v0.4.1c                             | Repository Abstractions | 🔜 Planned  |
+| [v0.4.1c](v0.4.x/LCS-CL-v0.4.1c.md) | Repository Abstractions | ✅ Complete |
 | v0.4.1d                             | Dapper Implementation   | 🔜 Planned  |
 
 ---

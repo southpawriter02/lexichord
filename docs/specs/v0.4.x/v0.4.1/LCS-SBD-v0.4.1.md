@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-041                                              |
 | **Version**      | v0.4.1                                                   |
 | **Codename**     | The Vector Foundation (pgvector Setup)                   |
-| **Status**       | Draft                                                    |
-| **Last Updated** | 2026-01-27                                               |
+| **Status**       | In Progress                                              |
+| **Last Updated** | 2026-01-31                                               |
 | **Owner**        | Lead Architect                                           |
 | **Depends On**   | v0.0.5b (IDbConnectionFactory), v0.0.5c (FluentMigrator) |
 
