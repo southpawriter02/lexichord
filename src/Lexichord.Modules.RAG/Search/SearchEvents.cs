@@ -5,7 +5,7 @@
 // =============================================================================
 // LOGIC: Defines domain events published during semantic search operations.
 //   - SemanticSearchExecutedEvent: Published on successful search completion
-//     for telemetry and analytics.
+//     for telemetry and analytics. Includes UsedCachedEmbedding flag (v0.4.5d).
 //   - SearchDeniedEvent: Published when a search is blocked due to
 //     insufficient license tier for audit and upgrade prompt triggers.
 // =============================================================================
@@ -37,7 +37,7 @@ namespace Lexichord.Modules.RAG.Search;
 /// Handlers do not return values and failures do not affect the search result.
 /// </para>
 /// <para>
-/// <b>Introduced:</b> v0.4.5b.
+/// <b>Introduced:</b> v0.4.5b. <b>Enhanced:</b> v0.4.5d (UsedCachedEmbedding).
 /// </para>
 /// </remarks>
 public record SemanticSearchExecutedEvent : INotification
@@ -65,6 +65,21 @@ public record SemanticSearchExecutedEvent : INotification
     /// </summary>
     /// <value>Defaults to <see cref="DateTimeOffset.UtcNow"/> at creation time.</value>
     public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Whether the query embedding was served from cache rather than generated via the API.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the embedding was retrieved from <see cref="IQueryPreprocessor"/> cache;
+    /// <c>false</c> if a new embedding was generated via <see cref="IEmbeddingService"/>.
+    /// Defaults to <c>false</c>.
+    /// </value>
+    /// <remarks>
+    /// LOGIC: Tracks cache efficiency for telemetry. A high cache hit rate indicates
+    /// users are repeating queries and the 5-minute sliding cache is effective.
+    /// Introduced in v0.4.5d.
+    /// </remarks>
+    public bool UsedCachedEmbedding { get; init; }
 }
 
 /// <summary>

@@ -7,11 +7,17 @@
 //   - EnsureSearchAuthorized() throws FeatureNotLicensedException if unlicensed.
 //   - TryAuthorizeSearchAsync() returns bool and publishes SearchDeniedEvent.
 //   - IsSearchAvailable provides quick property check without exceptions.
+//   - GetUpgradeMessage() returns tier-specific upgrade guidance (v0.4.5d).
 //   - Required tier: WriterPro or higher.
 //
 //   This guard is injected into PgVectorSearchService to enforce license gating
 //   before any search operations execute. The guard approach avoids duplicating
 //   license checks across multiple search-related services.
+//
+//   v0.4.5b: Initial implementation with EnsureSearchAuthorized,
+//            TryAuthorizeSearchAsync, IsSearchAvailable, CurrentTier.
+//   v0.4.5d: Made FeatureName and RequiredTier public for external consumers.
+//            Added GetUpgradeMessage() for UI upgrade prompt text.
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
@@ -67,7 +73,7 @@ namespace Lexichord.Modules.RAG.Search;
 /// License tier is read from <see cref="ILicenseContext"/> on each check.
 /// </para>
 /// <para>
-/// <b>Introduced:</b> v0.4.5b.
+/// <b>Introduced:</b> v0.4.5b. <b>Enhanced:</b> v0.4.5d (public constants, GetUpgradeMessage).
 /// </para>
 /// </remarks>
 public sealed class SearchLicenseGuard
@@ -77,14 +83,23 @@ public sealed class SearchLicenseGuard
     private readonly ILogger<SearchLicenseGuard> _logger;
 
     /// <summary>
-    /// The feature name used in exception messages and denial events.
+    /// The feature name used in exception messages, denial events, and upgrade prompts.
     /// </summary>
-    private const string FeatureName = "Semantic Search";
+    /// <remarks>
+    /// LOGIC: Public constant so that UI consumers and event handlers can reference the
+    /// canonical feature name without string duplication. Introduced as public in v0.4.5d.
+    /// </remarks>
+    public const string FeatureName = "Semantic Search";
 
     /// <summary>
     /// The minimum license tier required for semantic search.
     /// </summary>
-    private static readonly LicenseTier RequiredTier = LicenseTier.WriterPro;
+    /// <remarks>
+    /// LOGIC: Public constant so that UI consumers can display the required tier in
+    /// upgrade prompts without coupling to the guard's internal logic. Introduced as
+    /// public in v0.4.5d.
+    /// </remarks>
+    public const LicenseTier RequiredTier = LicenseTier.WriterPro;
 
     /// <summary>
     /// Creates a new <see cref="SearchLicenseGuard"/> instance.
@@ -194,5 +209,41 @@ public sealed class SearchLicenseGuard
         }, ct);
 
         return false;
+    }
+
+    /// <summary>
+    /// Gets a user-friendly upgrade message based on the current license tier.
+    /// </summary>
+    /// <returns>
+    /// A message explaining the license requirement for semantic search.
+    /// For tiers below <see cref="LicenseTier.WriterPro"/>, the message encourages
+    /// upgrading. For authorized tiers, the message confirms access.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Provides tier-specific messaging for UI upgrade prompts.
+    /// Called by the Reference Panel (v0.4.6) when displaying the search
+    /// authorization state to the user.
+    /// </para>
+    /// <para>
+    /// <b>Introduced:</b> v0.4.5d.
+    /// </para>
+    /// </remarks>
+    public string GetUpgradeMessage()
+    {
+        var tier = _licenseContext.GetCurrentTier();
+
+        _logger.LogDebug("Generating upgrade message for tier: {Tier}", tier);
+
+        // LOGIC: Core is the only tier below WriterPro in the current LicenseTier enum.
+        // The default arm covers WriterPro, Teams, and Enterprise (all authorized).
+        return tier switch
+        {
+            LicenseTier.Core =>
+                "Upgrade to Writer Pro to unlock semantic search. " +
+                "Search your documents using natural language!",
+            _ =>
+                "Semantic search is available with your license."
+        };
     }
 }

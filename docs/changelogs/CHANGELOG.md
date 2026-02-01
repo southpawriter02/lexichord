@@ -109,6 +109,8 @@ This release implements semantic search capabilities enabling natural language q
 
 - **Query Preprocessing** — Full `QueryPreprocessor` implementation replacing the `PassthroughQueryPreprocessor` stub from v0.4.5b. Four-stage normalization pipeline (whitespace trimming, whitespace collapsing, Unicode NFC normalization, optional abbreviation expansion) with 35 technical abbreviations across 6 categories. SHA256-based query embedding caching with 5-minute sliding expiration via `IMemoryCache`. Added `ClearCache()` method to `IQueryPreprocessor` interface.
 
+- **License Gating** — Enhanced `SearchLicenseGuard` with publicly accessible `FeatureName` and `RequiredTier` constants for UI consumers, and `GetUpgradeMessage()` method providing tier-specific upgrade guidance for the Reference Panel (v0.4.6). Added `UsedCachedEmbedding` telemetry flag to `SemanticSearchExecutedEvent` for cache efficiency tracking. Updated `PgVectorSearchService` to track and report embedding cache hits in telemetry events.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title               | Status      |
@@ -116,7 +118,7 @@ This release implements semantic search capabilities enabling natural language q
 | [v0.4.5a](v0.4.x/LCS-CL-v0.4.5a.md) | Search Abstractions | ✅ Complete |
 | [v0.4.5b](v0.4.x/LCS-CL-v0.4.5b.md) | Vector Search Query | ✅ Complete |
 | [v0.4.5c](v0.4.x/LCS-CL-v0.4.5c.md) | Query Preprocessing | ✅ Complete |
-| v0.4.5d                            | License Gating      | 🔜 Planned  |
+| [v0.4.5d](v0.4.x/LCS-CL-v0.4.5d.md) | License Gating      | ✅ Complete |
 
 ---
 

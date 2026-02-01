@@ -24,6 +24,7 @@
 //   Dependencies:
 //     - v0.4.5a: ISemanticSearchService, SearchOptions, SearchResult, SearchHit
 //     - v0.4.5b: IQueryPreprocessor, SearchLicenseGuard, SearchEvents
+//     - v0.4.5d: UsedCachedEmbedding telemetry flag on SemanticSearchExecutedEvent
 //     - v0.4.4a: IEmbeddingService for query embedding generation
 //     - v0.4.1c: IDocumentRepository for document metadata
 //     - v0.0.5b: IDbConnectionFactory for database connections
@@ -163,7 +164,8 @@ public sealed class PgVectorSearchService : ISemanticSearchService
             var processedQuery = _preprocessor.Process(query, options);
 
             // Step 4: Get query embedding (cache check, then generate if needed).
-            var queryEmbedding = await GetQueryEmbeddingAsync(processedQuery, options, ct);
+            // LOGIC: v0.4.5d — destructure tuple to capture cache hit status for telemetry.
+            var (queryEmbedding, usedCachedEmbedding) = await GetQueryEmbeddingAsync(processedQuery, options, ct);
 
             // Step 5: Execute vector similarity search against pgvector.
             var hits = await ExecuteVectorSearchAsync(queryEmbedding, options, ct);
@@ -171,12 +173,14 @@ public sealed class PgVectorSearchService : ISemanticSearchService
             stopwatch.Stop();
 
             // Step 6: Publish telemetry event.
+            // LOGIC: v0.4.5d — include UsedCachedEmbedding for cache efficiency tracking.
             await _mediator.Publish(new SemanticSearchExecutedEvent
             {
                 Query = query,
                 ResultCount = hits.Count,
                 Duration = stopwatch.Elapsed,
-                Timestamp = DateTimeOffset.UtcNow
+                Timestamp = DateTimeOffset.UtcNow,
+                UsedCachedEmbedding = usedCachedEmbedding
             }, ct);
 
             _logger.LogInformation(
@@ -234,19 +238,26 @@ public sealed class PgVectorSearchService : ISemanticSearchService
     /// <param name="query">The preprocessed query text.</param>
     /// <param name="options">Search options controlling cache behavior.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>The embedding vector for the query.</returns>
+    /// <returns>
+    /// A tuple containing the embedding vector and a flag indicating whether
+    /// the embedding was served from cache (<c>true</c>) or freshly generated (<c>false</c>).
+    /// </returns>
     /// <remarks>
     /// <para>
     /// LOGIC: Cache lookup flow:
     /// </para>
     /// <list type="number">
     ///   <item><description>If <see cref="SearchOptions.UseCache"/> is true, check the preprocessor cache.</description></item>
-    ///   <item><description>On cache hit, return the cached embedding (skip API call).</description></item>
+    ///   <item><description>On cache hit, return the cached embedding with <c>usedCache: true</c> (skip API call).</description></item>
     ///   <item><description>On cache miss, generate a new embedding via <see cref="IEmbeddingService"/>.</description></item>
     ///   <item><description>If caching is enabled, store the new embedding in the cache.</description></item>
     /// </list>
+    /// <para>
+    /// <b>v0.4.5d:</b> Return type changed from <c>float[]</c> to tuple to expose cache hit
+    /// status for <see cref="SemanticSearchExecutedEvent.UsedCachedEmbedding"/> telemetry.
+    /// </para>
     /// </remarks>
-    private async Task<float[]> GetQueryEmbeddingAsync(
+    private async Task<(float[] Embedding, bool UsedCache)> GetQueryEmbeddingAsync(
         string query,
         SearchOptions options,
         CancellationToken ct)
@@ -258,7 +269,7 @@ public sealed class PgVectorSearchService : ISemanticSearchService
             if (cached != null)
             {
                 _logger.LogDebug("Using cached embedding for query: '{Query}'", query);
-                return cached;
+                return (cached, true);
             }
         }
 
@@ -271,7 +282,7 @@ public sealed class PgVectorSearchService : ISemanticSearchService
             _preprocessor.CacheEmbedding(query, embedding);
         }
 
-        return embedding;
+        return (embedding, false);
     }
 
     /// <summary>

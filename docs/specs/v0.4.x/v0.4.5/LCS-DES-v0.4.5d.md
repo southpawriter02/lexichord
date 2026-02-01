@@ -12,7 +12,7 @@
 | **Swimlane**         | Memory                            |
 | **License Tier**     | WriterPro                         |
 | **Feature Gate Key** | `FeatureFlags.RAG.SemanticSearch` |
-| **Status**           | Draft                             |
+| **Status**           | Implemented                       |
 | **Last Updated**     | 2026-01-27                        |
 
 ---
@@ -674,11 +674,11 @@ public class SearchAnalyticsHandler : INotificationHandler<SearchDeniedEvent>
 
 | #   | Deliverable                                | Status |
 | :-- | :----------------------------------------- | :----- |
-| 1   | `SearchLicenseGuard` helper class          | [ ]    |
-| 2   | `SearchDeniedEvent` notification           | [ ]    |
-| 3   | `SemanticSearchExecutedEvent` notification | [ ]    |
-| 4   | Unit tests for guard                       | [ ]    |
-| 5   | Unit tests for events                      | [ ]    |
+| 1   | `SearchLicenseGuard` helper class          | [x]    |
+| 2   | `SearchDeniedEvent` notification           | [x]    |
+| 3   | `SemanticSearchExecutedEvent` notification | [x]    |
+| 4   | Unit tests for guard                       | [x]    |
+| 5   | Unit tests for events                      | [x]    |
 
 > **Note:** `FeatureNotLicensedException` is reused from v0.4.4d.
 
