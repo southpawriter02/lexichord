@@ -20,6 +20,12 @@
     <!-- DI Abstractions only (not the full container) -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    
+    <!-- v0.4.2c: Options pattern for FileWatcherOptions -->
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+    
+    <!-- v0.4.2c: MediatR for event publishing -->
+    <PackageReference Include="MediatR" Version="12.4.0" />
 
     <!-- v0.4.1d: Dapper for database access -->
     <PackageReference Include="Dapper" Version="2.1.35" />

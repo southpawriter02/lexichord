@@ -10,6 +10,7 @@
 
 using Dapper;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Ingestion;
 using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Modules.RAG.Data;
 using Lexichord.Modules.RAG.Services;
@@ -34,6 +35,7 @@ namespace Lexichord.Modules.RAG;
 ///   <item><description><see cref="VectorTypeHandler"/>: Dapper type mapping for pgvector.</description></item>
 ///   <item><description><see cref="DocumentRepository"/>: Document CRUD operations.</description></item>
 ///   <item><description><see cref="ChunkRepository"/>: Chunk storage and vector search.</description></item>
+///   <item><description><see cref="FileWatcherIngestionHandler"/>: File change detection for auto-indexing (v0.4.2c).</description></item>
 /// </list>
 /// <para>
 /// <b>Database Requirements:</b> The PostgreSQL database must have the pgvector
@@ -48,7 +50,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 4, 1),
+        Version: new Version(0, 4, 2),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -80,6 +82,19 @@ public sealed class RAGModule : IModule
         // LOGIC: Register FileHashService as singleton - it is stateless and thread-safe.
         // Used for hash-based change detection in the ingestion pipeline (v0.4.2b).
         services.AddSingleton<IFileHashService, FileHashService>();
+
+        // LOGIC: Configure FileWatcherOptions with defaults using Options pattern.
+        // The defaults are set via ConfigureOptions which allows proper IOptions<T> injection.
+        // These can be overridden via configuration binding in the host.
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(FileWatcherOptions.Default));
+
+        // LOGIC: Register FileWatcherIngestionHandler as singleton.
+        // It subscribes to ExternalFileChangesEvent and publishes FileIndexingRequestedEvent.
+        // Singleton ensures a single debounce state across the application lifetime (v0.4.2c).
+        // Also register as INotificationHandler for MediatR discovery.
+        services.AddSingleton<FileWatcherIngestionHandler>();
+        services.AddSingleton<MediatR.INotificationHandler<Lexichord.Abstractions.Events.ExternalFileChangesEvent>>(
+            sp => sp.GetRequiredService<FileWatcherIngestionHandler>());
     }
 
     /// <inheritdoc/>
