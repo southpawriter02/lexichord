@@ -13,6 +13,7 @@ using Dapper;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Ingestion;
 using Lexichord.Abstractions.Contracts.RAG;
+using Lexichord.Modules.RAG.Chunking;
 using Lexichord.Modules.RAG.Data;
 using Lexichord.Modules.RAG.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -114,6 +115,10 @@ public sealed class RAGModule : IModule
         // It continuously processes items from the queue using IIngestionService (v0.4.2d).
         // Note: IIngestionService itself is registered by downstream consumers (e.g., v0.4.2e).
         services.AddHostedService<IngestionBackgroundService>();
+
+        // LOGIC: Register FixedSizeChunkingStrategy as singleton - it is stateless and thread-safe.
+        // This is the foundational chunking algorithm for the RAG pipeline (v0.4.3b).
+        services.AddSingleton<FixedSizeChunkingStrategy>();
     }
 
     /// <inheritdoc/>

@@ -105,14 +105,16 @@ This release introduces a flexible chunking system for breaking documents into s
 
 - **Chunking Abstractions** — Core interfaces, records, and enums defining the chunking contract. `IChunkingStrategy` enables pluggable algorithms, `TextChunk` and `ChunkMetadata` carry output with position and context, `ChunkingOptions` provides configurable behavior with validation, and `ChunkingPresets` offers ready-to-use configurations for common use cases.
 
+- **Fixed-Size Chunker** — `FixedSizeChunkingStrategy` splits text into chunks of configurable target size with overlap for context continuity. Two-phase word boundary search (backward 20%, forward 10%) avoids mid-word splits. Supports whitespace trimming, Unicode characters, and proper metadata (Index, TotalChunks, IsFirst/IsLast).
+
 #### Sub-Part Changelogs
 
-| Version                               | Title                   | Status      |
-| ------------------------------------- | ----------------------- | ----------- |
+| Version                             | Title                   | Status      |
+| ----------------------------------- | ----------------------- | ----------- |
 | [v0.4.3a](v0.4.x/LCS-CL-v0.4.3a.md) | Chunking Abstractions   | ✅ Complete |
-| v0.4.3b                               | Fixed-Size Chunker      | 🔜 Planned  |
-| v0.4.3c                               | Paragraph Chunker       | 🔜 Planned  |
-| v0.4.3d                               | Markdown Header Chunker | 🔜 Planned  |
+| [v0.4.3b](v0.4.x/LCS-CL-v0.4.3b.md) | Fixed-Size Chunker      | ✅ Complete |
+| v0.4.3c                             | Paragraph Chunker       | 🔜 Planned  |
+| v0.4.3d                             | Markdown Header Chunker | 🔜 Planned  |
 
 ---
 
