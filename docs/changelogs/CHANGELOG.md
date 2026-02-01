@@ -64,6 +64,31 @@ This release introduces PostgreSQL with pgvector for vector storage, enabling se
 
 ---
 
+## [v0.4.2] - 2026-01 (In Progress)
+
+### The Watcher (File Ingestion Pipeline)
+
+This release establishes the file ingestion pipeline for processing documents into the RAG system.
+
+#### What's New
+
+- **Ingestion Service Interface** — `IIngestionService` contract defining single file and directory ingestion, document removal, and real-time progress reporting via events.
+
+- **Ingestion Data Contracts** — `IngestionResult` record with factory methods for success/failure/skipped outcomes, `IngestionProgressEventArgs` with auto-calculated completion percentage, and `IngestionOptions` for configurable file filtering and concurrency.
+
+- **Pipeline Phase Model** — `IngestionPhase` enum defining 7 discrete stages (Scanning → Hashing → Reading → Chunking → Embedding → Storing → Complete) enabling granular progress tracking.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                       | Status      |
+| ----------------------------------- | --------------------------- | ----------- |
+| [v0.4.2a](v0.4.x/LCS-CL-v0.4.2a.md) | Ingestion Service Interface | ✅ Complete |
+| v0.4.2b                             | File Hashing Service        | 🔜 Planned  |
+| v0.4.2c                             | File Watcher                | 🔜 Planned  |
+| v0.4.2d                             | Ingestion Queue             | 🔜 Planned  |
+
+---
+
 ## [v0.3.8] - 2026-01 (In Progress)
 
 ### The Hardening (Unit Testing)
