@@ -34,11 +34,11 @@ The Knowledge Graph Foundation provides:
 
 ### Design Specifications
 
-| Document ID | Sub-Part | Title | Module | License |
-| :---------- | :------- | :---- | :----- | :------ |
-| [LCS-DES-045-KG-a](./LCS-DES-045-KG-a.md) | v0.4.5e | Graph Database Integration | `Lexichord.Modules.Knowledge` | Teams |
-| [LCS-DES-045-KG-b](./LCS-DES-045-KG-b.md) | v0.4.5f | Schema Registry Service | `Lexichord.Modules.Knowledge` | Teams |
-| [LCS-DES-045-KG-c](./LCS-DES-045-KG-c.md) | v0.4.5g | Entity Abstraction Layer | `Lexichord.Modules.Knowledge` | Teams |
+| Document ID | Sub-Part | Title | Module | License | Status |
+| :---------- | :------- | :---- | :----- | :------ | :----- |
+| [LCS-DES-045-KG-a](./LCS-DES-045-KG-a.md) | v0.4.5e | Graph Database Integration | `Lexichord.Modules.Knowledge` | Teams | ✅ Implemented |
+| [LCS-DES-045-KG-b](./LCS-DES-045-KG-b.md) | v0.4.5f | Schema Registry Service | `Lexichord.Modules.Knowledge` | Teams | ✅ Implemented |
+| [LCS-DES-045-KG-c](./LCS-DES-045-KG-c.md) | v0.4.5g | Entity Abstraction Layer | `Lexichord.Modules.Knowledge` | Teams | 🔜 Planned |
 
 ---
 

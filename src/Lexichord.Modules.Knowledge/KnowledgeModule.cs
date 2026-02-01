@@ -5,22 +5,24 @@
 // =============================================================================
 // LOGIC: Registers all Knowledge Graph-related services and initializes the
 //   Neo4j graph database connection. This module implements CKVS Phase 1:
-//   - v0.4.5e: Graph Database Integration (this version)
-//   - v0.4.5f: Schema Registry Service (future)
+//   - v0.4.5e: Graph Database Integration
+//   - v0.4.5f: Schema Registry Service (this version)
 //   - v0.4.5g: Entity Abstraction Layer (future)
 //
 // Service Registrations:
 //   - Neo4jConnectionFactory: Singleton (manages connection pool)
 //   - Neo4jHealthCheck: Transient (created per health check invocation)
 //   - GraphConfiguration: Bound to IOptions<GraphConfiguration>
+//   - SchemaRegistry: Singleton (in-memory schema registry for entity/relationship validation)
 //
-// v0.4.5e: Graph Database Integration (CKVS Phase 1)
+// v0.4.5f: Schema Registry Service (CKVS Phase 1)
 // Dependencies: ISecureVault (v0.0.6a), ILicenseContext (v0.0.4c),
 //               IConfiguration (v0.0.3d), ILogger<T> (v0.0.3b)
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Modules.Knowledge.Graph;
+using Lexichord.Modules.Knowledge.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -108,6 +110,18 @@ public sealed class KnowledgeModule : IModule
         // LOGIC: Register Neo4jHealthCheck as transient.
         // Health checks are created per invocation by the health check framework.
         services.AddTransient<Neo4jHealthCheck>();
+
+        // =============================================================================
+        // v0.4.5f: Schema Registry Service
+        // =============================================================================
+
+        // LOGIC: Register SchemaRegistry as singleton.
+        // The registry holds all loaded entity and relationship type schemas in memory.
+        // Singleton ensures consistent schema state across the application lifetime.
+        // Also registered as ISchemaRegistry for consumer injection.
+        services.AddSingleton<SchemaRegistry>();
+        services.AddSingleton<ISchemaRegistry>(sp =>
+            sp.GetRequiredService<SchemaRegistry>());
     }
 
     /// <inheritdoc/>

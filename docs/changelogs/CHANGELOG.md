@@ -113,6 +113,8 @@ This release implements semantic search capabilities enabling natural language q
 
 - **Graph Database Integration** — Neo4j 5.x Community Edition integration for the Knowledge Graph Foundation (CKVS Phase 1). `IGraphConnectionFactory` with license-gated session creation (Teams for write, WriterPro for read-only, Core denied). `Neo4jGraphSession` with Cypher query execution, Stopwatch timing, slow query warnings (>100ms), and exception wrapping to `GraphQueryException`. `Neo4jHealthCheck` for application health monitoring. Docker Compose Neo4j container with APOC plugin. PostgreSQL metadata tables (`GraphMetadata`, `DocumentEntities`) for cross-system linkage.
 
+- **Schema Registry Service** — YAML-driven schema system for knowledge graph entity and relationship type governance. `ISchemaRegistry` with in-memory registry, case-insensitive lookups, and comprehensive validation producing typed error codes (13 error codes, 1 warning code). `SchemaLoader` parses YAML files with underscore naming convention and flexible From/To handling. `SchemaValidator` enforces type existence, required properties, type correctness, and constraint validation (length, pattern, numeric range). Built-in technical documentation schema with 6 entity types (Product, Component, Endpoint, Parameter, Response, Concept) and 6 relationship types.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                      | Status      |
@@ -122,6 +124,7 @@ This release implements semantic search capabilities enabling natural language q
 | [v0.4.5c](v0.4.x/LCS-CL-v0.4.5c.md) | Query Preprocessing        | ✅ Complete |
 | [v0.4.5d](v0.4.x/LCS-CL-v0.4.5d.md) | License Gating             | ✅ Complete |
 | [v0.4.5e](v0.4.x/LCS-CL-v0.4.5e.md) | Graph Database Integration | ✅ Complete |
+| [v0.4.5f](v0.4.x/LCS-CL-v0.4.5f.md) | Schema Registry Service    | ✅ Complete |
 
 ---
 

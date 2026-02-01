@@ -29,6 +29,14 @@
 
     <!-- v0.4.5e: Health check abstractions -->
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="9.0.0" />
+
+    <!-- v0.4.5f: YAML parsing for schema registry -->
+    <PackageReference Include="YamlDotNet" Version="15.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- v0.4.5f: Built-in schema YAML files -->
+    <Content Include="Schema\BuiltInSchemas\technical-docs.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

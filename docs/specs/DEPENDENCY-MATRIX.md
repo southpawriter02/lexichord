@@ -447,6 +447,39 @@
 | `Neo4jRecordMapper`      | v0.4.5e    | Modules.Knowledge | IRecord to typed object mapping      |
 | `KnowledgeModule`        | v0.4.5e    | Modules.Knowledge | IModule implementation               |
 
+### 1.11b v0.4.5f Schema Registry Interfaces
+
+| Interface          | Defined In | Module       | Purpose                                     |
+| :----------------- | :--------- | :----------- | :------------------------------------------ |
+| `ISchemaRegistry`  | v0.4.5f    | Abstractions | Schema loading, validation, and querying    |
+
+**New Records (v0.4.5f):**
+
+| Record                     | Defined In | Module       | Purpose                                    |
+| :------------------------- | :--------- | :----------- | :----------------------------------------- |
+| `PropertySchema`           | v0.4.5f    | Abstractions | Property definition with type & constraints |
+| `EntityTypeSchema`         | v0.4.5f    | Abstractions | Entity type definition with properties     |
+| `RelationshipTypeSchema`   | v0.4.5f    | Abstractions | Relationship type with from/to constraints |
+| `SchemaValidationResult`   | v0.4.5f    | Abstractions | Validation outcome (errors + warnings)     |
+| `SchemaValidationError`    | v0.4.5f    | Abstractions | Blocking validation error with code        |
+| `SchemaValidationWarning`  | v0.4.5f    | Abstractions | Non-blocking validation warning            |
+| `SchemaDocument`           | v0.4.5f    | Modules.Knowledge | Parsed YAML schema file output        |
+
+**New Enums (v0.4.5f):**
+
+| Enum           | Defined In | Module       | Purpose                              |
+| :------------- | :--------- | :----------- | :----------------------------------- |
+| `PropertyType` | v0.4.5f    | Abstractions | Data types for schema properties     |
+| `Cardinality`  | v0.4.5f    | Abstractions | Relationship cardinality constraints |
+
+**New Classes (v0.4.5f):**
+
+| Class              | Defined In | Module            | Purpose                                   |
+| :----------------- | :--------- | :---------------- | :---------------------------------------- |
+| `SchemaRegistry`   | v0.4.5f    | Modules.Knowledge | ISchemaRegistry with in-memory dictionaries |
+| `SchemaLoader`     | v0.4.5f    | Modules.Knowledge | YAML parser using YamlDotNet              |
+| `SchemaValidator`  | v0.4.5f    | Modules.Knowledge | Entity/relationship validation logic      |
+
 ### 1.12 v0.4.6 Reference Panel Interfaces
 
 | Interface                     | Defined In | Module      | Purpose                     |
