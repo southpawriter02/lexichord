@@ -95,6 +95,33 @@ This release establishes the file ingestion pipeline for processing documents in
 
 ---
 
+## [v0.4.4] - 2026-02 (In Progress)
+
+### The Embedder (Vector Generation)
+
+This release introduces the embedding infrastructure for generating semantic vectors from text, enabling similarity search and RAG capabilities.
+
+#### What's New
+
+- **Embedding Abstractions** — Core `IEmbeddingService` interface defining vector generation operations with single and batch embedding support. `EmbeddingOptions` configuration record with validation, `EmbeddingResult` for operation outcomes with diagnostics, and `EmbeddingException` for error classification.
+
+- **OpenAI Connector** — `OpenAIEmbeddingService` implementation using OpenAI's text-embedding-3-small model. Features Polly-based exponential backoff retry (2^attempt seconds) for rate limits (429) and server errors (5xx). Secure API key retrieval via `ISecureVault`.
+
+- **Token Counting** — `ITokenCounter` interface with `TiktokenTokenCounter` implementation using cl100k_base encoding. Provides accurate token counting, truncation with word boundary preservation, and encode/decode round-trip support.
+
+- **Document Indexing Pipeline** — `DocumentIndexingPipeline` orchestrates the complete indexing workflow: chunk → validate tokens → embed (batched) → store. Features license gating (WriterPro), MediatR events (`DocumentIndexedEvent`, `DocumentIndexingFailedEvent`), and graceful error handling.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                 | Status      |
+| ----------------------------------- | --------------------- | ----------- |
+| [v0.4.4a](v0.4.x/LCS-CL-v0.4.4a.md) | Embedding Abstractions | ✅ Complete |
+| [v0.4.4b](v0.4.x/LCS-CL-v0.4.4b.md) | OpenAI Connector       | ✅ Complete |
+| [v0.4.4c](v0.4.x/LCS-CL-v0.4.4c.md) | Token Counting         | ✅ Complete |
+| [v0.4.4d](v0.4.x/LCS-CL-v0.4.4d.md) | Embedding Pipeline     | ✅ Complete |
+
+---
+
 ## [v0.4.3] - 2026-02 (In Progress)
 
 ### The Splitter (Chunking Strategies)

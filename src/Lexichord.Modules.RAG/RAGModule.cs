@@ -7,6 +7,7 @@
 //   - VectorTypeHandler must be registered before any repository operations.
 //   - DocumentRepository and ChunkRepository are scoped for per-request lifecycle.
 //   - IngestionQueue and IngestionBackgroundService handle queued file processing (v0.4.2d).
+//   - Embedding services and document indexing pipeline (v0.4.4).
 // =============================================================================
 
 using Dapper;
@@ -15,10 +16,13 @@ using Lexichord.Abstractions.Contracts.Ingestion;
 using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Modules.RAG.Chunking;
 using Lexichord.Modules.RAG.Data;
+using Lexichord.Modules.RAG.Embedding;
+using Lexichord.Modules.RAG.Indexing;
 using Lexichord.Modules.RAG.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 namespace Lexichord.Modules.RAG;
 
@@ -41,6 +45,10 @@ namespace Lexichord.Modules.RAG;
 ///   <item><description><see cref="FileWatcherIngestionHandler"/>: File change detection for auto-indexing (v0.4.2c).</description></item>
 ///   <item><description><see cref="IngestionQueue"/>: Priority-based processing queue for file ingestion (v0.4.2d).</description></item>
 ///   <item><description><see cref="IngestionBackgroundService"/>: Background processor for the ingestion queue (v0.4.2d).</description></item>
+///   <item><description><see cref="TiktokenTokenCounter"/>: Token counting using tiktoken encoding (v0.4.4c).</description></item>
+///   <item><description><see cref="OpenAIEmbeddingService"/>: OpenAI embeddings with Polly retry (v0.4.4b).</description></item>
+///   <item><description><see cref="ChunkingStrategyFactory"/>: Strategy selection for document chunking (v0.4.4d).</description></item>
+///   <item><description><see cref="DocumentIndexingPipeline"/>: Full indexing workflow orchestration (v0.4.4d).</description></item>
 /// </list>
 /// <para>
 /// <b>Database Requirements:</b> The PostgreSQL database must have the pgvector
@@ -55,7 +63,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 4, 2),
+        Version: new Version(0, 4, 4),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -125,9 +133,46 @@ public sealed class RAGModule : IModule
         services.AddSingleton<ParagraphChunkingStrategy>();
 
         // LOGIC: Register MarkdownHeaderChunkingStrategy as singleton - it is stateless and thread-safe.
-        // This strategy splits on Markdown header boundaries with ParagraphChunkingStrategy as 
+        // This strategy splits on Markdown header boundaries with ParagraphChunkingStrategy as
         // fallback for no-header content and FixedSizeChunkingStrategy for oversized sections (v0.4.3d).
         services.AddSingleton<MarkdownHeaderChunkingStrategy>();
+
+        // =============================================================================
+        // v0.4.4: Embedding Infrastructure
+        // =============================================================================
+
+        // LOGIC: Configure EmbeddingOptions with defaults using Options pattern (v0.4.4a).
+        // The defaults are set via Options.Create which allows proper IOptions<T> injection.
+        // These can be overridden via configuration binding in the host.
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(EmbeddingOptions.Default));
+
+        // LOGIC: Register HttpClient for OpenAI API with default JSON accept header (v0.4.4b).
+        // Using IHttpClientFactory for proper connection pooling and lifecycle management.
+        services.AddHttpClient("OpenAI", client =>
+        {
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+        });
+
+        // LOGIC: Register TiktokenTokenCounter as singleton - it is stateless and thread-safe (v0.4.4c).
+        // Uses cl100k_base encoding for compatibility with OpenAI GPT-4 and embedding models.
+        services.AddSingleton<TiktokenTokenCounter>();
+        services.AddSingleton<ITokenCounter>(sp => sp.GetRequiredService<TiktokenTokenCounter>());
+
+        // LOGIC: Register OpenAIEmbeddingService as singleton (v0.4.4b).
+        // Uses ISecureVault for API key retrieval and Polly for retry policies.
+        // Thread-safe and stateless, suitable for singleton lifetime.
+        services.AddSingleton<OpenAIEmbeddingService>();
+        services.AddSingleton<IEmbeddingService>(sp => sp.GetRequiredService<OpenAIEmbeddingService>());
+
+        // LOGIC: Register ChunkingStrategyFactory as singleton (v0.4.4d).
+        // Factory for selecting appropriate chunking strategy based on content or mode.
+        services.AddSingleton<ChunkingStrategyFactory>();
+
+        // LOGIC: Register DocumentIndexingPipeline as scoped (v0.4.4d).
+        // The pipeline orchestrates chunking, embedding, and storage.
+        // Scoped to align with repository lifetimes and database transaction boundaries.
+        services.AddScoped<DocumentIndexingPipeline>();
     }
 
     /// <inheritdoc/>

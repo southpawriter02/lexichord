@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-044                                                          |
 | **Version**      | v0.4.4                                                               |
 | **Codename**     | The Embedder (Vector Generation)                                     |
-| **Status**       | Draft                                                                |
-| **Last Updated** | 2026-01-27                                                           |
+| **Status**       | Implemented                                                          |
+| **Last Updated** | 2026-02-01                                                           |
 | **Owner**        | Lead Architect                                                       |
 | **Depends On**   | v0.4.3 (Chunking), v0.4.1 (Vector Foundation), v0.0.6a (SecureVault) |
 
@@ -1242,22 +1242,22 @@ OPENAI_API_KEY=sk-... dotnet test --filter "Category=Integration&FullyQualifiedN
 
 | #   | Deliverable                                | Status |
 | :-- | :----------------------------------------- | :----- |
-| 1   | `IEmbeddingService` interface              | [ ]    |
-| 2   | `EmbeddingOptions` record                  | [ ]    |
-| 3   | `EmbeddingResult` record                   | [ ]    |
-| 4   | `OpenAIEmbeddingService` implementation    | [ ]    |
-| 5   | Polly retry policy integration             | [ ]    |
-| 6   | `ITokenCounter` interface                  | [ ]    |
-| 7   | `TiktokenTokenCounter` implementation      | [ ]    |
-| 8   | `DocumentIndexingPipeline` implementation  | [ ]    |
-| 9   | `DocumentIndexedEvent` notification        | [ ]    |
-| 10  | `DocumentIndexingFailedEvent` notification | [ ]    |
-| 11  | `IndexingResult` record                    | [ ]    |
-| 12  | Unit tests for EmbeddingService            | [ ]    |
-| 13  | Unit tests for TokenCounter                | [ ]    |
-| 14  | Integration tests for pipeline             | [ ]    |
-| 15  | License gating for WriterPro               | [ ]    |
-| 16  | DI registration in RAGModule.cs            | [ ]    |
+| 1   | `IEmbeddingService` interface              | ✅     |
+| 2   | `EmbeddingOptions` record                  | ✅     |
+| 3   | `EmbeddingResult` record                   | ✅     |
+| 4   | `OpenAIEmbeddingService` implementation    | ✅     |
+| 5   | Polly retry policy integration             | ✅     |
+| 6   | `ITokenCounter` interface                  | ✅     |
+| 7   | `TiktokenTokenCounter` implementation      | ✅     |
+| 8   | `DocumentIndexingPipeline` implementation  | ✅     |
+| 9   | `DocumentIndexedEvent` notification        | ✅     |
+| 10  | `DocumentIndexingFailedEvent` notification | ✅     |
+| 11  | `IndexingResult` record                    | ✅     |
+| 12  | Unit tests for EmbeddingService            | ✅     |
+| 13  | Unit tests for TokenCounter                | ✅     |
+| 14  | Integration tests for pipeline             | ✅     |
+| 15  | License gating for WriterPro               | ✅     |
+| 16  | DI registration in RAGModule.cs            | ✅     |
 
 ---
 

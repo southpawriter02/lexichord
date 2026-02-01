@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-DES-044-INDEX                        |
 | **Version**      | v0.4.4                                   |
 | **Codename**     | The Embedder (Vector Generation)         |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
+| **Status**       | Implemented                              |
+| **Last Updated** | 2026-02-01                               |
 | **Owner**        | Lead Architect                           |
 
 ---
@@ -23,10 +23,10 @@ This index provides navigation to all design specifications for **v0.4.4: The Em
 
 | Document ID    | Title                      | Description                                      | Status |
 | :------------- | :------------------------- | :----------------------------------------------- | :----- |
-| [LCS-DES-044a](./LCS-DES-044a.md) | Embedding Abstractions | Interfaces and records for embedding | Draft |
-| [LCS-DES-044b](./LCS-DES-044b.md) | OpenAI Connector | OpenAI API integration with retry logic | Draft |
-| [LCS-DES-044c](./LCS-DES-044c.md) | Token Counting | Token validation and text truncation | Draft |
-| [LCS-DES-044d](./LCS-DES-044d.md) | Embedding Pipeline | Document indexing orchestration | Draft |
+| [LCS-DES-044a](./LCS-DES-v0.4.4a.md) | Embedding Abstractions | Interfaces and records for embedding | ✅ Implemented |
+| [LCS-DES-044b](./LCS-DES-v0.4.4b.md) | OpenAI Connector | OpenAI API integration with retry logic | ✅ Implemented |
+| [LCS-DES-044c](./LCS-DES-v0.4.4c.md) | Token Counting | Token validation and text truncation | ✅ Implemented |
+| [LCS-DES-044d](./LCS-DES-v0.4.4d.md) | Embedding Pipeline | Document indexing orchestration | ✅ Implemented |
 
 ---
 
@@ -242,5 +242,6 @@ v0.4.4a (Abstractions)
 | Version | Date       | Author         | Changes                    |
 | :------ | :--------- | :------------- | :------------------------- |
 | 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| 1.0     | 2026-02-01 | Lead Architect | Implementation complete    |
 
 ---

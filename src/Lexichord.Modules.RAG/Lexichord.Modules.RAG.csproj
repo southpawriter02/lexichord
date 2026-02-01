@@ -38,6 +38,15 @@
     
     <!-- v0.4.3d: Markdig for Markdown header parsing -->
     <PackageReference Include="Markdig" Version="0.37.0" />
+
+    <!-- v0.4.4c: Microsoft.ML.Tokenizers for Tiktoken token counting -->
+    <PackageReference Include="Microsoft.ML.Tokenizers" Version="0.22.0-preview.24378.1" />
+
+    <!-- v0.4.4b: Polly for resilience (retry policy with exponential backoff) -->
+    <PackageReference Include="Polly" Version="8.2.0" />
+
+    <!-- v0.4.4b: Microsoft.Extensions.Http for IHttpClientFactory -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
