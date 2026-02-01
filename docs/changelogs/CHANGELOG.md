@@ -111,14 +111,17 @@ This release implements semantic search capabilities enabling natural language q
 
 - **License Gating** — Enhanced `SearchLicenseGuard` with publicly accessible `FeatureName` and `RequiredTier` constants for UI consumers, and `GetUpgradeMessage()` method providing tier-specific upgrade guidance for the Reference Panel (v0.4.6). Added `UsedCachedEmbedding` telemetry flag to `SemanticSearchExecutedEvent` for cache efficiency tracking. Updated `PgVectorSearchService` to track and report embedding cache hits in telemetry events.
 
+- **Graph Database Integration** — Neo4j 5.x Community Edition integration for the Knowledge Graph Foundation (CKVS Phase 1). `IGraphConnectionFactory` with license-gated session creation (Teams for write, WriterPro for read-only, Core denied). `Neo4jGraphSession` with Cypher query execution, Stopwatch timing, slow query warnings (>100ms), and exception wrapping to `GraphQueryException`. `Neo4jHealthCheck` for application health monitoring. Docker Compose Neo4j container with APOC plugin. PostgreSQL metadata tables (`GraphMetadata`, `DocumentEntities`) for cross-system linkage.
+
 #### Sub-Part Changelogs
 
-| Version                             | Title               | Status      |
-| ----------------------------------- | ------------------- | ----------- |
-| [v0.4.5a](v0.4.x/LCS-CL-v0.4.5a.md) | Search Abstractions | ✅ Complete |
-| [v0.4.5b](v0.4.x/LCS-CL-v0.4.5b.md) | Vector Search Query | ✅ Complete |
-| [v0.4.5c](v0.4.x/LCS-CL-v0.4.5c.md) | Query Preprocessing | ✅ Complete |
-| [v0.4.5d](v0.4.x/LCS-CL-v0.4.5d.md) | License Gating      | ✅ Complete |
+| Version                             | Title                      | Status      |
+| ----------------------------------- | -------------------------- | ----------- |
+| [v0.4.5a](v0.4.x/LCS-CL-v0.4.5a.md) | Search Abstractions        | ✅ Complete |
+| [v0.4.5b](v0.4.x/LCS-CL-v0.4.5b.md) | Vector Search Query        | ✅ Complete |
+| [v0.4.5c](v0.4.x/LCS-CL-v0.4.5c.md) | Query Preprocessing        | ✅ Complete |
+| [v0.4.5d](v0.4.x/LCS-CL-v0.4.5d.md) | License Gating             | ✅ Complete |
+| [v0.4.5e](v0.4.x/LCS-CL-v0.4.5e.md) | Graph Database Integration | ✅ Complete |
 
 ---
 

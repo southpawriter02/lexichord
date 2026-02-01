@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Module metadata -->
+    <AssemblyTitle>Lexichord Knowledge Module</AssemblyTitle>
+    <Description>Knowledge Graph Foundation - Neo4j integration, schema registry, entity extraction</Description>
+    <Version>0.4.5</Version>
+
+    <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
+    <OutputPath>$(SolutionDir)Modules\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- DI Abstractions only (not the full container) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+
+    <!-- v0.4.5e: Options pattern for GraphConfiguration -->
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+
+    <!-- v0.4.5e: Neo4j Bolt driver for graph database connectivity -->
+    <PackageReference Include="Neo4j.Driver" Version="5.27.0" />
+
+    <!-- v0.4.5e: Health check abstractions -->
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The ONLY project reference allowed for modules -->
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+  <!-- Allow unit tests to access internal classes -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Lexichord.Tests.Unit" />
+    <InternalsVisibleTo Include="Lexichord.Tests.Integration" />
+  </ItemGroup>
+
+</Project>

@@ -17,6 +17,9 @@
     <!-- Assertions -->
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
 
+    <!-- Mocking (for integration test setup helpers) -->
+    <PackageReference Include="Moq" Version="4.20.70" />
+
     <!-- Testcontainers -->
     <PackageReference Include="Testcontainers" Version="3.7.0" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="3.7.0" />
@@ -47,11 +50,14 @@
     <ProjectReference Include="..\..\src\Lexichord.Modules.StatusBar\Lexichord.Modules.StatusBar.csproj" />
     <!-- v0.2.2b: Style module for Terminology Repository tests -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.Style\Lexichord.Modules.Style.csproj" />
+    <!-- v0.4.5e: Knowledge Graph Module for integration testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.Knowledge\Lexichord.Modules.Knowledge.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="FluentAssertions" />
+    <Using Include="Moq" />
   </ItemGroup>
 
 </Project>

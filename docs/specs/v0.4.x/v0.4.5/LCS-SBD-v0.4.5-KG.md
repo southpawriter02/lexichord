@@ -969,12 +969,12 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Knowledge"
 
 | #   | Deliverable                                   | Status |
 | :-- | :-------------------------------------------- | :----- |
-| 1   | Docker Compose with Neo4j                     | [ ]    |
-| 2   | `IGraphConnectionFactory` interface           | [ ]    |
-| 3   | `Neo4jConnectionFactory` implementation       | [ ]    |
-| 4   | `IGraphSession` interface                     | [ ]    |
-| 5   | `Neo4jGraphSession` implementation            | [ ]    |
-| 6   | Graph metadata PostgreSQL migration           | [ ]    |
+| 1   | Docker Compose with Neo4j                     | [x]    |
+| 2   | `IGraphConnectionFactory` interface           | [x]    |
+| 3   | `Neo4jConnectionFactory` implementation       | [x]    |
+| 4   | `IGraphSession` interface                     | [x]    |
+| 5   | `Neo4jGraphSession` implementation            | [x]    |
+| 6   | Graph metadata PostgreSQL migration           | [x]    |
 | 7   | `ISchemaRegistry` interface                   | [ ]    |
 | 8   | `SchemaRegistry` implementation               | [ ]    |
 | 9   | Schema YAML format specification              | [ ]    |
@@ -985,10 +985,10 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Knowledge"
 | 14  | `ConceptExtractor` implementation             | [ ]    |
 | 15  | `IEntityExtractionPipeline` interface         | [ ]    |
 | 16  | `EntityExtractionPipeline` implementation     | [ ]    |
-| 17  | Unit tests for all components                 | [ ]    |
-| 18  | Integration tests for Neo4j                   | [ ]    |
-| 19  | DI registration in KnowledgeModule.cs         | [ ]    |
-| 20  | License gating implementation                 | [ ]    |
+| 17  | Unit tests for all components                 | [x]    |
+| 18  | Integration tests for Neo4j                   | [x]    |
+| 19  | DI registration in KnowledgeModule.cs         | [x]    |
+| 20  | License gating implementation                 | [x]    |
 
 ---
 

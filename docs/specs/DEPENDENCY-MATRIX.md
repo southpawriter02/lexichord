@@ -405,7 +405,49 @@
 | `QueryPreprocessor`     | v0.4.5c    | Modules.RAG | Query normalization and caching   |
 | `SearchLicenseGuard`    | v0.4.5d    | Modules.RAG | License validation helper         |
 
-### 1.11 v0.4.6 Reference Panel Interfaces
+### 1.11 v0.4.5e Knowledge Graph Interfaces
+
+| Interface                  | Defined In | Module              | Purpose                                    |
+| :------------------------- | :--------- | :------------------ | :----------------------------------------- |
+| `IGraphConnectionFactory`  | v0.4.5e    | Abstractions        | Graph database session creation            |
+| `IGraphSession`            | v0.4.5e    | Abstractions        | Cypher query execution (IAsyncDisposable)  |
+| `IGraphRecord`             | v0.4.5e    | Abstractions        | Raw record access for query results        |
+| `IGraphTransaction`        | v0.4.5e    | Abstractions        | Explicit transaction support               |
+
+**New Records (v0.4.5e):**
+
+| Record                    | Defined In | Module       | Purpose                                |
+| :------------------------ | :--------- | :----------- | :------------------------------------- |
+| `GraphWriteResult`        | v0.4.5e    | Abstractions | Write operation mutation statistics    |
+| `KnowledgeEntity`         | v0.4.5e    | Abstractions | Graph node with typed properties       |
+| `KnowledgeRelationship`   | v0.4.5e    | Abstractions | Graph edge between two entities        |
+| `GraphConfiguration`      | v0.4.5e    | Modules.Knowledge | Neo4j connection settings          |
+
+**New Enums (v0.4.5e):**
+
+| Enum              | Defined In | Module       | Purpose                       |
+| :---------------- | :--------- | :----------- | :---------------------------- |
+| `GraphAccessMode` | v0.4.5e    | Abstractions | Read/Write session access mode |
+
+**New Exceptions (v0.4.5e):**
+
+| Exception             | Defined In | Module       | Purpose                           |
+| :-------------------- | :--------- | :----------- | :-------------------------------- |
+| `GraphQueryException` | v0.4.5e    | Abstractions | Wraps Neo4j driver exceptions     |
+
+**New Classes (v0.4.5e):**
+
+| Class                    | Defined In | Module            | Purpose                              |
+| :----------------------- | :--------- | :---------------- | :----------------------------------- |
+| `Neo4jConnectionFactory` | v0.4.5e    | Modules.Knowledge | IGraphConnectionFactory with pooling |
+| `Neo4jGraphSession`      | v0.4.5e    | Modules.Knowledge | IGraphSession with timing/logging    |
+| `Neo4jGraphRecord`       | v0.4.5e    | Modules.Knowledge | IGraphRecord wrapping Neo4j IRecord  |
+| `Neo4jGraphTransaction`  | v0.4.5e    | Modules.Knowledge | IGraphTransaction with auto-rollback |
+| `Neo4jHealthCheck`       | v0.4.5e    | Modules.Knowledge | IHealthCheck for Neo4j connectivity  |
+| `Neo4jRecordMapper`      | v0.4.5e    | Modules.Knowledge | IRecord to typed object mapping      |
+| `KnowledgeModule`        | v0.4.5e    | Modules.Knowledge | IModule implementation               |
+
+### 1.12 v0.4.6 Reference Panel Interfaces
 
 | Interface                     | Defined In | Module      | Purpose                     |
 | :---------------------------- | :--------- | :---------- | :-------------------------- |
@@ -862,6 +904,8 @@
 | `coverlet.collector`                       | 6.x     | v0.4.8a       | Code coverage reporting              |
 | `RichardSzalay.MockHttp`                   | 7.x     | v0.4.8a       | HTTP mocking for unit tests          |
 | `Respawn`                                  | 6.x     | v0.4.8b       | Database reset for integration tests |
+| `Neo4j.Driver`                             | 5.27.x  | v0.4.5e       | Neo4j Bolt driver for Knowledge Graph |
+| `Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions` | 9.0.x | v0.4.5e | Health check abstractions for Neo4j |
 
 ---
 

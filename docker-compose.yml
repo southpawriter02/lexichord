@@ -75,6 +75,77 @@ services:
             - lexichord-network
 
     # ============================================================================
+    # Neo4j 5.x Graph Database (Knowledge Graph — CKVS Phase 1)
+    # ============================================================================
+    # LOGIC: Neo4j Community Edition provides the graph database for the Knowledge
+    # Graph subsystem (v0.4.5e). Entities and relationships are stored as nodes
+    # and edges, enabling efficient traversal and pattern matching for knowledge
+    # validation. Data is persisted to named volumes to survive container recreation.
+    # The health check ensures dependent services wait for Neo4j to be ready.
+    # ============================================================================
+    neo4j:
+        image: neo4j:5.15-community
+        container_name: lexichord-neo4j
+        restart: unless-stopped
+
+        # Environment variables for Neo4j configuration
+        # LOGIC: NEO4J_AUTH sets initial credentials (username/password).
+        # Memory settings are tuned for development workloads.
+        # APOC plugin is included for advanced graph operations.
+        environment:
+            NEO4J_AUTH: ${NEO4J_AUTH:-neo4j/lexichord_dev_password}
+            NEO4J_PLUGINS: '["apoc"]'
+            NEO4J_dbms_memory_heap_initial__size: "256m"
+            NEO4J_dbms_memory_heap_max__size: "512m"
+            NEO4J_dbms_memory_pagecache_size: "128m"
+
+        # Port mapping: host:container
+        # LOGIC: 7474 = HTTP (Neo4j Browser UI), 7687 = Bolt (driver protocol).
+        # Change host ports if you have a local Neo4j installation.
+        ports:
+            - "${NEO4J_HTTP_PORT:-7474}:7474"
+            - "${NEO4J_BOLT_PORT:-7687}:7687"
+
+        # Persistent data and log volumes
+        # LOGIC: Named volumes ensure data survives container recreation.
+        # Use 'docker compose down -v' to delete all volumes and reset data.
+        volumes:
+            - lexichord-neo4j-data:/data
+            - lexichord-neo4j-logs:/logs
+
+        # Health check configuration
+        # LOGIC: Verifies Neo4j HTTP endpoint is responding.
+        # This ensures the database is fully started before dependent services
+        # attempt to connect via Bolt protocol.
+        healthcheck:
+            test: ["CMD", "wget", "-qO-", "http://localhost:7474"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 15s
+
+        # Resource limits for development
+        # LOGIC: Prevent runaway resource consumption on dev machines.
+        # Neo4j requires more memory than PostgreSQL due to in-memory caching.
+        deploy:
+            resources:
+                limits:
+                    memory: 1G
+                reservations:
+                    memory: 512M
+
+        # Logging configuration
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+        # Network configuration
+        networks:
+            - lexichord-network
+
+    # ============================================================================
     # pgAdmin 4 (Optional Database UI)
     # ============================================================================
     # LOGIC: Provides a web-based PostgreSQL administration interface.
@@ -114,6 +185,10 @@ volumes:
         name: lexichord-pgdata
     lexichord-pgadmin:
         name: lexichord-pgadmin
+    lexichord-neo4j-data:
+        name: lexichord-neo4j-data
+    lexichord-neo4j-logs:
+        name: lexichord-neo4j-logs
 
 # ============================================================================
 # Networks
