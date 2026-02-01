@@ -74,6 +74,13 @@
     <ProjectReference Include="..\..\src\Lexichord.Modules.Editor\Lexichord.Modules.Editor.csproj" />
     <!-- v0.2.1a: Style Module for testing -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.Style\Lexichord.Modules.Style.csproj" />
+    <!-- v0.4.1d: RAG Module for testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.RAG\Lexichord.Modules.RAG.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- v0.4.1d: Pgvector for VectorTypeHandler tests -->
+    <PackageReference Include="Pgvector" Version="0.3.0" />
   </ItemGroup>
 
   <ItemGroup>

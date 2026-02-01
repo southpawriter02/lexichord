@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Module metadata -->
+    <AssemblyTitle>Lexichord RAG Module</AssemblyTitle>
+    <Description>RAG subsystem - Vector storage and semantic search</Description>
+    <Version>0.4.1</Version>
+
+    <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
+    <OutputPath>$(SolutionDir)Modules\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- DI Abstractions only (not the full container) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+
+    <!-- v0.4.1d: Dapper for database access -->
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    
+    <!-- v0.4.1d: pgvector support for vector embeddings -->
+    <PackageReference Include="Pgvector" Version="0.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The ONLY project reference allowed for modules -->
+    <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+  <!-- v0.4.1d: Allow unit tests to access internal classes -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Lexichord.Tests.Unit" />
+    <InternalsVisibleTo Include="Lexichord.Tests.Integration" />
+  </ItemGroup>
+
+</Project>
