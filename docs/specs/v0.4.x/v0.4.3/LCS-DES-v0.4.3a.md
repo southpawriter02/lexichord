@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-DES-043a                             |
 | **Version**      | v0.4.3a                                  |
 | **Title**        | Chunking Abstractions                    |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
+| **Status**       | Implemented                              |
+| **Last Updated** | 2026-02-01                               |
 | **Owner**        | Lead Architect                           |
 | **Module**       | `Lexichord.Abstractions`                 |
 | **License Tier** | Core                                     |
@@ -610,16 +610,16 @@ public class ChunkingAbstractionsTests
 
 | # | Criterion | Status |
 | :- | :-------- | :----- |
-| 1 | ChunkingMode enum has FixedSize, Paragraph, MarkdownHeader, Semantic | [ ] |
-| 2 | IChunkingStrategy defines Mode property and Split method | [ ] |
-| 3 | TextChunk includes Content, StartOffset, EndOffset, Metadata | [ ] |
-| 4 | TextChunk.Length computed correctly | [ ] |
-| 5 | ChunkMetadata includes Index, Heading, Level, TotalChunks | [ ] |
-| 6 | ChunkMetadata provides IsFirst, IsLast, RelativePosition | [ ] |
-| 7 | ChunkingOptions has all configurable properties | [ ] |
-| 8 | ChunkingOptions.Validate() enforces all constraints | [ ] |
-| 9 | ChunkingPresets provides HighPrecision, Balanced, HighContext, Code | [ ] |
-| 10 | All unit tests pass | [ ] |
+| 1 | ChunkingMode enum has FixedSize, Paragraph, MarkdownHeader, Semantic | [x] |
+| 2 | IChunkingStrategy defines Mode property and Split method | [x] |
+| 3 | TextChunk includes Content, StartOffset, EndOffset, Metadata | [x] |
+| 4 | TextChunk.Length computed correctly | [x] |
+| 5 | ChunkMetadata includes Index, Heading, Level, TotalChunks | [x] |
+| 6 | ChunkMetadata provides IsFirst, IsLast, RelativePosition | [x] |
+| 7 | ChunkingOptions has all configurable properties | [x] |
+| 8 | ChunkingOptions.Validate() enforces all constraints | [x] |
+| 9 | ChunkingPresets provides HighPrecision, Balanced, HighContext, Code | [x] |
+| 10 | All unit tests pass | [x] |
 
 ---
 
@@ -628,5 +628,6 @@ public class ChunkingAbstractionsTests
 | Version | Date       | Author         | Changes                    |
 | :------ | :--------- | :------------- | :------------------------- |
 | 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| 1.0     | 2026-02-01 | Lead Architect | Implemented — all criteria met |
 
 ---

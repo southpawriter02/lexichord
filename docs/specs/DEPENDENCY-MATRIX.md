@@ -1119,10 +1119,10 @@ graph TB
 
 ### v0.4.3 Prerequisites for v0.4.4+
 
-- [ ] IChunkingStrategy (v0.4.3a)
-- [ ] ChunkingMode enum (v0.4.3a)
-- [ ] TextChunk, ChunkMetadata, ChunkingOptions records (v0.4.3a)
-- [ ] ChunkingPresets static class (v0.4.3a)
+- [x] IChunkingStrategy (v0.4.3a)
+- [x] ChunkingMode enum (v0.4.3a)
+- [x] TextChunk, ChunkMetadata, ChunkingOptions records (v0.4.3a)
+- [x] ChunkingPresets static class (v0.4.3a)
 - [ ] FixedSizeChunkingStrategy (v0.4.3b)
 - [ ] ParagraphChunkingStrategy (v0.4.3c)
 - [ ] MarkdownHeaderChunkingStrategy (v0.4.3d)

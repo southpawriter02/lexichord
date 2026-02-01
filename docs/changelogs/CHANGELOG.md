@@ -95,6 +95,27 @@ This release establishes the file ingestion pipeline for processing documents in
 
 ---
 
+## [v0.4.3] - 2026-02 (In Progress)
+
+### The Splitter (Chunking Strategies)
+
+This release introduces a flexible chunking system for breaking documents into semantically meaningful text segments suitable for embedding.
+
+#### What's New
+
+- **Chunking Abstractions** — Core interfaces, records, and enums defining the chunking contract. `IChunkingStrategy` enables pluggable algorithms, `TextChunk` and `ChunkMetadata` carry output with position and context, `ChunkingOptions` provides configurable behavior with validation, and `ChunkingPresets` offers ready-to-use configurations for common use cases.
+
+#### Sub-Part Changelogs
+
+| Version                               | Title                   | Status      |
+| ------------------------------------- | ----------------------- | ----------- |
+| [v0.4.3a](v0.4.x/LCS-CL-v0.4.3a.md) | Chunking Abstractions   | ✅ Complete |
+| v0.4.3b                               | Fixed-Size Chunker      | 🔜 Planned  |
+| v0.4.3c                               | Paragraph Chunker       | 🔜 Planned  |
+| v0.4.3d                               | Markdown Header Chunker | 🔜 Planned  |
+
+---
+
 ## [v0.3.8] - 2026-01 (In Progress)
 
 ### The Hardening (Unit Testing)

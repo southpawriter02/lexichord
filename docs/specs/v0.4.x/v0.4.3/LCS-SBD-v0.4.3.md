@@ -1171,11 +1171,11 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Chunking"
 
 | #   | Deliverable                                     | Status |
 | :-- | :---------------------------------------------- | :----- |
-| 1   | `ChunkingMode` enum                             | [ ]    |
-| 2   | `IChunkingStrategy` interface                   | [ ]    |
-| 3   | `TextChunk` record                              | [ ]    |
-| 4   | `ChunkMetadata` record                          | [ ]    |
-| 5   | `ChunkingOptions` record                        | [ ]    |
+| 1   | `ChunkingMode` enum                             | [x]    |
+| 2   | `IChunkingStrategy` interface                   | [x]    |
+| 3   | `TextChunk` record                              | [x]    |
+| 4   | `ChunkMetadata` record                          | [x]    |
+| 5   | `ChunkingOptions` record                        | [x]    |
 | 6   | `FixedSizeChunkingStrategy` implementation      | [ ]    |
 | 7   | `ParagraphChunkingStrategy` implementation      | [ ]    |
 | 8   | `MarkdownHeaderChunkingStrategy` implementation | [ ]    |
