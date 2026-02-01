@@ -95,6 +95,19 @@ public sealed class TiktokenTokenCounter : ITokenCounter
     /// var counter3 = new TiktokenTokenCounter("cl100k_base", null);
     /// </code>
     /// </example>
+    /// <summary>
+    /// Maps encoding names to representative model names that use them.
+    /// TiktokenTokenizer.CreateForModel expects model names, not encoding names.
+    /// </summary>
+    private static readonly Dictionary<string, string> EncodingToModelMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["cl100k_base"] = "gpt-4",
+        ["p50k_base"] = "text-davinci-003",
+        ["p50k_edit"] = "text-davinci-edit-001",
+        ["r50k_base"] = "text-davinci-001",
+        ["o200k_base"] = "gpt-4o"
+    };
+
     public TiktokenTokenCounter(string? model = null, ILogger<TiktokenTokenCounter>? logger = null)
     {
         // LOGIC: Normalize model name to default if not provided.
@@ -103,9 +116,13 @@ public sealed class TiktokenTokenCounter : ITokenCounter
 
         try
         {
+            // LOGIC: If the user passed an encoding name (e.g., "cl100k_base"),
+            // map it to a representative model name for TiktokenTokenizer.CreateForModel.
+            var modelForApi = EncodingToModelMap.TryGetValue(_model, out var mapped) ? mapped : _model;
+
             // LOGIC: Create Tiktoken tokenizer for the specified model.
             // TiktokenTokenizer.CreateForModel internally maps model names to encodings.
-            _tokenizer = TiktokenTokenizer.CreateForModel(_model);
+            _tokenizer = TiktokenTokenizer.CreateForModel(modelForApi);
             _logger?.LogDebug("Initialized Tiktoken token counter for model '{Model}'", _model);
         }
         catch (Exception ex)
@@ -188,7 +205,7 @@ public sealed class TiktokenTokenCounter : ITokenCounter
 
             // LOGIC: Text exceeds limit - truncate to maxTokens and decode.
             var truncatedTokens = tokens.Take(maxTokens).ToList();
-            var truncatedText = _tokenizer.Decode(truncatedTokens);
+            var truncatedText = _tokenizer.Decode(truncatedTokens) ?? string.Empty;
 
             _logger?.LogWarning(
                 "Text truncated from {OriginalTokenCount} tokens to {MaxTokens} tokens " +
@@ -225,7 +242,7 @@ public sealed class TiktokenTokenCounter : ITokenCounter
         {
             var tokens = _tokenizer.EncodeToIds(text);
             _logger?.LogDebug("Encoded {TextLength} chars to {TokenCount} tokens", text.Length, tokens.Count);
-            return new ReadOnlyCollection<int>(tokens);
+            return new ReadOnlyCollection<int>(tokens.ToArray());
         }
         catch (Exception ex)
         {
@@ -258,9 +275,9 @@ public sealed class TiktokenTokenCounter : ITokenCounter
 
         try
         {
-            var text = _tokenizer.Decode(tokens.ToList());
+            var text = _tokenizer.Decode(tokens.ToList()) ?? string.Empty;
             _logger?.LogDebug("Decoded {TokenCount} tokens to {TextLength} chars", tokens.Count, text.Length);
-            return text ?? string.Empty;
+            return text;
         }
         catch (Exception ex)
         {

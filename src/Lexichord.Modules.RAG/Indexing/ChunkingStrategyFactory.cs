@@ -12,6 +12,7 @@
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Modules.RAG.Chunking;
 using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Modules.RAG.Indexing;
@@ -55,7 +56,7 @@ namespace Lexichord.Modules.RAG.Indexing;
 /// Multiple concurrent calls are supported.
 /// </para>
 /// </remarks>
-public sealed class ChunkingStrategyFactory
+public class ChunkingStrategyFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ChunkingStrategyFactory> _logger;
@@ -102,7 +103,7 @@ public sealed class ChunkingStrategyFactory
     /// future NLP-based chunking and will throw <see cref="NotSupportedException"/>.
     /// </para>
     /// </remarks>
-    public IChunkingStrategy GetStrategy(ChunkingMode mode)
+    public virtual IChunkingStrategy GetStrategy(ChunkingMode mode)
     {
         if (mode == ChunkingMode.Semantic)
         {
@@ -191,7 +192,7 @@ public sealed class ChunkingStrategyFactory
     /// call <see cref="GetStrategy(ChunkingMode)"/> with an explicit mode.
     /// </para>
     /// </remarks>
-    public IChunkingStrategy GetStrategy(string content, string? fileExtension)
+    public virtual IChunkingStrategy GetStrategy(string content, string? fileExtension)
     {
         ArgumentNullException.ThrowIfNull(content);
 

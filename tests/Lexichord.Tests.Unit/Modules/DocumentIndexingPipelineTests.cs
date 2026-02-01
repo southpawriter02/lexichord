@@ -28,7 +28,8 @@ namespace Lexichord.Tests.Unit.Modules;
 [Trait("Feature", "v0.4.4d")]
 public class DocumentIndexingPipelineTests
 {
-    private readonly Mock<ChunkingStrategyFactory> _mockChunkingStrategyFactory = new();
+    private readonly Mock<ChunkingStrategyFactory> _mockChunkingStrategyFactory =
+        new(Mock.Of<IServiceProvider>(), Mock.Of<ILogger<ChunkingStrategyFactory>>());
     private readonly Mock<ITokenCounter> _mockTokenCounter = new();
     private readonly Mock<IEmbeddingService> _mockEmbeddingService = new();
     private readonly Mock<IChunkRepository> _mockChunkRepository = new();
@@ -273,21 +274,25 @@ public class DocumentIndexingPipelineTests
 
     [Fact]
     [Trait("Feature", "v0.4.4d")]
-    public async Task IndexDocumentAsync_WithoutLicense_ThrowsFeatureNotLicensedException()
+    public async Task IndexDocumentAsync_WithoutLicense_ReturnsFailure()
     {
         // Arrange
         var pipeline = CreatePipeline();
         _mockLicenseContext.Setup(lc => lc.GetCurrentTier())
-            .Returns(LicenseTier.Free); // Below WriterPro
+            .Returns(LicenseTier.Core); // Below WriterPro
 
-        // Act & Assert
-        var act = () => pipeline.IndexDocumentAsync(
+        _mockMediator.Setup(m => m.Publish(It.IsAny<DocumentIndexingFailedEvent>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await pipeline.IndexDocumentAsync(
             "test.md",
             "content",
             null,
             CancellationToken.None);
 
-        await act.Should().ThrowAsync<FeatureNotLicensedException>();
+        // Assert - pipeline catches FeatureNotLicensedException and returns failure
+        result.Success.Should().BeFalse();
     }
 
     [Fact]
@@ -349,11 +354,13 @@ public class DocumentIndexingPipelineTests
         _mockLicenseContext.Setup(lc => lc.GetCurrentTier())
             .Returns(LicenseTier.WriterPro);
 
+        SetupSuccessfulIndexing();
+
+        // Override GetByFilePathAsync AFTER SetupSuccessfulIndexing so the pipeline
+        // finds an existing document instead of creating a new one.
         var documentId = Guid.NewGuid();
         _mockDocumentRepository.Setup(dr => dr.GetByFilePathAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Document(documentId, Guid.Empty, "test.md", "Test", "hash", DocumentStatus.Pending));
-
-        SetupSuccessfulIndexing();
+            .ReturnsAsync(new Document(documentId, Guid.Empty, "test.md", "Test", "hash", DocumentStatus.Pending, null, null));
 
         // Act
         await pipeline.IndexDocumentAsync(
@@ -401,11 +408,12 @@ public class DocumentIndexingPipelineTests
         _mockLicenseContext.Setup(lc => lc.GetCurrentTier())
             .Returns(LicenseTier.WriterPro);
 
-        // Setup token counter to indicate truncation
+        SetupSuccessfulIndexing();
+
+        // Setup token counter to indicate truncation AFTER SetupSuccessfulIndexing
+        // so this overrides the default (text, false) setup.
         _mockTokenCounter.Setup(tc => tc.TruncateToTokenLimit(It.IsAny<string>(), It.IsAny<int>()))
             .Returns(("truncated", true));
-
-        SetupSuccessfulIndexing();
 
         // Act
         var result = await pipeline.IndexDocumentAsync(
@@ -415,7 +423,7 @@ public class DocumentIndexingPipelineTests
             CancellationToken.None);
 
         // Assert
-        result.WasTruncated.Should().BeTrue();
+        result.TruncationOccurred.Should().BeTrue();
     }
 
     [Fact]
@@ -428,9 +436,9 @@ public class DocumentIndexingPipelineTests
             .Returns(LicenseTier.WriterPro);
 
         var mockStrategy = new Mock<IChunkingStrategy>();
-        mockStrategy.Setup(s => s.Mode).Returns(ChunkingMode.Fixed);
+        mockStrategy.Setup(s => s.Mode).Returns(ChunkingMode.FixedSize);
         mockStrategy.Setup(s => s.Split(It.IsAny<string>(), It.IsAny<ChunkingOptions>()))
-            .Returns(Array.Empty<DocumentChunk>());
+            .Returns(Array.Empty<TextChunk>());
 
         _mockChunkingStrategyFactory.Setup(f => f.GetStrategy(It.IsAny<string>(), It.IsAny<string>()))
             .Returns(mockStrategy.Object);
@@ -439,12 +447,12 @@ public class DocumentIndexingPipelineTests
             .ReturnsAsync((Document?)null);
 
         _mockDocumentRepository.Setup(dr => dr.AddAsync(It.IsAny<Document>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Document(Guid.NewGuid(), Guid.Empty, "test.md", "Test", "hash", DocumentStatus.Pending));
+            .ReturnsAsync(new Document(Guid.NewGuid(), Guid.Empty, "test.md", "Test", "hash", DocumentStatus.Pending, null, null));
 
         _mockChunkRepository.Setup(cr => cr.DeleteByDocumentIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
 
-        _mockDocumentRepository.Setup(dr => dr.UpdateStatusAsync(It.IsAny<Guid>(), It.IsAny<DocumentStatus>(), It.IsAny<CancellationToken>()))
+        _mockDocumentRepository.Setup(dr => dr.UpdateStatusAsync(It.IsAny<Guid>(), It.IsAny<DocumentStatus>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -526,6 +534,10 @@ public class DocumentIndexingPipelineTests
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
+        // Setup the first async call to throw when cancellation is already requested.
+        _mockDocumentRepository.Setup(dr => dr.GetByFilePathAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new OperationCanceledException());
+
         // Act & Assert
         var act = () => pipeline.IndexDocumentAsync(
             "test.md",
@@ -565,9 +577,9 @@ public class DocumentIndexingPipelineTests
             .ReturnsAsync((Document?)null);
 
         _mockDocumentRepository.Setup(dr => dr.AddAsync(It.IsAny<Document>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Document(documentId, Guid.Empty, "test.md", "Test", "hash", DocumentStatus.Pending));
+            .ReturnsAsync(new Document(documentId, Guid.Empty, "test.md", "Test", "hash", DocumentStatus.Pending, null, null));
 
-        _mockDocumentRepository.Setup(dr => dr.UpdateStatusAsync(It.IsAny<Guid>(), It.IsAny<DocumentStatus>(), It.IsAny<CancellationToken>()))
+        _mockDocumentRepository.Setup(dr => dr.UpdateStatusAsync(It.IsAny<Guid>(), It.IsAny<DocumentStatus>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Setup chunk repository
@@ -579,11 +591,11 @@ public class DocumentIndexingPipelineTests
 
         // Setup chunking strategy
         var chunks = Enumerable.Range(0, chunkCount)
-            .Select(i => new DocumentChunk(i, i * 100, (i + 1) * 100, $"chunk {i}"))
+            .Select(i => new TextChunk($"chunk {i}", i * 100, (i + 1) * 100, new ChunkMetadata(i)))
             .ToArray();
 
         var mockStrategy = new Mock<IChunkingStrategy>();
-        mockStrategy.Setup(s => s.Mode).Returns(ChunkingMode.Fixed);
+        mockStrategy.Setup(s => s.Mode).Returns(ChunkingMode.FixedSize);
         mockStrategy.Setup(s => s.Split(It.IsAny<string>(), It.IsAny<ChunkingOptions>()))
             .Returns(chunks);
 

@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-045                                                      |
 | **Version**      | v0.4.5                                                           |
 | **Codename**     | The Searcher (Semantic Query)                                    |
-| **Status**       | Draft                                                            |
-| **Last Updated** | 2026-01-27                                                       |
+| **Status**       | In Progress                                                      |
+| **Last Updated** | 2026-02-01                                                       |
 | **Owner**        | Lead Architect                                                   |
 | **Depends On**   | v0.4.4 (Embedder), v0.4.1 (Vector Foundation), v0.0.4c (License) |
 

@@ -95,6 +95,27 @@ This release establishes the file ingestion pipeline for processing documents in
 
 ---
 
+## [v0.4.5] - 2026-02 (In Progress)
+
+### The Searcher (Semantic Query)
+
+This release implements semantic search capabilities enabling natural language queries against the indexed document corpus.
+
+#### What's New
+
+- **Search Abstractions** — `ISemanticSearchService` interface defining the semantic search contract with `SearchAsync` method. `SearchOptions` record for configurable TopK, MinScore, DocumentFilter, abbreviation expansion, and embedding caching. `SearchResult` container with ranked hits, timing, and truncation metadata. `SearchHit` for individual matches with score formatting helpers (`ScorePercent`, `ScoreDecimal`) and content previews.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title               | Status      |
+| ----------------------------------- | ------------------- | ----------- |
+| [v0.4.5a](v0.4.x/LCS-CL-v0.4.5a.md) | Search Abstractions | ✅ Complete |
+| v0.4.5b                            | Vector Search Query | 🔜 Planned  |
+| v0.4.5c                            | Query Preprocessing | 🔜 Planned  |
+| v0.4.5d                            | License Gating      | 🔜 Planned  |
+
+---
+
 ## [v0.4.4] - 2026-02 (In Progress)
 
 ### The Embedder (Vector Generation)

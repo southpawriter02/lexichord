@@ -12,8 +12,8 @@
 | **Swimlane** | Memory |
 | **License Tier** | Core (interface only) |
 | **Feature Gate Key** | N/A (abstractions) |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-27 |
+| **Status** | Implemented |
+| **Last Updated** | 2026-02-01 |
 
 ---
 
@@ -498,13 +498,13 @@ var result = await searchService.SearchAsync("plot twist", options);
 
 | #  | Deliverable                                                    | Status |
 | :- | :------------------------------------------------------------- | :----- |
-| 1  | `ISemanticSearchService` interface                             | [ ]    |
-| 2  | `SearchOptions` record                                         | [ ]    |
-| 3  | `SearchResult` record                                          | [ ]    |
-| 4  | `SearchHit` record                                             | [ ]    |
-| 5  | Unit tests for SearchOptions                                   | [ ]    |
-| 6  | Unit tests for SearchResult                                    | [ ]    |
-| 7  | Unit tests for SearchHit                                       | [ ]    |
+| 1  | `ISemanticSearchService` interface                             | [x]    |
+| 2  | `SearchOptions` record                                         | [x]    |
+| 3  | `SearchResult` record                                          | [x]    |
+| 4  | `SearchHit` record                                             | [x]    |
+| 5  | Unit tests for SearchOptions                                   | [x]    |
+| 6  | Unit tests for SearchResult                                    | [x]    |
+| 7  | Unit tests for SearchHit                                       | [x]    |
 
 ---
 

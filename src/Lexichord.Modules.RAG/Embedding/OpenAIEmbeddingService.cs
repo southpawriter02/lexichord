@@ -242,7 +242,8 @@ public sealed class OpenAIEmbeddingService : IEmbeddingService, IDisposable
 
                 throw new EmbeddingException(
                     $"OpenAI API returned {response.StatusCode}: {response.ReasonPhrase}. {content}",
-                    statusCode: (int)response.StatusCode);
+                    (int)response.StatusCode,
+                    isTransient: false);
             }
 
             // LOGIC: Transient error after retry exhaustion.
@@ -252,8 +253,8 @@ public sealed class OpenAIEmbeddingService : IEmbeddingService, IDisposable
 
             throw new EmbeddingException(
                 $"OpenAI API returned transient error {response.StatusCode} after retries: {response.ReasonPhrase}",
-                isTransient: true,
-                statusCode: (int)response.StatusCode);
+                (int)response.StatusCode,
+                isTransient: true);
         }
 
         // LOGIC: Parse successful response.

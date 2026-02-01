@@ -274,7 +274,7 @@ public class OpenAIEmbeddingServiceTests
         mockHttpClient.Setup(c => c.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResponse);
 
-        _mockHttpClientFactory.Setup(f => f.CreateClient())
+        _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>()))
             .Returns(mockHttpClient.Object);
 
         // Act
@@ -298,7 +298,7 @@ public class OpenAIEmbeddingServiceTests
             _mockLogger.Object);
 
         _mockVault.Setup(v => v.GetSecretAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string?)null);
+            .ReturnsAsync((string)null!);
 
         // Act & Assert
         var act = () => service.EmbedAsync("test", CancellationToken.None);
@@ -333,7 +333,7 @@ public class OpenAIEmbeddingServiceTests
         mockHttpClient.Setup(c => c.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResponse);
 
-        _mockHttpClientFactory.Setup(f => f.CreateClient())
+        _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>()))
             .Returns(mockHttpClient.Object);
 
         var texts = new[] { "text1", "text2", "text3" };
@@ -446,7 +446,7 @@ public class OpenAIEmbeddingServiceTests
         mockHttpClient.Setup(c => c.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResponse);
 
-        _mockHttpClientFactory.Setup(f => f.CreateClient())
+        _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>()))
             .Returns(mockHttpClient.Object);
 
         // Act & Assert
@@ -484,7 +484,7 @@ public class OpenAIEmbeddingServiceTests
         mockHttpClient.Setup(c => c.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
             .Returns(() => Task.FromResult(mockResponses.Dequeue()));
 
-        _mockHttpClientFactory.Setup(f => f.CreateClient())
+        _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>()))
             .Returns(mockHttpClient.Object);
 
         // Act
@@ -547,7 +547,7 @@ public class OpenAIEmbeddingServiceTests
                 embedding = Enumerable.Range(0, TestDimensions)
                     .Select(j => (float)(i + j) * 0.001f)
                     .ToArray(),
-                object = "embedding"
+                @object = "embedding"
             }).ToList();
 
         var response = new
