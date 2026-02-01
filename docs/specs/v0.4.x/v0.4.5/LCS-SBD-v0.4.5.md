@@ -1182,13 +1182,13 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Search"
 | 4   | `SearchHit` record                         | [x]    |
 | 5   | `PgVectorSearchService` implementation     | [x]    |
 | 6   | `IQueryPreprocessor` interface             | [x]    |
-| 7   | `QueryPreprocessor` implementation         | [ ]    |
-| 8   | Query embedding cache                      | [ ]    |
+| 7   | `QueryPreprocessor` implementation         | [x]    |
+| 8   | Query embedding cache                      | [x]    |
 | 9   | `SearchLicenseGuard` helper                | [x]    |
 | 10  | `SearchDeniedEvent` notification           | [x]    |
 | 11  | `SemanticSearchExecutedEvent` notification | [x]    |
 | 12  | Unit tests for search service              | [x]    |
-| 13  | Unit tests for preprocessor                | [ ]    |
+| 13  | Unit tests for preprocessor                | [x]    |
 | 14  | Unit tests for license guard               | [x]    |
 | 15  | Integration tests for full search flow     | [ ]    |
 | 16  | DI registration in RAGModule.cs            | [x]    |

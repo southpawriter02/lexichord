@@ -107,13 +107,15 @@ This release implements semantic search capabilities enabling natural language q
 
 - **Vector Search Query** — `PgVectorSearchService` implementing `ISemanticSearchService` using pgvector's cosine similarity (`<=>` operator) for semantic search against indexed document chunks. Includes `SearchLicenseGuard` for WriterPro tier enforcement with three validation modes (throw, try/publish, property check), `IQueryPreprocessor` interface with passthrough stub, `ChunkSearchRow` for Dapper result mapping, and MediatR events (`SemanticSearchExecutedEvent`, `SearchDeniedEvent`) for telemetry and license denial tracking.
 
+- **Query Preprocessing** — Full `QueryPreprocessor` implementation replacing the `PassthroughQueryPreprocessor` stub from v0.4.5b. Four-stage normalization pipeline (whitespace trimming, whitespace collapsing, Unicode NFC normalization, optional abbreviation expansion) with 35 technical abbreviations across 6 categories. SHA256-based query embedding caching with 5-minute sliding expiration via `IMemoryCache`. Added `ClearCache()` method to `IQueryPreprocessor` interface.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title               | Status      |
 | ----------------------------------- | ------------------- | ----------- |
 | [v0.4.5a](v0.4.x/LCS-CL-v0.4.5a.md) | Search Abstractions | ✅ Complete |
 | [v0.4.5b](v0.4.x/LCS-CL-v0.4.5b.md) | Vector Search Query | ✅ Complete |
-| v0.4.5c                            | Query Preprocessing | 🔜 Planned  |
+| [v0.4.5c](v0.4.x/LCS-CL-v0.4.5c.md) | Query Preprocessing | ✅ Complete |
 | v0.4.5d                            | License Gating      | 🔜 Planned  |
 
 ---

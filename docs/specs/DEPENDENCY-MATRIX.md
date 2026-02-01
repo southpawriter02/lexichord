@@ -1152,7 +1152,7 @@ graph TB
 - [x] SearchOptions, SearchResult, SearchHit records (v0.4.5a)
 - [x] PgVectorSearchService implementation (v0.4.5b)
 - [x] IQueryPreprocessor interface (v0.4.5b — interface defined; full implementation in v0.4.5c)
-- [ ] QueryPreprocessor implementation (v0.4.5c)
+- [x] QueryPreprocessor implementation (v0.4.5c)
 - [x] SearchLicenseGuard helper class (v0.4.5b)
 - [x] SearchDeniedEvent, SemanticSearchExecutedEvent (v0.4.5b)
 

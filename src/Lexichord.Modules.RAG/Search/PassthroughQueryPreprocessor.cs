@@ -91,4 +91,14 @@ internal sealed class PassthroughQueryPreprocessor : IQueryPreprocessor
     {
         // No-op: caching deferred to v0.4.5c QueryPreprocessor.
     }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// LOGIC: No-op in passthrough implementation. No cache to clear.
+    /// Full cache management delivered in v0.4.5c QueryPreprocessor.
+    /// </remarks>
+    public void ClearCache()
+    {
+        // No-op: no caching in passthrough implementation.
+    }
 }

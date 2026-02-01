@@ -12,9 +12,11 @@
 //   - Process() normalizes whitespace, Unicode, and optionally expands abbreviations.
 //   - GetCachedEmbedding() checks for previously computed embeddings (5-min TTL).
 //   - CacheEmbedding() stores embeddings for repeated query reuse.
+//   - ClearCache() signals cache clear (entries expire naturally via sliding window).
 //
 //   Interface defined in v0.4.5b for use by PgVectorSearchService.
-//   Implementation (QueryPreprocessor) will be delivered in v0.4.5c.
+//   Implementation (QueryPreprocessor) delivered in v0.4.5c.
+//   ClearCache() added in v0.4.5c.
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
@@ -111,4 +113,19 @@ public interface IQueryPreprocessor
     /// </para>
     /// </remarks>
     void CacheEmbedding(string query, float[] embedding);
+
+    /// <summary>
+    /// Clears all cached query embeddings.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Note:</b> The underlying <c>IMemoryCache</c> does not natively support
+    /// clearing all entries. Implementations should log that entries will expire
+    /// naturally via the sliding expiration window (5 minutes).
+    /// </para>
+    /// <para>
+    /// <b>Introduced:</b> v0.4.5c.
+    /// </para>
+    /// </remarks>
+    void ClearCache();
 }

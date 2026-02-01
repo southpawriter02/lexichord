@@ -21,6 +21,7 @@ using Lexichord.Modules.RAG.Embedding;
 using Lexichord.Modules.RAG.Indexing;
 using Lexichord.Modules.RAG.Search;
 using Lexichord.Modules.RAG.Services;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -187,10 +188,17 @@ public sealed class RAGModule : IModule
         // Used by PgVectorSearchService to enforce WriterPro+ tier before search execution.
         services.AddSingleton<SearchLicenseGuard>();
 
-        // LOGIC: Register PassthroughQueryPreprocessor as singleton (v0.4.5b).
-        // This is a temporary no-op stub that trims whitespace and performs no abbreviation
-        // expansion or caching. Will be replaced by full QueryPreprocessor in v0.4.5c.
-        services.AddSingleton<IQueryPreprocessor, PassthroughQueryPreprocessor>();
+        // LOGIC: v0.4.5c: IMemoryCache for query embedding caching.
+        // AddMemoryCache() is idempotent — safe even if StyleModule also calls it.
+        // Required by QueryPreprocessor for 5-minute sliding expiration cache.
+        services.AddMemoryCache();
+
+        // LOGIC: Register QueryPreprocessor as singleton (v0.4.5c).
+        // Provides whitespace normalization, Unicode NFC normalization, optional
+        // abbreviation expansion, and SHA256-based query embedding caching with
+        // 5-minute sliding expiration via IMemoryCache.
+        // Replaces PassthroughQueryPreprocessor from v0.4.5b.
+        services.AddSingleton<IQueryPreprocessor, QueryPreprocessor>();
 
         // LOGIC: Register PgVectorSearchService as scoped (v0.4.5b).
         // Scoped to align with IDbConnectionFactory and repository lifetimes.

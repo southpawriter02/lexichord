@@ -25,7 +25,7 @@ This index provides navigation to all design specifications for **v0.4.5: The Se
 | :-------------------------------- | :------------------ | :----------------------------------------- | :----- |
 | [LCS-DES-045a](./LCS-DES-045a.md) | Search Abstractions | Interfaces and records for semantic search | Implemented |
 | [LCS-DES-045b](./LCS-DES-045b.md) | Vector Search Query | pgvector cosine similarity implementation  | Implemented |
-| [LCS-DES-045c](./LCS-DES-045c.md) | Query Preprocessing | Normalization, expansion, and caching      | Draft  |
+| [LCS-DES-045c](./LCS-DES-045c.md) | Query Preprocessing | Normalization, expansion, and caching      | Implemented |
 | [LCS-DES-045d](./LCS-DES-045d.md) | License Gating      | WriterPro tier enforcement                 | Draft  |
 
 ---

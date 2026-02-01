@@ -47,6 +47,9 @@
 
     <!-- v0.4.4b: Microsoft.Extensions.Http for IHttpClientFactory -->
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+
+    <!-- v0.4.5c: IMemoryCache for query embedding caching -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
