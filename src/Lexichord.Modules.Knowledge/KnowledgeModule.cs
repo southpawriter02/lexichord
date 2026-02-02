@@ -188,6 +188,21 @@ public sealed class KnowledgeModule : IModule
         // Scoped lifetime aligns with per-request license context and database access.
         // The store integrates with IAxiomRepository (scoped) and IAxiomLoader (singleton).
         services.AddScoped<Axioms.IAxiomStore, Axioms.AxiomStore>();
+
+        // =============================================================================
+        // v0.4.7e: Entity List View
+        // =============================================================================
+
+        // LOGIC: Register GraphRepository as singleton.
+        // The repository wraps IGraphSession for domain-specific entity queries.
+        // Singleton is appropriate as it's stateless and thread-safe.
+        services.AddSingleton<Graph.GraphRepository>();
+        services.AddSingleton<IGraphRepository>(sp =>
+            sp.GetRequiredService<Graph.GraphRepository>());
+
+        // LOGIC: Register EntityListViewModel as transient.
+        // Each view instance should get its own ViewModel for independent state.
+        services.AddTransient<UI.ViewModels.EntityListViewModel>();
     }
 
     /// <inheritdoc/>

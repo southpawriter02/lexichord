@@ -5,10 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
+    <!-- v0.4.7e: Enable compiled bindings for EntityListView -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
     <!-- Module metadata -->
     <AssemblyTitle>Lexichord Knowledge Module</AssemblyTitle>
     <Description>Knowledge Graph Foundation - Neo4j integration, schema registry, entity extraction</Description>
-    <Version>0.4.5</Version>
+    <Version>0.4.7</Version>
 
     <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
     <OutputPath>$(SolutionDir)Modules\</OutputPath>
@@ -35,6 +38,12 @@
 
     <!-- v0.4.6f: In-memory caching for axiom repository -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+
+    <!-- v0.4.7e: Avalonia UI for Entity List View -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+
+    <!-- v0.4.7e: CommunityToolkit.Mvvm for MVVM pattern (ObservableObject, RelayCommand) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>

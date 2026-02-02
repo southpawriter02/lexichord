@@ -1,0 +1,264 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Knowledge.UI.ViewModels"
+             xmlns:conv="using:Lexichord.Modules.Knowledge.UI.Converters"
+             mc:Ignorable="d"
+             x:Class="Lexichord.Modules.Knowledge.UI.Views.EntityListView"
+             x:DataType="vm:EntityListViewModel">
+    <!--
+    ===========================================================================
+    File: EntityListView.axaml
+    Project: Lexichord.Modules.Knowledge
+    Description: Entity Browser list view with filtering and virtual scrolling.
+    Version: v0.4.7e
+    ===========================================================================
+    LAYOUT:
+         - Row 0: Filter bar (search, type, confidence, clear)
+         - Row 1: Entity list with virtual scrolling
+         - Row 2: Status bar with entity counts
+    ===========================================================================
+    DEPENDENCIES:
+         - v0.4.7e: EntityListViewModel, EntityListItemViewModel, ConfidenceToColorConverter
+    ===========================================================================
+    -->
+
+    <UserControl.Resources>
+        <conv:ConfidenceToColorConverter x:Key="ConfidenceToColor"/>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- Entity Item Style -->
+        <Style Selector="Border.entity-item">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Margin" Value="0,4" />
+        </Style>
+        <Style Selector="Border.entity-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
+        </Style>
+
+        <!-- Confidence Badge Styles -->
+        <Style Selector="Border.confidence-badge">
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="6,2" />
+        </Style>
+        <Style Selector="Border.confidence-high">
+            <Setter Property="Background" Value="#22c55e" />
+        </Style>
+        <Style Selector="Border.confidence-medium-high">
+            <Setter Property="Background" Value="#eab308" />
+        </Style>
+        <Style Selector="Border.confidence-medium">
+            <Setter Property="Background" Value="#f97316" />
+        </Style>
+        <Style Selector="Border.confidence-low">
+            <Setter Property="Background" Value="#ef4444" />
+        </Style>
+
+        <!-- Count Badge Style -->
+        <Style Selector="Border.count-badge">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="6,2" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ===================================================================
+        Row 0: Filter Bar
+        =================================================================== -->
+        <Border Grid.Row="0"
+                Padding="12"
+                Background="{DynamicResource SystemControlBackgroundChromeLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+
+                <!-- Search Box -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding SearchText, Mode=TwoWay}"
+                         Watermark="🔍 Search entities..."
+                         Margin="0,0,8,0" />
+
+                <!-- Type Filter -->
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding AvailableTypes}"
+                          SelectedItem="{Binding TypeFilter}"
+                          PlaceholderText="All Types"
+                          Width="130"
+                          Margin="0,0,8,0" />
+
+                <!-- Confidence Filter -->
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0">
+                    <TextBlock Text="Min:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,4,0"/>
+                    <Slider Value="{Binding MinConfidenceFilter}"
+                            Minimum="0"
+                            Maximum="1"
+                            Width="80"
+                            VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding MinConfidenceFilter, StringFormat='{}{0:P0}'}"
+                               VerticalAlignment="Center"
+                               Width="35"
+                               Margin="4,0,0,0"/>
+                </StackPanel>
+
+                <!-- Clear Filters Button -->
+                <Button Grid.Column="3"
+                        Command="{Binding ClearFiltersCommand}"
+                        ToolTip.Tip="Clear all filters"
+                        Width="28"
+                        Height="28"
+                        Padding="0">
+                    <PathIcon Data="M6.4,19 L5,17.6 L10.6,12 L5,6.4 L6.4,5 L12,10.6 L17.6,5 L19,6.4 L13.4,12 L19,17.6 L17.6,19 L12,13.4 L6.4,19Z"
+                              Width="12" Height="12" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ===================================================================
+        Row 1: Entity List
+        =================================================================== -->
+        <Grid Grid.Row="1">
+            
+            <!-- Loading Indicator -->
+            <Border IsVisible="{Binding IsLoading}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel Spacing="8">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="200" />
+                    <TextBlock Text="Loading entities..."
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Empty State -->
+            <Border IsVisible="{Binding !IsLoading}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Opacity="0.6">
+                <Border.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!IsLoading" />
+                        <Binding Path="FilteredEntities.Count" Converter="{x:Static ObjectConverters.IsNull}" FallbackValue="True" />
+                    </MultiBinding>
+                </Border.IsVisible>
+                <StackPanel Spacing="8">
+                    <PathIcon Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
+                              Width="48" Height="48"
+                              Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    <TextBlock Text="No entities found"
+                               HorizontalAlignment="Center"
+                               FontSize="14" />
+                    <TextBlock Text="Knowledge graph entities will appear here"
+                               HorizontalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Entity List -->
+            <ScrollViewer IsVisible="{Binding !IsLoading}"
+                          Padding="16">
+                <ItemsControl ItemsSource="{Binding FilteredEntities}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:EntityListItemViewModel">
+                            <Border Classes="entity-item">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+
+                                    <!-- Type Icon -->
+                                    <Border Grid.Column="0"
+                                            Width="28"
+                                            Height="28"
+                                            CornerRadius="4"
+                                            Background="{Binding Color}"
+                                            Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Icon}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="14" />
+                                    </Border>
+
+                                    <!-- Name and Type -->
+                                    <StackPanel Grid.Column="1"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Type}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+
+                                    <!-- Relationship/Mention Counts -->
+                                    <StackPanel Grid.Column="2"
+                                                Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Margin="8,0">
+                                        <Border Classes="count-badge"
+                                                Margin="0,0,4,0"
+                                                ToolTip.Tip="Relationships">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="🔗" FontSize="10" />
+                                                <TextBlock Text="{Binding RelationshipCount}"
+                                                           FontSize="11" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="count-badge"
+                                                ToolTip.Tip="Source Documents">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="📄" FontSize="10" />
+                                                <TextBlock Text="{Binding MentionCount}"
+                                                           FontSize="11" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <!-- Confidence Badge -->
+                                    <Border Grid.Column="3"
+                                            Classes="confidence-badge"
+                                            VerticalAlignment="Center"
+                                            Background="{Binding Confidence, Converter={StaticResource ConfidenceToColor}}"
+                                            ToolTip.Tip="Extraction Confidence">
+                                        <TextBlock Text="{Binding ConfidenceDisplay}"
+                                                   FontSize="11"
+                                                   Foreground="White"
+                                                   FontWeight="SemiBold" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ===================================================================
+        Row 2: Status Bar
+        =================================================================== -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SystemControlBackgroundChromeLowBrush}"
+                Padding="12,6"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,1,0,0">
+            <TextBlock FontSize="11">
+                <Run Text="Showing" />
+                <Run Text="{Binding FilteredCount, Mode=OneWay}" FontWeight="SemiBold" />
+                <Run Text="of" />
+                <Run Text="{Binding TotalCount, Mode=OneWay}" FontWeight="SemiBold" />
+                <Run Text="entities" />
+            </TextBlock>
+        </Border>
+    </Grid>
+</UserControl>
