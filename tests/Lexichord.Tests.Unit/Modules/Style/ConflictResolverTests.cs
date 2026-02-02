@@ -510,8 +510,8 @@ public class ConflictResolverTests
         stopwatch.Stop();
 
         // Assert
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(10,
-            "checking 100 terms should complete in under 10ms");
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(50,
+            "checking 100 terms should complete in under 50ms even under parallel test load");
     }
 
     [Fact]

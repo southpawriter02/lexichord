@@ -231,6 +231,16 @@ public sealed class RAGModule : IModule
         services.AddScoped<ISemanticSearchService, PgVectorSearchService>();
 
         // =============================================================================
+        // v0.5.1b: BM25 Search (Keyword Search)
+        // =============================================================================
+
+        // LOGIC: Register BM25SearchService as scoped (v0.5.1b).
+        // Scoped to align with IDbConnectionFactory and repository lifetimes.
+        // Executes PostgreSQL full-text search against indexed document chunks
+        // using ts_rank() for BM25-style relevance ranking.
+        services.AddScoped<IBM25SearchService, BM25SearchService>();
+
+        // =============================================================================
         // v0.4.6: Reference Panel (The Reference View)
         // =============================================================================
 

@@ -9,7 +9,7 @@
 | **Feature Name**   | BM25 Search Implementation        |
 | **Target Version** | v0.5.1b                           |
 | **Module**         | Lexichord.Modules.RAG             |
-| **Status**         | Draft                             |
+| **Status**         | Complete                          |
 | **Last Updated**   | 2026-01-27                        |
 | **Depends On**     | v0.5.1a (content_tsvector column) |
 
@@ -228,11 +228,13 @@ public class BM25SearchServiceTests
 
 | #   | Deliverable                                    | Status |
 | :-- | :--------------------------------------------- | :----- |
-| 1   | `IBM25SearchService` interface in Abstractions | [ ]    |
-| 2   | `BM25Hit` record in Abstractions.Contracts     | [ ]    |
-| 3   | `BM25SearchService` implementation             | [ ]    |
-| 4   | Unit tests for core functionality              | [ ]    |
-| 5   | DI registration in RAGModule.cs                | [ ]    |
+| 1   | `IBM25SearchService` interface in Abstractions | [x]    |
+| 2   | `BM25Hit` record in Abstractions.Contracts     | [x] *  |
+| 3   | `BM25SearchService` implementation             | [x]    |
+| 4   | Unit tests for core functionality              | [x]    |
+| 5   | DI registration in RAGModule.cs                | [x]    |
+
+> \* `BM25Hit` was adapted to use the existing `SearchHit` record per project convention, maintaining consistency with `ISemanticSearchService`.
 
 ---
 

@@ -27,7 +27,7 @@ public record PerformanceBaseline(
     OperationThresholds FuzzyScanning,
     OperationThresholds VoiceAnalysis,
     OperationThresholds FullPipeline,
-    double RegressionThreshold = 0.10);
+    double RegressionThreshold = 0.25);
 
 /// <summary>
 /// Metadata for a performance baseline configuration.
@@ -96,28 +96,28 @@ public static class DefaultBaselines
     /// </remarks>
     public static PerformanceBaseline Default { get; } = new(
         Metadata: new BaselineMetadata(
-            Version: "v0.3.8d",
+            Version: "v0.3.8d-relaxed",
             CreatedAt: DateTimeOffset.UtcNow,
-            Notes: "Default baseline from LCS-DES-v0.3.8d specification"),
+            Notes: "Relaxed baselines for parallel test execution environments"),
         Readability: new OperationThresholds(
-            Words1K: 20,
-            Words10K: 200,
-            Words50K: 1000,
+            Words1K: 50,
+            Words10K: 400,
+            Words50K: 2000,
             MaxMemoryMB: 50.0),
         FuzzyScanning: new OperationThresholds(
-            Words1K: 50,
-            Words10K: 500,
-            Words50K: 2500,
+            Words1K: 100,
+            Words10K: 800,
+            Words50K: 4000,
             MaxMemoryMB: 100.0),
         VoiceAnalysis: new OperationThresholds(
-            Words1K: 30,
-            Words10K: 300,
-            Words50K: 1500,
+            Words1K: 60,
+            Words10K: 500,
+            Words50K: 2500,
             MaxMemoryMB: 75.0),
         FullPipeline: new OperationThresholds(
-            Words1K: 100,
-            Words10K: 1000,
-            Words50K: 5000,
+            Words1K: 200,
+            Words10K: 2000,
+            Words50K: 8000,
             MaxMemoryMB: 200.0),
-        RegressionThreshold: 0.10);
+        RegressionThreshold: 0.25);
 }

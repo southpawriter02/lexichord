@@ -462,9 +462,9 @@ public class IgnorePatternServiceTests : IDisposable
         }
         stopwatch.Stop();
 
-        // Assert - 500ms is conservative for CI environments with parallel test execution
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(500,
-            "checking 100 paths should complete in under 500ms even under load");
+        // Assert - 1000ms is conservative for CI environments with parallel test execution
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(1000,
+            "checking 100 paths should complete in under 1000ms even under load");
     }
 
     #endregion

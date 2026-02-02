@@ -987,10 +987,10 @@ dotnet test --filter "FullyQualifiedName~HybridSearchService"
 
 | #   | Deliverable                                            | Status |
 | :-- | :----------------------------------------------------- | :----- |
-| 1   | `Migration_004_FullTextSearch.cs` with tsvector column | [ ]    |
-| 2   | `IBM25SearchService` interface in Abstractions         | [ ]    |
-| 3   | `BM25Hit` record                                       | [ ]    |
-| 4   | `BM25SearchService` implementation                     | [ ]    |
+| 1   | `Migration_004_FullTextSearch.cs` with tsvector column | [x]    |
+| 2   | `IBM25SearchService` interface in Abstractions         | [x]    |
+| 3   | `BM25Hit` record                                       | [x] *  |
+| 4   | `BM25SearchService` implementation                     | [x]    |
 | 5   | `IHybridSearchService` interface in Abstractions       | [ ]    |
 | 6   | `HybridSearchOptions` record                           | [ ]    |
 | 7   | `HybridSearchService` with RRF implementation          | [ ]    |
@@ -999,10 +999,13 @@ dotnet test --filter "FullyQualifiedName~HybridSearchService"
 | 10  | `ReferenceViewModel` updated with SearchMode property  | [ ]    |
 | 11  | Search mode toggle UI in Reference Panel               | [ ]    |
 | 12  | License gating for Hybrid mode                         | [ ]    |
-| 13  | Unit tests for BM25SearchService                       | [ ]    |
+| 13  | Unit tests for BM25SearchService                       | [x]    |
 | 14  | Unit tests for HybridSearchService                     | [ ]    |
 | 15  | Integration tests for hybrid pipeline                  | [ ]    |
-| 16  | DI registration in RAGModule.cs                        | [ ]    |
+| 16  | DI registration in RAGModule.cs                        | [x] ** |
+
+> \* `BM25Hit` adapted to use existing `SearchHit` record per project convention.
+> \*\* BM25 registration added; Hybrid registration pending v0.5.1c.
 
 ---
 

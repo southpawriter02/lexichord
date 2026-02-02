@@ -1383,9 +1383,9 @@ graph TB
 
 - [x] Migration_004_FullTextSearch with content_tsvector (v0.5.1a)
 - [x] GIN index on content_tsvector (v0.5.1a)
-- [ ] IBM25SearchService interface (v0.5.1b)
-- [ ] BM25SearchService implementation (v0.5.1b)
-- [ ] BM25Hit record (v0.5.1b)
+- [x] IBM25SearchService interface (v0.5.1b)
+- [x] BM25SearchService implementation (v0.5.1b)
+- [x] BM25Hit record (v0.5.1b) — adapted to use SearchHit per project convention
 - [ ] IHybridSearchService interface (v0.5.1c)
 - [ ] HybridSearchService with RRF algorithm (v0.5.1c)
 - [ ] HybridSearchOptions record (v0.5.1c)

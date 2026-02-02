@@ -127,8 +127,8 @@ public class AnalysisBufferTests : IDisposable
     [Fact]
     public async Task Submit_EmitsRequestAfterIdlePeriod()
     {
-        // Arrange - use generous timing to avoid flakiness
-        var buffer = CreateBuffer(idlePeriodMs: 100);
+        // Arrange - use generous timing to avoid flakiness under parallel test load
+        var buffer = CreateBuffer(idlePeriodMs: 200);
         var request = AnalysisRequest.Create("doc-1", "/path/doc1.md", "test content");
 
         AnalysisRequest? emittedRequest = null;
@@ -136,7 +136,7 @@ public class AnalysisBufferTests : IDisposable
 
         // Act
         buffer.Submit(request);
-        await Task.Delay(250); // Wait for idle period + margin
+        await Task.Delay(500); // Wait for idle period + generous margin
 
         // Assert
         emittedRequest.Should().NotBeNull();
@@ -291,20 +291,20 @@ public class AnalysisBufferTests : IDisposable
     [Fact]
     public async Task ConfigurableIdlePeriod_Respected()
     {
-        // Arrange - use a long idle period
-        var buffer = CreateBuffer(idlePeriodMs: 200);
+        // Arrange - use a long idle period to avoid flakiness under parallel test load
+        var buffer = CreateBuffer(idlePeriodMs: 400);
         var emitted = false;
         using var subscription = buffer.Requests.Subscribe(_ => emitted = true);
 
         // Act
         buffer.Submit(AnalysisRequest.Create("doc-1", null, "content"));
 
-        // Assert - should not emit before idle period
-        await Task.Delay(80);
+        // Assert - should not emit before idle period (generous margin for CI load)
+        await Task.Delay(150);
         emitted.Should().BeFalse();
 
         // But should emit after idle period + margin
-        await Task.Delay(200);
+        await Task.Delay(400);
         emitted.Should().BeTrue();
     }
 

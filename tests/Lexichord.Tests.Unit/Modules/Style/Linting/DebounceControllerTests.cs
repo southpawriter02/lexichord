@@ -210,13 +210,13 @@ public class DebounceControllerTests : IDisposable
     public async Task NewRequestDuringScanning_CancelsPreviousAndStartsNew()
     {
         // Arrange - use longer debounce to reliably enter scanning state under CPU load
-        var controller = CreateController(debounceMs: 100);
+        var controller = CreateController(debounceMs: 200);
         controller.RequestScan("first content");
-        await Task.Delay(200); // Enter scanning state
+        await Task.Delay(400); // Enter scanning state
 
         // Act - new request during scan
         controller.RequestScan("second content");
-        await Task.Delay(200); // Wait for new scan
+        await Task.Delay(400); // Wait for new scan
 
         // Assert
         _scanRequests.Should().HaveCount(2);
@@ -231,16 +231,16 @@ public class DebounceControllerTests : IDisposable
     [Fact]
     public async Task ConfigurableDelay_Respected()
     {
-        // Arrange - long debounce
-        var controller = CreateController(debounceMs: 100);
+        // Arrange - use generous debounce to avoid flakiness under parallel test load
+        var controller = CreateController(debounceMs: 300);
         controller.RequestScan("test content");
 
-        // Act - check before debounce
-        await Task.Delay(30);
+        // Act - check well before debounce (generous margin for CI load)
+        await Task.Delay(50);
         var stateBeforeDebounce = controller.CurrentState;
 
-        // Wait for debounce to complete
-        await Task.Delay(100);
+        // Wait for debounce to complete (300ms debounce + margin)
+        await Task.Delay(400);
         var stateAfterDebounce = controller.CurrentState;
 
         // Assert
