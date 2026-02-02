@@ -95,6 +95,28 @@ This release establishes the file ingestion pipeline for processing documents in
 
 ---
 
+## [v0.4.6] - 2026-02 (In Progress)
+
+### The Reference Panel (Search UI)
+
+This release implements the user-facing interface for semantic search, completing the RAG subsystem's search experience.
+
+#### What's New
+
+- **Search History Service** — `ISearchHistoryService` with thread-safe LinkedList-based implementation for O(1) operations. Case-insensitive deduplication, automatic eviction at max size (10), and query trimming.
+
+- **Reference Panel View** — `ReferenceView.axaml` with AutoCompleteBox for search with history dropdown, virtualized results list using `VirtualizingStackPanel`, loading indicator, no-results state, and status bar showing result count and duration. License gating displays warning for unlicensed users.
+
+- **ViewModels** — `ReferenceViewModel` orchestrates search execution, history management, and license checking via `SearchLicenseGuard`. `SearchResultItemViewModel` wraps `SearchHit` with formatted display properties including document name, preview text, relevance score, and section heading.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                | Status      |
+| ----------------------------------- | -------------------- | ----------- |
+| [v0.4.6a](v0.4.x/LCS-CL-v0.4.6a.md) | Reference Panel View | ✅ Complete |
+
+---
+
 ## [v0.4.5] - 2026-02 (In Progress)
 
 ### The Searcher (Semantic Query)
@@ -149,8 +171,8 @@ This release introduces the embedding infrastructure for generating semantic vec
 
 #### Sub-Part Changelogs
 
-| Version                             | Title                 | Status      |
-| ----------------------------------- | --------------------- | ----------- |
+| Version                             | Title                  | Status      |
+| ----------------------------------- | ---------------------- | ----------- |
 | [v0.4.4a](v0.4.x/LCS-CL-v0.4.4a.md) | Embedding Abstractions | ✅ Complete |
 | [v0.4.4b](v0.4.x/LCS-CL-v0.4.4b.md) | OpenAI Connector       | ✅ Complete |
 | [v0.4.4c](v0.4.x/LCS-CL-v0.4.4c.md) | Token Counting         | ✅ Complete |

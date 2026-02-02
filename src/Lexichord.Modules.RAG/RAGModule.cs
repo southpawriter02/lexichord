@@ -204,6 +204,19 @@ public sealed class RAGModule : IModule
         // Scoped to align with IDbConnectionFactory and repository lifetimes.
         // Executes pgvector cosine similarity search against indexed document chunks.
         services.AddScoped<ISemanticSearchService, PgVectorSearchService>();
+
+        // =============================================================================
+        // v0.4.6: Reference Panel (The Reference View)
+        // =============================================================================
+
+        // LOGIC: Register SearchHistoryService as singleton (v0.4.6a).
+        // Thread-safe in-memory history for recent search queries.
+        // Used by ReferenceViewModel for autocomplete and history dropdown.
+        services.AddSingleton<ISearchHistoryService, SearchHistoryService>();
+
+        // LOGIC: Register ReferenceViewModel as transient (v0.4.6a).
+        // Each panel instance gets its own ViewModel.
+        services.AddTransient<ViewModels.ReferenceViewModel>();
     }
 
     /// <inheritdoc/>

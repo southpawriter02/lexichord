@@ -5,10 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
+    <!-- v0.4.6a: Enable compiled bindings for ReferenceView -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
     <!-- Module metadata -->
     <AssemblyTitle>Lexichord RAG Module</AssemblyTitle>
     <Description>RAG subsystem - Vector storage and semantic search</Description>
-    <Version>0.4.1</Version>
+    <Version>0.4.6</Version>
 
     <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
     <OutputPath>$(SolutionDir)Modules\</OutputPath>
@@ -50,6 +53,12 @@
 
     <!-- v0.4.5c: IMemoryCache for query embedding caching -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+
+    <!-- v0.4.6a: Avalonia UI for ReferenceView -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+
+    <!-- v0.4.6a: CommunityToolkit.Mvvm for MVVM pattern (ObservableObject, RelayCommand) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>
