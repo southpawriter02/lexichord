@@ -562,6 +562,57 @@
 | `AxiomConstraintType` | v0.4.6e    | Abstractions | 14 constraint types (Required, Range, etc.)     |
 | `ConditionOperator`   | v0.4.6e    | Abstractions | 9 comparison operators (Equals, Contains, etc.) |
 
+**New Interfaces (v0.4.6f) — Axiom Repository:**
+
+| Interface            | Defined In | Module            | Purpose                        |
+| :------------------- | :--------- | :---------------- | :----------------------------- |
+| `IAxiomRepository`   | v0.4.6f    | Abstractions      | Axiom CRUD with license gating |
+| `IAxiomCacheService` | v0.4.6f    | Modules.Knowledge | In-memory axiom caching        |
+
+**New Records (v0.4.6f):**
+
+| Record            | Defined In | Module       | Purpose                           |
+| :---------------- | :--------- | :----------- | :-------------------------------- |
+| `AxiomFilter`     | v0.4.6f    | Abstractions | Query filtering by type/tags/etc. |
+| `AxiomStatistics` | v0.4.6f    | Abstractions | Aggregate counts by category      |
+
+**New Classes (v0.4.6f):**
+
+| Class               | Defined In | Module            | Purpose                          |
+| :------------------ | :--------- | :---------------- | :------------------------------- |
+| `AxiomRepository`   | v0.4.6f    | Modules.Knowledge | Dapper PostgreSQL implementation |
+| `AxiomCacheService` | v0.4.6f    | Modules.Knowledge | IMemoryCache implementation      |
+| `AxiomEntity`       | v0.4.6f    | Modules.Knowledge | Internal database entity         |
+
+**New Interfaces (v0.4.6g) — Axiom Loader:**
+
+| Interface      | Defined In | Module       | Purpose                             |
+| :------------- | :--------- | :----------- | :---------------------------------- |
+| `IAxiomLoader` | v0.4.6g    | Abstractions | YAML axiom loading from all sources |
+
+**New Records (v0.4.6g):**
+
+| Record                  | Defined In | Module       | Purpose                              |
+| :---------------------- | :--------- | :----------- | :----------------------------------- |
+| `AxiomLoadResult`       | v0.4.6g    | Abstractions | Load outcome with axioms and errors  |
+| `AxiomLoadError`        | v0.4.6g    | Abstractions | Error details with file/line context |
+| `AxiomValidationReport` | v0.4.6g    | Abstractions | Dry-run validation summary           |
+
+**New Classes (v0.4.6g):**
+
+| Class                  | Defined In | Module            | Purpose                   |
+| :--------------------- | :--------- | :---------------- | :------------------------ |
+| `AxiomLoader`          | v0.4.6g    | Modules.Knowledge | Loader with file watching |
+| `AxiomYamlParser`      | v0.4.6g    | Modules.Knowledge | YamlDotNet YAML parsing   |
+| `AxiomSchemaValidator` | v0.4.6g    | Modules.Knowledge | Target type validation    |
+
+**New Enums (v0.4.6g):**
+
+| Enum                | Defined In | Module       | Purpose                          |
+| :------------------ | :--------- | :----------- | :------------------------------- |
+| `LoadErrorSeverity` | v0.4.6g    | Abstractions | Error severity (Error/Warn/Info) |
+| `AxiomSourceType`   | v0.4.6g    | Abstractions | Source type (BuiltIn/Workspace)  |
+
 ### 1.12 v0.4.7 Index Manager Interfaces
 
 | Interface                 | Defined In | Module      | Purpose                    |

@@ -43,6 +43,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- v0.4.6g: Built-in axiom YAML files (embedded resources) -->
+    <EmbeddedResource Include="Resources\BuiltInAxioms\*.yaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <!-- The ONLY project reference allowed for modules -->
     <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
   </ItemGroup>

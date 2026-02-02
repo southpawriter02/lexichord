@@ -119,6 +119,8 @@ This release implements the user-facing interface for semantic search, completin
 
 - **Axiom Repository** — Persistent storage for domain axioms using PostgreSQL via Dapper. `IAxiomRepository` contract defines CRUD operations with `AxiomFilter` for querying by type/category/tags and `AxiomStatistics` for aggregate counts. `AxiomCacheService` provides 5-minute sliding / 30-minute absolute expiration via `IMemoryCache`. License-gated: WriterPro+ for reads, Teams+ for writes.
 
+- **Axiom Loader** — YAML-based axiom loading from embedded resources and workspace files (`.lexichord/knowledge/axioms/`). `AxiomYamlParser` deserializes axiom files with constraint type mapping, `AxiomSchemaValidator` validates target types against `ISchemaRegistry`, and `AxiomLoader` orchestrates loading with file watching for hot-reload. License-gated: WriterPro+ for built-in, Teams+ for workspace.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                  | Status      |
@@ -129,6 +131,7 @@ This release implements the user-facing interface for semantic search, completin
 | [v0.4.6d](v0.4.x/LCS-CL-v0.4.6d.md) | Search History Service | ✅ Complete |
 | [v0.4.6e](v0.4.x/LCS-CL-v0.4.6e.md) | Axiom Data Model       | ✅ Complete |
 | [v0.4.6f](v0.4.x/LCS-CL-v0.4.6f.md) | Axiom Repository       | ✅ Complete |
+| [v0.4.6g](v0.4.x/LCS-CL-v0.4.6g.md) | Axiom Loader           | ✅ Complete |
 
 ---
 

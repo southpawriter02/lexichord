@@ -165,6 +165,16 @@ public sealed class KnowledgeModule : IModule
         // Scoped lifetime aligns with per-request database connections.
         // The repository uses IDbConnectionFactory for PostgreSQL access.
         services.AddScoped<Lexichord.Abstractions.Contracts.Knowledge.IAxiomRepository, Axioms.AxiomRepository>();
+
+        // =============================================================================
+        // v0.4.6g: Axiom Loader
+        // =============================================================================
+
+        // LOGIC: Register AxiomLoader as singleton.
+        // The loader manages file watching and caches parsed axiom files.
+        // Singleton ensures consistent state and single FileSystemWatcher instance.
+        // Implements IDisposable for cleanup of FileSystemWatcher resources.
+        services.AddSingleton<Axioms.IAxiomLoader, Axioms.AxiomLoader>();
     }
 
     /// <inheritdoc/>

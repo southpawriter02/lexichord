@@ -1,0 +1,260 @@
+# ==============================================================================
+# File: api-documentation.yaml
+# Project: Lexichord.Modules.Knowledge
+# Description: Built-in axioms for API documentation validation.
+# ==============================================================================
+# LOGIC: Provides default schema validation rules for REST API documentation.
+#   - Endpoint validation (method, path, status codes)
+#   - Parameter validation (type, location, required constraints)
+#   - Response configuration validation
+#
+# v0.4.6g: Axiom Loader (CKVS Phase 1d)
+# ==============================================================================
+
+axiom_version: "1.0"
+name: "API Documentation Axioms"
+description: "Default validation rules for REST API technical documentation"
+
+axioms:
+    # ===========================================================================
+    # Endpoint Axioms
+    # ===========================================================================
+
+    - id: "endpoint-method-required"
+      name: "Endpoint Must Have Method"
+      description: "Every API endpoint must specify an HTTP method"
+      target_type: Endpoint
+      target_kind: Entity
+      severity: error
+      category: "API Structure"
+      tags: ["api", "endpoint", "required"]
+      rules:
+          - property: method
+            constraint: required
+            error_message: "Endpoint is missing required HTTP method"
+
+    - id: "endpoint-method-valid"
+      name: "Endpoint Method Must Be Valid"
+      description: "HTTP method must be one of the standard methods"
+      target_type: Endpoint
+      target_kind: Entity
+      severity: error
+      category: "API Structure"
+      tags: ["api", "endpoint", "validation"]
+      rules:
+          - property: method
+            constraint: one_of
+            values: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+            error_message: "Invalid HTTP method. Must be GET, POST, PUT, PATCH, DELETE, HEAD, or OPTIONS"
+
+    - id: "endpoint-path-required"
+      name: "Endpoint Must Have Path"
+      description: "Every API endpoint must specify a URL path"
+      target_type: Endpoint
+      target_kind: Entity
+      severity: error
+      category: "API Structure"
+      tags: ["api", "endpoint", "required"]
+      rules:
+          - property: path
+            constraint: required
+            error_message: "Endpoint is missing required path"
+
+    - id: "endpoint-path-format"
+      name: "Endpoint Path Format"
+      description: "API endpoint path must start with a forward slash"
+      target_type: Endpoint
+      target_kind: Entity
+      severity: warning
+      category: "API Style"
+      tags: ["api", "endpoint", "style"]
+      rules:
+          - property: path
+            constraint: pattern
+            pattern: "^/"
+            error_message: "Endpoint path should start with '/'"
+
+    - id: "endpoint-path-params-format"
+      name: "Path Parameters Use Braces"
+      description: "Path parameters should use curly brace notation {param}"
+      target_type: Endpoint
+      target_kind: Entity
+      severity: info
+      category: "API Style"
+      tags: ["api", "endpoint", "style"]
+      rules:
+          - property: path
+            constraint: pattern
+            pattern: "^[^:]+$"
+            error_message: "Consider using {param} notation instead of :param for path parameters"
+
+    # ===========================================================================
+    # Response Axioms
+    # ===========================================================================
+
+    - id: "response-status-required"
+      name: "Response Must Have Status Code"
+      description: "Every response configuration must specify a status code"
+      target_type: Response
+      target_kind: Entity
+      severity: error
+      category: "API Responses"
+      tags: ["api", "response", "required"]
+      rules:
+          - property: statusCode
+            constraint: required
+            error_message: "Response is missing required status code"
+
+    - id: "response-status-range"
+      name: "Response Status Code Valid Range"
+      description: "HTTP status codes must be in the valid range 100-599"
+      target_type: Response
+      target_kind: Entity
+      severity: error
+      category: "API Responses"
+      tags: ["api", "response", "validation"]
+      rules:
+          - property: statusCode
+            constraint: range
+            min: 100
+            max: 599
+            error_message: "Status code must be between 100 and 599"
+
+    - id: "response-error-has-description"
+      name: "Error Responses Should Have Description"
+      description: "Error responses (4xx, 5xx) should include a description"
+      target_type: Response
+      target_kind: Entity
+      severity: warning
+      category: "API Documentation"
+      tags: ["api", "response", "documentation"]
+      rules:
+          - property: description
+            constraint: required
+            when:
+                property: statusCode
+                operator: greater_than
+                value: 399
+            error_message: "Error responses should include a description explaining the error"
+
+    # ===========================================================================
+    # Parameter Axioms
+    # ===========================================================================
+
+    - id: "parameter-name-required"
+      name: "Parameter Must Have Name"
+      description: "Every API parameter must have a name"
+      target_type: Parameter
+      target_kind: Entity
+      severity: error
+      category: "API Parameters"
+      tags: ["api", "parameter", "required"]
+      rules:
+          - property: name
+            constraint: required
+            error_message: "Parameter is missing required name"
+
+    - id: "parameter-location-valid"
+      name: "Parameter Location Must Be Valid"
+      description: "Parameter location must be path, query, header, cookie, or body"
+      target_type: Parameter
+      target_kind: Entity
+      severity: error
+      category: "API Parameters"
+      tags: ["api", "parameter", "validation"]
+      rules:
+          - property: in
+            constraint: one_of
+            values: ["path", "query", "header", "cookie", "body"]
+            error_message: "Invalid parameter location. Must be path, query, header, cookie, or body"
+
+    - id: "parameter-path-is-required"
+      name: "Path Parameters Must Be Required"
+      description: "Parameters in the URL path are implicitly required"
+      target_type: Parameter
+      target_kind: Entity
+      severity: warning
+      category: "API Parameters"
+      tags: ["api", "parameter", "validation"]
+      rules:
+          - property: required
+            constraint: equals
+            when:
+                property: in
+                operator: equals
+                value: "path"
+            error_message: "Path parameters should be marked as required"
+
+    - id: "parameter-type-valid"
+      name: "Parameter Type Must Be Valid"
+      description: "Parameter data type must be a recognized type"
+      target_type: Parameter
+      target_kind: Entity
+      severity: warning
+      category: "API Parameters"
+      tags: ["api", "parameter", "validation"]
+      rules:
+          - property: type
+            constraint: one_of
+            values:
+                [
+                    "string",
+                    "number",
+                    "integer",
+                    "boolean",
+                    "array",
+                    "object",
+                    "file",
+                ]
+            error_message: "Parameter type should be string, number, integer, boolean, array, object, or file"
+
+    # ===========================================================================
+    # Schema Axioms
+    # ===========================================================================
+
+    - id: "schema-has-type"
+      name: "Schema Must Define Type"
+      description: "Object schemas should define their type"
+      target_type: Schema
+      target_kind: Entity
+      severity: warning
+      category: "API Schemas"
+      tags: ["api", "schema", "documentation"]
+      rules:
+          - property: type
+            constraint: required
+            error_message: "Schema should define a type"
+
+    - id: "schema-object-has-properties"
+      name: "Object Schema Has Properties"
+      description: "Object type schemas should define properties"
+      target_type: Schema
+      target_kind: Entity
+      severity: warning
+      category: "API Schemas"
+      tags: ["api", "schema", "documentation"]
+      rules:
+          - property: properties
+            constraint: required
+            when:
+                property: type
+                operator: equals
+                value: "object"
+            error_message: "Object schemas should define their properties"
+
+    - id: "schema-array-has-items"
+      name: "Array Schema Has Items"
+      description: "Array type schemas should define items"
+      target_type: Schema
+      target_kind: Entity
+      severity: warning
+      category: "API Schemas"
+      tags: ["api", "schema", "documentation"]
+      rules:
+          - property: items
+            constraint: required
+            when:
+                property: type
+                operator: equals
+                value: "array"
+            error_message: "Array schemas should define their items type"
