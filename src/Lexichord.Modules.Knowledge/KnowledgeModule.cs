@@ -175,6 +175,19 @@ public sealed class KnowledgeModule : IModule
         // Singleton ensures consistent state and single FileSystemWatcher instance.
         // Implements IDisposable for cleanup of FileSystemWatcher resources.
         services.AddSingleton<Axioms.IAxiomLoader, Axioms.AxiomLoader>();
+
+        // =============================================================================
+        // v0.4.6h: Axiom Query API
+        // =============================================================================
+
+        // LOGIC: Register AxiomEvaluator as singleton.
+        // The evaluator is stateless and thread-safe, can be shared across requests.
+        services.AddSingleton<Axioms.IAxiomEvaluator, Axioms.AxiomEvaluator>();
+
+        // LOGIC: Register AxiomStore as scoped.
+        // Scoped lifetime aligns with per-request license context and database access.
+        // The store integrates with IAxiomRepository (scoped) and IAxiomLoader (singleton).
+        services.AddScoped<Axioms.IAxiomStore, Axioms.AxiomStore>();
     }
 
     /// <inheritdoc/>

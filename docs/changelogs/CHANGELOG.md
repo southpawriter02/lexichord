@@ -121,6 +121,8 @@ This release implements the user-facing interface for semantic search, completin
 
 - **Axiom Loader** — YAML-based axiom loading from embedded resources and workspace files (`.lexichord/knowledge/axioms/`). `AxiomYamlParser` deserializes axiom files with constraint type mapping, `AxiomSchemaValidator` validates target types against `ISchemaRegistry`, and `AxiomLoader` orchestrates loading with file watching for hot-reload. License-gated: WriterPro+ for built-in, Teams+ for workspace.
 
+- **Axiom Query API** — In-memory axiom store with O(1) retrieval indexed by target type. `AxiomEvaluator` supports 9 constraint types (Required, OneOf, Range, Pattern, Cardinality, NotBoth, RequiresTogether, Equals, NotEquals) with 13 condition operators. `AxiomStore` provides validation, statistics tracking, and `AxiomsLoaded` event publishing for hot-reload. License-gated: WriterPro+ for queries, Teams+ for validation.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                  | Status      |
@@ -132,6 +134,7 @@ This release implements the user-facing interface for semantic search, completin
 | [v0.4.6e](v0.4.x/LCS-CL-v0.4.6e.md) | Axiom Data Model       | ✅ Complete |
 | [v0.4.6f](v0.4.x/LCS-CL-v0.4.6f.md) | Axiom Repository       | ✅ Complete |
 | [v0.4.6g](v0.4.x/LCS-CL-v0.4.6g.md) | Axiom Loader           | ✅ Complete |
+| [v0.4.6h](v0.4.x/LCS-CL-v0.4.6h.md) | Axiom Query API        | ✅ Complete |
 
 ---
 
