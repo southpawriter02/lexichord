@@ -113,13 +113,19 @@ This release implements the user-facing interface for semantic search, completin
 
 - **Source Navigation** — `IReferenceNavigationService` with `ReferenceNavigationService` implementation that bridges RAG search results with the editor's navigation infrastructure. Opens closed documents, scrolls to chunk offsets, and highlights matched text spans. Publishes `ReferenceNavigatedEvent` for telemetry tracking. `HighlightStyle` enum for categorizing editor highlights (SearchResult, Error, Warning, Reference).
 
+- **Search History Service** — Enhanced `ISearchHistoryService` with persistence via `ISearchHistoryRepository`, query removal, and `IObservable<string>` change notifications. Thread-safe LinkedList implementation with O(1) operations, case-insensitive deduplication, and automatic eviction.
+
+- **Axiom Data Model** — Foundational data model for the Axiom Store (CKVS Phase 1b). Defines `Axiom`, `AxiomRule`, `AxiomViolation`, and `AxiomValidationResult` records with 4 supporting enums (`AxiomSeverity`, `AxiomTargetKind`, `AxiomConstraintType`, `ConditionOperator`) for domain rule governance.
+
 #### Sub-Part Changelogs
 
-| Version                             | Title                | Status      |
-| ----------------------------------- | -------------------- | ----------- |
-| [v0.4.6a](v0.4.x/LCS-CL-v0.4.6a.md) | Reference Panel View | ✅ Complete |
-| [v0.4.6b](v0.4.x/LCS-CL-v0.4.6b.md) | Search Result Item   | ✅ Complete |
-| [v0.4.6c](v0.4.x/LCS-CL-v0.4.6c.md) | Source Navigation    | ✅ Complete |
+| Version                             | Title                  | Status      |
+| ----------------------------------- | ---------------------- | ----------- |
+| [v0.4.6a](v0.4.x/LCS-CL-v0.4.6a.md) | Reference Panel View   | ✅ Complete |
+| [v0.4.6b](v0.4.x/LCS-CL-v0.4.6b.md) | Search Result Item     | ✅ Complete |
+| [v0.4.6c](v0.4.x/LCS-CL-v0.4.6c.md) | Source Navigation      | ✅ Complete |
+| [v0.4.6d](v0.4.x/LCS-CL-v0.4.6d.md) | Search History Service | ✅ Complete |
+| [v0.4.6e](v0.4.x/LCS-CL-v0.4.6e.md) | Axiom Data Model       | ✅ Complete |
 
 ---
 

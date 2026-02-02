@@ -407,33 +407,33 @@
 
 ### 1.11 v0.4.5e Knowledge Graph Interfaces
 
-| Interface                  | Defined In | Module              | Purpose                                    |
-| :------------------------- | :--------- | :------------------ | :----------------------------------------- |
-| `IGraphConnectionFactory`  | v0.4.5e    | Abstractions        | Graph database session creation            |
-| `IGraphSession`            | v0.4.5e    | Abstractions        | Cypher query execution (IAsyncDisposable)  |
-| `IGraphRecord`             | v0.4.5e    | Abstractions        | Raw record access for query results        |
-| `IGraphTransaction`        | v0.4.5e    | Abstractions        | Explicit transaction support               |
+| Interface                 | Defined In | Module       | Purpose                                   |
+| :------------------------ | :--------- | :----------- | :---------------------------------------- |
+| `IGraphConnectionFactory` | v0.4.5e    | Abstractions | Graph database session creation           |
+| `IGraphSession`           | v0.4.5e    | Abstractions | Cypher query execution (IAsyncDisposable) |
+| `IGraphRecord`            | v0.4.5e    | Abstractions | Raw record access for query results       |
+| `IGraphTransaction`       | v0.4.5e    | Abstractions | Explicit transaction support              |
 
 **New Records (v0.4.5e):**
 
-| Record                    | Defined In | Module       | Purpose                                |
-| :------------------------ | :--------- | :----------- | :------------------------------------- |
-| `GraphWriteResult`        | v0.4.5e    | Abstractions | Write operation mutation statistics    |
-| `KnowledgeEntity`         | v0.4.5e    | Abstractions | Graph node with typed properties       |
-| `KnowledgeRelationship`   | v0.4.5e    | Abstractions | Graph edge between two entities        |
-| `GraphConfiguration`      | v0.4.5e    | Modules.Knowledge | Neo4j connection settings          |
+| Record                  | Defined In | Module            | Purpose                             |
+| :---------------------- | :--------- | :---------------- | :---------------------------------- |
+| `GraphWriteResult`      | v0.4.5e    | Abstractions      | Write operation mutation statistics |
+| `KnowledgeEntity`       | v0.4.5e    | Abstractions      | Graph node with typed properties    |
+| `KnowledgeRelationship` | v0.4.5e    | Abstractions      | Graph edge between two entities     |
+| `GraphConfiguration`    | v0.4.5e    | Modules.Knowledge | Neo4j connection settings           |
 
 **New Enums (v0.4.5e):**
 
-| Enum              | Defined In | Module       | Purpose                       |
-| :---------------- | :--------- | :----------- | :---------------------------- |
+| Enum              | Defined In | Module       | Purpose                        |
+| :---------------- | :--------- | :----------- | :----------------------------- |
 | `GraphAccessMode` | v0.4.5e    | Abstractions | Read/Write session access mode |
 
 **New Exceptions (v0.4.5e):**
 
-| Exception             | Defined In | Module       | Purpose                           |
-| :-------------------- | :--------- | :----------- | :-------------------------------- |
-| `GraphQueryException` | v0.4.5e    | Abstractions | Wraps Neo4j driver exceptions     |
+| Exception             | Defined In | Module       | Purpose                       |
+| :-------------------- | :--------- | :----------- | :---------------------------- |
+| `GraphQueryException` | v0.4.5e    | Abstractions | Wraps Neo4j driver exceptions |
 
 **New Classes (v0.4.5e):**
 
@@ -449,21 +449,21 @@
 
 ### 1.11b v0.4.5f Schema Registry Interfaces
 
-| Interface          | Defined In | Module       | Purpose                                     |
-| :----------------- | :--------- | :----------- | :------------------------------------------ |
-| `ISchemaRegistry`  | v0.4.5f    | Abstractions | Schema loading, validation, and querying    |
+| Interface         | Defined In | Module       | Purpose                                  |
+| :---------------- | :--------- | :----------- | :--------------------------------------- |
+| `ISchemaRegistry` | v0.4.5f    | Abstractions | Schema loading, validation, and querying |
 
 **New Records (v0.4.5f):**
 
-| Record                     | Defined In | Module       | Purpose                                    |
-| :------------------------- | :--------- | :----------- | :----------------------------------------- |
-| `PropertySchema`           | v0.4.5f    | Abstractions | Property definition with type & constraints |
-| `EntityTypeSchema`         | v0.4.5f    | Abstractions | Entity type definition with properties     |
-| `RelationshipTypeSchema`   | v0.4.5f    | Abstractions | Relationship type with from/to constraints |
-| `SchemaValidationResult`   | v0.4.5f    | Abstractions | Validation outcome (errors + warnings)     |
-| `SchemaValidationError`    | v0.4.5f    | Abstractions | Blocking validation error with code        |
-| `SchemaValidationWarning`  | v0.4.5f    | Abstractions | Non-blocking validation warning            |
-| `SchemaDocument`           | v0.4.5f    | Modules.Knowledge | Parsed YAML schema file output        |
+| Record                    | Defined In | Module            | Purpose                                     |
+| :------------------------ | :--------- | :---------------- | :------------------------------------------ |
+| `PropertySchema`          | v0.4.5f    | Abstractions      | Property definition with type & constraints |
+| `EntityTypeSchema`        | v0.4.5f    | Abstractions      | Entity type definition with properties      |
+| `RelationshipTypeSchema`  | v0.4.5f    | Abstractions      | Relationship type with from/to constraints  |
+| `SchemaValidationResult`  | v0.4.5f    | Abstractions      | Validation outcome (errors + warnings)      |
+| `SchemaValidationError`   | v0.4.5f    | Abstractions      | Blocking validation error with code         |
+| `SchemaValidationWarning` | v0.4.5f    | Abstractions      | Non-blocking validation warning             |
+| `SchemaDocument`          | v0.4.5f    | Modules.Knowledge | Parsed YAML schema file output              |
 
 **New Enums (v0.4.5f):**
 
@@ -474,37 +474,37 @@
 
 **New Classes (v0.4.5f):**
 
-| Class              | Defined In | Module            | Purpose                                   |
-| :----------------- | :--------- | :---------------- | :---------------------------------------- |
-| `SchemaRegistry`   | v0.4.5f    | Modules.Knowledge | ISchemaRegistry with in-memory dictionaries |
-| `SchemaLoader`     | v0.4.5f    | Modules.Knowledge | YAML parser using YamlDotNet              |
-| `SchemaValidator`  | v0.4.5f    | Modules.Knowledge | Entity/relationship validation logic      |
+| Class             | Defined In | Module            | Purpose                                     |
+| :---------------- | :--------- | :---------------- | :------------------------------------------ |
+| `SchemaRegistry`  | v0.4.5f    | Modules.Knowledge | ISchemaRegistry with in-memory dictionaries |
+| `SchemaLoader`    | v0.4.5f    | Modules.Knowledge | YAML parser using YamlDotNet                |
+| `SchemaValidator` | v0.4.5f    | Modules.Knowledge | Entity/relationship validation logic        |
 
 ### 1.11c v0.4.5g Entity Extraction Interfaces
 
-| Interface                    | Defined In | Module       | Purpose                                         |
-| :--------------------------- | :--------- | :----------- | :---------------------------------------------- |
-| `IEntityExtractor`           | v0.4.5g    | Abstractions | Pluggable entity type extractor                 |
-| `IEntityExtractionPipeline`  | v0.4.5g    | Abstractions | Composite extraction coordinator                |
+| Interface                   | Defined In | Module       | Purpose                          |
+| :-------------------------- | :--------- | :----------- | :------------------------------- |
+| `IEntityExtractor`          | v0.4.5g    | Abstractions | Pluggable entity type extractor  |
+| `IEntityExtractionPipeline` | v0.4.5g    | Abstractions | Composite extraction coordinator |
 
 **New Records (v0.4.5g):**
 
-| Record                | Defined In | Module       | Purpose                                         |
-| :-------------------- | :--------- | :----------- | :---------------------------------------------- |
-| `EntityMention`       | v0.4.5g    | Abstractions | Extracted entity mention with confidence        |
-| `ExtractionContext`   | v0.4.5g    | Abstractions | Extraction parameters and configuration         |
-| `ExtractionResult`    | v0.4.5g    | Abstractions | Aggregated extraction output with statistics    |
-| `AggregatedEntity`    | v0.4.5g    | Abstractions | Deduplicated entity from multiple mentions      |
+| Record              | Defined In | Module       | Purpose                                      |
+| :------------------ | :--------- | :----------- | :------------------------------------------- |
+| `EntityMention`     | v0.4.5g    | Abstractions | Extracted entity mention with confidence     |
+| `ExtractionContext` | v0.4.5g    | Abstractions | Extraction parameters and configuration      |
+| `ExtractionResult`  | v0.4.5g    | Abstractions | Aggregated extraction output with statistics |
+| `AggregatedEntity`  | v0.4.5g    | Abstractions | Deduplicated entity from multiple mentions   |
 
 **New Classes (v0.4.5g):**
 
-| Class                        | Defined In | Module            | Purpose                                           |
-| :--------------------------- | :--------- | :---------------- | :------------------------------------------------ |
-| `EndpointExtractor`          | v0.4.5g    | Modules.Knowledge | API endpoint detection (3 regex patterns)         |
-| `ParameterExtractor`         | v0.4.5g    | Modules.Knowledge | Parameter detection (5 regex patterns)            |
-| `ConceptExtractor`           | v0.4.5g    | Modules.Knowledge | Domain term detection (4 regex patterns)          |
-| `MentionAggregator`          | v0.4.5g    | Modules.Knowledge | Mention grouping and entity deduplication         |
-| `EntityExtractionPipeline`   | v0.4.5g    | Modules.Knowledge | IEntityExtractionPipeline with priority ordering  |
+| Class                      | Defined In | Module            | Purpose                                          |
+| :------------------------- | :--------- | :---------------- | :----------------------------------------------- |
+| `EndpointExtractor`        | v0.4.5g    | Modules.Knowledge | API endpoint detection (3 regex patterns)        |
+| `ParameterExtractor`       | v0.4.5g    | Modules.Knowledge | Parameter detection (5 regex patterns)           |
+| `ConceptExtractor`         | v0.4.5g    | Modules.Knowledge | Domain term detection (4 regex patterns)         |
+| `MentionAggregator`        | v0.4.5g    | Modules.Knowledge | Mention grouping and entity deduplication        |
+| `EntityExtractionPipeline` | v0.4.5g    | Modules.Knowledge | IEntityExtractionPipeline with priority ordering |
 
 ### 1.12 v0.4.6 Reference Panel Interfaces
 
@@ -540,6 +540,27 @@
 | Record/Class                    | Defined In | Module      | Purpose                        |
 | :------------------------------ | :--------- | :---------- | :----------------------------- |
 | `SearchHistoryChangedEventArgs` | v0.4.6d    | Modules.RAG | Event args for history changes |
+
+**New Records (v0.4.6e) — Axiom Data Model:**
+
+| Record                  | Defined In | Module       | Purpose                                    |
+| :---------------------- | :--------- | :----------- | :----------------------------------------- |
+| `TextSpan`              | v0.4.6e    | Abstractions | Document location span (start/end/line)    |
+| `AxiomCondition`        | v0.4.6e    | Abstractions | Conditional clause for rule evaluation     |
+| `AxiomFix`              | v0.4.6e    | Abstractions | Suggested fix for violations               |
+| `AxiomRule`             | v0.4.6e    | Abstractions | Single constraint within an axiom          |
+| `Axiom`                 | v0.4.6e    | Abstractions | Domain rule definition (ID, rules, target) |
+| `AxiomViolation`        | v0.4.6e    | Abstractions | Detected rule violation with context       |
+| `AxiomValidationResult` | v0.4.6e    | Abstractions | Aggregated validation outcome              |
+
+**New Enums (v0.4.6e):**
+
+| Enum                  | Defined In | Module       | Purpose                                         |
+| :-------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `AxiomSeverity`       | v0.4.6e    | Abstractions | Violation severity (Error/Warn/Info)            |
+| `AxiomTargetKind`     | v0.4.6e    | Abstractions | Target kind (Entity/Relationship/Claim)         |
+| `AxiomConstraintType` | v0.4.6e    | Abstractions | 14 constraint types (Required, Range, etc.)     |
+| `ConditionOperator`   | v0.4.6e    | Abstractions | 9 comparison operators (Equals, Contains, etc.) |
 
 ### 1.12 v0.4.7 Index Manager Interfaces
 
@@ -927,44 +948,44 @@
 
 ## 3. NuGet Package Registry
 
-| Package                                    | Version | Introduced In | Purpose                              |
-| :----------------------------------------- | :------ | :------------ | :----------------------------------- |
-| `Serilog`                                  | 4.x     | v0.0.3b       | Structured logging                   |
-| `Serilog.Sinks.File`                       | 6.x     | v0.0.3b       | File sink                            |
-| `Serilog.Sinks.Console`                    | 6.x     | v0.0.3b       | Console sink                         |
-| `Microsoft.Extensions.DependencyInjection` | 9.0.x   | v0.0.3a       | DI container                         |
-| `Microsoft.Extensions.Configuration`       | 9.0.x   | v0.0.3d       | Configuration                        |
-| `Microsoft.Extensions.Caching.Memory`      | 9.0.x   | v0.2.2b       | In-memory caching                    |
-| `MediatR`                                  | 12.4.x  | v0.0.7a       | Event bus / CQRS                     |
-| `Npgsql`                                   | 9.0.x   | v0.0.5b       | PostgreSQL driver                    |
-| `Dapper`                                   | 2.1.x   | v0.0.5d       | Micro-ORM                            |
-| `Dapper.Contrib`                           | 2.0.x   | v0.0.5d       | Dapper entity mapping extensions     |
-| `FluentMigrator`                           | 6.2.x   | v0.0.5c       | Schema migrations                    |
-| `FluentValidation`                         | 11.9.x  | v0.0.7d       | Input validation                     |
-| `Polly`                                    | 8.5.x   | v0.0.5d       | Resilience policies                  |
-| `Dock.Avalonia`                            | 11.x    | v0.1.1a       | Docking system                       |
-| `AvaloniaEdit`                             | 11.x    | v0.1.3a       | Text editor control                  |
-| `Material.Icons.Avalonia`                  | 2.x     | v0.1.2c       | File icons                           |
-| `FuzzySharp`                               | 2.x     | v0.1.5b       | Fuzzy string matching                |
-| `YamlDotNet`                               | 16.x    | v0.2.1c       | YAML parsing                         |
-| `System.Reactive`                          | 6.x     | v0.2.3a       | Reactive extensions                  |
-| `Velopack`                                 | 0.x     | v0.1.7a       | Auto-updater                         |
-| `Sentry`                                   | 4.x     | v0.1.7d       | Crash reporting                      |
-| `CsvHelper`                                | 31.x    | v0.2.5d       | CSV parsing for terminology import   |
-| `Markdig`                                  | 0.37.x  | v0.4.3d       | Markdown parsing for header chunking |
-| `Npgsql.Pgvector`                          | 0.2.x   | v0.4.1d       | pgvector type mapping for Dapper     |
-| `System.Threading.Channels`                | 9.0.x   | v0.4.2d       | Bounded ingestion queue              |
-| `System.IO.Hashing`                        | 9.0.x   | v0.4.2b       | SHA-256 hash computation             |
-| `Microsoft.ML.Tokenizers`                  | 0.22.x  | v0.4.4c       | Tiktoken tokenizer for OpenAI        |
-| `Polly.Extensions.Http`                    | 3.x     | v0.4.4b       | HTTP retry policy extensions         |
-| `Microsoft.Data.Sqlite`                    | 9.x     | v0.4.8d       | SQLite cache storage                 |
-| `BenchmarkDotNet`                          | 0.14.x  | v0.3.8d       | Performance benchmarks               |
-| `Testcontainers.PostgreSql`                | 3.x     | v0.4.8b       | Integration test containers          |
-| `coverlet.collector`                       | 6.x     | v0.4.8a       | Code coverage reporting              |
-| `RichardSzalay.MockHttp`                   | 7.x     | v0.4.8a       | HTTP mocking for unit tests          |
-| `Respawn`                                  | 6.x     | v0.4.8b       | Database reset for integration tests |
-| `Neo4j.Driver`                             | 5.27.x  | v0.4.5e       | Neo4j Bolt driver for Knowledge Graph |
-| `Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions` | 9.0.x | v0.4.5e | Health check abstractions for Neo4j |
+| Package                                                      | Version | Introduced In | Purpose                               |
+| :----------------------------------------------------------- | :------ | :------------ | :------------------------------------ |
+| `Serilog`                                                    | 4.x     | v0.0.3b       | Structured logging                    |
+| `Serilog.Sinks.File`                                         | 6.x     | v0.0.3b       | File sink                             |
+| `Serilog.Sinks.Console`                                      | 6.x     | v0.0.3b       | Console sink                          |
+| `Microsoft.Extensions.DependencyInjection`                   | 9.0.x   | v0.0.3a       | DI container                          |
+| `Microsoft.Extensions.Configuration`                         | 9.0.x   | v0.0.3d       | Configuration                         |
+| `Microsoft.Extensions.Caching.Memory`                        | 9.0.x   | v0.2.2b       | In-memory caching                     |
+| `MediatR`                                                    | 12.4.x  | v0.0.7a       | Event bus / CQRS                      |
+| `Npgsql`                                                     | 9.0.x   | v0.0.5b       | PostgreSQL driver                     |
+| `Dapper`                                                     | 2.1.x   | v0.0.5d       | Micro-ORM                             |
+| `Dapper.Contrib`                                             | 2.0.x   | v0.0.5d       | Dapper entity mapping extensions      |
+| `FluentMigrator`                                             | 6.2.x   | v0.0.5c       | Schema migrations                     |
+| `FluentValidation`                                           | 11.9.x  | v0.0.7d       | Input validation                      |
+| `Polly`                                                      | 8.5.x   | v0.0.5d       | Resilience policies                   |
+| `Dock.Avalonia`                                              | 11.x    | v0.1.1a       | Docking system                        |
+| `AvaloniaEdit`                                               | 11.x    | v0.1.3a       | Text editor control                   |
+| `Material.Icons.Avalonia`                                    | 2.x     | v0.1.2c       | File icons                            |
+| `FuzzySharp`                                                 | 2.x     | v0.1.5b       | Fuzzy string matching                 |
+| `YamlDotNet`                                                 | 16.x    | v0.2.1c       | YAML parsing                          |
+| `System.Reactive`                                            | 6.x     | v0.2.3a       | Reactive extensions                   |
+| `Velopack`                                                   | 0.x     | v0.1.7a       | Auto-updater                          |
+| `Sentry`                                                     | 4.x     | v0.1.7d       | Crash reporting                       |
+| `CsvHelper`                                                  | 31.x    | v0.2.5d       | CSV parsing for terminology import    |
+| `Markdig`                                                    | 0.37.x  | v0.4.3d       | Markdown parsing for header chunking  |
+| `Npgsql.Pgvector`                                            | 0.2.x   | v0.4.1d       | pgvector type mapping for Dapper      |
+| `System.Threading.Channels`                                  | 9.0.x   | v0.4.2d       | Bounded ingestion queue               |
+| `System.IO.Hashing`                                          | 9.0.x   | v0.4.2b       | SHA-256 hash computation              |
+| `Microsoft.ML.Tokenizers`                                    | 0.22.x  | v0.4.4c       | Tiktoken tokenizer for OpenAI         |
+| `Polly.Extensions.Http`                                      | 3.x     | v0.4.4b       | HTTP retry policy extensions          |
+| `Microsoft.Data.Sqlite`                                      | 9.x     | v0.4.8d       | SQLite cache storage                  |
+| `BenchmarkDotNet`                                            | 0.14.x  | v0.3.8d       | Performance benchmarks                |
+| `Testcontainers.PostgreSql`                                  | 3.x     | v0.4.8b       | Integration test containers           |
+| `coverlet.collector`                                         | 6.x     | v0.4.8a       | Code coverage reporting               |
+| `RichardSzalay.MockHttp`                                     | 7.x     | v0.4.8a       | HTTP mocking for unit tests           |
+| `Respawn`                                                    | 6.x     | v0.4.8b       | Database reset for integration tests  |
+| `Neo4j.Driver`                                               | 5.27.x  | v0.4.5e       | Neo4j Bolt driver for Knowledge Graph |
+| `Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions` | 9.0.x   | v0.4.5e       | Health check abstractions for Neo4j   |
 
 ---
 
