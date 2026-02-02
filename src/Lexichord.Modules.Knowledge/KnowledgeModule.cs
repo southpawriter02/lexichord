@@ -151,6 +151,20 @@ public sealed class KnowledgeModule : IModule
 
             return pipeline;
         });
+
+        // =============================================================================
+        // v0.4.6f: Axiom Repository
+        // =============================================================================
+
+        // LOGIC: Register AxiomCacheService as singleton.
+        // The cache service uses IMemoryCache with 5-minute sliding / 30-minute absolute
+        // expiration. Singleton ensures consistent cache state across the application.
+        services.AddSingleton<Axioms.IAxiomCacheService, Axioms.AxiomCacheService>();
+
+        // LOGIC: Register AxiomRepository as scoped.
+        // Scoped lifetime aligns with per-request database connections.
+        // The repository uses IDbConnectionFactory for PostgreSQL access.
+        services.AddScoped<Lexichord.Abstractions.Contracts.Knowledge.IAxiomRepository, Axioms.AxiomRepository>();
     }
 
     /// <inheritdoc/>

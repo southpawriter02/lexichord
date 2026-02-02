@@ -32,6 +32,9 @@
 
     <!-- v0.4.5f: YAML parsing for schema registry -->
     <PackageReference Include="YamlDotNet" Version="15.1.6" />
+
+    <!-- v0.4.6f: In-memory caching for axiom repository -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
