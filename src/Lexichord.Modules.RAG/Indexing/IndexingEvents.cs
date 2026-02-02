@@ -91,6 +91,9 @@ public record DocumentIndexedEvent(
 /// <b>MediatR Pattern:</b> This is a <see cref="INotification"/> (fire-and-forget),
 /// not a <see cref="IRequest{TResponse}"/>. Handlers do not return values.
 /// </para>
+/// <para>
+/// <b>v0.4.7d:</b> Added <see cref="Exception"/> property for error categorization.
+/// </para>
 /// </remarks>
 /// <param name="FilePath">
 /// The relative file path of the document that failed to index.
@@ -100,6 +103,11 @@ public record DocumentIndexedEvent(
 /// The diagnostic message explaining why indexing failed.
 /// Contains actionable information for troubleshooting.
 /// </param>
+/// <param name="Exception">
+/// The exception that caused the failure. Used for error categorization.
+/// May be null for legacy callers. Introduced in v0.4.7d.
+/// </param>
 public record DocumentIndexingFailedEvent(
     string FilePath,
-    string ErrorMessage) : INotification;
+    string ErrorMessage,
+    Exception? Exception = null) : INotification;

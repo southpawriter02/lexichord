@@ -104,6 +104,26 @@ public interface IDocumentRepository
     /// </remarks>
     Task<IEnumerable<Document>> GetByStatusAsync(DocumentStatus status, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Retrieves all documents that have failed indexing.
+    /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A collection of documents with <see cref="DocumentStatus.Failed"/> status.
+    /// May be empty if no documents have failed.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// This is a convenience method equivalent to calling
+    /// <see cref="GetByStatusAsync"/> with <see cref="DocumentStatus.Failed"/>.
+    /// It is provided for semantic clarity in the Index Status View.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7d as part of Indexing Errors.
+    /// </para>
+    /// </remarks>
+    Task<IEnumerable<Document>> GetFailedDocumentsAsync(CancellationToken cancellationToken = default);
+
     #endregion
 
     #region Write Operations

@@ -109,6 +109,8 @@ This release introduces index status visibility and manual control over the docu
 
 - **Indexing Progress Toast** — Real-time progress overlay for indexing operations with document name, progress bar, elapsed time, and cancellation support. Auto-dismisses after completion with success/cancelled icons. (v0.4.7c)
 
+- **Indexing Error Categorization** — Error handling for failed indexing operations with 10 error categories (RateLimit, NetworkError, FileNotFound, etc.). `IndexingErrorCategorizer` classifies exceptions for targeted retry logic and user-friendly messaging. Failed documents show `IsRetryable` status and `SuggestedAction` guidance. (v0.4.7d)
+
 - **Index Management Telemetry** — MediatR events for tracking manual indexing operations: `DocumentReindexedEvent`, `DocumentRemovedFromIndexEvent`, and `AllDocumentsReindexedEvent`.
 
 #### Sub-Part Changelogs
@@ -118,6 +120,7 @@ This release introduces index status visibility and manual control over the docu
 | [v0.4.7a](v0.4.x/LCS-CL-v0.4.7a.md) | Index Status View        | ✅ Complete |
 | [v0.4.7b](v0.4.x/LCS-CL-v0.4.7b.md) | Manual Indexing Controls | ✅ Complete |
 | [v0.4.7c](v0.4.x/LCS-CL-v0.4.7c.md) | Indexing Progress        | ✅ Complete |
+| [v0.4.7d](v0.4.x/LCS-CL-v0.4.7d.md) | Indexing Errors          | ✅ Complete |
 
 ---
 

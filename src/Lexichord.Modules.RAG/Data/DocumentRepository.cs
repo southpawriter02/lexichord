@@ -168,6 +168,14 @@ public sealed class DocumentRepository : IDocumentRepository
         return resultList;
     }
 
+    /// <inheritdoc />
+    public Task<IEnumerable<Document>> GetFailedDocumentsAsync(CancellationToken cancellationToken = default)
+    {
+        // LOGIC: Delegate to GetByStatusAsync for consistency. This convenience method
+        // provides semantic clarity for the Index Status View.
+        return GetByStatusAsync(DocumentStatus.Failed, cancellationToken);
+    }
+
     #endregion
 
     #region Write Operations
