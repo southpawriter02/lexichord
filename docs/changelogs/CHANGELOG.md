@@ -139,6 +139,24 @@ This release introduces index status visibility and manual control over the docu
 
 ---
 
+## [v0.4.8] - 2026-02 (In Progress)
+
+### The Hardening (Performance & Testing)
+
+This release hardens the RAG subsystem with comprehensive unit tests and code coverage.
+
+#### What's New
+
+- **Unit Test Suite** — Comprehensive test coverage for RAG module with 755+ verified tests. Coverage for chunking strategies, embedding service (mock HTTP), token counter edge cases, search logic, and ingestion pipeline. `coverage.runsettings` for consistent coverage reporting targeting ≥80%. (v0.4.8a)
+
+#### Sub-Part Changelogs
+
+| Version                             | Title           | Status      |
+| ----------------------------------- | --------------- | ----------- |
+| [v0.4.8a](v0.4.x/LCS-CL-v0.4.8a.md) | Unit Test Suite | ✅ Complete |
+
+---
+
 ## [v0.4.6] - 2026-02 (In Progress)
 
 ### The Reference Panel (Search UI)

@@ -189,9 +189,9 @@ public class IDocumentRepositoryContractTests
         var methods = _interfaceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
         // Assert
-        // 4 read + 4 write = 8 methods
-        methods.Should().HaveCount(8,
-            because: "IDocumentRepository should have exactly 8 methods (4 read, 4 write)");
+        // 5 read + 4 write = 9 methods (v0.4.7d added GetFailedDocumentsAsync)
+        methods.Should().HaveCount(9,
+            because: "IDocumentRepository should have exactly 9 methods (5 read, 4 write)");
     }
 
     [Theory]
@@ -199,6 +199,7 @@ public class IDocumentRepositoryContractTests
     [InlineData("GetByProjectAsync")]
     [InlineData("GetByFilePathAsync")]
     [InlineData("GetByStatusAsync")]
+    [InlineData("GetFailedDocumentsAsync")]
     [InlineData("AddAsync")]
     [InlineData("UpdateAsync")]
     [InlineData("UpdateStatusAsync")]

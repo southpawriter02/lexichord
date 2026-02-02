@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- =============================================================================
+  File: coverage.runsettings
+  Project: Lexichord.Tests.Unit
+  Description: Coverage configuration for RAG module unit tests.
+  Version: v0.4.8a
+  
+  Usage:
+    dotnet test tests/Lexichord.Tests.Unit \
+      - -settings tests/coverage.runsettings \
+      - -collect:"XPlat Code Coverage" \
+      - -results-directory ./coverage
+============================================================================= -->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <!-- Output formats for coverage data -->
+          <Format>cobertura,opencover</Format>
+          
+          <!-- Include only RAG module for v0.4.8a coverage -->
+          <Include>[Lexichord.Modules.RAG]*</Include>
+          
+          <!-- Exclude test assemblies and generated code -->
+          <Exclude>
+            [*Tests*]*,
+            [*]*.Migrations.*,
+            [*]*.Designer.*
+          </Exclude>
+          
+          <!-- Exclude generated attributes from coverage -->
+          <ExcludeByAttribute>
+            GeneratedCodeAttribute,
+            CompilerGeneratedAttribute,
+            ExcludeFromCodeCoverageAttribute
+          </ExcludeByAttribute>
+          
+          <!-- Include all hit counts, not just first hit -->
+          <SingleHit>false</SingleHit>
+          
+          <!-- Enable source link for coverage mapping -->
+          <UseSourceLink>true</UseSourceLink>
+          
+          <!-- Skip auto-generated properties -->
+          <SkipAutoProps>true</SkipAutoProps>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

@@ -2,14 +2,14 @@
 
 ## Document Control
 
-| Field            | Value                                    |
-| :--------------- | :--------------------------------------- |
-| **Document ID**  | LCS-SBD-048                              |
-| **Version**      | v0.4.8                                   |
-| **Codename**     | The Hardening (Performance & Testing)    |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
-| **Owner**        | Lead Architect                           |
+| Field            | Value                                 |
+| :--------------- | :------------------------------------ |
+| **Document ID**  | LCS-SBD-048                           |
+| **Version**      | v0.4.8                                |
+| **Codename**     | The Hardening (Performance & Testing) |
+| **Status**       | Draft                                 |
+| **Last Updated** | 2026-01-27                            |
+| **Owner**        | Lead Architect                        |
 
 ---
 
@@ -21,23 +21,23 @@ v0.4.8 ensures the RAG system is production-ready through comprehensive testing,
 
 ### 1.2 Success Metrics
 
-| Metric | Target |
-| :----- | :----- |
-| Unit test coverage for RAG module | ≥ 80% |
-| Integration tests pass rate | 100% |
-| Search latency (10K chunks) | < 200ms |
-| Chunking throughput (100KB doc) | < 100ms |
-| Cache hit rate for repeated queries | ≥ 90% |
+| Metric                              | Target  |
+| :---------------------------------- | :------ |
+| Unit test coverage for RAG module   | ≥ 80%   |
+| Integration tests pass rate         | 100%    |
+| Search latency (10K chunks)         | < 200ms |
+| Chunking throughput (100KB doc)     | < 100ms |
+| Cache hit rate for repeated queries | ≥ 90%   |
 
 ### 1.3 Estimated Effort
 
-| Sub-Part | Description | Hours |
-| :------- | :---------- | :---- |
-| v0.4.8a | Unit Test Suite | 12 |
-| v0.4.8b | Integration Tests | 10 |
-| v0.4.8c | Performance Benchmarks | 8 |
-| v0.4.8d | Embedding Cache | 10 |
-| **Total** | | **40** |
+| Sub-Part  | Description            | Hours  |
+| :-------- | :--------------------- | :----- |
+| v0.4.8a   | Unit Test Suite        | 12     |
+| v0.4.8b   | Integration Tests      | 10     |
+| v0.4.8c   | Performance Benchmarks | 8      |
+| v0.4.8d   | Embedding Cache        | 10     |
+| **Total** |                        | **40** |
 
 ---
 
@@ -58,11 +58,11 @@ v0.4.8 ensures the RAG system is production-ready through comprehensive testing,
 
 **Definition of Done:**
 
-- [ ] All chunking strategies have tests
-- [ ] Embedding service tested with mock responses
-- [ ] Search scoring logic verified
-- [ ] Token counting edge cases covered
-- [ ] Coverage report generated
+- [x] All chunking strategies have tests
+- [x] Embedding service tested with mock responses
+- [x] Search scoring logic verified
+- [x] Token counting edge cases covered
+- [x] Coverage report generated
 
 ---
 
@@ -141,32 +141,32 @@ v0.4.8 ensures the RAG system is production-ready through comprehensive testing,
 
 ## 3. Implementation Checklist
 
-| # | Task | Sub-Part | Status |
-| :- | :--- | :------- | :----- |
-| 1 | Create ChunkingStrategyTests | v0.4.8a | [ ] |
-| 2 | Create EmbeddingServiceTests | v0.4.8a | [ ] |
-| 3 | Create SearchServiceTests | v0.4.8a | [ ] |
-| 4 | Create TokenCounterTests | v0.4.8a | [ ] |
-| 5 | Create IngestionServiceTests | v0.4.8a | [ ] |
-| 6 | Generate coverage report | v0.4.8a | [ ] |
-| 7 | Configure test containers | v0.4.8b | [ ] |
-| 8 | Test ingestion pipeline | v0.4.8b | [ ] |
-| 9 | Test search roundtrip | v0.4.8b | [ ] |
-| 10 | Test change detection | v0.4.8b | [ ] |
-| 11 | Test deletion cascade | v0.4.8b | [ ] |
-| 12 | Test concurrent ingestion | v0.4.8b | [ ] |
-| 13 | Create benchmark project | v0.4.8c | [ ] |
-| 14 | Benchmark chunking | v0.4.8c | [ ] |
-| 15 | Benchmark search | v0.4.8c | [ ] |
-| 16 | Benchmark indexing | v0.4.8c | [ ] |
-| 17 | Document baselines | v0.4.8c | [ ] |
-| 18 | Design cache schema | v0.4.8d | [ ] |
-| 19 | Implement IEmbeddingCache | v0.4.8d | [ ] |
-| 20 | Implement SqliteEmbeddingCache | v0.4.8d | [ ] |
-| 21 | Add LRU eviction | v0.4.8d | [ ] |
-| 22 | Add configuration | v0.4.8d | [ ] |
-| 23 | Integrate with EmbeddingService | v0.4.8d | [ ] |
-| 24 | Write cache unit tests | v0.4.8d | [ ] |
+| #   | Task                            | Sub-Part | Status |
+| :-- | :------------------------------ | :------- | :----- |
+| 1   | Create ChunkingStrategyTests    | v0.4.8a  | [ ]    |
+| 2   | Create EmbeddingServiceTests    | v0.4.8a  | [ ]    |
+| 3   | Create SearchServiceTests       | v0.4.8a  | [ ]    |
+| 4   | Create TokenCounterTests        | v0.4.8a  | [ ]    |
+| 5   | Create IngestionServiceTests    | v0.4.8a  | [ ]    |
+| 6   | Generate coverage report        | v0.4.8a  | [ ]    |
+| 7   | Configure test containers       | v0.4.8b  | [ ]    |
+| 8   | Test ingestion pipeline         | v0.4.8b  | [ ]    |
+| 9   | Test search roundtrip           | v0.4.8b  | [ ]    |
+| 10  | Test change detection           | v0.4.8b  | [ ]    |
+| 11  | Test deletion cascade           | v0.4.8b  | [ ]    |
+| 12  | Test concurrent ingestion       | v0.4.8b  | [ ]    |
+| 13  | Create benchmark project        | v0.4.8c  | [ ]    |
+| 14  | Benchmark chunking              | v0.4.8c  | [ ]    |
+| 15  | Benchmark search                | v0.4.8c  | [ ]    |
+| 16  | Benchmark indexing              | v0.4.8c  | [ ]    |
+| 17  | Document baselines              | v0.4.8c  | [ ]    |
+| 18  | Design cache schema             | v0.4.8d  | [ ]    |
+| 19  | Implement IEmbeddingCache       | v0.4.8d  | [ ]    |
+| 20  | Implement SqliteEmbeddingCache  | v0.4.8d  | [ ]    |
+| 21  | Add LRU eviction                | v0.4.8d  | [ ]    |
+| 22  | Add configuration               | v0.4.8d  | [ ]    |
+| 23  | Integrate with EmbeddingService | v0.4.8d  | [ ]    |
+| 24  | Write cache unit tests          | v0.4.8d  | [ ]    |
 
 ---
 
@@ -174,52 +174,52 @@ v0.4.8 ensures the RAG system is production-ready through comprehensive testing,
 
 ### 4.1 Required Interfaces (Upstream)
 
-| Interface | Source | Usage |
-| :-------- | :----- | :---- |
-| `IChunkingStrategy` | v0.4.3a | Test target |
-| `IEmbeddingService` | v0.4.4a | Test target |
-| `ISemanticSearchService` | v0.4.5a | Test target |
-| `IIngestionService` | v0.4.2a | Test target |
-| `IDocumentRepository` | v0.4.1c | Integration tests |
-| `IChunkRepository` | v0.4.1c | Integration tests |
+| Interface                | Source  | Usage             |
+| :----------------------- | :------ | :---------------- |
+| `IChunkingStrategy`      | v0.4.3a | Test target       |
+| `IEmbeddingService`      | v0.4.4a | Test target       |
+| `ISemanticSearchService` | v0.4.5a | Test target       |
+| `IIngestionService`      | v0.4.2a | Test target       |
+| `IDocumentRepository`    | v0.4.1c | Integration tests |
+| `IChunkRepository`       | v0.4.1c | Integration tests |
 
 ### 4.2 New Interfaces Introduced
 
-| Interface | Purpose |
-| :-------- | :------ |
+| Interface         | Purpose                 |
+| :---------------- | :---------------------- |
 | `IEmbeddingCache` | Local embedding storage |
 
 ### 4.3 NuGet Packages
 
-| Package | Version | Purpose |
-| :------ | :------ | :------ |
-| `Microsoft.Data.Sqlite` | 9.x | Cache storage |
-| `BenchmarkDotNet` | 0.14.x | Performance benchmarks |
-| `Testcontainers.PostgreSql` | 3.x | Integration tests |
-| `coverlet.collector` | 6.x | Coverage reporting |
+| Package                     | Version | Purpose                |
+| :-------------------------- | :------ | :--------------------- |
+| `Microsoft.Data.Sqlite`     | 9.x     | Cache storage          |
+| `BenchmarkDotNet`           | 0.14.x  | Performance benchmarks |
+| `Testcontainers.PostgreSql` | 3.x     | Integration tests      |
+| `coverlet.collector`        | 6.x     | Coverage reporting     |
 
 ---
 
 ## 5. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| :--- | :----- | :--------- |
-| Flaky integration tests | Medium | Use deterministic test data |
-| Benchmark variance | Low | Run multiple iterations |
-| Cache corruption | Medium | Validate on read, rebuild on error |
-| SQLite locking issues | Medium | Use connection pooling |
+| Risk                    | Impact | Mitigation                         |
+| :---------------------- | :----- | :--------------------------------- |
+| Flaky integration tests | Medium | Use deterministic test data        |
+| Benchmark variance      | Low    | Run multiple iterations            |
+| Cache corruption        | Medium | Validate on read, rebuild on error |
+| SQLite locking issues   | Medium | Use connection pooling             |
 
 ---
 
 ## 6. User Stories
 
-| ID | Role | Story | Priority |
-| :- | :--- | :---- | :------- |
-| US-048-1 | Developer | Run unit tests for RAG module | Must Have |
-| US-048-2 | Developer | Run integration tests against real DB | Must Have |
-| US-048-3 | Developer | View performance benchmarks | Should Have |
-| US-048-4 | Writer | Benefit from faster repeated searches | Should Have |
-| US-048-5 | Writer | Configure embedding cache size | Could Have |
+| ID       | Role      | Story                                 | Priority    |
+| :------- | :-------- | :------------------------------------ | :---------- |
+| US-048-1 | Developer | Run unit tests for RAG module         | Must Have   |
+| US-048-2 | Developer | Run integration tests against real DB | Must Have   |
+| US-048-3 | Developer | View performance benchmarks           | Should Have |
+| US-048-4 | Writer    | Benefit from faster repeated searches | Should Have |
+| US-048-5 | Writer    | Configure embedding cache size        | Could Have  |
 
 ---
 
@@ -327,29 +327,29 @@ public class IngestionPipelineIntegrationTests : IClassFixture<PostgresFixture>
 
 ## 9. Observability & Logging
 
-| Level | Source | Message |
-| :---- | :----- | :------ |
+| Level       | Source          | Message                                     |
+| :---------- | :-------------- | :------------------------------------------ |
 | Information | BenchmarkRunner | "Benchmark complete: {Name} = {Duration}ms" |
-| Debug | EmbeddingCache | "Cache hit for hash: {Hash}" |
-| Debug | EmbeddingCache | "Cache miss for hash: {Hash}" |
-| Information | EmbeddingCache | "Cache eviction: removed {Count} entries" |
-| Warning | EmbeddingCache | "Cache corruption detected, rebuilding" |
+| Debug       | EmbeddingCache  | "Cache hit for hash: {Hash}"                |
+| Debug       | EmbeddingCache  | "Cache miss for hash: {Hash}"               |
+| Information | EmbeddingCache  | "Cache eviction: removed {Count} entries"   |
+| Warning     | EmbeddingCache  | "Cache corruption detected, rebuilding"     |
 
 ---
 
 ## 10. Acceptance Criteria (QA)
 
-| # | Criterion | Status |
-| :- | :-------- | :----- |
-| 1 | Unit test suite achieves ≥80% coverage | [ ] |
-| 2 | All unit tests pass | [ ] |
-| 3 | Integration tests pass with real PostgreSQL | [ ] |
-| 4 | Chunking benchmark < 100ms for 100KB | [ ] |
-| 5 | Search benchmark < 200ms for 10K chunks | [ ] |
-| 6 | Embedding cache stores by content hash | [ ] |
-| 7 | Cache hit skips API call | [ ] |
-| 8 | LRU eviction respects size limit | [ ] |
-| 9 | Cache can be disabled via configuration | [ ] |
+| #   | Criterion                                   | Status |
+| :-- | :------------------------------------------ | :----- |
+| 1   | Unit test suite achieves ≥80% coverage      | [ ]    |
+| 2   | All unit tests pass                         | [ ]    |
+| 3   | Integration tests pass with real PostgreSQL | [ ]    |
+| 4   | Chunking benchmark < 100ms for 100KB        | [ ]    |
+| 5   | Search benchmark < 200ms for 10K chunks     | [ ]    |
+| 6   | Embedding cache stores by content hash      | [ ]    |
+| 7   | Cache hit skips API call                    | [ ]    |
+| 8   | LRU eviction respects size limit            | [ ]    |
+| 9   | Cache can be disabled via configuration     | [ ]    |
 
 ---
 
@@ -376,22 +376,22 @@ reportgenerator -reports:coverage.cobertura.xml -targetdir:coveragereport
 
 ## 12. Deferred Features
 
-| Feature | Reason | Target Version |
-| :------ | :----- | :------------- |
-| Distributed cache | Complexity | v0.6.x |
-| Cache warming | Low priority | v0.5.x |
-| A/B testing framework | Out of scope | v0.7.x |
-| Load testing | Requires infrastructure | v0.6.x |
+| Feature               | Reason                  | Target Version |
+| :-------------------- | :---------------------- | :------------- |
+| Distributed cache     | Complexity              | v0.6.x         |
+| Cache warming         | Low priority            | v0.5.x         |
+| A/B testing framework | Out of scope            | v0.7.x         |
+| Load testing          | Requires infrastructure | v0.6.x         |
 
 ---
 
 ## 13. Related Documents
 
-| Document | Relationship |
-| :------- | :----------- |
-| [LCS-DES-048-INDEX](./LCS-DES-048-INDEX.md) | Design specification index |
-| [LCS-SBD-047](../v0.4.7/LCS-SBD-047.md) | Predecessor (Index Manager) |
-| [roadmap-v0.4.x](../roadmap-v0.4.x.md) | Version roadmap |
+| Document                                    | Relationship                |
+| :------------------------------------------ | :-------------------------- |
+| [LCS-DES-048-INDEX](./LCS-DES-048-INDEX.md) | Design specification index  |
+| [LCS-SBD-047](../v0.4.7/LCS-SBD-047.md)     | Predecessor (Index Manager) |
+| [roadmap-v0.4.x](../roadmap-v0.4.x.md)      | Version roadmap             |
 
 ---
 
@@ -401,6 +401,7 @@ reportgenerator -reports:coverage.cobertura.xml -targetdir:coveragereport
 ### v0.4.8 - The Hardening
 
 #### Added
+
 - Comprehensive unit test suite for RAG module (≥80% coverage)
 - Integration tests with PostgreSQL test containers
 - Performance benchmarks using BenchmarkDotNet
@@ -410,12 +411,14 @@ reportgenerator -reports:coverage.cobertura.xml -targetdir:coveragereport
 - Cache configuration options (`EmbeddingCacheEnabled`, `EmbeddingCacheMaxSizeMB`)
 
 #### Performance
+
 - Established baseline: Chunking < 100ms for 100KB
 - Established baseline: Search < 200ms for 10K chunks
 - Established baseline: Indexing > 10 docs/minute
 - Cache reduces repeat query latency by ~95%
 
 #### Developer Experience
+
 - Coverage reports generated automatically
 - Benchmark reports available
 ```
@@ -424,8 +427,8 @@ reportgenerator -reports:coverage.cobertura.xml -targetdir:coveragereport
 
 ## 15. Revision History
 
-| Version | Date       | Author         | Changes                    |
-| :------ | :--------- | :------------- | :------------------------- |
-| 0.1     | 2026-01-27 | Lead Architect | Initial draft              |
+| Version | Date       | Author         | Changes       |
+| :------ | :--------- | :------------- | :------------ |
+| 0.1     | 2026-01-27 | Lead Architect | Initial draft |
 
 ---
