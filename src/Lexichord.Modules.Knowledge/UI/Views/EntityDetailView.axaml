@@ -1,0 +1,319 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Knowledge.UI.ViewModels"
+             xmlns:conv="using:Lexichord.Modules.Knowledge.UI.Converters"
+             mc:Ignorable="d"
+             x:Class="Lexichord.Modules.Knowledge.UI.Views.EntityDetailView"
+             x:DataType="vm:EntityDetailViewModel">
+    <!--
+    ===========================================================================
+    File: EntityDetailView.axaml
+    Project: Lexichord.Modules.Knowledge
+    Description: Entity detail view showing properties, relationships, and sources.
+    Version: v0.4.7f
+    ===========================================================================
+    LAYOUT:
+         - Row 0: Header with icon, name, type, confidence
+         - Row 1: Scrollable content with Properties/Relationships/Documents expanders
+         - Row 2: Action buttons (Edit/Merge/Delete)
+    ===========================================================================
+    DEPENDENCIES:
+         - v0.4.7f: EntityDetailViewModel, PropertyItemViewModel,
+           RelationshipItemViewModel, SourceDocumentItemViewModel
+         - v0.4.7e: ConfidenceToColorConverter
+    ===========================================================================
+    -->
+
+    <UserControl.Resources>
+        <conv:ConfidenceToColorConverter x:Key="ConfidenceToColor"/>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- Section Header Style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- Property Row Style -->
+        <Style Selector="Border.property-row">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Border.property-row:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+        </Style>
+
+        <!-- Relationship Row Style -->
+        <Style Selector="Button.relationship-link">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.relationship-link:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+        </Style>
+
+        <!-- Document Row Style -->
+        <Style Selector="Button.document-link">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.document-link:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+        </Style>
+
+        <!-- Action Button Style -->
+        <Style Selector="Button.action-button">
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+        <Style Selector="Button.danger-button">
+            <Setter Property="Background" Value="#dc2626" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ===================================================================
+        Row 0: Header
+        =================================================================== -->
+        <Border Grid.Row="0"
+                Padding="16"
+                Background="{DynamicResource SystemControlBackgroundChromeLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+
+                <!-- Entity Icon -->
+                <Border Grid.Column="0"
+                        Width="48"
+                        Height="48"
+                        CornerRadius="8"
+                        Background="{DynamicResource SystemControlBackgroundAccentBrush}"
+                        Margin="0,0,16,0">
+                    <TextBlock Text="{Binding Icon}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="24" />
+                </Border>
+
+                <!-- Name and Type -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Type}"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+
+                <!-- Confidence Badge -->
+                <Border Grid.Column="2"
+                        CornerRadius="4"
+                        Padding="10,6"
+                        VerticalAlignment="Center"
+                        Background="{Binding Confidence, Converter={StaticResource ConfidenceToColor}}">
+                    <TextBlock Text="{Binding Confidence, StringFormat='{}{0:P0}'}"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Foreground="White" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ===================================================================
+        Row 1: Content
+        =================================================================== -->
+        <Grid Grid.Row="1">
+
+            <!-- Empty State -->
+            <Border IsVisible="{Binding Entity, Converter={x:Static ObjectConverters.IsNull}}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Opacity="0.6">
+                <StackPanel Spacing="8">
+                    <PathIcon Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
+                              Width="48" Height="48"
+                              Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    <TextBlock Text="Select an entity"
+                               HorizontalAlignment="Center"
+                               FontSize="14" />
+                    <TextBlock Text="Click on an entity in the list to view details"
+                               HorizontalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Loading Indicator -->
+            <Border IsVisible="{Binding IsLoading}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel Spacing="8">
+                    <ProgressBar IsIndeterminate="True" Width="200" />
+                    <TextBlock Text="Loading entity details..."
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Content ScrollViewer -->
+            <ScrollViewer IsVisible="{Binding !IsLoading}"
+                          Padding="16">
+                <ScrollViewer.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!IsLoading" />
+                        <Binding Path="Entity" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                    </MultiBinding>
+                </ScrollViewer.IsVisible>
+
+                <StackPanel Spacing="16">
+
+                    <!-- Properties Section -->
+                    <Expander Header="Properties" IsExpanded="True">
+                        <ItemsControl ItemsSource="{Binding Properties}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PropertyItemViewModel">
+                                    <Border Classes="property-row">
+                                        <Grid ColumnDefinitions="140,*,Auto">
+                                            <!-- Property Name -->
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="Medium"
+                                                           ToolTip.Tip="{Binding Description}" />
+                                                <TextBlock Text="*"
+                                                           Foreground="#dc2626"
+                                                           IsVisible="{Binding IsRequired}"
+                                                           Margin="2,0,0,0" />
+                                            </StackPanel>
+
+                                            <!-- Property Value -->
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding Value}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="8,0" />
+
+                                            <!-- Copy Button -->
+                                            <Button Grid.Column="2"
+                                                    Command="{Binding $parent[UserControl].((vm:EntityDetailViewModel)DataContext).CopyPropertyValueCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="Copy value"
+                                                    Padding="4"
+                                                    Background="Transparent"
+                                                    BorderThickness="0">
+                                                <TextBlock Text="📋" FontSize="12" />
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+
+                    <!-- Relationships Section -->
+                    <Expander IsExpanded="True" Margin="0,8,0,0">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Relationships" />
+                                <TextBlock Text="{Binding Relationships.Count, StringFormat=' ({0})'}"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            </StackPanel>
+                        </Expander.Header>
+                        <ItemsControl ItemsSource="{Binding Relationships}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:RelationshipItemViewModel">
+                                    <Button Classes="relationship-link"
+                                            Command="{Binding $parent[UserControl].((vm:EntityDetailViewModel)DataContext).NavigateToRelatedEntityCommand}"
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Direction}"
+                                                       Margin="0,0,6,0"
+                                                       FontWeight="Bold" />
+                                            <TextBlock Text="{Binding Type}"
+                                                       FontWeight="Medium"
+                                                       Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
+                                            <TextBlock Text=": " Margin="0,0,4,0" />
+                                            <TextBlock Text="{Binding OtherEntityName}" />
+                                            <TextBlock Text="{Binding OtherEntityType, StringFormat=' ({0})'}"
+                                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                       FontSize="11" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+
+                    <!-- Source Documents Section -->
+                    <Expander IsExpanded="True" Margin="0,8,0,0">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Source Documents" />
+                                <TextBlock Text="{Binding SourceDocuments.Count, StringFormat=' ({0})'}"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            </StackPanel>
+                        </Expander.Header>
+                        <ItemsControl ItemsSource="{Binding SourceDocuments}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SourceDocumentItemViewModel">
+                                    <Button Classes="document-link"
+                                            Command="{Binding $parent[UserControl].((vm:EntityDetailViewModel)DataContext).NavigateToSourceCommand}"
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="📄" Margin="0,0,6,0" />
+                                            <TextBlock Text="{Binding Title}"
+                                                       Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
+                                            <TextBlock Text="{Binding MentionCount, StringFormat=' ({0} mentions)'}"
+                                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                       FontSize="11" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ===================================================================
+        Row 2: Action Buttons
+        =================================================================== -->
+        <Border Grid.Row="2"
+                Padding="16,12"
+                Background="{DynamicResource SystemControlBackgroundChromeLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,1,0,0"
+                IsVisible="{Binding Entity, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Edit"
+                        Classes="action-button"
+                        IsEnabled="{Binding CanEdit}"
+                        ToolTip.Tip="Edit entity properties (Teams tier required)" />
+                <Button Content="Merge"
+                        Classes="action-button"
+                        IsEnabled="{Binding CanEdit}"
+                        ToolTip.Tip="Merge with another entity (Teams tier required)" />
+                <Button Content="Delete"
+                        Classes="action-button danger-button"
+                        IsEnabled="{Binding CanEdit}"
+                        ToolTip.Tip="Delete this entity (Teams tier required)" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

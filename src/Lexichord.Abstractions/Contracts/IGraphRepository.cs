@@ -115,4 +115,54 @@ public interface IGraphRepository
     /// Returns null if no entity with the specified ID exists.
     /// </remarks>
     Task<KnowledgeEntity?> GetByIdAsync(Guid entityId, CancellationToken ct = default);
+
+    #region v0.4.7f: Entity Detail View
+
+    /// <summary>
+    /// Retrieves all relationships connected to an entity.
+    /// </summary>
+    /// <param name="entityId">The unique identifier of the entity.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <returns>
+    /// A read-only list of all <see cref="KnowledgeRelationship"/> instances
+    /// where the entity is either the source or target. Returns an empty list
+    /// if the entity does not exist or has no relationships.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Executes a Cypher query matching both incoming and outgoing
+    /// relationships: <c>MATCH (n {id: $id})-[r]-(m) RETURN r</c>.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7f as part of the Entity Detail View.
+    /// </para>
+    /// </remarks>
+    Task<IReadOnlyList<KnowledgeRelationship>> GetRelationshipsForEntityAsync(
+        Guid entityId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Counts the number of mentions for an entity in a specific document.
+    /// </summary>
+    /// <param name="entityId">The unique identifier of the entity.</param>
+    /// <param name="documentId">The unique identifier of the source document.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <returns>
+    /// The number of times this entity is mentioned in the specified document.
+    /// Returns 0 if the entity or document does not exist, or if there are no mentions.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Queries the entity-document mention tracking to count occurrences.
+    /// This provides granular mention counts per document, as opposed to
+    /// <see cref="GetMentionCountAsync(Guid, CancellationToken)"/> which returns
+    /// the total across all documents.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7f as part of the Entity Detail View.
+    /// </para>
+    /// </remarks>
+    Task<int> GetMentionCountAsync(Guid entityId, Guid documentId, CancellationToken ct = default);
+
+    #endregion
 }

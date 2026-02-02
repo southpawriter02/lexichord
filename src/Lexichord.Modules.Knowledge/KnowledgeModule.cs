@@ -203,6 +203,14 @@ public sealed class KnowledgeModule : IModule
         // LOGIC: Register EntityListViewModel as transient.
         // Each view instance should get its own ViewModel for independent state.
         services.AddTransient<UI.ViewModels.EntityListViewModel>();
+
+        // =============================================================================
+        // v0.4.7f: Entity Detail View
+        // =============================================================================
+
+        // LOGIC: Register EntityDetailViewModel as transient.
+        // Each detail view needs independent state for entity display.
+        services.AddTransient<UI.ViewModels.EntityDetailViewModel>();
     }
 
     /// <inheritdoc/>

@@ -113,6 +113,8 @@ This release introduces index status visibility and manual control over the docu
 
 - **Entity List View** — Knowledge Graph browser displaying all extracted entities with type icons, confidence badges, relationship/mention counts. Supports filtering by type, search text, and minimum confidence. `IGraphRepository` abstraction for entity queries. (v0.4.7e)
 
+- **Entity Detail View** — Comprehensive entity details panel showing properties, relationships, and source documents. Supports navigation to related entities and opening source documents in the editor. Properties display with schema metadata and copy-to-clipboard. Edit actions license-gated to Teams tier. (v0.4.7f)
+
 - **Index Management Telemetry** — MediatR events for tracking manual indexing operations: `DocumentReindexedEvent`, `DocumentRemovedFromIndexEvent`, and `AllDocumentsReindexedEvent`.
 
 #### Sub-Part Changelogs
@@ -124,6 +126,7 @@ This release introduces index status visibility and manual control over the docu
 | [v0.4.7c](v0.4.x/LCS-CL-v0.4.7c.md) | Indexing Progress        | ✅ Complete |
 | [v0.4.7d](v0.4.x/LCS-CL-v0.4.7d.md) | Indexing Errors          | ✅ Complete |
 | [v0.4.7e](v0.4.x/LCS-CL-v0.4.7e.md) | Entity List View         | ✅ Complete |
+| [v0.4.7f](v0.4.x/LCS-CL-v0.4.7f.md) | Entity Detail View       | ✅ Complete |
 
 ---
 

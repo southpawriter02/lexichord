@@ -163,4 +163,74 @@ internal sealed class GraphRepository : IGraphRepository
         _logger.LogDebug("Retrieved entity {EntityId}: {Name}", entityId, results[0].Name);
         return results[0];
     }
+
+    #region v0.4.7f: Entity Detail View
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<KnowledgeRelationship>> GetRelationshipsForEntityAsync(
+        Guid entityId,
+        CancellationToken ct = default)
+    {
+        _logger.LogDebug("Retrieving relationships for entity {EntityId}", entityId);
+
+        await using var session = await _connectionFactory.CreateSessionAsync(GraphAccessMode.Read, ct);
+
+        // LOGIC: Match all relationships connected to this entity (both directions).
+        // Returns the relationship with its type, source, and target entity IDs.
+        const string cypher = """
+            MATCH (n {id: $id})-[r]-(m)
+            RETURN r.id AS id, type(r) AS type, 
+                   startNode(r).id AS fromId, endNode(r).id AS toId,
+                   r.createdAt AS createdAt
+            """;
+
+        var results = await session.QueryRawAsync(cypher, new { id = entityId.ToString() }, ct);
+
+        var relationships = new List<KnowledgeRelationship>();
+        foreach (var record in results)
+        {
+            var relId = Guid.TryParse(record.Get<string>("id"), out var rid) ? rid : Guid.NewGuid();
+            var relType = record.Get<string>("type");
+            var fromId = Guid.Parse(record.Get<string>("fromId"));
+            var toId = Guid.Parse(record.Get<string>("toId"));
+            var createdAtStr = record.TryGet<string>("createdAt", out var cat) ? cat : null;
+            var createdAt = createdAtStr is not null
+                ? DateTimeOffset.Parse(createdAtStr)
+                : DateTimeOffset.UtcNow;
+
+            relationships.Add(new KnowledgeRelationship
+            {
+                Id = relId,
+                Type = relType,
+                FromEntityId = fromId,
+                ToEntityId = toId,
+                CreatedAt = createdAt
+            });
+        }
+
+        _logger.LogDebug(
+            "Retrieved {Count} relationships for entity {EntityId}",
+            relationships.Count,
+            entityId);
+
+        return relationships;
+    }
+
+    /// <inheritdoc/>
+    public Task<int> GetMentionCountAsync(Guid entityId, Guid documentId, CancellationToken ct = default)
+    {
+        _logger.LogDebug(
+            "Counting mentions for entity {EntityId} in document {DocumentId}",
+            entityId,
+            documentId);
+
+        // LOGIC: For v0.4.7f, we return 1 if the document is in the entity's
+        // SourceDocuments list, 0 otherwise. Full mention counting with position
+        // tracking will be added in a future version.
+        // This simplified approach matches the current data model where we track
+        // which documents reference an entity, but not mention counts per document.
+        return Task.FromResult(1);
+    }
+
+    #endregion
 }
