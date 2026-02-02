@@ -1261,13 +1261,13 @@ graph TB
 
 ### v0.4.6 Prerequisites for v0.4.7+
 
-- [ ] ReferenceView and ReferenceViewModel (v0.4.6a)
-- [ ] SearchResultItemView and SearchResultItemViewModel (v0.4.6b)
-- [ ] HighlightedTextBlock control (v0.4.6b)
-- [ ] IReferenceNavigationService (v0.4.6c)
-- [ ] ReferenceNavigationService implementation (v0.4.6c)
-- [ ] ReferenceNavigatedEvent (v0.4.6c)
-- [ ] HighlightStyle enum (v0.4.6c)
+- [x] ReferenceView and ReferenceViewModel (v0.4.6a)
+- [x] SearchResultItemView and SearchResultItemViewModel (v0.4.6b)
+- [x] HighlightedTextBlock control (v0.4.6b)
+- [x] IReferenceNavigationService (v0.4.6c)
+- [x] ReferenceNavigationService implementation (v0.4.6c)
+- [x] ReferenceNavigatedEvent (v0.4.6c)
+- [x] HighlightStyle enum (v0.4.6c)
 - [ ] ISearchHistoryService (v0.4.6d)
 - [ ] SearchHistoryService implementation (v0.4.6d)
 - [ ] SearchHistoryChangeType enum (v0.4.6d)

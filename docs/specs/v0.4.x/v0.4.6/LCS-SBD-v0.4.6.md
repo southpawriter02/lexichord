@@ -967,22 +967,22 @@ dotnet test --filter "Category=UI&FullyQualifiedName~Reference"
 
 | #   | Deliverable                                 | Status |
 | :-- | :------------------------------------------ | :----- |
-| 1   | `ReferenceView.axaml` layout                | [ ]    |
-| 2   | `ReferenceViewModel` implementation         | [ ]    |
-| 3   | `SearchResultItemView.axaml` layout         | [ ]    |
-| 4   | `SearchResultItemViewModel` implementation  | [ ]    |
-| 5   | Query term highlighting in preview          | [ ]    |
-| 6   | `IReferenceNavigationService` interface     | [ ]    |
-| 7   | `ReferenceNavigationService` implementation | [ ]    |
-| 8   | `ReferenceNavigatedEvent` notification      | [ ]    |
+| 1   | `ReferenceView.axaml` layout                | [x]    |
+| 2   | `ReferenceViewModel` implementation         | [x]    |
+| 3   | `SearchResultItemView.axaml` layout         | [x]    |
+| 4   | `SearchResultItemViewModel` implementation  | [x]    |
+| 5   | Query term highlighting in preview          | [x]    |
+| 6   | `IReferenceNavigationService` interface     | [x]    |
+| 7   | `ReferenceNavigationService` implementation | [x]    |
+| 8   | `ReferenceNavigatedEvent` notification      | [x]    |
 | 9   | `ISearchHistoryService` interface           | [ ]    |
 | 10  | `SearchHistoryService` implementation       | [ ]    |
 | 11  | History dropdown UI                         | [ ]    |
 | 12  | History persistence                         | [ ]    |
-| 13  | Unit tests for ViewModels                   | [ ]    |
-| 14  | Unit tests for services                     | [ ]    |
+| 13  | Unit tests for ViewModels                   | [x]    |
+| 14  | Unit tests for services                     | [x]    |
 | 15  | Integration tests                           | [ ]    |
-| 16  | DI registration                             | [ ]    |
+| 16  | DI registration                             | [x]    |
 
 ---
 

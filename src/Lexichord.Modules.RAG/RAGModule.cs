@@ -68,7 +68,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 4, 5),
+        Version: new Version(0, 4, 6),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -209,14 +209,32 @@ public sealed class RAGModule : IModule
         // v0.4.6: Reference Panel (The Reference View)
         // =============================================================================
 
-        // LOGIC: Register SearchHistoryService as singleton (v0.4.6a).
-        // Thread-safe in-memory history for recent search queries.
+        // LOGIC: Register SearchHistoryService as singleton (v0.4.6a, enhanced v0.4.6d).
+        // Thread-safe in-memory history for recent search queries with persistence support.
         // Used by ReferenceViewModel for autocomplete and history dropdown.
-        services.AddSingleton<ISearchHistoryService, SearchHistoryService>();
+        // ISystemSettingsRepository provides persistence; if unavailable, operates in-memory only.
+        services.AddSingleton<ISearchHistoryService>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<SearchHistoryService>>();
+            var settingsRepository = sp.GetService<ISystemSettingsRepository>();
+            var service = new SearchHistoryService(logger, settingsRepository, maxSize: 10);
+            // Load history on startup (fire-and-forget)
+            _ = service.LoadAsync();
+            return service;
+        });
 
         // LOGIC: Register ReferenceViewModel as transient (v0.4.6a).
         // Each panel instance gets its own ViewModel.
         services.AddTransient<ViewModels.ReferenceViewModel>();
+
+        // =============================================================================
+        // v0.4.6c: Source Navigation
+        // =============================================================================
+
+        // LOGIC: Register ReferenceNavigationService as singleton (v0.4.6c).
+        // Stateless service that bridges RAG search results with editor navigation.
+        // Depends on IEditorService (v0.1.3a) and IEditorNavigationService (v0.2.6b).
+        services.AddSingleton<IReferenceNavigationService, Services.ReferenceNavigationService>();
     }
 
     /// <inheritdoc/>

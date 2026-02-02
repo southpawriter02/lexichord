@@ -25,7 +25,7 @@ This index provides navigation to all design specifications for **v0.4.6: The Re
 | :-------------------------------- | :------------------- | :-------------------------- | :----- |
 | [LCS-DES-046a](./LCS-DES-046a.md) | Reference Panel View | Main search panel UI        | Draft  |
 | [LCS-DES-046b](./LCS-DES-046b.md) | Search Result Item   | Individual result display   | Draft  |
-| [LCS-DES-046c](./LCS-DES-046c.md) | Source Navigation    | Click-to-open functionality | Draft  |
+| [LCS-DES-046c](./LCS-DES-046c.md) | Source Navigation    | Click-to-open functionality | Implemented |
 | [LCS-DES-046d](./LCS-DES-046d.md) | Search History       | Recent queries management   | Draft  |
 
 ---

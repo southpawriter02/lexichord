@@ -111,12 +111,15 @@ This release implements the user-facing interface for semantic search, completin
 
 - **Search Result Item View** — Dedicated `SearchResultItemView` UserControl with score badge coloring (green/amber/orange/gray based on relevance), query term highlighting via `HighlightedTextBlock` custom control, document icon, section heading, and double-click navigation to source.
 
+- **Source Navigation** — `IReferenceNavigationService` with `ReferenceNavigationService` implementation that bridges RAG search results with the editor's navigation infrastructure. Opens closed documents, scrolls to chunk offsets, and highlights matched text spans. Publishes `ReferenceNavigatedEvent` for telemetry tracking. `HighlightStyle` enum for categorizing editor highlights (SearchResult, Error, Warning, Reference).
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                | Status      |
 | ----------------------------------- | -------------------- | ----------- |
 | [v0.4.6a](v0.4.x/LCS-CL-v0.4.6a.md) | Reference Panel View | ✅ Complete |
 | [v0.4.6b](v0.4.x/LCS-CL-v0.4.6b.md) | Search Result Item   | ✅ Complete |
+| [v0.4.6c](v0.4.x/LCS-CL-v0.4.6c.md) | Source Navigation    | ✅ Complete |
 
 ---
 

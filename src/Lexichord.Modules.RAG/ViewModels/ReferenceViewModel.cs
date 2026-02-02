@@ -51,6 +51,7 @@ public partial class ReferenceViewModel : ObservableObject
 {
     private readonly ISemanticSearchService _searchService;
     private readonly ISearchHistoryService _historyService;
+    private readonly IReferenceNavigationService _navigationService;
     private readonly SearchLicenseGuard _licenseGuard;
     private readonly IMediator _mediator;
     private readonly ILogger<ReferenceViewModel> _logger;
@@ -61,18 +62,21 @@ public partial class ReferenceViewModel : ObservableObject
     /// </summary>
     /// <param name="searchService">Service for executing semantic searches.</param>
     /// <param name="historyService">Service for managing search history.</param>
+    /// <param name="navigationService">Service for navigating to search result sources (v0.4.6c).</param>
     /// <param name="licenseGuard">Guard for validating license tier.</param>
     /// <param name="mediator">MediatR instance for publishing events.</param>
     /// <param name="logger">Logger for diagnostics.</param>
     public ReferenceViewModel(
         ISemanticSearchService searchService,
         ISearchHistoryService historyService,
+        IReferenceNavigationService navigationService,
         SearchLicenseGuard licenseGuard,
         IMediator mediator,
         ILogger<ReferenceViewModel> logger)
     {
         _searchService = searchService;
         _historyService = historyService;
+        _navigationService = navigationService;
         _licenseGuard = licenseGuard;
         _mediator = mediator;
         _logger = logger;
@@ -302,13 +306,38 @@ public partial class ReferenceViewModel : ObservableObject
         SearchCommand.NotifyCanExecuteChanged();
     }
 
-    private void OnNavigateToResult(SearchHit hit)
+    /// <summary>
+    /// Handles navigation to a search result's source document.
+    /// </summary>
+    /// <param name="hit">The search hit to navigate to.</param>
+    /// <remarks>
+    /// LOGIC: Delegates to <see cref="IReferenceNavigationService.NavigateToHitAsync"/>
+    /// which opens the document, scrolls to the match, and highlights the text span.
+    /// Uses async void because this is a fire-and-forget UI event callback.
+    ///
+    /// Version: v0.4.6c
+    /// </remarks>
+    private async void OnNavigateToResult(SearchHit hit)
     {
-        // LOGIC: Navigation will be implemented in v0.4.6c via IReferenceNavigationService.
-        // For now, just log the intent.
-        _logger.LogInformation(
+        _logger.LogDebug(
             "Navigate requested: {Document} at offset {Offset}",
             hit.Document.FilePath,
             hit.Chunk.StartOffset);
+
+        try
+        {
+            var success = await _navigationService.NavigateToHitAsync(hit);
+            if (!success)
+            {
+                _logger.LogWarning(
+                    "Navigation failed for {Document} at offset {Offset}",
+                    hit.Document.FilePath,
+                    hit.Chunk.StartOffset);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Navigation error for {Document}", hit.Document.FilePath);
+        }
     }
 }
