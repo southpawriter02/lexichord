@@ -1381,8 +1381,8 @@ graph TB
 
 ### v0.5.1 Prerequisites for v0.5.2+
 
-- [ ] Migration_004_FullTextSearch with content_tsvector (v0.5.1a)
-- [ ] GIN index on content_tsvector (v0.5.1a)
+- [x] Migration_004_FullTextSearch with content_tsvector (v0.5.1a)
+- [x] GIN index on content_tsvector (v0.5.1a)
 - [ ] IBM25SearchService interface (v0.5.1b)
 - [ ] BM25SearchService implementation (v0.5.1b)
 - [ ] BM25Hit record (v0.5.1b)

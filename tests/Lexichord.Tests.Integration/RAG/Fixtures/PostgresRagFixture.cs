@@ -315,12 +315,17 @@ public class PostgresRagFixture : IAsyncLifetime
                 metadata TEXT,
                 heading TEXT,
                 heading_level INTEGER NOT NULL DEFAULT 0,
+                content_tsvector TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', content)) STORED,
                 CONSTRAINT uq_chunks_document_id_chunk_index UNIQUE (document_id, chunk_index)
             );
 
             -- Create HNSW index for fast similarity search if it doesn't exist
             CREATE INDEX IF NOT EXISTS ix_chunks_embedding ON chunks 
             USING hnsw (embedding vector_cosine_ops);
+
+            -- Create GIN index for full-text search (v0.5.1a)
+            CREATE INDEX IF NOT EXISTS ix_chunks_content_tsvector ON chunks
+            USING GIN (content_tsvector);
         ");
 
         // Create views with PascalCase quoted names for PgVectorSearchService compatibility
@@ -337,7 +342,8 @@ public class PostgresRagFixture : IAsyncLifetime
                 end_offset AS ""EndOffset"",
                 metadata AS ""Metadata"",
                 heading AS ""Heading"",
-                heading_level AS ""HeadingLevel""
+                heading_level AS ""HeadingLevel"",
+                content_tsvector AS ""ContentTsvector""
             FROM chunks;
         ");
     }

@@ -9,8 +9,8 @@
 | **Feature Name**   | BM25 Index Schema             |
 | **Target Version** | v0.5.1a                       |
 | **Module**         | Lexichord.Modules.RAG         |
-| **Status**         | Draft                         |
-| **Last Updated**   | 2026-01-27                    |
+| **Status**         | Implemented                   |
+| **Last Updated**   | 2026-02-02                    |
 | **Depends On**     | v0.4.1b (chunks table schema) |
 
 ---

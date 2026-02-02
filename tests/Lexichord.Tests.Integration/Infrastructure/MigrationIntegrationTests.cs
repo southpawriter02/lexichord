@@ -328,6 +328,133 @@ public class MigrationIntegrationTests : IDisposable
         chunkCount.Should().Be(0, "chunks should be deleted when parent document is deleted");
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // v0.5.1a: Full-Text Search Migration Tests
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    [Fact(Skip = "Requires running PostgreSQL container with pgvector. Run ./scripts/db-start.sh first.")]
+    public void MigrateUp_CreatesContentTsvectorColumn()
+    {
+        // Arrange
+        EnsureTestDatabaseExists();
+
+        // Act
+        _runner.MigrateUp();
+
+        // Assert
+        using var connection = new NpgsqlConnection(TestConnectionString);
+        connection.Open();
+
+        using var cmd = new NpgsqlCommand(@"
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'Chunks' AND column_name = 'ContentTsvector'", connection);
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read().Should().BeTrue("ContentTsvector column should exist after migration");
+        reader.GetString(1).Should().Be("tsvector", "column should be tsvector type");
+    }
+
+    [Fact(Skip = "Requires running PostgreSQL container with pgvector. Run ./scripts/db-start.sh first.")]
+    public void MigrateUp_CreatesContentTsvectorGinIndex()
+    {
+        // Arrange
+        EnsureTestDatabaseExists();
+
+        // Act
+        _runner.MigrateUp();
+
+        // Assert
+        using var connection = new NpgsqlConnection(TestConnectionString);
+        connection.Open();
+
+        using var cmd = new NpgsqlCommand(@"
+            SELECT indexname, indexdef
+            FROM pg_indexes
+            WHERE tablename = 'Chunks' AND indexname = 'IX_Chunks_ContentTsvector_gin'", connection);
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read().Should().BeTrue("GIN index should exist for full-text search");
+        reader.GetString(1).Should().Contain("gin", "index should use GIN access method");
+    }
+
+    [Fact(Skip = "Requires running PostgreSQL container with pgvector. Run ./scripts/db-start.sh first.")]
+    public void MigrateUp_ContentTsvectorIsGeneratedColumn()
+    {
+        // Arrange
+        EnsureTestDatabaseExists();
+        _runner.MigrateUp();
+
+        using var connection = new NpgsqlConnection(TestConnectionString);
+        connection.Open();
+
+        // Insert a document
+        var docId = Guid.NewGuid();
+        using (var insertDoc = new NpgsqlCommand($@"
+            INSERT INTO ""Documents"" (""Id"", ""FilePath"", ""FileHash"", ""Status"")
+            VALUES (@id, '/test/fulltext.md', 'def456', 'Indexed')", connection))
+        {
+            insertDoc.Parameters.AddWithValue("id", docId);
+            insertDoc.ExecuteNonQuery();
+        }
+
+        // Act - Insert a chunk with content
+        const string testContent = "The quick brown fox jumps over the lazy dog";
+        using (var insertChunk = new NpgsqlCommand($@"
+            INSERT INTO ""Chunks"" (""DocumentId"", ""Content"", ""ChunkIndex"")
+            VALUES (@docId, @content, 0)", connection))
+        {
+            insertChunk.Parameters.AddWithValue("docId", docId);
+            insertChunk.Parameters.AddWithValue("content", testContent);
+            insertChunk.ExecuteNonQuery();
+        }
+
+        // Assert - Verify tsvector was auto-generated and is searchable
+        using var searchCmd = new NpgsqlCommand(@"
+            SELECT ""Content"", ""ContentTsvector"" IS NOT NULL as has_tsvector,
+                   ""ContentTsvector"" @@ plainto_tsquery('english', 'fox') as matches_fox,
+                   ""ContentTsvector"" @@ plainto_tsquery('english', 'elephant') as matches_elephant
+            FROM ""Chunks""
+            WHERE ""DocumentId"" = @docId", connection);
+        searchCmd.Parameters.AddWithValue("docId", docId);
+
+        using var reader = searchCmd.ExecuteReader();
+        reader.Read().Should().BeTrue();
+        reader.GetBoolean(1).Should().BeTrue("ContentTsvector should be auto-generated");
+        reader.GetBoolean(2).Should().BeTrue("should match 'fox' in content");
+        reader.GetBoolean(3).Should().BeFalse("should not match 'elephant' (not in content)");
+    }
+
+    [Fact(Skip = "Requires running PostgreSQL container with pgvector. Run ./scripts/db-start.sh first.")]
+    public void MigrateDown_DropsContentTsvectorColumn()
+    {
+        // Arrange
+        EnsureTestDatabaseExists();
+        _runner.MigrateUp();
+
+        // Act - Migrate down to version 3 (before full-text search schema)
+        _runner.MigrateDown(3);
+
+        // Assert
+        using var connection = new NpgsqlConnection(TestConnectionString);
+        connection.Open();
+
+        using var cmd = new NpgsqlCommand(@"
+            SELECT COUNT(*) FROM information_schema.columns
+            WHERE table_name = 'Chunks' AND column_name = 'ContentTsvector'", connection);
+
+        var columnCount = (long)cmd.ExecuteScalar()!;
+        columnCount.Should().Be(0, "ContentTsvector column should be dropped after rollback");
+
+        // Also verify GIN index is gone
+        using var indexCmd = new NpgsqlCommand(@"
+            SELECT COUNT(*) FROM pg_indexes
+            WHERE tablename = 'Chunks' AND indexname = 'IX_Chunks_ContentTsvector_gin'", connection);
+
+        var indexCount = (long)indexCmd.ExecuteScalar()!;
+        indexCount.Should().Be(0, "GIN index should be dropped after rollback");
+    }
+
     [Fact(Skip = "Requires running PostgreSQL container with pgvector. Run ./scripts/db-start.sh first.")]
     public void MigrateDown_DropsVectorTables()
     {

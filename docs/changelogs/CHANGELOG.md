@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.5.1] - 2026-02 (In Progress)
+
+### The Hybrid Engine (BM25 + Semantic)
+
+This release introduces hybrid search combining BM25 keyword search with semantic vector similarity for more accurate document retrieval.
+
+#### What's New
+
+- **BM25 Index Schema** — Extended the `Chunks` table with a generated `ContentTsvector` column and GIN index for PostgreSQL full-text search. Enables fast keyword matching using `@@` operator with automatic stemming and stop word removal via the 'english' text search configuration.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title             | Status      |
+| -------------------------------- | ----------------- | ----------- |
+| [v0.5.1a](v0.5.x/LCS-CL-051a.md) | BM25 Index Schema | ✅ Complete |
+
+---
+
 ## [v0.2.4] - 2026-01 (In Progress)
 
 ### Red Pen (Editor Integration)
