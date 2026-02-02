@@ -165,4 +165,109 @@ public interface IGraphRepository
     Task<int> GetMentionCountAsync(Guid entityId, Guid documentId, CancellationToken ct = default);
 
     #endregion
+
+    #region v0.4.7g: Entity CRUD Operations
+
+    /// <summary>
+    /// Creates a new entity in the knowledge graph.
+    /// </summary>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <returns>The created entity with any server-assigned values.</returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Executes a Cypher CREATE query to insert the entity as a new node.
+    /// The entity's properties are serialized to Neo4j-compatible types.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7g as part of Entity CRUD Operations.
+    /// </para>
+    /// </remarks>
+    Task<KnowledgeEntity> CreateEntityAsync(KnowledgeEntity entity, CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates an existing entity in the knowledge graph.
+    /// </summary>
+    /// <param name="entity">The entity with updated values.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Executes a Cypher SET query to update the entity's properties.
+    /// The entity is matched by ID and all properties are replaced.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7g as part of Entity CRUD Operations.
+    /// </para>
+    /// </remarks>
+    Task UpdateEntityAsync(KnowledgeEntity entity, CancellationToken ct = default);
+
+    /// <summary>
+    /// Deletes an entity from the knowledge graph.
+    /// </summary>
+    /// <param name="entityId">The ID of the entity to delete.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Executes a Cypher DETACH DELETE query to remove the entity
+    /// and all its relationships from the graph.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7g as part of Entity CRUD Operations.
+    /// </para>
+    /// </remarks>
+    Task DeleteEntityAsync(Guid entityId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Deletes all relationships connected to an entity without deleting the entity.
+    /// </summary>
+    /// <param name="entityId">The ID of the entity whose relationships to delete.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Executes a Cypher query to delete all incoming and outgoing
+    /// relationships: <c>MATCH (n {id: $id})-[r]-() DELETE r</c>.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7g as part of Entity CRUD Operations.
+    /// </para>
+    /// </remarks>
+    Task DeleteRelationshipsForEntityAsync(Guid entityId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves the change history for an entity.
+    /// </summary>
+    /// <param name="entityId">The ID of the entity to get history for.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <returns>
+    /// A chronologically ordered list of change records, newest first.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Queries the PostgreSQL audit table for all changes related to the
+    /// entity, ordered by timestamp descending.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7g as part of Entity CRUD Operations.
+    /// </para>
+    /// </remarks>
+    Task<IReadOnlyList<Knowledge.EntityChangeRecord>> GetChangeHistoryAsync(
+        Guid entityId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Records an entity change in the audit trail.
+    /// </summary>
+    /// <param name="record">The change record to persist.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Inserts the change record into the PostgreSQL audit table.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7g as part of Entity CRUD Operations.
+    /// </para>
+    /// </remarks>
+    Task RecordChangeAsync(Knowledge.EntityChangeRecord record, CancellationToken ct = default);
+
+    #endregion
 }
+

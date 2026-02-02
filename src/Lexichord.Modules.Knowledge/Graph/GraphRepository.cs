@@ -233,4 +233,154 @@ internal sealed class GraphRepository : IGraphRepository
     }
 
     #endregion
+
+    #region v0.4.7g: Entity CRUD Operations
+
+    /// <inheritdoc/>
+    public async Task<KnowledgeEntity> CreateEntityAsync(
+        KnowledgeEntity entity,
+        CancellationToken ct = default)
+    {
+        _logger.LogDebug("Creating entity {EntityId} ({Type})", entity.Id, entity.Type);
+
+        await using var session = await _connectionFactory.CreateSessionAsync(GraphAccessMode.Write, ct);
+
+        // LOGIC: Create a new node with the entity's properties.
+        // Properties dictionary is serialized to JSON for Neo4j storage.
+        const string cypher = """
+            CREATE (n:Entity {
+                id: $id,
+                type: $type,
+                name: $name,
+                properties: $properties,
+                sourceDocuments: $sourceDocuments,
+                createdAt: $createdAt,
+                modifiedAt: $modifiedAt
+            })
+            RETURN n
+            """;
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["id"] = entity.Id.ToString(),
+            ["type"] = entity.Type,
+            ["name"] = entity.Name,
+            ["properties"] = System.Text.Json.JsonSerializer.Serialize(entity.Properties),
+            ["sourceDocuments"] = entity.SourceDocuments.Select(g => g.ToString()).ToList(),
+            ["createdAt"] = entity.CreatedAt.ToString("O"),
+            ["modifiedAt"] = entity.ModifiedAt.ToString("O")
+        };
+
+        await session.ExecuteAsync(cypher, parameters, ct);
+
+        _logger.LogInformation("Created entity {EntityId} ({Type}): {Name}", entity.Id, entity.Type, entity.Name);
+        return entity;
+    }
+
+    /// <inheritdoc/>
+    public async Task UpdateEntityAsync(KnowledgeEntity entity, CancellationToken ct = default)
+    {
+        _logger.LogDebug("Updating entity {EntityId}", entity.Id);
+
+        await using var session = await _connectionFactory.CreateSessionAsync(GraphAccessMode.Write, ct);
+
+        // LOGIC: Update all entity properties using SET.
+        const string cypher = """
+            MATCH (n {id: $id})
+            SET n.name = $name,
+                n.type = $type,
+                n.properties = $properties,
+                n.sourceDocuments = $sourceDocuments,
+                n.modifiedAt = $modifiedAt
+            """;
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["id"] = entity.Id.ToString(),
+            ["type"] = entity.Type,
+            ["name"] = entity.Name,
+            ["properties"] = System.Text.Json.JsonSerializer.Serialize(entity.Properties),
+            ["sourceDocuments"] = entity.SourceDocuments.Select(g => g.ToString()).ToList(),
+            ["modifiedAt"] = entity.ModifiedAt.ToString("O")
+        };
+
+        await session.ExecuteAsync(cypher, parameters, ct);
+
+        _logger.LogInformation("Updated entity {EntityId}: {Name}", entity.Id, entity.Name);
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteEntityAsync(Guid entityId, CancellationToken ct = default)
+    {
+        _logger.LogDebug("Deleting entity {EntityId}", entityId);
+
+        await using var session = await _connectionFactory.CreateSessionAsync(GraphAccessMode.Write, ct);
+
+        // LOGIC: DETACH DELETE removes the entity and all connected relationships.
+        const string cypher = """
+            MATCH (n {id: $id})
+            DETACH DELETE n
+            """;
+
+        await session.ExecuteAsync(cypher, new { id = entityId.ToString() }, ct);
+
+        _logger.LogInformation("Deleted entity {EntityId}", entityId);
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteRelationshipsForEntityAsync(Guid entityId, CancellationToken ct = default)
+    {
+        _logger.LogDebug("Deleting relationships for entity {EntityId}", entityId);
+
+        await using var session = await _connectionFactory.CreateSessionAsync(GraphAccessMode.Write, ct);
+
+        // LOGIC: Delete only relationships, not the entity itself.
+        const string cypher = """
+            MATCH (n {id: $id})-[r]-()
+            DELETE r
+            """;
+
+        await session.ExecuteAsync(cypher, new { id = entityId.ToString() }, ct);
+
+        _logger.LogInformation("Deleted relationships for entity {EntityId}", entityId);
+    }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<Abstractions.Contracts.Knowledge.EntityChangeRecord>> GetChangeHistoryAsync(
+        Guid entityId,
+        CancellationToken ct = default)
+    {
+        _logger.LogDebug("Retrieving change history for entity {EntityId}", entityId);
+
+        // LOGIC: For v0.4.7g MVP, change history is not yet persisted to PostgreSQL.
+        // Return an empty list. Full audit trail with database storage will be
+        // implemented when the database migration is added in a follow-up version.
+        return Task.FromResult<IReadOnlyList<Abstractions.Contracts.Knowledge.EntityChangeRecord>>(
+            Array.Empty<Abstractions.Contracts.Knowledge.EntityChangeRecord>());
+    }
+
+    /// <inheritdoc/>
+    public Task RecordChangeAsync(
+        Abstractions.Contracts.Knowledge.EntityChangeRecord record,
+        CancellationToken ct = default)
+    {
+        _logger.LogDebug(
+            "Recording change for entity {EntityId}: {Operation}",
+            record.EntityId,
+            record.Operation);
+
+        // LOGIC: For v0.4.7g MVP, changes are logged but not persisted to PostgreSQL.
+        // This is a no-op stub. Full audit trail persistence will be implemented
+        // when the database migration is added in a follow-up version.
+        _logger.LogInformation(
+            "Entity change recorded: {EntityId} - {Operation} at {Timestamp}",
+            record.EntityId,
+            record.Operation,
+            record.Timestamp);
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
 }
+

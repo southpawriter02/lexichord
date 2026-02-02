@@ -115,6 +115,10 @@ This release introduces index status visibility and manual control over the docu
 
 - **Entity Detail View** — Comprehensive entity details panel showing properties, relationships, and source documents. Supports navigation to related entities and opening source documents in the editor. Properties display with schema metadata and copy-to-clipboard. Edit actions license-gated to Teams tier. (v0.4.7f)
 
+- **Entity CRUD Operations** — Service layer for entity management with create, update, and delete operations. `IEntityCrudService` abstraction with full validation and error handling. (v0.4.7g)
+
+- **Relationship Viewer** — Hierarchical tree view displaying entity relationships grouped by direction and type. Supports filtering by direction (Incoming/Outgoing/Both) and relationship type. Integrated into Entity Detail View. (v0.4.7h)
+
 - **Index Management Telemetry** — MediatR events for tracking manual indexing operations: `DocumentReindexedEvent`, `DocumentRemovedFromIndexEvent`, and `AllDocumentsReindexedEvent`.
 
 #### Sub-Part Changelogs
@@ -127,6 +131,8 @@ This release introduces index status visibility and manual control over the docu
 | [v0.4.7d](v0.4.x/LCS-CL-v0.4.7d.md) | Indexing Errors          | ✅ Complete |
 | [v0.4.7e](v0.4.x/LCS-CL-v0.4.7e.md) | Entity List View         | ✅ Complete |
 | [v0.4.7f](v0.4.x/LCS-CL-v0.4.7f.md) | Entity Detail View       | ✅ Complete |
+| [v0.4.7g](v0.4.x/LCS-CL-v0.4.7g.md) | Entity CRUD Operations   | ✅ Complete |
+| [v0.4.7h](v0.4.x/LCS-CL-v0.4.7h.md) | Relationship Viewer      | ✅ Complete |
 
 ---
 

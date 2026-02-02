@@ -211,6 +211,23 @@ public sealed class KnowledgeModule : IModule
         // LOGIC: Register EntityDetailViewModel as transient.
         // Each detail view needs independent state for entity display.
         services.AddTransient<UI.ViewModels.EntityDetailViewModel>();
+
+        // =============================================================================
+        // v0.4.7g: Entity CRUD Operations
+        // =============================================================================
+
+        // LOGIC: Register EntityCrudService as scoped.
+        // Scoped lifetime aligns with per-request license context and database access.
+        // The service integrates with IGraphRepository (singleton) and IAxiomStore (scoped).
+        services.AddScoped<Abstractions.Contracts.Knowledge.IEntityCrudService, Services.EntityCrudService>();
+
+        // =============================================================================
+        // v0.4.7h: Relationship Viewer
+        // =============================================================================
+
+        // LOGIC: Register RelationshipViewerPanelViewModel as transient.
+        // Each relationship panel instance needs independent state for filtering and display.
+        services.AddTransient<UI.ViewModels.RelationshipViewerPanelViewModel>();
     }
 
     /// <inheritdoc/>

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lexichord.Modules.Knowledge.UI.ViewModels"
              xmlns:conv="using:Lexichord.Modules.Knowledge.UI.Converters"
+             xmlns:local="using:Lexichord.Modules.Knowledge.UI.Views"
              mc:Ignorable="d"
              x:Class="Lexichord.Modules.Knowledge.UI.Views.EntityDetailView"
              x:DataType="vm:EntityDetailViewModel">
@@ -224,7 +225,7 @@
                         </ItemsControl>
                     </Expander>
 
-                    <!-- Relationships Section -->
+                    <!-- Relationships Section (v0.4.7h: Tree-based Relationship Viewer) -->
                     <Expander IsExpanded="True" Margin="0,8,0,0">
                         <Expander.Header>
                             <StackPanel Orientation="Horizontal">
@@ -233,30 +234,16 @@
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
                             </StackPanel>
                         </Expander.Header>
-                        <ItemsControl ItemsSource="{Binding Relationships}" Margin="0,8,0,0">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:RelationshipItemViewModel">
-                                    <Button Classes="relationship-link"
-                                            Command="{Binding $parent[UserControl].((vm:EntityDetailViewModel)DataContext).NavigateToRelatedEntityCommand}"
-                                            CommandParameter="{Binding}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Direction}"
-                                                       Margin="0,0,6,0"
-                                                       FontWeight="Bold" />
-                                            <TextBlock Text="{Binding Type}"
-                                                       FontWeight="Medium"
-                                                       Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
-                                            <TextBlock Text=": " Margin="0,0,4,0" />
-                                            <TextBlock Text="{Binding OtherEntityName}" />
-                                            <TextBlock Text="{Binding OtherEntityType, StringFormat=' ({0})'}"
-                                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                                       FontSize="11" />
-                                        </StackPanel>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        
+                        <StackPanel Margin="0,8,0,0">
+                            <!-- Relationship Viewer Panel (v0.4.7h) -->
+                            <local:RelationshipViewerPanel 
+                                DataContext="{Binding RelationshipViewerPanel}"
+                                MinHeight="200"
+                                MaxHeight="400" />
+                        </StackPanel>
                     </Expander>
+
 
                     <!-- Source Documents Section -->
                     <Expander IsExpanded="True" Margin="0,8,0,0">

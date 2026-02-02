@@ -44,6 +44,9 @@
 
     <!-- v0.4.7e: CommunityToolkit.Mvvm for MVVM pattern (ObservableObject, RelayCommand) -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
+    <!-- v0.4.7g: MediatR for entity CRUD event publishing -->
+    <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
   </ItemGroup>
 
   <ItemGroup>

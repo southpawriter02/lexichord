@@ -32,6 +32,7 @@ public class EntityDetailViewModelTests
     private readonly Mock<IEditorService> _editorServiceMock;
     private readonly Mock<ILicenseContext> _licenseContextMock;
     private readonly Mock<ILogger<EntityDetailViewModel>> _loggerMock;
+    private readonly RelationshipViewerPanelViewModel _relationshipViewerPanelMock;
 
     public EntityDetailViewModelTests()
     {
@@ -41,6 +42,12 @@ public class EntityDetailViewModelTests
         _editorServiceMock = new Mock<IEditorService>();
         _licenseContextMock = new Mock<ILicenseContext>();
         _loggerMock = new Mock<ILogger<EntityDetailViewModel>>();
+
+        // Create a real RelationshipViewerPanelViewModel with the mock dependencies
+        var relationshipPanelLoggerMock = new Mock<ILogger<RelationshipViewerPanelViewModel>>();
+        _relationshipViewerPanelMock = new RelationshipViewerPanelViewModel(
+            _graphRepositoryMock.Object,
+            relationshipPanelLoggerMock.Object);
 
         // Default license tier (WriterPro cannot edit)
         _licenseContextMock.Setup(x => x.GetCurrentTier()).Returns(LicenseTier.WriterPro);
@@ -58,6 +65,7 @@ public class EntityDetailViewModelTests
                 _documentRepositoryMock.Object,
                 _editorServiceMock.Object,
                 _licenseContextMock.Object,
+                _relationshipViewerPanelMock,
                 _loggerMock.Object));
 
         Assert.Equal("graphRepository", ex.ParamName);
@@ -73,6 +81,7 @@ public class EntityDetailViewModelTests
                 _documentRepositoryMock.Object,
                 _editorServiceMock.Object,
                 _licenseContextMock.Object,
+                _relationshipViewerPanelMock,
                 _loggerMock.Object));
 
         Assert.Equal("schemaRegistry", ex.ParamName);
@@ -88,6 +97,7 @@ public class EntityDetailViewModelTests
                 null!,
                 _editorServiceMock.Object,
                 _licenseContextMock.Object,
+                _relationshipViewerPanelMock,
                 _loggerMock.Object));
 
         Assert.Equal("documentRepository", ex.ParamName);
@@ -103,6 +113,7 @@ public class EntityDetailViewModelTests
                 _documentRepositoryMock.Object,
                 null!,
                 _licenseContextMock.Object,
+                _relationshipViewerPanelMock,
                 _loggerMock.Object));
 
         Assert.Equal("editorService", ex.ParamName);
@@ -118,9 +129,26 @@ public class EntityDetailViewModelTests
                 _documentRepositoryMock.Object,
                 _editorServiceMock.Object,
                 null!,
+                _relationshipViewerPanelMock,
                 _loggerMock.Object));
 
         Assert.Equal("licenseContext", ex.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_WithNullRelationshipViewerPanel_ThrowsArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            new EntityDetailViewModel(
+                _graphRepositoryMock.Object,
+                _schemaRegistryMock.Object,
+                _documentRepositoryMock.Object,
+                _editorServiceMock.Object,
+                _licenseContextMock.Object,
+                null!,
+                _loggerMock.Object));
+
+        Assert.Equal("relationshipViewerPanel", ex.ParamName);
     }
 
     [Fact]
@@ -133,6 +161,7 @@ public class EntityDetailViewModelTests
                 _documentRepositoryMock.Object,
                 _editorServiceMock.Object,
                 _licenseContextMock.Object,
+                _relationshipViewerPanelMock,
                 null!));
 
         Assert.Equal("logger", ex.ParamName);
@@ -405,6 +434,7 @@ public class EntityDetailViewModelTests
             _documentRepositoryMock.Object,
             _editorServiceMock.Object,
             _licenseContextMock.Object,
+            _relationshipViewerPanelMock,
             _loggerMock.Object);
     }
 

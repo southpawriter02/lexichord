@@ -122,6 +122,16 @@ public partial class EntityDetailViewModel : ObservableObject
     /// </summary>
     public ObservableCollection<SourceDocumentItemViewModel> SourceDocuments { get; } = new();
 
+    /// <summary>
+    /// Gets the Relationship Viewer panel ViewModel.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Introduced in:</b> v0.4.7h as part of the Relationship Viewer.
+    /// </para>
+    /// </remarks>
+    public RelationshipViewerPanelViewModel? RelationshipViewerPanel { get; private set; }
+
     #endregion
 
     /// <summary>
@@ -132,6 +142,7 @@ public partial class EntityDetailViewModel : ObservableObject
     /// <param name="documentRepository">Repository for source document lookup.</param>
     /// <param name="editorService">Service for opening documents in the editor.</param>
     /// <param name="licenseContext">Context for checking license tier.</param>
+    /// <param name="relationshipViewerPanel">ViewModel for the relationship tree panel (v0.4.7h).</param>
     /// <param name="logger">Logger for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when any parameter is null.
@@ -142,6 +153,7 @@ public partial class EntityDetailViewModel : ObservableObject
         IDocumentRepository documentRepository,
         IEditorService editorService,
         ILicenseContext licenseContext,
+        RelationshipViewerPanelViewModel relationshipViewerPanel,
         ILogger<EntityDetailViewModel> logger)
     {
         _graphRepository = graphRepository ?? throw new ArgumentNullException(nameof(graphRepository));
@@ -149,6 +161,7 @@ public partial class EntityDetailViewModel : ObservableObject
         _documentRepository = documentRepository ?? throw new ArgumentNullException(nameof(documentRepository));
         _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
+        RelationshipViewerPanel = relationshipViewerPanel ?? throw new ArgumentNullException(nameof(relationshipViewerPanel));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         // LOGIC: Check license tier for edit permissions.
@@ -175,6 +188,9 @@ public partial class EntityDetailViewModel : ObservableObject
         {
             _logger.LogDebug("Entity changed to {EntityId}: {EntityName}", value.Id, value.Name);
             _ = LoadEntityDetailsAsync(value);
+            
+            // v0.4.7h: Load relationships into tree viewer
+            _ = RelationshipViewerPanel?.LoadRelationshipsAsync(value.Id);
         }
         else
         {
