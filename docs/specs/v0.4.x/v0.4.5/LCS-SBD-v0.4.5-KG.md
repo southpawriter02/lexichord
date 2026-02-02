@@ -459,14 +459,14 @@ public interface IEntityExtractionPipeline
 | 12        | v0.4.5f  | Create technical-docs base schema            | 1          | ✅ Done       |
 | 13        | v0.4.5f  | Implement schema validation                  | 2          | ✅ Done       |
 | 14        | v0.4.5f  | Unit tests for schema validation             | 2          | ✅ Done       |
-| 15        | v0.4.5g  | Create IEntityExtractor interface            | 1            |
-| 16        | v0.4.5g  | Implement EndpointExtractor                  | 2            |
-| 17        | v0.4.5g  | Implement ParameterExtractor                 | 2            |
-| 18        | v0.4.5g  | Implement ConceptExtractor                   | 2            |
-| 19        | v0.4.5g  | Create IEntityExtractionPipeline             | 1            |
-| 20        | v0.4.5g  | Implement EntityExtractionPipeline           | 2            |
-| 21        | v0.4.5g  | Unit tests for extractors                    | 3            |
-| 22        | All      | DI registration in KnowledgeModule.cs        | 1            |
+| 15        | v0.4.5g  | Create IEntityExtractor interface            | 1          | ✅ Done       |
+| 16        | v0.4.5g  | Implement EndpointExtractor                  | 2          | ✅ Done       |
+| 17        | v0.4.5g  | Implement ParameterExtractor                 | 2          | ✅ Done       |
+| 18        | v0.4.5g  | Implement ConceptExtractor                   | 2          | ✅ Done       |
+| 19        | v0.4.5g  | Create IEntityExtractionPipeline             | 1          | ✅ Done       |
+| 20        | v0.4.5g  | Implement EntityExtractionPipeline           | 2          | ✅ Done       |
+| 21        | v0.4.5g  | Unit tests for extractors                    | 3          | ✅ Done       |
+| 22        | All      | DI registration in KnowledgeModule.cs        | 1          | ✅ Done       |
 | 23        | All      | End-to-end integration tests                 | 3            |
 | **Total** |          |                                              | **39 hours** |
 
@@ -977,16 +977,16 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~Knowledge"
 | 4   | `IGraphSession` interface                     | [x]    |
 | 5   | `Neo4jGraphSession` implementation            | [x]    |
 | 6   | Graph metadata PostgreSQL migration           | [x]    |
-| 7   | `ISchemaRegistry` interface                   | [ ]    |
-| 8   | `SchemaRegistry` implementation               | [ ]    |
-| 9   | Schema YAML format specification              | [ ]    |
-| 10  | Built-in technical-docs.yaml schema           | [ ]    |
-| 11  | `IEntityExtractor` interface                  | [ ]    |
-| 12  | `EndpointExtractor` implementation            | [ ]    |
-| 13  | `ParameterExtractor` implementation           | [ ]    |
-| 14  | `ConceptExtractor` implementation             | [ ]    |
-| 15  | `IEntityExtractionPipeline` interface         | [ ]    |
-| 16  | `EntityExtractionPipeline` implementation     | [ ]    |
+| 7   | `ISchemaRegistry` interface                   | [x]    |
+| 8   | `SchemaRegistry` implementation               | [x]    |
+| 9   | Schema YAML format specification              | [x]    |
+| 10  | Built-in technical-docs.yaml schema           | [x]    |
+| 11  | `IEntityExtractor` interface                  | [x]    |
+| 12  | `EndpointExtractor` implementation            | [x]    |
+| 13  | `ParameterExtractor` implementation           | [x]    |
+| 14  | `ConceptExtractor` implementation             | [x]    |
+| 15  | `IEntityExtractionPipeline` interface         | [x]    |
+| 16  | `EntityExtractionPipeline` implementation     | [x]    |
 | 17  | Unit tests for all components                 | [x]    |
 | 18  | Integration tests for Neo4j                   | [x]    |
 | 19  | DI registration in KnowledgeModule.cs         | [x]    |

@@ -480,6 +480,32 @@
 | `SchemaLoader`     | v0.4.5f    | Modules.Knowledge | YAML parser using YamlDotNet              |
 | `SchemaValidator`  | v0.4.5f    | Modules.Knowledge | Entity/relationship validation logic      |
 
+### 1.11c v0.4.5g Entity Extraction Interfaces
+
+| Interface                    | Defined In | Module       | Purpose                                         |
+| :--------------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `IEntityExtractor`           | v0.4.5g    | Abstractions | Pluggable entity type extractor                 |
+| `IEntityExtractionPipeline`  | v0.4.5g    | Abstractions | Composite extraction coordinator                |
+
+**New Records (v0.4.5g):**
+
+| Record                | Defined In | Module       | Purpose                                         |
+| :-------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `EntityMention`       | v0.4.5g    | Abstractions | Extracted entity mention with confidence        |
+| `ExtractionContext`   | v0.4.5g    | Abstractions | Extraction parameters and configuration         |
+| `ExtractionResult`    | v0.4.5g    | Abstractions | Aggregated extraction output with statistics    |
+| `AggregatedEntity`    | v0.4.5g    | Abstractions | Deduplicated entity from multiple mentions      |
+
+**New Classes (v0.4.5g):**
+
+| Class                        | Defined In | Module            | Purpose                                           |
+| :--------------------------- | :--------- | :---------------- | :------------------------------------------------ |
+| `EndpointExtractor`          | v0.4.5g    | Modules.Knowledge | API endpoint detection (3 regex patterns)         |
+| `ParameterExtractor`         | v0.4.5g    | Modules.Knowledge | Parameter detection (5 regex patterns)            |
+| `ConceptExtractor`           | v0.4.5g    | Modules.Knowledge | Domain term detection (4 regex patterns)          |
+| `MentionAggregator`          | v0.4.5g    | Modules.Knowledge | Mention grouping and entity deduplication         |
+| `EntityExtractionPipeline`   | v0.4.5g    | Modules.Knowledge | IEntityExtractionPipeline with priority ordering  |
+
 ### 1.12 v0.4.6 Reference Panel Interfaces
 
 | Interface                     | Defined In | Module      | Purpose                     |

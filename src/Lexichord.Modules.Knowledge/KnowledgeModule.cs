@@ -7,20 +7,23 @@
 //   Neo4j graph database connection. This module implements CKVS Phase 1:
 //   - v0.4.5e: Graph Database Integration
 //   - v0.4.5f: Schema Registry Service (this version)
-//   - v0.4.5g: Entity Abstraction Layer (future)
+//   - v0.4.5g: Entity Abstraction Layer (this version)
 //
 // Service Registrations:
 //   - Neo4jConnectionFactory: Singleton (manages connection pool)
 //   - Neo4jHealthCheck: Transient (created per health check invocation)
 //   - GraphConfiguration: Bound to IOptions<GraphConfiguration>
 //   - SchemaRegistry: Singleton (in-memory schema registry for entity/relationship validation)
+//   - EntityExtractionPipeline: Singleton (coordinates extractors, deduplicates, aggregates)
 //
-// v0.4.5f: Schema Registry Service (CKVS Phase 1)
+// v0.4.5g: Entity Abstraction Layer (CKVS Phase 1)
 // Dependencies: ISecureVault (v0.0.6a), ILicenseContext (v0.0.4c),
 //               IConfiguration (v0.0.3d), ILogger<T> (v0.0.3b)
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Modules.Knowledge.Extraction;
+using Lexichord.Modules.Knowledge.Extraction.Extractors;
 using Lexichord.Modules.Knowledge.Graph;
 using Lexichord.Modules.Knowledge.Schema;
 using Microsoft.Extensions.DependencyInjection;
@@ -122,6 +125,32 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<SchemaRegistry>();
         services.AddSingleton<ISchemaRegistry>(sp =>
             sp.GetRequiredService<SchemaRegistry>());
+
+        // =============================================================================
+        // v0.4.5g: Entity Abstraction Layer
+        // =============================================================================
+
+        // LOGIC: Register EntityExtractionPipeline as singleton.
+        // The pipeline coordinates multiple entity extractors, handling priority-ordered
+        // execution, error isolation, confidence filtering, mention deduplication, and
+        // entity aggregation. Singleton ensures consistent extractor registration and
+        // shared state across the application lifetime.
+        // Also registered as IEntityExtractionPipeline for consumer injection.
+        services.AddSingleton<EntityExtractionPipeline>();
+        services.AddSingleton<IEntityExtractionPipeline>(sp =>
+        {
+            var pipeline = sp.GetRequiredService<EntityExtractionPipeline>();
+
+            // LOGIC: Register built-in extractors in priority order (descending).
+            // EndpointExtractor (100): API endpoint detection — most specific, runs first.
+            // ParameterExtractor (90): API parameter detection — often co-located with endpoints.
+            // ConceptExtractor (50): Domain term detection — broadest, runs last.
+            pipeline.Register(new EndpointExtractor());
+            pipeline.Register(new ParameterExtractor());
+            pipeline.Register(new ConceptExtractor());
+
+            return pipeline;
+        });
     }
 
     /// <inheritdoc/>

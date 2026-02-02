@@ -115,6 +115,8 @@ This release implements semantic search capabilities enabling natural language q
 
 - **Schema Registry Service** — YAML-driven schema system for knowledge graph entity and relationship type governance. `ISchemaRegistry` with in-memory registry, case-insensitive lookups, and comprehensive validation producing typed error codes (13 error codes, 1 warning code). `SchemaLoader` parses YAML files with underscore naming convention and flexible From/To handling. `SchemaValidator` enforces type existence, required properties, type correctness, and constraint validation (length, pattern, numeric range). Built-in technical documentation schema with 6 entity types (Product, Component, Endpoint, Parameter, Response, Concept) and 6 relationship types.
 
+- **Entity Abstraction Layer** — Pluggable entity extraction pipeline for identifying structured entities in document text. `IEntityExtractor` interface with priority ordering and confidence scoring. `IEntityExtractionPipeline` coordinator with error isolation, confidence filtering, mention deduplication (overlapping spans resolved by highest confidence), and entity aggregation. Three built-in regex-based extractors: `EndpointExtractor` (API endpoints with 3 patterns, confidence 0.7–1.0), `ParameterExtractor` (parameters from paths, queries, code, JSON with 5 patterns, 0.6–1.0), and `ConceptExtractor` (domain terms, acronyms, glossary entries with 4 patterns, 0.5–0.95). `MentionAggregator` groups mentions by type and normalized value into `AggregatedEntity` records for graph node creation.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                      | Status      |
@@ -125,6 +127,7 @@ This release implements semantic search capabilities enabling natural language q
 | [v0.4.5d](v0.4.x/LCS-CL-v0.4.5d.md) | License Gating             | ✅ Complete |
 | [v0.4.5e](v0.4.x/LCS-CL-v0.4.5e.md) | Graph Database Integration | ✅ Complete |
 | [v0.4.5f](v0.4.x/LCS-CL-v0.4.5f.md) | Schema Registry Service    | ✅ Complete |
+| [v0.4.5g](v0.4.x/LCS-CL-v0.4.5g.md) | Entity Abstraction Layer   | ✅ Complete |
 
 ---
 
