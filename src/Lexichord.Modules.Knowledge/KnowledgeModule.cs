@@ -228,6 +228,14 @@ public sealed class KnowledgeModule : IModule
         // LOGIC: Register RelationshipViewerPanelViewModel as transient.
         // Each relationship panel instance needs independent state for filtering and display.
         services.AddTransient<UI.ViewModels.RelationshipViewerPanelViewModel>();
+
+        // =============================================================================
+        // v0.4.7i: Axiom Viewer
+        // =============================================================================
+
+        // LOGIC: Register AxiomViewerViewModel as transient.
+        // Each axiom viewer instance needs independent state for filtering and grouping.
+        services.AddTransient<UI.ViewModels.AxiomViewerViewModel>();
     }
 
     /// <inheritdoc/>

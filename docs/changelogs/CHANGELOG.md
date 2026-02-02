@@ -119,6 +119,8 @@ This release introduces index status visibility and manual control over the docu
 
 - **Relationship Viewer** — Hierarchical tree view displaying entity relationships grouped by direction and type. Supports filtering by direction (Incoming/Outgoing/Both) and relationship type. Integrated into Entity Detail View. (v0.4.7h)
 
+- **Axiom Viewer** — Read-only panel displaying all axioms with human-readable rule formatting. Supports five-dimension filtering (search, type, severity, category, disabled status) and grouping. Human-readable formatting for all 14 constraint types and 9 condition operators. (v0.4.7i)
+
 - **Index Management Telemetry** — MediatR events for tracking manual indexing operations: `DocumentReindexedEvent`, `DocumentRemovedFromIndexEvent`, and `AllDocumentsReindexedEvent`.
 
 #### Sub-Part Changelogs
@@ -133,6 +135,7 @@ This release introduces index status visibility and manual control over the docu
 | [v0.4.7f](v0.4.x/LCS-CL-v0.4.7f.md) | Entity Detail View       | ✅ Complete |
 | [v0.4.7g](v0.4.x/LCS-CL-v0.4.7g.md) | Entity CRUD Operations   | ✅ Complete |
 | [v0.4.7h](v0.4.x/LCS-CL-v0.4.7h.md) | Relationship Viewer      | ✅ Complete |
+| [v0.4.7i](v0.4.x/LCS-CL-v0.4.7i.md) | Axiom Viewer             | ✅ Complete |
 
 ---
 

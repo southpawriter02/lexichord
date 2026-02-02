@@ -1,0 +1,254 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Knowledge.UI.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
+             x:Class="Lexichord.Modules.Knowledge.UI.Views.AxiomViewerView"
+             x:DataType="vm:AxiomViewerViewModel">
+    <!-- ==========================================================================
+         AxiomViewerView.axaml
+         
+         Provides a read-only view of axioms (validation rules) for the Knowledge
+         Graph Browser. Supports filtering, grouping, and human-readable rule display.
+         
+         v0.4.7i: Axiom Viewer (CKVS Phase 1c)
+    ========================================================================== -->
+
+    <UserControl.Styles>
+        <!-- Severity badge styles -->
+        <Style Selector="Border.severity-error">
+            <Setter Property="Background" Value="#FFEBEE" />
+            <Setter Property="BorderBrush" Value="#EF5350" />
+        </Style>
+        <Style Selector="Border.severity-warning">
+            <Setter Property="Background" Value="#FFF8E1" />
+            <Setter Property="BorderBrush" Value="#FFA726" />
+        </Style>
+        <Style Selector="Border.severity-info">
+            <Setter Property="Background" Value="#E3F2FD" />
+            <Setter Property="BorderBrush" Value="#42A5F5" />
+        </Style>
+        
+        <!-- Disabled axiom style -->
+        <Style Selector="Border.axiom-disabled">
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+        
+        <!-- Tag style -->
+        <Style Selector="Border.tag">
+            <Setter Property="Background" Value="#E8EAF6" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="Margin" Value="2,0" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        
+        <!-- Header: Title and Filter Controls -->
+        <Border Grid.Row="0" 
+                Background="{DynamicResource SystemControlPageBackgroundChromeLowBrush}"
+                Padding="12,8"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Axiom Viewer"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="|"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               VerticalAlignment="Center" />
+                    <TextBlock VerticalAlignment="Center">
+                        <Run Text="{Binding FilteredCount}" />
+                        <Run Text=" of " />
+                        <Run Text="{Binding TotalCount}" />
+                        <Run Text=" axioms" />
+                    </TextBlock>
+                </StackPanel>
+                
+                <!-- Loading indicator -->
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal" 
+                            IsVisible="{Binding IsLoading}"
+                            Spacing="8">
+                    <ProgressBar IsIndeterminate="True" 
+                                 Width="100" />
+                    <TextBlock Text="Loading..."
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Filter Controls -->
+        <Border Grid.Row="1"
+                Padding="12,8"
+                Background="{DynamicResource SystemControlPageBackgroundAltMediumBrush}">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" RowDefinitions="Auto">
+                
+                <!-- Search Box -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding SearchText}"
+                         Watermark="Search axioms (id, name, description)..."
+                         Margin="0,0,8,0" />
+                
+                <!-- Type Filter -->
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding AvailableTypes}"
+                          SelectedItem="{Binding TypeFilter}"
+                          PlaceholderText="All Types"
+                          MinWidth="120"
+                          Margin="0,0,8,0" />
+                
+                <!-- Category Filter -->
+                <ComboBox Grid.Column="2"
+                          ItemsSource="{Binding AvailableCategories}"
+                          SelectedItem="{Binding CategoryFilter}"
+                          PlaceholderText="All Categories"
+                          MinWidth="120"
+                          Margin="0,0,8,0" />
+                
+                <!-- Show Disabled Toggle -->
+                <CheckBox Grid.Column="3"
+                          IsChecked="{Binding ShowDisabled}"
+                          Content="Show Disabled"
+                          VerticalAlignment="Center"
+                          Margin="0,0,8,0" />
+                
+                <!-- Clear Filters Button -->
+                <Button Grid.Column="4"
+                        Content="Clear Filters"
+                        VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Axiom List -->
+        <ScrollViewer Grid.Row="2" 
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding FilteredAxioms}"
+                          Margin="8">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:AxiomItemViewModel">
+                        <Border Margin="4"
+                                Padding="12"
+                                CornerRadius="4"
+                                BorderThickness="1"
+                                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                Background="{DynamicResource SystemControlPageBackgroundChromeLowBrush}">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                                
+                                <!-- Row 0: Header with Name, Severity Badge, and Target -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="14" />
+                                        <TextBlock Text="{Binding Id}"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    
+                                    <!-- Severity Badge -->
+                                    <Border Grid.Column="1"
+                                            CornerRadius="4"
+                                            Padding="8,2"
+                                            Margin="8,0"
+                                            BorderThickness="1">
+                                        <TextBlock Text="{Binding SeverityDisplay}"
+                                                   FontSize="11"
+                                                   FontWeight="Medium" />
+                                    </Border>
+                                    
+                                    <!-- Target Type -->
+                                    <StackPanel Grid.Column="2" 
+                                                Orientation="Horizontal" 
+                                                Spacing="4">
+                                        <TextBlock Text="{Binding TargetKindDisplay}"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   FontSize="12" />
+                                        <TextBlock Text=":"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   FontSize="12" />
+                                        <TextBlock Text="{Binding TargetType}"
+                                                   FontWeight="Medium"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <!-- Row 1: Description -->
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding Description}"
+                                           TextWrapping="Wrap"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           Margin="0,4,0,8"
+                                           IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                
+                                <!-- Row 2: Rules List -->
+                                <Expander Grid.Row="2"
+                                          Header="{Binding RuleCount, StringFormat='Rules ({0})'}"
+                                          IsExpanded="True"
+                                          Margin="0,4">
+                                    <ItemsControl ItemsSource="{Binding FormattedRules}"
+                                                  Margin="8,4">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="•" 
+                                                               Margin="0,0,8,0"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                                    <TextBlock Text="{Binding}"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Expander>
+                                
+                                <!-- Row 3: Category and Source -->
+                                <StackPanel Grid.Row="3"
+                                            Orientation="Horizontal"
+                                            Spacing="16"
+                                            Margin="0,8,0,0">
+                                    <TextBlock IsVisible="{Binding Category, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                        <Run Text="Category: " 
+                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                        <Run Text="{Binding Category}" FontWeight="Medium" />
+                                    </TextBlock>
+                                    <TextBlock IsVisible="{Binding SourceFile, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                        <Run Text="Source: "
+                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                        <Run Text="{Binding SourceFile}" FontSize="11" />
+                                    </TextBlock>
+                                    <TextBlock IsVisible="{Binding !IsEnabled}"
+                                               Foreground="#EF5350"
+                                               FontWeight="Medium"
+                                               Text="(Disabled)" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Footer: Status Bar -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource SystemControlPageBackgroundChromeLowBrush}"
+                Padding="12,4"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       FontSize="11">
+                <Run Text="Showing " />
+                <Run Text="{Binding FilteredCount}" FontWeight="Medium" />
+                <Run Text=" of " />
+                <Run Text="{Binding TotalCount}" FontWeight="Medium" />
+                <Run Text=" axioms • Read-only view" />
+            </TextBlock>
+        </Border>
+    </Grid>
+</UserControl>
