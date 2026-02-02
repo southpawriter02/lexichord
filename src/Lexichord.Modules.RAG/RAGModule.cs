@@ -235,6 +235,24 @@ public sealed class RAGModule : IModule
         // Stateless service that bridges RAG search results with editor navigation.
         // Depends on IEditorService (v0.1.3a) and IEditorNavigationService (v0.2.6b).
         services.AddSingleton<IReferenceNavigationService, Services.ReferenceNavigationService>();
+
+        // =============================================================================
+        // v0.4.7a: Index Status View
+        // =============================================================================
+
+        // LOGIC: Register IndexStatusService as scoped (v0.4.7a).
+        // Scoped to align with repository lifetimes for document and chunk queries.
+        // Provides real-time visibility into document indexing status and statistics.
+        services.AddScoped<IIndexStatusService, Services.IndexStatusService>();
+
+        // LOGIC: Register IndexStatusViewModel as transient (v0.4.7a).
+        // Each settings page instance gets its own ViewModel.
+        services.AddTransient<ViewModels.IndexStatusViewModel>();
+
+        // LOGIC: Register IndexStatusSettingsPage as singleton (v0.4.7a).
+        // Settings page registration for the Index Status View in Settings dialog.
+        // Registered as ISettingsPage for discovery by the settings page registry.
+        services.AddSingleton<ISettingsPage, Settings.IndexStatusSettingsPage>();
     }
 
     /// <inheritdoc/>
