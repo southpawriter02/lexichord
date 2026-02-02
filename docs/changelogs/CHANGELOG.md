@@ -107,6 +107,8 @@ This release introduces index status visibility and manual control over the docu
 
 - **Manual Indexing Controls** — Commands for managing the document index: Re-index Document, Remove from Index, and Re-index All. Includes confirmation dialogs for destructive operations and progress reporting for bulk operations. (v0.4.7b)
 
+- **Indexing Progress Toast** — Real-time progress overlay for indexing operations with document name, progress bar, elapsed time, and cancellation support. Auto-dismisses after completion with success/cancelled icons. (v0.4.7c)
+
 - **Index Management Telemetry** — MediatR events for tracking manual indexing operations: `DocumentReindexedEvent`, `DocumentRemovedFromIndexEvent`, and `AllDocumentsReindexedEvent`.
 
 #### Sub-Part Changelogs
@@ -115,6 +117,7 @@ This release introduces index status visibility and manual control over the docu
 | ----------------------------------- | ------------------------ | ----------- |
 | [v0.4.7a](v0.4.x/LCS-CL-v0.4.7a.md) | Index Status View        | ✅ Complete |
 | [v0.4.7b](v0.4.x/LCS-CL-v0.4.7b.md) | Manual Indexing Controls | ✅ Complete |
+| [v0.4.7c](v0.4.x/LCS-CL-v0.4.7c.md) | Indexing Progress        | ✅ Complete |
 
 ---
 

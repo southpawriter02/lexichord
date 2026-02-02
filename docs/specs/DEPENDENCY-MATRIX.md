@@ -630,13 +630,13 @@
 
 **New Records (v0.4.7):**
 
-| Record                 | Defined In | Module      | Purpose              |
-| :--------------------- | :--------- | :---------- | :------------------- |
-| `IndexedDocumentInfo`  | v0.4.7a    | Modules.RAG | Document status info |
-| `IndexStatistics`      | v0.4.7a    | Modules.RAG | Summary statistics   |
-| `IndexOperationResult` | v0.4.7b    | Modules.RAG | Operation result     |
-| `IndexingProgressInfo` | v0.4.7b    | Modules.RAG | Progress information |
-| `IndexingErrorInfo`    | v0.4.7d    | Modules.RAG | Error details        |
+| Record                 | Defined In | Module       | Purpose              |
+| :--------------------- | :--------- | :----------- | :------------------- |
+| `IndexedDocumentInfo`  | v0.4.7a    | Modules.RAG  | Document status info |
+| `IndexStatistics`      | v0.4.7a    | Modules.RAG  | Summary statistics   |
+| `IndexOperationResult` | v0.4.7b    | Modules.RAG  | Operation result     |
+| `IndexingProgressInfo` | v0.4.7c    | Abstractions | Progress information |
+| `IndexingErrorInfo`    | v0.4.7d    | Modules.RAG  | Error details        |
 
 **New Classes (v0.4.7):**
 
@@ -1356,8 +1356,8 @@ graph TB
 - [ ] IndexManagementService implementation (v0.4.7b)
 - [ ] IndexOperationResult, IndexingProgressInfo records (v0.4.7b)
 - [ ] Index operation MediatR events (v0.4.7b)
-- [ ] IndexingProgressViewModel and View (v0.4.7c)
-- [ ] IndexingProgressUpdatedEvent (v0.4.7c)
+- [x] IndexingProgressViewModel and View (v0.4.7c)
+- [x] IndexingProgressUpdatedEvent (v0.4.7c)
 - [ ] IndexingErrorInfo record (v0.4.7d)
 - [ ] IndexingErrorCategorizer helper (v0.4.7d)
 - [ ] IndexingErrorCategory enum (v0.4.7d)

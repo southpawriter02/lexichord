@@ -146,11 +146,11 @@ v0.4.7 delivers user-facing tools for managing the indexed document corpus. User
 | 9   | Add Re-index All command                         | v0.4.7b  | [ ]    |
 | 10  | Implement confirmation dialogs                   | v0.4.7b  | [ ]    |
 | 11  | Create IIndexManagementService                   | v0.4.7b  | [ ]    |
-| 12  | Create IndexingProgressView.axaml                | v0.4.7c  | [ ]    |
-| 13  | Create IndexingProgressViewModel                 | v0.4.7c  | [ ]    |
-| 14  | Bind to ProgressChanged event                    | v0.4.7c  | [ ]    |
-| 15  | Implement cancellation support                   | v0.4.7c  | [ ]    |
-| 16  | Add auto-dismiss behavior                        | v0.4.7c  | [ ]    |
+| 12  | Create IndexingProgressView.axaml                | v0.4.7c  | [x]    |
+| 13  | Create IndexingProgressViewModel                 | v0.4.7c  | [x]    |
+| 14  | Bind to ProgressChanged event                    | v0.4.7c  | [x]    |
+| 15  | Implement cancellation support                   | v0.4.7c  | [x]    |
+| 16  | Add auto-dismiss behavior                        | v0.4.7c  | [x]    |
 | 17  | Add error_message migration                      | v0.4.7d  | [ ]    |
 | 18  | Create IndexingErrorInfo record                  | v0.4.7d  | [ ]    |
 | 19  | Display failed documents                         | v0.4.7d  | [ ]    |

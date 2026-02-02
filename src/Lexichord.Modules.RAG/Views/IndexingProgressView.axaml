@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.RAG.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="150"
+             x:Class="Lexichord.Modules.RAG.Views.IndexingProgressView"
+             x:DataType="vm:IndexingProgressViewModel"
+             IsVisible="{Binding IsVisible}">
+    <!--
+    =============================================================================
+    File: IndexingProgressView.axaml
+    Project: Lexichord.Modules.RAG
+    Description: Toast overlay for displaying indexing progress.
+    Version: v0.4.7c
+    =============================================================================
+    LOGIC: Bottom-right positioned toast showing real-time indexing progress.
+      - Fixed width (360px) for consistent appearance.
+      - Header with operation title and dismiss button.
+      - Current document name with ellipsis truncation.
+      - Progress bar showing PercentComplete.
+      - Footer with progress text, elapsed time, cancel button or status icons.
+    =============================================================================
+    -->
+
+    <!-- Positioned at bottom-right with margin -->
+    <Panel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,24">
+        <Border Classes="progress-toast"
+                Width="360"
+                Padding="16"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                BoxShadow="0 4 12 0 #40000000">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                <!-- Row 0: Header with title and dismiss button -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding OperationTitle}"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                               TextTrimming="CharacterEllipsis"/>
+                    <Button Grid.Column="1"
+                            Command="{Binding DismissCommand}"
+                            IsVisible="{Binding IsComplete}"
+                            Classes="icon-button"
+                            Padding="4"
+                            ToolTip.Tip="Dismiss">
+                        <PathIcon Data="M19.3 5.3l-.6-.6L12 11.4 5.3 4.7l-.6.6L11.4 12l-6.7 6.7.6.6L12 12.6l6.7 6.7.6-.6L12.6 12z"
+                                  Width="12"
+                                  Height="12"
+                                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    </Button>
+                </Grid>
+
+                <!-- Row 1: Current document name -->
+                <TextBlock Grid.Row="1"
+                           Text="{Binding CurrentDocument}"
+                           FontSize="12"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="0,8,0,0"
+                           MaxWidth="328"/>
+
+                <!-- Row 2: Progress bar -->
+                <ProgressBar Grid.Row="2"
+                             Value="{Binding PercentComplete}"
+                             Minimum="0"
+                             Maximum="100"
+                             Height="6"
+                             Margin="0,12,0,0"
+                             CornerRadius="3"
+                             Foreground="{DynamicResource AccentFillColorDefaultBrush}"/>
+
+                <!-- Row 3: Footer with progress text, elapsed time, and action/status -->
+                <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+                    <!-- Progress text (e.g., "5 / 10") -->
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding ProgressText}"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+                    <!-- Elapsed time -->
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ElapsedTimeDisplay}"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                               Margin="0,0,12,0"/>
+
+                    <!-- Cancel button (visible during operation) -->
+                    <Button Grid.Column="2"
+                            Content="Cancel"
+                            Command="{Binding CancelCommand}"
+                            IsVisible="{Binding CanCancel}"
+                            Classes="accent"
+                            FontSize="12"
+                            Padding="12,4"
+                            VerticalAlignment="Center"/>
+
+                    <!-- Status icons (visible after completion) -->
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                IsVisible="{Binding IsComplete}"
+                                VerticalAlignment="Center">
+                        <!-- Success icon -->
+                        <PathIcon IsVisible="{Binding !WasCancelled}"
+                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                                  Width="16"
+                                  Height="16"
+                                  Foreground="#4CAF50"/>
+                        <!-- Warning/cancelled icon -->
+                        <PathIcon IsVisible="{Binding WasCancelled}"
+                                  Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
+                                  Width="16"
+                                  Height="16"
+                                  Foreground="#FFA726"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Panel>
+</UserControl>

@@ -255,6 +255,13 @@ public sealed class RAGModule : IModule
         // Each settings page instance gets its own ViewModel.
         services.AddTransient<ViewModels.IndexStatusViewModel>();
 
+        // LOGIC: Register IndexingProgressViewModel as transient (v0.4.7c).
+        // Each progress toast instance gets its own ViewModel.
+        // Also register as INotificationHandler for MediatR event subscription.
+        services.AddTransient<ViewModels.IndexingProgressViewModel>();
+        services.AddTransient<MediatR.INotificationHandler<Events.IndexingProgressUpdatedEvent>>(
+            sp => sp.GetRequiredService<ViewModels.IndexingProgressViewModel>());
+
         // LOGIC: Register IndexStatusSettingsPage as singleton (v0.4.7a).
         // Settings page registration for the Index Status View in Settings dialog.
         // Registered as ISettingsPage for discovery by the settings page registry.
