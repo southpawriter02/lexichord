@@ -68,7 +68,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 4, 6),
+        Version: new Version(0, 4, 7),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -177,7 +177,8 @@ public sealed class RAGModule : IModule
         // LOGIC: Register DocumentIndexingPipeline as scoped (v0.4.4d).
         // The pipeline orchestrates chunking, embedding, and storage.
         // Scoped to align with repository lifetimes and database transaction boundaries.
-        services.AddScoped<DocumentIndexingPipeline>();
+        // v0.4.7b: Register via interface for testability.
+        services.AddScoped<IDocumentIndexingPipeline, DocumentIndexingPipeline>();
 
         // =============================================================================
         // v0.4.5: Semantic Search (The Searcher)
@@ -244,6 +245,11 @@ public sealed class RAGModule : IModule
         // Scoped to align with repository lifetimes for document and chunk queries.
         // Provides real-time visibility into document indexing status and statistics.
         services.AddScoped<IIndexStatusService, Services.IndexStatusService>();
+
+        // LOGIC: Register IndexManagementService as scoped (v0.4.7b).
+        // Scoped to align with repository and pipeline lifetimes.
+        // Provides manual control over index operations: re-index, remove, re-index all.
+        services.AddScoped<IIndexManagementService, Services.IndexManagementService>();
 
         // LOGIC: Register IndexStatusViewModel as transient (v0.4.7a).
         // Each settings page instance gets its own ViewModel.

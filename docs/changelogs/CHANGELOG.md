@@ -95,6 +95,29 @@ This release establishes the file ingestion pipeline for processing documents in
 
 ---
 
+## [v0.4.7] - 2026-02 (In Progress)
+
+### The Index Manager (Corpus Administration)
+
+This release introduces index status visibility and manual control over the document corpus.
+
+#### What's New
+
+- **Index Status View** — Settings page displaying all indexed documents with status (Indexed, Stale, Failed, Pending), file metadata, and aggregate statistics. Supports filtering by text and status. (v0.4.7a)
+
+- **Manual Indexing Controls** — Commands for managing the document index: Re-index Document, Remove from Index, and Re-index All. Includes confirmation dialogs for destructive operations and progress reporting for bulk operations. (v0.4.7b)
+
+- **Index Management Telemetry** — MediatR events for tracking manual indexing operations: `DocumentReindexedEvent`, `DocumentRemovedFromIndexEvent`, and `AllDocumentsReindexedEvent`.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                    | Status      |
+| ----------------------------------- | ------------------------ | ----------- |
+| [v0.4.7a](v0.4.x/LCS-CL-v0.4.7a.md) | Index Status View        | ✅ Complete |
+| [v0.4.7b](v0.4.x/LCS-CL-v0.4.7b.md) | Manual Indexing Controls | ✅ Complete |
+
+---
+
 ## [v0.4.6] - 2026-02 (In Progress)
 
 ### The Reference Panel (Search UI)

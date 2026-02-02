@@ -2,7 +2,7 @@
 // File: IndexStatusViewModel.cs
 // Project: Lexichord.Modules.RAG
 // Description: ViewModel for the Index Status View in Settings.
-// Version: v0.4.7a
+// Version: v0.4.7b
 // =============================================================================
 
 using System.Collections.ObjectModel;
@@ -26,30 +26,36 @@ namespace Lexichord.Modules.RAG.ViewModels;
 /// <b>Dependencies:</b>
 /// <list type="bullet">
 /// <item><see cref="IIndexStatusService"/> - Retrieves status data</item>
+/// <item><see cref="IIndexManagementService"/> - Manual index operations (v0.4.7b)</item>
 /// </list>
 /// </para>
 /// <para>
 /// <b>Introduced in:</b> v0.4.7a as part of the Index Status View.
+/// <b>Enhanced in:</b> v0.4.7b with manual indexing commands.
 /// </para>
 /// </remarks>
 public partial class IndexStatusViewModel : ObservableObject
 {
     private readonly IIndexStatusService _statusService;
+    private readonly IIndexManagementService _managementService;
     private readonly ILogger<IndexStatusViewModel> _logger;
 
     /// <summary>
     /// Initializes a new instance of <see cref="IndexStatusViewModel"/>.
     /// </summary>
     /// <param name="statusService">Service for retrieving index status.</param>
+    /// <param name="managementService">Service for manual index operations.</param>
     /// <param name="logger">Logger for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when any parameter is null.
     /// </exception>
     public IndexStatusViewModel(
         IIndexStatusService statusService,
+        IIndexManagementService managementService,
         ILogger<IndexStatusViewModel> logger)
     {
         _statusService = statusService ?? throw new ArgumentNullException(nameof(statusService));
+        _managementService = managementService ?? throw new ArgumentNullException(nameof(managementService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _logger.LogDebug("[IndexStatusViewModel] Initialized");
@@ -80,6 +86,30 @@ public partial class IndexStatusViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private IndexingStatus? _statusFilter;
+
+    /// <summary>
+    /// Gets or sets the currently selected document for context menu operations.
+    /// </summary>
+    /// <remarks>
+    /// Introduced in v0.4.7b for manual indexing controls.
+    /// </remarks>
+    [ObservableProperty]
+    private IndexedDocumentViewModel? _selectedDocument;
+
+    /// <summary>
+    /// Gets or sets the progress percentage for bulk operations (0-100).
+    /// </summary>
+    /// <remarks>
+    /// Introduced in v0.4.7b for re-index all progress indication.
+    /// </remarks>
+    [ObservableProperty]
+    private int _progressPercent;
+
+    /// <summary>
+    /// Gets or sets the last operation result message.
+    /// </summary>
+    [ObservableProperty]
+    private string? _lastOperationMessage;
 
     #endregion
 
@@ -217,6 +247,207 @@ public partial class IndexStatusViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region Index Management Commands (v0.4.7b)
+
+    /// <summary>
+    /// Gets or sets the confirmation delegate invoked before destructive operations.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The view should wire this delegate to a confirmation dialog. If not set,
+    /// destructive operations proceed without confirmation.
+    /// </para>
+    /// <para>
+    /// The delegate receives a message and returns <c>true</c> if the user confirms.
+    /// </para>
+    /// </remarks>
+    public Func<string, Task<bool>>? ConfirmationDelegate { get; set; }
+
+    /// <summary>
+    /// Re-indexes the specified document.
+    /// </summary>
+    /// <param name="document">The document to re-index.</param>
+    [RelayCommand]
+    private async Task ReindexDocumentAsync(IndexedDocumentViewModel? document)
+    {
+        if (document == null)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] ReindexDocument called with null document");
+            return;
+        }
+
+        if (IsLoading)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] ReindexDocument skipped, operation in progress");
+            return;
+        }
+
+        _logger.LogInformation("[IndexStatusViewModel] Re-indexing document: {FilePath}", document.FilePath);
+        IsLoading = true;
+        LastOperationMessage = null;
+
+        try
+        {
+            var result = await _managementService.ReindexDocumentAsync(document.Id);
+
+            LastOperationMessage = result.Message;
+            _logger.LogInformation(
+                "[IndexStatusViewModel] Re-index result for {FilePath}: {Success}, {Message}",
+                document.FilePath,
+                result.Success,
+                result.Message);
+
+            // Reload to reflect changes
+            await LoadAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] Re-index cancelled");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[IndexStatusViewModel] Re-index failed for {FilePath}", document.FilePath);
+            LastOperationMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Removes the specified document from the index.
+    /// </summary>
+    /// <param name="document">The document to remove.</param>
+    /// <remarks>
+    /// Shows confirmation dialog before proceeding with removal.
+    /// </remarks>
+    [RelayCommand]
+    private async Task RemoveFromIndexAsync(IndexedDocumentViewModel? document)
+    {
+        if (document == null)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] RemoveFromIndex called with null document");
+            return;
+        }
+
+        if (IsLoading)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] RemoveFromIndex skipped, operation in progress");
+            return;
+        }
+
+        // Confirmation dialog
+        if (ConfirmationDelegate != null)
+        {
+            var confirmed = await ConfirmationDelegate(
+                $"Remove '{document.FileName}' from the index? This will delete all indexed chunks for this document.");
+
+            if (!confirmed)
+            {
+                _logger.LogDebug("[IndexStatusViewModel] RemoveFromIndex cancelled by user");
+                return;
+            }
+        }
+
+        _logger.LogInformation("[IndexStatusViewModel] Removing document from index: {FilePath}", document.FilePath);
+        IsLoading = true;
+        LastOperationMessage = null;
+
+        try
+        {
+            var result = await _managementService.RemoveFromIndexAsync(document.Id);
+
+            LastOperationMessage = result.Message;
+            _logger.LogInformation(
+                "[IndexStatusViewModel] Remove result for {FilePath}: {Success}, {Message}",
+                document.FilePath,
+                result.Success,
+                result.Message);
+
+            // Reload to reflect changes
+            await LoadAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] Remove cancelled");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[IndexStatusViewModel] Remove failed for {FilePath}", document.FilePath);
+            LastOperationMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Re-indexes all documents in the corpus.
+    /// </summary>
+    /// <remarks>
+    /// Shows confirmation dialog before proceeding. Reports progress via <see cref="ProgressPercent"/>.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ReindexAllAsync()
+    {
+        if (IsLoading)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] ReindexAll skipped, operation in progress");
+            return;
+        }
+
+        // Confirmation dialog
+        if (ConfirmationDelegate != null)
+        {
+            var confirmed = await ConfirmationDelegate(
+                "Re-index all documents? This may take a while depending on corpus size.");
+
+            if (!confirmed)
+            {
+                _logger.LogDebug("[IndexStatusViewModel] ReindexAll cancelled by user");
+                return;
+            }
+        }
+
+        _logger.LogInformation("[IndexStatusViewModel] Re-indexing all documents");
+        IsLoading = true;
+        ProgressPercent = 0;
+        LastOperationMessage = null;
+
+        try
+        {
+            var progress = new Progress<int>(p => ProgressPercent = p);
+            var result = await _managementService.ReindexAllAsync(progress);
+
+            LastOperationMessage = result.Message;
+            _logger.LogInformation(
+                "[IndexStatusViewModel] ReindexAll completed: {SuccessCount} succeeded, {FailedCount} failed",
+                result.ProcessedCount,
+                result.FailedCount);
+
+            // Reload to reflect changes
+            await LoadAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogDebug("[IndexStatusViewModel] ReindexAll cancelled");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[IndexStatusViewModel] ReindexAll failed");
+            LastOperationMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+            ProgressPercent = 0;
         }
     }
 

@@ -1,7 +1,8 @@
 // =============================================================================
 // File: IndexingResult.cs
-// Project: Lexichord.Modules.RAG
+// Project: Lexichord.Abstractions
 // Description: Result record for document indexing operations in the RAG pipeline.
+// Version: v0.4.7b - Moved to Abstractions for IDocumentIndexingPipeline contract.
 // =============================================================================
 // LOGIC: Immutable record carrying the outcome of a document indexing operation.
 //   - Success indicates whether indexing completed without errors.
@@ -12,7 +13,7 @@
 //   - ErrorMessage contains diagnostic info on failure.
 // =============================================================================
 
-namespace Lexichord.Modules.RAG.Indexing;
+namespace Lexichord.Abstractions.Contracts.RAG;
 
 /// <summary>
 /// Represents the result of a document indexing operation.

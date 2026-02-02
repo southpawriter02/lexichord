@@ -22,16 +22,19 @@ namespace Lexichord.Tests.Unit.Modules.RAG.ViewModels;
 public class IndexStatusViewModelTests
 {
     private readonly Mock<IIndexStatusService> _statusServiceMock;
+    private readonly Mock<IIndexManagementService> _managementServiceMock;
     private readonly Mock<ILogger<IndexStatusViewModel>> _loggerMock;
     private readonly IndexStatusViewModel _sut;
 
     public IndexStatusViewModelTests()
     {
         _statusServiceMock = new Mock<IIndexStatusService>();
+        _managementServiceMock = new Mock<IIndexManagementService>();
         _loggerMock = new Mock<ILogger<IndexStatusViewModel>>();
 
         _sut = new IndexStatusViewModel(
             _statusServiceMock.Object,
+            _managementServiceMock.Object,
             _loggerMock.Object);
     }
 
@@ -43,9 +46,22 @@ public class IndexStatusViewModelTests
         var ex = Assert.Throws<ArgumentNullException>(() =>
             new IndexStatusViewModel(
                 null!,
+                _managementServiceMock.Object,
                 _loggerMock.Object));
 
         Assert.Equal("statusService", ex.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_WithNullManagementService_ThrowsArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            new IndexStatusViewModel(
+                _statusServiceMock.Object,
+                null!,
+                _loggerMock.Object));
+
+        Assert.Equal("managementService", ex.ParamName);
     }
 
     [Fact]
@@ -54,6 +70,7 @@ public class IndexStatusViewModelTests
         var ex = Assert.Throws<ArgumentNullException>(() =>
             new IndexStatusViewModel(
                 _statusServiceMock.Object,
+                _managementServiceMock.Object,
                 null!));
 
         Assert.Equal("logger", ex.ParamName);

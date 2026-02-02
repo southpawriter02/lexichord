@@ -60,7 +60,7 @@ namespace Lexichord.Modules.RAG.Indexing;
 ///   <item>Storage: Bulk insert via repository's optimized AddRangeAsync</item>
 /// </list>
 /// </remarks>
-public sealed class DocumentIndexingPipeline
+public sealed class DocumentIndexingPipeline : IDocumentIndexingPipeline
 {
     private readonly ChunkingStrategyFactory _chunkingStrategyFactory;
     private readonly ITokenCounter _tokenCounter;
