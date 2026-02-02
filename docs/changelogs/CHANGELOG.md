@@ -109,11 +109,14 @@ This release implements the user-facing interface for semantic search, completin
 
 - **ViewModels** — `ReferenceViewModel` orchestrates search execution, history management, and license checking via `SearchLicenseGuard`. `SearchResultItemViewModel` wraps `SearchHit` with formatted display properties including document name, preview text, relevance score, and section heading.
 
+- **Search Result Item View** — Dedicated `SearchResultItemView` UserControl with score badge coloring (green/amber/orange/gray based on relevance), query term highlighting via `HighlightedTextBlock` custom control, document icon, section heading, and double-click navigation to source.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                | Status      |
 | ----------------------------------- | -------------------- | ----------- |
 | [v0.4.6a](v0.4.x/LCS-CL-v0.4.6a.md) | Reference Panel View | ✅ Complete |
+| [v0.4.6b](v0.4.x/LCS-CL-v0.4.6b.md) | Search Result Item   | ✅ Complete |
 
 ---
 

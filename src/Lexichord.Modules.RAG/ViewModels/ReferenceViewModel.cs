@@ -201,10 +201,10 @@ public partial class ReferenceViewModel : ObservableObject
             _historyService.AddQuery(query);
             RefreshSearchHistory();
 
-            // LOGIC: Populate results.
+            // LOGIC: Populate results with query for term highlighting (v0.4.6b).
             foreach (var hit in result.Hits)
             {
-                Results.Add(new SearchResultItemViewModel(hit, OnNavigateToResult));
+                Results.Add(new SearchResultItemViewModel(hit, OnNavigateToResult, query));
             }
 
             NotifyResultsChanged();

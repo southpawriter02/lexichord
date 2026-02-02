@@ -48,17 +48,16 @@ public partial class ReferenceView : UserControl
     /// <summary>
     /// Handles pointer press on a result item to trigger navigation.
     /// </summary>
+    /// <remarks>
+    /// <b>Deprecated (v0.4.6b):</b> Navigation is now handled by
+    /// <see cref="SearchResultItemView"/> via DoubleTapped event.
+    /// This method is retained for backward compatibility but is unused.
+    /// </remarks>
     /// <param name="sender">Event sender.</param>
     /// <param name="e">Pointer event args.</param>
+    [Obsolete("Navigation moved to SearchResultItemView in v0.4.6b")]
     private void OnResultItemPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (sender is Border { DataContext: SearchResultItemViewModel resultVm })
-        {
-            if (resultVm.NavigateCommand.CanExecute(null))
-            {
-                resultVm.NavigateCommand.Execute(null);
-                e.Handled = true;
-            }
-        }
+        // v0.4.6b: Navigation is now handled by SearchResultItemView.OnDoubleTapped
     }
 }
