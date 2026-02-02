@@ -64,7 +64,7 @@ Each sub-part has its own detailed design specification following the LDS-01 tem
 | :------- | :------------------------------------ | :------------------------- | :--------------------------------------- | :---------- |
 | v0.5.1a  | **[LCS-DES-051a](./LCS-DES-051a.md)** | BM25 Index Schema          | PostgreSQL tsvector column and GIN index | ✅ Complete |
 | v0.5.1b  | **[LCS-DES-051b](./LCS-DES-051b.md)** | BM25 Search Implementation | Full-text search service with ranking    | ✅ Complete |
-| v0.5.1c  | **[LCS-DES-051c](./LCS-DES-051c.md)** | Hybrid Fusion Algorithm    | RRF implementation combining both types  | 🔜 Planned  |
+| v0.5.1c  | **[LCS-DES-051c](./LCS-DES-051c.md)** | Hybrid Fusion Algorithm    | RRF implementation combining both types  | ✅ Complete |
 | v0.5.1d  | **[LCS-DES-051d](./LCS-DES-051d.md)** | Search Mode Toggle         | UI toggle and license gating             | 🔜 Planned  |
 
 ---

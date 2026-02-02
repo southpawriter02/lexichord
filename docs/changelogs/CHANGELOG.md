@@ -18,12 +18,15 @@ This release introduces hybrid search combining BM25 keyword search with semanti
 
 - **BM25 Search Implementation** — Implemented `IBM25SearchService` interface and `BM25SearchService` class for keyword-based full-text search using PostgreSQL's `ts_rank()` function. Includes license gating (WriterPro+), query preprocessing, telemetry events, and comprehensive unit tests.
 
+- **Hybrid Fusion Algorithm** — Implemented `IHybridSearchService` and `HybridSearchService` using Reciprocal Rank Fusion (RRF) to combine BM25 keyword search and semantic vector search results. Executes both searches in parallel and merges ranked lists with configurable weights (default: 0.7 semantic, 0.3 BM25). Chunks appearing in both result sets are naturally boosted. Includes WriterPro+ license gating, telemetry events, and 52 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                      | Status      |
 | -------------------------------- | -------------------------- | ----------- |
 | [v0.5.1a](v0.5.x/LCS-CL-051a.md) | BM25 Index Schema          | ✅ Complete |
 | [v0.5.1b](v0.5.x/LCS-CL-051b.md) | BM25 Search Implementation | ✅ Complete |
+| [v0.5.1c](v0.5.x/LCS-CL-051c.md) | Hybrid Fusion Algorithm    | ✅ Complete |
 
 ---
 

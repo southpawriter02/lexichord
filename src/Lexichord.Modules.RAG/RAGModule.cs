@@ -241,6 +241,20 @@ public sealed class RAGModule : IModule
         services.AddScoped<IBM25SearchService, BM25SearchService>();
 
         // =============================================================================
+        // v0.5.1c: Hybrid Search (Hybrid Fusion Algorithm)
+        // =============================================================================
+
+        // LOGIC: Configure HybridSearchOptions with defaults using Options pattern (v0.5.1c).
+        // The defaults (SemanticWeight=0.7, BM25Weight=0.3, RRFConstant=60) are calibrated
+        // for general-purpose retrieval. These can be overridden via configuration binding.
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(HybridSearchOptions.Default));
+
+        // LOGIC: Register HybridSearchService as scoped (v0.5.1c).
+        // Scoped to align with ISemanticSearchService and IBM25SearchService lifetimes.
+        // Executes both sub-searches in parallel and merges results via Reciprocal Rank Fusion.
+        services.AddScoped<IHybridSearchService, HybridSearchService>();
+
+        // =============================================================================
         // v0.4.6: Reference Panel (The Reference View)
         // =============================================================================
 
