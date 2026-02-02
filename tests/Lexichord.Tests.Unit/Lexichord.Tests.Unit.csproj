@@ -83,6 +83,8 @@
   <ItemGroup>
     <!-- v0.4.1d: Pgvector for VectorTypeHandler tests -->
     <PackageReference Include="Pgvector" Version="0.3.0" />
+    <!-- v0.4.8d: Microsoft.Data.Sqlite for embedding cache tests -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

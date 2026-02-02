@@ -54,6 +54,9 @@
     <!-- v0.4.5c: IMemoryCache for query embedding caching -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
 
+    <!-- v0.4.8d: Microsoft.Data.Sqlite for embedding cache storage -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+
     <!-- v0.4.6a: Avalonia UI for ReferenceView -->
     <PackageReference Include="Avalonia" Version="11.2.3" />
 

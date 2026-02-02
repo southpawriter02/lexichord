@@ -16,6 +16,7 @@ using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Ingestion;
 using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Modules.RAG.Chunking;
+using Lexichord.Modules.RAG.Configuration;
 using Lexichord.Modules.RAG.Data;
 using Lexichord.Modules.RAG.Embedding;
 using Lexichord.Modules.RAG.Indexing;
@@ -25,6 +26,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 
 namespace Lexichord.Modules.RAG;
@@ -164,11 +166,33 @@ public sealed class RAGModule : IModule
         services.AddSingleton<TiktokenTokenCounter>();
         services.AddSingleton<ITokenCounter>(sp => sp.GetRequiredService<TiktokenTokenCounter>());
 
+        // =============================================================================
+        // v0.4.8d: Embedding Cache
+        // =============================================================================
+
+        // LOGIC: Configure EmbeddingCacheOptions with defaults using Options pattern (v0.4.8d).
+        // Provides local SQLite-based caching of embeddings to reduce API costs and latency.
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(EmbeddingCacheOptions.Default));
+
+        // LOGIC: Register SqliteEmbeddingCache as singleton (v0.4.8d).
+        // Provides local storage for embeddings with LRU eviction.
+        services.AddSingleton<IEmbeddingCache, SqliteEmbeddingCache>();
+
         // LOGIC: Register OpenAIEmbeddingService as singleton (v0.4.4b).
         // Uses ISecureVault for API key retrieval and Polly for retry policies.
         // Thread-safe and stateless, suitable for singleton lifetime.
         services.AddSingleton<OpenAIEmbeddingService>();
-        services.AddSingleton<IEmbeddingService>(sp => sp.GetRequiredService<OpenAIEmbeddingService>());
+
+        // LOGIC: Register CachedEmbeddingService as the IEmbeddingService (v0.4.8d).
+        // Decorates OpenAIEmbeddingService with transparent caching via SqliteEmbeddingCache.
+        services.AddSingleton<IEmbeddingService>(sp =>
+        {
+            var inner = sp.GetRequiredService<OpenAIEmbeddingService>();
+            var cache = sp.GetRequiredService<IEmbeddingCache>();
+            var options = sp.GetRequiredService<IOptions<EmbeddingCacheOptions>>();
+            var logger = sp.GetRequiredService<ILogger<CachedEmbeddingService>>();
+            return new CachedEmbeddingService(inner, cache, options, logger);
+        });
 
         // LOGIC: Register ChunkingStrategyFactory as singleton (v0.4.4d).
         // Factory for selecting appropriate chunking strategy based on content or mode.

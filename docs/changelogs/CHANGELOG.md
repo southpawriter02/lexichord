@@ -153,6 +153,8 @@ This release hardens the RAG subsystem with comprehensive unit tests, integratio
 
 - **Performance Benchmarks** — BenchmarkDotNet suite with 21 benchmarks covering chunking throughput, token counting, vector search latency, and memory allocation. Parameterized corpus sizes for scaling analysis. (v0.4.8c)
 
+- **Embedding Cache** — Local SQLite-based embedding cache to reduce API costs and improve latency for repeated queries. `SqliteEmbeddingCache` with LRU eviction, `CachedEmbeddingService` decorator for transparent caching, and configurable options (max size, cache path, compaction interval). (v0.4.8d)
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                  | Status      |
@@ -160,6 +162,7 @@ This release hardens the RAG subsystem with comprehensive unit tests, integratio
 | [v0.4.8a](v0.4.x/LCS-CL-v0.4.8a.md) | Unit Test Suite        | ✅ Complete |
 | [v0.4.8b](v0.4.x/LCS-CL-v0.4.8b.md) | Integration Tests      | ✅ Complete |
 | [v0.4.8c](v0.4.x/LCS-CL-v0.4.8c.md) | Performance Benchmarks | ✅ Complete |
+| [v0.4.8d](v0.4.x/LCS-CL-v0.4.8d.md) | Embedding Cache        | ✅ Complete |
 
 ---
 
