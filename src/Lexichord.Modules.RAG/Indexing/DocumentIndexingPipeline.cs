@@ -226,6 +226,7 @@ public sealed class DocumentIndexingPipeline : IDocumentIndexingPipeline
 
             // LOGIC: Step 2 - Document Management
             _logger.LogDebug("Retrieving or creating document record for {FilePath}", filePath);
+            var newHash = ComputeContentHash(content);
             var document = await _documentRepository.GetByFilePathAsync(
                 Guid.Empty, // TODO: Inject ProjectId from context
                 filePath,
@@ -234,9 +235,19 @@ public sealed class DocumentIndexingPipeline : IDocumentIndexingPipeline
             if (document == null)
             {
                 _logger.LogDebug("Creating new document record for {FilePath}", filePath);
-                var hash = ComputeContentHash(content);
-                document = Document.CreatePending(Guid.Empty, filePath, Path.GetFileName(filePath), hash);
+                document = Document.CreatePending(Guid.Empty, filePath, Path.GetFileName(filePath), newHash);
                 document = await _documentRepository.AddAsync(document, ct);
+            }
+            else if (document.Hash != newHash)
+            {
+                // LOGIC: Content has changed, update the document with new hash.
+                _logger.LogDebug("Content changed for {FilePath}, updating hash", filePath);
+                document = document with { Hash = newHash };
+                await _documentRepository.UpdateAsync(document, ct);
+            }
+            else
+            {
+                _logger.LogDebug("Content unchanged for {FilePath}, hash {Hash} matches", filePath, newHash);
             }
 
             _logger.LogDebug("Working with document {DocumentId}", document.Id);

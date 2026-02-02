@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- BenchmarkDotNet: .NET performance benchmarking library -->
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    <!-- Windows-specific diagnostics (optional, only on Windows) -->
+    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.14.0"
+                      Condition="'$(OS)' == 'Windows_NT'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Project references for benchmarking RAG module components -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.RAG\Lexichord.Modules.RAG.csproj" />
+    <ProjectReference Include="..\..\src\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

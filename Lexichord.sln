@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.Style", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Modules.Knowledge", "src\Lexichord.Modules.Knowledge\Lexichord.Modules.Knowledge.csproj", "{696CF5A1-AE74-4870-A793-B9F6BD27D74C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{5F65F53C-0067-4856-9058-7890A5B9D7BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexichord.Benchmarks", "benchmarks\Lexichord.Benchmarks\Lexichord.Benchmarks.csproj", "{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +175,18 @@ Global
 		{696CF5A1-AE74-4870-A793-B9F6BD27D74C}.Release|x64.Build.0 = Release|Any CPU
 		{696CF5A1-AE74-4870-A793-B9F6BD27D74C}.Release|x86.ActiveCfg = Release|Any CPU
 		{696CF5A1-AE74-4870-A793-B9F6BD27D74C}.Release|x86.Build.0 = Release|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Debug|x64.Build.0 = Debug|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Debug|x86.Build.0 = Debug|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Release|x64.ActiveCfg = Release|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Release|x64.Build.0 = Release|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Release|x86.ActiveCfg = Release|Any CPU
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,5 +203,6 @@ Global
 		{2C3A047A-A7DF-46AB-8DCE-4CCE40510698} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 		{8538CFCC-332B-4337-90B8-9978DE3C8AD7} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
 		{696CF5A1-AE74-4870-A793-B9F6BD27D74C} = {4A44CC7E-B4A5-4661-B284-BF26BF5A81DC}
+		{9DCC3D6A-131E-4780-B448-AAFF91C08F7A} = {5F65F53C-0067-4856-9058-7890A5B9D7BA}
 	EndGlobalSection
 EndGlobal

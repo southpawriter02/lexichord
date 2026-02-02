@@ -143,17 +143,23 @@ This release introduces index status visibility and manual control over the docu
 
 ### The Hardening (Performance & Testing)
 
-This release hardens the RAG subsystem with comprehensive unit tests and code coverage.
+This release hardens the RAG subsystem with comprehensive unit tests, integration tests, and performance benchmarks.
 
 #### What's New
 
 - **Unit Test Suite** — Comprehensive test coverage for RAG module with 755+ verified tests. Coverage for chunking strategies, embedding service (mock HTTP), token counter edge cases, search logic, and ingestion pipeline. `coverage.runsettings` for consistent coverage reporting targeting ≥80%. (v0.4.8a)
 
+- **Integration Tests** — End-to-end test suite using Testcontainers with PostgreSQL + pgvector. Full database roundtrip verification for ingestion, search, change detection, and deletion cascade. VectorEnabledConnectionFactory with `UseVector()` for pgvector type mapping. (v0.4.8b)
+
+- **Performance Benchmarks** — BenchmarkDotNet suite with 21 benchmarks covering chunking throughput, token counting, vector search latency, and memory allocation. Parameterized corpus sizes for scaling analysis. (v0.4.8c)
+
 #### Sub-Part Changelogs
 
-| Version                             | Title           | Status      |
-| ----------------------------------- | --------------- | ----------- |
-| [v0.4.8a](v0.4.x/LCS-CL-v0.4.8a.md) | Unit Test Suite | ✅ Complete |
+| Version                             | Title                  | Status      |
+| ----------------------------------- | ---------------------- | ----------- |
+| [v0.4.8a](v0.4.x/LCS-CL-v0.4.8a.md) | Unit Test Suite        | ✅ Complete |
+| [v0.4.8b](v0.4.x/LCS-CL-v0.4.8b.md) | Integration Tests      | ✅ Complete |
+| [v0.4.8c](v0.4.x/LCS-CL-v0.4.8c.md) | Performance Benchmarks | ✅ Complete |
 
 ---
 

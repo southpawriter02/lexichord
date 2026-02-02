@@ -26,7 +26,7 @@
 
     <!-- PostgreSQL Client (for connection verification) -->
     <PackageReference Include="Npgsql" Version="9.0.3" />
-    <!-- v0.4.1a: pgvector extension for vector type support -->
+    <!-- v0.4.1a: pgvector extension for vector type support (includes UseVector() for NpgsqlDataSourceBuilder) -->
     <PackageReference Include="Pgvector" Version="0.3.0" />
 
     <!-- Code Coverage -->
@@ -38,6 +38,12 @@
     <!-- v0.0.7d: MediatR and FluentValidation for validation pipeline tests -->
     <PackageReference Include="MediatR" Version="$(MediatRVersion)" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="$(FluentValidationVersion)" />
+
+    <!-- v0.4.8b: Respawn for database reset between tests -->
+    <PackageReference Include="Respawn" Version="6.2.1" />
+
+    <!-- v0.4.8b: Dapper for direct database operations in integration tests -->
+    <PackageReference Include="Dapper" Version="2.1.35" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +58,8 @@
     <ProjectReference Include="..\..\src\Lexichord.Modules.Style\Lexichord.Modules.Style.csproj" />
     <!-- v0.4.5e: Knowledge Graph Module for integration testing -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.Knowledge\Lexichord.Modules.Knowledge.csproj" />
+    <!-- v0.4.8b: RAG Module for integration testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.RAG\Lexichord.Modules.RAG.csproj" />
   </ItemGroup>
 
   <ItemGroup>
