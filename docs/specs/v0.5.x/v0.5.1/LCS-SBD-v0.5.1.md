@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-051                                          |
 | **Version**      | v0.5.1                                               |
 | **Codename**     | The Hybrid Engine (BM25 + Semantic)                  |
-| **Status**       | Draft                                                |
-| **Last Updated** | 2026-01-27                                           |
+| **Status**       | Complete                                             |
+| **Last Updated** | 2026-02-02                                           |
 | **Owner**        | Lead Architect                                       |
 | **Depends On**   | v0.4.5 (Semantic Search), v0.4.1 (Vector Foundation) |
 

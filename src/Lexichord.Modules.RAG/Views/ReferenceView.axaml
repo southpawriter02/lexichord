@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lexichord.Modules.RAG.ViewModels"
              xmlns:views="using:Lexichord.Modules.RAG.Views"
+             xmlns:contracts="using:Lexichord.Abstractions.Contracts.RAG"
              mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="600"
              x:Class="Lexichord.Modules.RAG.Views.ReferenceView"
              x:DataType="vm:ReferenceViewModel">
@@ -99,8 +100,9 @@
                 Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}">
             <StackPanel Spacing="8">
 
-                <!-- Search Box with Button -->
-                <Grid ColumnDefinitions="*,Auto">
+                <!-- Search Box with Mode Selector and Button -->
+                <!-- v0.5.1d: Added search mode dropdown between search box and button -->
+                <Grid ColumnDefinitions="*,Auto,Auto">
 
                     <!-- AutoComplete Search Box with History -->
                     <AutoCompleteBox Grid.Column="0"
@@ -123,8 +125,33 @@
                         </AutoCompleteBox.ItemTemplate>
                     </AutoCompleteBox>
 
+                    <!-- v0.5.1d: Search Mode Dropdown -->
+                    <ComboBox Grid.Column="1"
+                              x:Name="SearchModeComboBox"
+                              Margin="8,0,0,0"
+                              Width="100"
+                              SelectedItem="{Binding SelectedSearchMode}"
+                              ItemsSource="{Binding AvailableSearchModes}"
+                              IsEnabled="{Binding IsLicensed}"
+                              ToolTip.Tip="Select search strategy"
+                              AutomationProperties.Name="Search mode">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                                    <!-- Lock icon for Hybrid when not licensed -->
+                                    <PathIcon Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
+                                             Width="12" Height="12"
+                                             Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                             IsVisible="False"
+                                             x:Name="LockIcon" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
                     <!-- Search Button -->
-                    <Button Grid.Column="1"
+                    <Button Grid.Column="2"
                           Margin="8,0,0,0"
                           Command="{Binding SearchCommand}"
                           ToolTip.Tip="Execute search"
@@ -140,9 +167,23 @@
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
                                 Width="16" Height="16" Foreground="#B25000" />
-                        <TextBlock Text="Semantic search requires a WriterPro license."
+                        <TextBlock Text="Search requires a WriterPro license."
                                  Foreground="#B25000"
                                  VerticalAlignment="Center"
+                                 FontSize="12" />
+                    </StackPanel>
+                </Border>
+
+                <!-- v0.5.1d: Hybrid Lock Warning (shown when Hybrid is locked but user is licensed) -->
+                <Border Classes="license-warning"
+                      IsVisible="{Binding IsHybridLocked}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
+                                Width="16" Height="16" Foreground="#B25000" />
+                        <TextBlock Text="Hybrid search requires WriterPro. Semantic and Keyword modes available."
+                                 Foreground="#B25000"
+                                 VerticalAlignment="Center"
+                                 TextWrapping="Wrap"
                                  FontSize="12" />
                     </StackPanel>
                 </Border>
@@ -234,13 +275,28 @@
         <!-- ===================================================================
         Row 2: Status Bar
         =================================================================== -->
+        <!-- v0.5.1d: Updated status bar to show search mode alongside result count and duration -->
         <Border Grid.Row="2"
               Padding="12,8"
               Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
               IsVisible="{Binding HasResults}">
-            <Grid ColumnDefinitions="*,Auto">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Search Mode Indicator -->
                 <TextBlock Grid.Column="0"
                          VerticalAlignment="Center"
+                         FontSize="11"
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}">
+                            <Binding Path="SelectedSearchMode" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <!-- Result Count -->
+                <TextBlock Grid.Column="1"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
                          FontSize="11"
                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                     <TextBlock.Text>
@@ -250,7 +306,8 @@
                     </TextBlock.Text>
                 </TextBlock>
 
-                <TextBlock Grid.Column="1"
+                <!-- Duration -->
+                <TextBlock Grid.Column="2"
                          VerticalAlignment="Center"
                          FontSize="11"
                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">

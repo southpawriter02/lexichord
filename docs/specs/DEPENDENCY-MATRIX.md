@@ -987,6 +987,7 @@
 | `IndexingProgressUpdatedEvent`  | v0.4.7c    | Progress update during indexing   |
 | `DocumentRemovedFromIndexEvent` | v0.4.7b    | Document removed from index       |
 | `HybridSearchExecutedEvent`     | v0.5.1c    | Hybrid search completed           |
+| `SearchModeChangedEvent`        | v0.5.1d    | Search mode toggled by user       |
 | `CitationCreatedEvent`          | v0.5.2a    | Citation created from search hit  |
 | `CitationValidationFailedEvent` | v0.5.2c    | Stale/missing citation detected   |
 | `ContextExpandedEvent`          | v0.5.3a    | Context expansion completed       |
@@ -1390,9 +1391,10 @@ graph TB
 - [x] HybridSearchService with RRF algorithm (v0.5.1c)
 - [x] HybridSearchOptions record (v0.5.1c)
 - [x] HybridSearchExecutedEvent (v0.5.1c)
-- [ ] SearchMode enum (v0.5.1d)
-- [ ] Search mode toggle UI (v0.5.1d)
-- [ ] License gating for Hybrid mode (v0.5.1d)
+- [x] SearchMode enum (v0.5.1d)
+- [x] Search mode toggle UI (v0.5.1d)
+- [x] License gating for Hybrid mode (v0.5.1d)
+- [x] SearchModeChangedEvent telemetry (v0.5.1d)
 
 ### v0.5.2 Prerequisites for v0.5.3+
 

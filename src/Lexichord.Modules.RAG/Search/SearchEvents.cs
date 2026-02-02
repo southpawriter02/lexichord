@@ -8,9 +8,12 @@
 //     for telemetry and analytics. Includes UsedCachedEmbedding flag (v0.4.5d).
 //   - SearchDeniedEvent: Published when a search is blocked due to
 //     insufficient license tier for audit and upgrade prompt triggers.
+//   - SearchModeChangedEvent: Published when the user changes the search mode
+//     in the Reference Panel (v0.5.1d).
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.RAG;
 using MediatR;
 
 namespace Lexichord.Modules.RAG.Search;
@@ -126,6 +129,54 @@ public record SearchDeniedEvent : INotification
 
     /// <summary>
     /// The UTC timestamp when the denial occurred.
+    /// </summary>
+    /// <value>Defaults to <see cref="DateTimeOffset.UtcNow"/> at creation time.</value>
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>
+/// Published when the user changes the search mode in the Reference Panel.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This event is published by <see cref="ViewModels.ReferenceViewModel"/> when the
+/// user selects a different search mode (Semantic, Keyword, or Hybrid). It enables:
+/// </para>
+/// <list type="bullet">
+///   <item><description>Telemetry handlers to track search mode usage patterns.</description></item>
+///   <item><description>Analytics handlers to understand feature adoption.</description></item>
+///   <item><description>Audit logging of search mode changes.</description></item>
+/// </list>
+/// <para>
+/// <b>MediatR Pattern:</b> This is an <see cref="INotification"/> (fire-and-forget).
+/// Handlers do not return values and failures do not affect the mode change.
+/// </para>
+/// <para>
+/// <b>Introduced:</b> v0.5.1d.
+/// </para>
+/// </remarks>
+public record SearchModeChangedEvent : INotification
+{
+    /// <summary>
+    /// The search mode that was previously active.
+    /// </summary>
+    /// <value>The <see cref="SearchMode"/> before the change.</value>
+    public required SearchMode PreviousMode { get; init; }
+
+    /// <summary>
+    /// The search mode that is now active.
+    /// </summary>
+    /// <value>The <see cref="SearchMode"/> after the change.</value>
+    public required SearchMode NewMode { get; init; }
+
+    /// <summary>
+    /// The user's license tier at the time of the mode change.
+    /// </summary>
+    /// <value>The <see cref="LicenseTier"/> when the event was published.</value>
+    public required LicenseTier LicenseTier { get; init; }
+
+    /// <summary>
+    /// The UTC timestamp when the mode change occurred.
     /// </summary>
     /// <value>Defaults to <see cref="DateTimeOffset.UtcNow"/> at creation time.</value>
     public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;

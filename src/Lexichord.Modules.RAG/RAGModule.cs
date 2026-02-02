@@ -70,7 +70,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 4, 7),
+        Version: new Version(0, 5, 1),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -272,8 +272,12 @@ public sealed class RAGModule : IModule
             return service;
         });
 
-        // LOGIC: Register ReferenceViewModel as transient (v0.4.6a).
+        // LOGIC: Register ReferenceViewModel as transient (v0.4.6a, enhanced v0.5.1d).
         // Each panel instance gets its own ViewModel.
+        // v0.5.1d: Constructor now requires ISemanticSearchService, IBM25SearchService,
+        // IHybridSearchService, ILicenseContext, and optional ISystemSettingsRepository
+        // for search mode toggle support. ISystemSettingsRepository may be null if
+        // the Infrastructure module is not loaded (resolved via GetService).
         services.AddTransient<ViewModels.ReferenceViewModel>();
 
         // =============================================================================

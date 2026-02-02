@@ -141,4 +141,22 @@ public static class FeatureCodes
     public const string GlobalDictionary = "Feature.GlobalDictionary";
 
     #endregion
+
+    #region Hybrid Search Features (v0.5.1)
+
+    /// <summary>
+    /// The Hybrid Search feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Hybrid Search mode which combines BM25 keyword
+    /// search and semantic vector search using Reciprocal Rank Fusion (RRF).
+    /// When this feature is not enabled, the Hybrid option in the search mode
+    /// toggle is locked and the user is prompted to upgrade.
+    /// Semantic and Keyword modes remain available to all tiers.
+    /// Introduced in v0.5.1d.
+    /// </remarks>
+    public const string HybridSearch = "Feature.HybridSearch";
+
+    #endregion
 }

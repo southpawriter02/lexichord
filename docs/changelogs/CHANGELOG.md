@@ -20,6 +20,8 @@ This release introduces hybrid search combining BM25 keyword search with semanti
 
 - **Hybrid Fusion Algorithm** — Implemented `IHybridSearchService` and `HybridSearchService` using Reciprocal Rank Fusion (RRF) to combine BM25 keyword search and semantic vector search results. Executes both searches in parallel and merges ranked lists with configurable weights (default: 0.7 semantic, 0.3 BM25). Chunks appearing in both result sets are naturally boosted. Includes WriterPro+ license gating, telemetry events, and 52 unit tests.
 
+- **Search Mode Toggle** — Added a search mode dropdown to the Reference Panel, allowing users to switch between Semantic, Keyword, and Hybrid search strategies. Hybrid mode is license-gated to WriterPro+ with automatic fallback to Semantic for Core tier. Mode selection is persisted across sessions and emits telemetry events. Includes 39 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                      | Status      |
@@ -27,6 +29,7 @@ This release introduces hybrid search combining BM25 keyword search with semanti
 | [v0.5.1a](v0.5.x/LCS-CL-051a.md) | BM25 Index Schema          | ✅ Complete |
 | [v0.5.1b](v0.5.x/LCS-CL-051b.md) | BM25 Search Implementation | ✅ Complete |
 | [v0.5.1c](v0.5.x/LCS-CL-051c.md) | Hybrid Fusion Algorithm    | ✅ Complete |
+| [v0.5.1d](v0.5.x/LCS-CL-051d.md) | Search Mode Toggle         | ✅ Complete |
 
 ---
 
