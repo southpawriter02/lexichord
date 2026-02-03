@@ -7,6 +7,7 @@
 //   - AddRangeAsync enables batch insertion for efficiency.
 //   - SearchSimilarAsync is the core vector similarity search method.
 //   - Uses pgvector's HNSW index for fast approximate nearest neighbor search.
+//   - v0.5.3c: Added GetChunksWithHeadingsAsync for heading hierarchy support.
 // =============================================================================
 
 namespace Lexichord.Abstractions.Contracts.RAG;
@@ -91,6 +92,40 @@ public interface IChunkRepository
         int centerIndex,
         int beforeCount,
         int afterCount,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all chunks that have heading metadata for a document.
+    /// </summary>
+    /// <param name="documentId">The document's unique identifier.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A collection of <see cref="ChunkHeadingInfo"/> ordered by <see cref="Chunk.ChunkIndex"/>.
+    /// Only includes chunks where <see cref="Chunk.Heading"/> is not null.
+    /// May be empty if the document has no headings.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.3c as part of The Context Window feature.
+    /// </para>
+    /// <para>
+    /// This method is optimized for heading hierarchy queries. It returns a lightweight
+    /// <see cref="ChunkHeadingInfo"/> record containing only the fields needed for
+    /// building heading trees and resolving breadcrumbs.
+    /// </para>
+    /// <para>
+    /// Used by <see cref="IHeadingHierarchyService"/> to construct document structure
+    /// and resolve breadcrumb trails for search results.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var headings = await repo.GetChunksWithHeadingsAsync(docId);
+    /// // Returns: [{ "Auth", 1, index: 0 }, { "OAuth", 2, index: 5 }, { "Tokens", 3, index: 10 }]
+    /// </code>
+    /// </example>
+    Task<IReadOnlyList<ChunkHeadingInfo>> GetChunksWithHeadingsAsync(
+        Guid documentId,
         CancellationToken cancellationToken = default);
 
     /// <summary>

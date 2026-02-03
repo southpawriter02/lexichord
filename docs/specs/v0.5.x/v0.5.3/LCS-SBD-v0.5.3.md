@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-053                                                                    |
 | **Version**      | v0.5.3                                                                         |
 | **Codename**     | The Context Window (Relevance Expansion)                                       |
-| **Status**       | Draft                                                                          |
-| **Last Updated** | 2026-01-27                                                                     |
+| **Status**       | In Progress (v0.5.3c Complete)                                                 |
+| **Last Updated** | 2026-02-03                                                                     |
 | **Owner**        | Lead Architect                                                                 |
 | **Depends On**   | v0.4.1 (Vector Foundation), v0.4.5 (Semantic Search), v0.5.2 (Citation Engine) |
 

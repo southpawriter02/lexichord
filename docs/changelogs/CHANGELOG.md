@@ -20,13 +20,15 @@ This release introduces the Context Window — intelligent context expansion for
 
 - **Sibling Chunk Retrieval** — Implemented dedicated `SiblingCache` class providing LRU-based caching for sibling chunk queries with document-level invalidation. Cache holds up to 500 entries with 50-entry batch eviction. Subscribes to `DocumentIndexedEvent` and `DocumentRemovedFromIndexEvent` for automatic cache invalidation when documents are re-indexed or removed. Added `SiblingCacheKey` record struct for efficient dictionary lookup. Integrated with `ChunkRepository.GetSiblingsAsync()` for transparent caching with cache-first lookup and automatic population on miss. Includes 27 unit tests.
 
+- **Heading Hierarchy Service** — Implemented `HeadingHierarchyService` to resolve heading breadcrumb trails for document chunks, replacing the stub implementation from v0.5.3a. Uses stack-based tree construction from chunk heading metadata and recursive depth-first search for breadcrumb resolution. Extended `Chunk` model with `Heading` and `HeadingLevel` properties, added `ChunkHeadingInfo` record for efficient heading queries, and updated all `ChunkRepository` queries to include heading columns. Includes document-level caching (50 entries) with automatic invalidation via MediatR event handlers. Handles edge cases including multiple H1 headings, skipped levels (H1→H3), and chunks before/after headings. Includes 30 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                     | Status         |
 | -------------------------------- | ------------------------- | -------------- |
 | [v0.5.3a](v0.5.x/LCS-CL-053a.md) | Context Expansion Service | ✅ Complete    |
 | [v0.5.3b](v0.5.x/LCS-CL-053b.md) | Sibling Chunk Retrieval   | ✅ Complete    |
-| v0.5.3c                          | Heading Hierarchy Service | 🔲 Not Started |
+| [v0.5.3c](v0.5.x/LCS-CL-053c.md) | Heading Hierarchy Service | ✅ Complete    |
 
 ---
 

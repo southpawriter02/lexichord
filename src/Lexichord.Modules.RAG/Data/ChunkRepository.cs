@@ -2,13 +2,14 @@
 // File: ChunkRepository.cs
 // Project: Lexichord.Modules.RAG
 // Description: Dapper implementation of IChunkRepository with vector similarity search.
-// Version: v0.5.3b - Added SiblingCache integration
+// Version: v0.5.3c - Added Heading/HeadingLevel columns and GetChunksWithHeadingsAsync
 // =============================================================================
 // LOGIC: Provides chunk storage and pgvector-based semantic search.
 //   - SearchSimilarAsync uses the <=> operator for cosine distance.
 //   - AddRangeAsync uses batch INSERT for efficiency.
 //   - Embedding dimension validation prevents costly database errors.
 //   - GetSiblingsAsync uses SiblingCache for LRU-based caching (v0.5.3b).
+//   - GetChunksWithHeadingsAsync supports heading hierarchy resolution (v0.5.3c).
 // =============================================================================
 
 using System.Data;
@@ -82,14 +83,17 @@ public sealed class ChunkRepository : IChunkRepository
     {
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
+        // LOGIC: v0.5.3c - Include Heading and HeadingLevel columns for breadcrumb support.
         const string sql = @"
-            SELECT id AS ""Id"", 
-                   document_id AS ""DocumentId"", 
-                   content AS ""Content"", 
-                   embedding AS ""Embedding"", 
-                   chunk_index AS ""ChunkIndex"", 
-                   start_offset AS ""StartOffset"", 
-                   end_offset AS ""EndOffset""
+            SELECT id AS ""Id"",
+                   document_id AS ""DocumentId"",
+                   content AS ""Content"",
+                   embedding AS ""Embedding"",
+                   chunk_index AS ""ChunkIndex"",
+                   start_offset AS ""StartOffset"",
+                   end_offset AS ""EndOffset"",
+                   heading AS ""Heading"",
+                   heading_level AS ""HeadingLevel""
             FROM chunks
             WHERE document_id = @DocumentId
             ORDER BY chunk_index";
@@ -137,6 +141,7 @@ public sealed class ChunkRepository : IChunkRepository
 
         // LOGIC: Query chunks within range [centerIndex - beforeCount, centerIndex + afterCount]
         // excluding the center chunk itself. Order by chunk_index for consistent results.
+        // v0.5.3c: Include Heading and HeadingLevel columns for breadcrumb support.
         const string sql = @"
             SELECT id AS ""Id"",
                    document_id AS ""DocumentId"",
@@ -144,7 +149,9 @@ public sealed class ChunkRepository : IChunkRepository
                    embedding AS ""Embedding"",
                    chunk_index AS ""ChunkIndex"",
                    start_offset AS ""StartOffset"",
-                   end_offset AS ""EndOffset""
+                   end_offset AS ""EndOffset"",
+                   heading AS ""Heading"",
+                   heading_level AS ""HeadingLevel""
             FROM chunks
             WHERE document_id = @DocumentId
               AND chunk_index >= @MinIndex
@@ -202,16 +209,19 @@ public sealed class ChunkRepository : IChunkRepository
         string sql;
         object parameters;
 
+        // LOGIC: v0.5.3c - Include Heading and HeadingLevel columns for breadcrumb support.
         if (projectId.HasValue)
         {
             sql = @"
-                SELECT c.id AS ""Id"", 
-                       c.document_id AS ""DocumentId"", 
-                       c.content AS ""Content"", 
-                       c.embedding AS ""Embedding"", 
-                       c.chunk_index AS ""ChunkIndex"", 
-                       c.start_offset AS ""StartOffset"", 
+                SELECT c.id AS ""Id"",
+                       c.document_id AS ""DocumentId"",
+                       c.content AS ""Content"",
+                       c.embedding AS ""Embedding"",
+                       c.chunk_index AS ""ChunkIndex"",
+                       c.start_offset AS ""StartOffset"",
                        c.end_offset AS ""EndOffset"",
+                       c.heading AS ""Heading"",
+                       c.heading_level AS ""HeadingLevel"",
                        1 - (c.embedding <=> @QueryEmbedding::vector) AS ""SimilarityScore""
                 FROM chunks c
                 INNER JOIN documents d ON c.document_id = d.id
@@ -225,13 +235,15 @@ public sealed class ChunkRepository : IChunkRepository
         else
         {
             sql = @"
-                SELECT c.id AS ""Id"", 
-                       c.document_id AS ""DocumentId"", 
-                       c.content AS ""Content"", 
-                       c.embedding AS ""Embedding"", 
-                       c.chunk_index AS ""ChunkIndex"", 
-                       c.start_offset AS ""StartOffset"", 
+                SELECT c.id AS ""Id"",
+                       c.document_id AS ""DocumentId"",
+                       c.content AS ""Content"",
+                       c.embedding AS ""Embedding"",
+                       c.chunk_index AS ""ChunkIndex"",
+                       c.start_offset AS ""StartOffset"",
                        c.end_offset AS ""EndOffset"",
+                       c.heading AS ""Heading"",
+                       c.heading_level AS ""HeadingLevel"",
                        1 - (c.embedding <=> @QueryEmbedding::vector) AS ""SimilarityScore""
                 FROM chunks c
                 WHERE c.embedding IS NOT NULL
@@ -244,7 +256,7 @@ public sealed class ChunkRepository : IChunkRepository
         var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
         var rows = await connection.QueryAsync<ChunkWithScore>(command);
         var resultList = rows.Select(r => new ChunkSearchResult(
-            new Chunk(r.Id, r.DocumentId, r.Content, r.Embedding, r.ChunkIndex, r.StartOffset, r.EndOffset),
+            new Chunk(r.Id, r.DocumentId, r.Content, r.Embedding, r.ChunkIndex, r.StartOffset, r.EndOffset, r.Heading, r.HeadingLevel),
             r.SimilarityScore
         )).ToList();
 
@@ -286,9 +298,10 @@ public sealed class ChunkRepository : IChunkRepository
 
         // LOGIC: Use Dapper's multi-row insert capability for batch efficiency.
         // Generate IDs for chunks with Guid.Empty.
+        // v0.5.3c: Include Heading and HeadingLevel columns for breadcrumb support.
         const string sql = @"
-            INSERT INTO chunks (id, document_id, content, embedding, chunk_index, start_offset, end_offset)
-            VALUES (@Id, @DocumentId, @Content, @Embedding, @ChunkIndex, @StartOffset, @EndOffset)";
+            INSERT INTO chunks (id, document_id, content, embedding, chunk_index, start_offset, end_offset, heading, heading_level)
+            VALUES (@Id, @DocumentId, @Content, @Embedding, @ChunkIndex, @StartOffset, @EndOffset, @Heading, @HeadingLevel)";
 
         var parameters = chunkList.Select(c => new
         {
@@ -298,7 +311,9 @@ public sealed class ChunkRepository : IChunkRepository
             c.Embedding,
             c.ChunkIndex,
             c.StartOffset,
-            c.EndOffset
+            c.EndOffset,
+            c.Heading,
+            c.HeadingLevel
         }).ToList();
 
         var stopwatch = Stopwatch.StartNew();
@@ -326,6 +341,42 @@ public sealed class ChunkRepository : IChunkRepository
 
     #endregion
 
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<ChunkHeadingInfo>> GetChunksWithHeadingsAsync(
+        Guid documentId,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug(
+            "Querying chunks with headings for doc={DocumentId}",
+            documentId);
+
+        await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        // LOGIC: v0.5.3c - Query only chunks that have heading metadata.
+        // Used by HeadingHierarchyService to build heading trees.
+        // Returns lightweight ChunkHeadingInfo to avoid loading full content/embeddings.
+        const string sql = @"
+            SELECT id AS ""Id"",
+                   document_id AS ""DocumentId"",
+                   chunk_index AS ""ChunkIndex"",
+                   heading AS ""Heading"",
+                   heading_level AS ""HeadingLevel""
+            FROM chunks
+            WHERE document_id = @DocumentId
+              AND heading IS NOT NULL
+            ORDER BY chunk_index";
+
+        var command = new DapperCommandDefinition(sql, new { DocumentId = documentId }, cancellationToken: cancellationToken);
+        var results = await connection.QueryAsync<ChunkHeadingInfo>(command);
+        var resultList = results.ToList();
+
+        _logger.LogDebug(
+            "Retrieved {Count} heading chunks for doc={DocumentId}",
+            resultList.Count, documentId);
+
+        return resultList;
+    }
+
     /// <summary>
     /// Internal record for mapping query results with similarity scores.
     /// </summary>
@@ -337,5 +388,7 @@ public sealed class ChunkRepository : IChunkRepository
         int ChunkIndex,
         int StartOffset,
         int EndOffset,
+        string? Heading,
+        int HeadingLevel,
         double SimilarityScore);
 }

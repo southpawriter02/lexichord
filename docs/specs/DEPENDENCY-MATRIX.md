@@ -1420,18 +1420,18 @@ graph TB
 
 ### v0.5.3 Prerequisites for v0.5.4+
 
-- [ ] IContextExpansionService interface (v0.5.3a)
-- [ ] ContextExpansionService implementation (v0.5.3a)
-- [ ] ContextOptions record (v0.5.3a)
-- [ ] ExpandedChunk record (v0.5.3a)
-- [ ] ContextExpandedEvent (v0.5.3a)
-- [ ] ContextExpansionDeniedEvent (v0.5.3a)
-- [ ] GetSiblingsAsync extension to IChunkRepository (v0.5.3b)
-- [ ] Sibling cache with LRU eviction (v0.5.3b)
-- [ ] IHeadingHierarchyService interface (v0.5.3c)
-- [ ] HeadingHierarchyService implementation (v0.5.3c)
-- [ ] HeadingNode record (v0.5.3c)
-- [ ] Breadcrumb resolution logic (v0.5.3c)
+- [x] IContextExpansionService interface (v0.5.3a) ✅
+- [x] ContextExpansionService implementation (v0.5.3a) ✅
+- [x] ContextOptions record (v0.5.3a) ✅
+- [x] ExpandedChunk record (v0.5.3a) ✅
+- [x] ContextExpandedEvent (v0.5.3a) ✅
+- [x] ContextExpansionDeniedEvent (v0.5.3a) ✅
+- [x] GetSiblingsAsync extension to IChunkRepository (v0.5.3b) ✅
+- [x] Sibling cache with LRU eviction (v0.5.3b) ✅
+- [x] IHeadingHierarchyService interface (v0.5.3c) ✅
+- [x] HeadingHierarchyService implementation (v0.5.3c) ✅
+- [x] HeadingNode record (v0.5.3c) ✅
+- [x] Breadcrumb resolution logic (v0.5.3c) ✅
 - [ ] ContextPreviewViewModel (v0.5.3d)
 - [ ] SearchResultItemView expander UI (v0.5.3d)
 - [ ] Context preview animations (v0.5.3d)

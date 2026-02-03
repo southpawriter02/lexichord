@@ -64,12 +64,12 @@ The detailed scope breakdown for v0.5.3, including all sub-parts, implementation
 
 Each sub-part has its own detailed design specification following the LDS-01 template:
 
-| Sub-Part | Document                              | Title                     | Description                             |
-| :------- | :------------------------------------ | :------------------------ | :-------------------------------------- |
-| v0.5.3a  | **[LCS-DES-053a](./LCS-DES-053a.md)** | Context Expansion Service | IContextExpansionService implementation |
-| v0.5.3b  | **[LCS-DES-053b](./LCS-DES-053b.md)** | Sibling Chunk Retrieval   | Adjacent chunk queries with caching     |
-| v0.5.3c  | **[LCS-DES-053c](./LCS-DES-053c.md)** | Heading Hierarchy         | Breadcrumb resolution service           |
-| v0.5.3d  | **[LCS-DES-053d](./LCS-DES-053d.md)** | Context Preview UI        | Expandable search result component      |
+| Sub-Part | Document                              | Title                     | Description                             | Status      |
+| :------- | :------------------------------------ | :------------------------ | :-------------------------------------- | :---------- |
+| v0.5.3a  | **[LCS-DES-053a](./LCS-DES-053a.md)** | Context Expansion Service | IContextExpansionService implementation | ✅ Complete |
+| v0.5.3b  | **[LCS-DES-053b](./LCS-DES-053b.md)** | Sibling Chunk Retrieval   | Adjacent chunk queries with caching     | ✅ Complete |
+| v0.5.3c  | **[LCS-DES-053c](./LCS-DES-053c.md)** | Heading Hierarchy         | Breadcrumb resolution service           | ✅ Complete |
+| v0.5.3d  | **[LCS-DES-053d](./LCS-DES-053d.md)** | Context Preview UI        | Expandable search result component      | 🔲 Pending  |
 
 ---
 

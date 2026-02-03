@@ -392,16 +392,28 @@ public sealed class RAGModule : IModule
         // v0.5.3a: Context Window (Context Expansion Service)
         // =============================================================================
 
-        // LOGIC: Register StubHeadingHierarchyService as singleton (v0.5.3a).
-        // Placeholder implementation until v0.5.3c provides real heading hierarchy.
-        // Returns empty breadcrumbs for all queries. Thread-safe and stateless.
-        services.AddSingleton<IHeadingHierarchyService, StubHeadingHierarchyService>();
-
         // LOGIC: Register ContextExpansionService as scoped (v0.5.3a).
         // Scoped to align with IChunkRepository lifetime for sibling chunk queries.
         // Provides context expansion with LRU caching (100 entries, FIFO eviction).
         // License-gated via FeatureFlags.RAG.ContextWindow (WriterPro+).
         services.AddScoped<IContextExpansionService, ContextExpansionService>();
+
+        // =============================================================================
+        // v0.5.3c: Context Window (Heading Hierarchy)
+        // =============================================================================
+
+        // LOGIC: Register HeadingHierarchyService as singleton (v0.5.3c).
+        // Provides heading breadcrumb resolution for search results via tree-based
+        // heading hierarchy. Caches heading trees per document (MaxCacheSize=50).
+        // Subscribes to DocumentIndexedEvent and DocumentRemovedFromIndexEvent for
+        // automatic cache invalidation. Thread-safe via ConcurrentDictionary.
+        // License-gated via FeatureFlags.RAG.ContextWindow (WriterPro+).
+        services.AddSingleton<HeadingHierarchyService>();
+        services.AddSingleton<IHeadingHierarchyService>(sp => sp.GetRequiredService<HeadingHierarchyService>());
+        services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentIndexedEvent>>(
+            sp => sp.GetRequiredService<HeadingHierarchyService>());
+        services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentRemovedFromIndexEvent>>(
+            sp => sp.GetRequiredService<HeadingHierarchyService>());
     }
 
     /// <inheritdoc/>

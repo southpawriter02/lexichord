@@ -321,6 +321,7 @@ public sealed class DocumentIndexingPipeline : IDocumentIndexingPipeline
             }
 
             // LOGIC: Step 7 - Create Chunk Records with Embeddings
+            // v0.5.3c: Include Heading and HeadingLevel from TextChunk.Metadata for breadcrumb support.
             _logger.LogDebug("Creating Chunk records with embeddings");
             var chunkRecords = new List<Chunk>();
             for (var i = 0; i < chunks.Count; i++)
@@ -332,7 +333,9 @@ public sealed class DocumentIndexingPipeline : IDocumentIndexingPipeline
                     Embedding: embeddings[i],
                     ChunkIndex: i,
                     StartOffset: chunks[i].StartOffset,
-                    EndOffset: chunks[i].EndOffset);
+                    EndOffset: chunks[i].EndOffset,
+                    Heading: chunks[i].Metadata.Heading,
+                    HeadingLevel: chunks[i].Metadata.Level);
 
                 chunkRecords.Add(chunkRecord);
             }

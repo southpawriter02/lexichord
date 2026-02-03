@@ -7,6 +7,7 @@
 //   - Each chunk contains a portion of the parent document's text.
 //   - The Embedding property holds the vector representation (1536 dimensions for OpenAI).
 //   - StartOffset and EndOffset enable navigation back to the source location.
+//   - v0.5.3c: Added Heading and HeadingLevel for breadcrumb navigation.
 // =============================================================================
 
 namespace Lexichord.Abstractions.Contracts.RAG;
@@ -60,6 +61,15 @@ namespace Lexichord.Abstractions.Contracts.RAG;
 /// The character offset where this chunk ends in the source document.
 /// Together with <paramref name="StartOffset"/>, defines the exact source region.
 /// </param>
+/// <param name="Heading">
+/// The section heading this chunk belongs to, if applicable.
+/// Null for chunks without heading context (e.g., preamble content or
+/// documents without headers). Populated during Markdown header chunking.
+/// </param>
+/// <param name="HeadingLevel">
+/// The heading level (1-6) if this chunk is under a Markdown header.
+/// Zero if no heading applies. Level 1 = H1, Level 2 = H2, etc.
+/// </param>
 public record Chunk(
     Guid Id,
     Guid DocumentId,
@@ -67,7 +77,9 @@ public record Chunk(
     float[]? Embedding,
     int ChunkIndex,
     int StartOffset,
-    int EndOffset)
+    int EndOffset,
+    string? Heading = null,
+    int HeadingLevel = 0)
 {
     /// <summary>
     /// Creates a new chunk without an embedding (pre-embedding state).
@@ -77,6 +89,8 @@ public record Chunk(
     /// <param name="chunkIndex">The position within the document.</param>
     /// <param name="startOffset">Character offset where chunk begins.</param>
     /// <param name="endOffset">Character offset where chunk ends.</param>
+    /// <param name="heading">Optional section heading this chunk belongs to.</param>
+    /// <param name="headingLevel">Heading level (1-6), or 0 if no heading.</param>
     /// <returns>A new <see cref="Chunk"/> ready for embedding generation.</returns>
     /// <remarks>
     /// Use this factory method during the chunking phase before embeddings are generated.
@@ -88,7 +102,9 @@ public record Chunk(
         string content,
         int chunkIndex,
         int startOffset,
-        int endOffset)
+        int endOffset,
+        string? heading = null,
+        int headingLevel = 0)
     {
         return new Chunk(
             Id: Guid.Empty,
@@ -97,7 +113,9 @@ public record Chunk(
             Embedding: null,
             ChunkIndex: chunkIndex,
             StartOffset: startOffset,
-            EndOffset: endOffset);
+            EndOffset: endOffset,
+            Heading: heading,
+            HeadingLevel: headingLevel);
     }
 
     /// <summary>
@@ -113,4 +131,12 @@ public record Chunk(
     /// The number of dimensions in <see cref="Embedding"/>, or 0 if not yet embedded.
     /// </value>
     public int EmbeddingDimensions => Embedding?.Length ?? 0;
+
+    /// <summary>
+    /// Gets whether this chunk has heading context.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if <see cref="Heading"/> is not null or empty; otherwise, <c>false</c>.
+    /// </value>
+    public bool HasHeading => !string.IsNullOrEmpty(Heading);
 }
