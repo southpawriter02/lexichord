@@ -1,0 +1,370 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.RAG.ViewModels"
+             xmlns:enums="using:Lexichord.Modules.RAG.Enums"
+             xmlns:contracts="using:Lexichord.Abstractions.Contracts"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="500"
+             x:Class="Lexichord.Modules.RAG.Views.SearchFilterPanel"
+             x:DataType="vm:SearchFilterPanelViewModel">
+
+    <!-- =============================================================================
+    File: SearchFilterPanel.axaml
+    Project: Lexichord.Modules.RAG
+    Description: Filter panel UI for search filtering with folder tree, extension
+                 toggles, date range picker, and saved presets.
+    ============================================================================= -->
+    <!-- LOGIC: Collapsible filter panel with multiple filter sections:
+         - Row 0: Expander header with filter count badge.
+         - Row 1 (when expanded): Filter sections and active filter chips.
+    -->
+    <!-- DEPENDENCIES:
+         - v0.5.5b: SearchFilterPanelViewModel, FolderNodeViewModel, ExtensionToggleViewModel
+         - v0.5.5a: FilterPreset, DateRange
+    -->
+    <!-- VERSION: v0.5.5b (Filter UI Component) -->
+
+    <UserControl.Styles>
+        <!-- Section Header Style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="0,8,0,4" />
+        </Style>
+
+        <!-- Toggle Button Style -->
+        <Style Selector="ToggleButton.extension-toggle">
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="4,2" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+
+        <Style Selector="ToggleButton.extension-toggle:checked">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!-- Filter Chip Style -->
+        <Style Selector="Border.filter-chip">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="2" />
+        </Style>
+
+        <!-- Lock Icon Style for License-Gated Features -->
+        <Style Selector="Border.license-locked">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <!-- Date Range Button Style -->
+        <Style Selector="RadioButton.date-range-option">
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="Padding" Value="4,2" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <!-- Folder Tree Item Style -->
+        <Style Selector="TreeViewItem">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+            CornerRadius="4"
+            Margin="0,4">
+
+        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                  Header="Filters"
+                  Padding="8"
+                  ExpandDirection="Down">
+
+            <Expander.HeaderTemplate>
+                <DataTemplate x:DataType="vm:SearchFilterPanelViewModel">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <!-- Filter Icon -->
+                        <PathIcon Grid.Column="0"
+                                  Data="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"
+                                  Width="16" Height="16"
+                                  Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                  VerticalAlignment="Center" />
+
+                        <!-- Title -->
+                        <TextBlock Grid.Column="1"
+                                   Text="Filters"
+                                   FontWeight="SemiBold"
+                                   FontSize="12"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center" />
+
+                        <!-- Active Filter Count Badge -->
+                        <Border Grid.Column="2"
+                                Background="{DynamicResource SystemAccentColor}"
+                                CornerRadius="10"
+                                Padding="6,2"
+                                IsVisible="{Binding HasActiveFilters}"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="{Binding ActiveChips.Count}"
+                                       FontSize="10"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center" />
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </Expander.HeaderTemplate>
+
+            <StackPanel Spacing="8">
+
+                <!-- ===============================================================
+                Section 1: Active Filter Chips
+                =============================================================== -->
+                <ItemsControl ItemsSource="{Binding ActiveChips}"
+                              IsVisible="{Binding HasActiveFilters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FilterChipViewModel">
+                            <Border Classes="filter-chip">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="{Binding DisplayText}"
+                                               FontSize="11"
+                                               VerticalAlignment="Center" />
+                                    <Button Padding="2"
+                                            Command="{Binding $parent[UserControl].((vm:SearchFilterPanelViewModel)DataContext).RemoveChipCommand}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="Remove filter"
+                                            Background="Transparent"
+                                            BorderThickness="0">
+                                        <PathIcon Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                                  Width="10" Height="10" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Clear Filters Button -->
+                <Button Content="Clear All Filters"
+                        Command="{Binding ClearFiltersCommand}"
+                        IsVisible="{Binding HasActiveFilters}"
+                        HorizontalAlignment="Right"
+                        Padding="8,4"
+                        FontSize="11" />
+
+                <!-- ===============================================================
+                Section 2: Folder Tree
+                =============================================================== -->
+                <StackPanel>
+                    <TextBlock Classes="section-header" Text="Folders" />
+
+                    <TreeView ItemsSource="{Binding FolderTree}"
+                              MaxHeight="200"
+                              BorderThickness="1"
+                              BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                              CornerRadius="4"
+                              Padding="4">
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="vm:FolderNodeViewModel">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <!-- Tri-state checkbox for folder selection -->
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                              IsThreeState="True"
+                                              VerticalAlignment="Center">
+                                        <!-- LOGIC: Use IsPartiallySelected to set indeterminate state -->
+                                        <CheckBox.IsChecked>
+                                            <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                                <Binding Path="IsSelected" />
+                                            </MultiBinding>
+                                        </CheckBox.IsChecked>
+                                    </CheckBox>
+
+                                    <!-- Folder icon -->
+                                    <PathIcon Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"
+                                              Width="14" Height="14"
+                                              Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                              VerticalAlignment="Center" />
+
+                                    <!-- Folder name -->
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="12"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </StackPanel>
+
+                <!-- ===============================================================
+                Section 3: File Extension Toggles
+                =============================================================== -->
+                <StackPanel>
+                    <TextBlock Classes="section-header" Text="File Types" />
+
+                    <ItemsControl ItemsSource="{Binding ExtensionToggles}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ExtensionToggleViewModel">
+                                <ToggleButton Classes="extension-toggle"
+                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                              ToolTip.Tip="{Binding DisplayName}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="{Binding Icon}"
+                                                   FontSize="11"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Extension, StringFormat=.{0}}"
+                                                   FontSize="11"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </ToggleButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- ===============================================================
+                Section 4: Date Range Picker (License-Gated)
+                =============================================================== -->
+                <Border Classes.license-locked="{Binding !CanUseDateFilter}">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Classes="section-header"
+                                       Text="Modified Date" />
+
+                            <!-- Lock icon for Core tier users -->
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="4"
+                                        IsVisible="{Binding !CanUseDateFilter}"
+                                        VerticalAlignment="Center">
+                                <PathIcon Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
+                                          Width="12" Height="12"
+                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                <TextBlock Text="Pro"
+                                           FontSize="10"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel IsEnabled="{Binding CanUseDateFilter}">
+                            <!-- Date range radio buttons -->
+                            <RadioButton Classes="date-range-option"
+                                         Content="Any time"
+                                         IsChecked="{Binding SelectedDateRange, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static enums:DateRangeOption.AnyTime}}"
+                                         GroupName="DateRange" />
+
+                            <RadioButton Classes="date-range-option"
+                                         Content="Last 24 hours"
+                                         IsChecked="{Binding SelectedDateRange, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static enums:DateRangeOption.LastDay}}"
+                                         GroupName="DateRange" />
+
+                            <RadioButton Classes="date-range-option"
+                                         Content="Last 7 days"
+                                         IsChecked="{Binding SelectedDateRange, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static enums:DateRangeOption.Last7Days}}"
+                                         GroupName="DateRange" />
+
+                            <RadioButton Classes="date-range-option"
+                                         Content="Last 30 days"
+                                         IsChecked="{Binding SelectedDateRange, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static enums:DateRangeOption.Last30Days}}"
+                                         GroupName="DateRange" />
+
+                            <RadioButton Classes="date-range-option"
+                                         Content="Custom range"
+                                         IsChecked="{Binding SelectedDateRange, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static enums:DateRangeOption.Custom}}"
+                                         GroupName="DateRange" />
+
+                            <!-- Custom date pickers (shown when Custom is selected) -->
+                            <Grid ColumnDefinitions="*,Auto,*"
+                                  Margin="16,4,0,0"
+                                  IsVisible="{Binding SelectedDateRange, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static enums:DateRangeOption.Custom}}">
+                                <CalendarDatePicker Grid.Column="0"
+                                                    SelectedDate="{Binding CustomStartDate}"
+                                                    Watermark="Start"
+                                                    HorizontalAlignment="Stretch" />
+
+                                <TextBlock Grid.Column="1"
+                                           Text="to"
+                                           Margin="8,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="11" />
+
+                                <CalendarDatePicker Grid.Column="2"
+                                                    SelectedDate="{Binding CustomEndDate}"
+                                                    Watermark="End"
+                                                    HorizontalAlignment="Stretch" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ===============================================================
+                Section 5: Saved Presets (License-Gated)
+                =============================================================== -->
+                <Border Classes.license-locked="{Binding !CanUseSavedPresets}">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Classes="section-header"
+                                       Text="Saved Presets" />
+
+                            <!-- Lock icon for Core tier users -->
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="4"
+                                        IsVisible="{Binding !CanUseSavedPresets}"
+                                        VerticalAlignment="Center">
+                                <PathIcon Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
+                                          Width="12" Height="12"
+                                          Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                <TextBlock Text="Pro"
+                                           FontSize="10"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <ComboBox ItemsSource="{Binding SavedPresets}"
+                                  IsEnabled="{Binding CanUseSavedPresets}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="Select a preset..."
+                                  FontSize="12">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="contracts:FilterPreset">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding Name}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:MMM d}'}"
+                                                   FontSize="10"
+                                                   Opacity="0.7"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <!-- Apply preset hint when presets are available -->
+                        <TextBlock Text="Select a preset to apply saved filter settings"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                   IsVisible="{Binding SavedPresets.Count}"
+                                   Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
+        </Expander>
+
+    </Border>
+
+</UserControl>

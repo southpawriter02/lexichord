@@ -15,6 +15,7 @@ using Dapper;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Ingestion;
 using Lexichord.Abstractions.Contracts.RAG;
+using Lexichord.Abstractions.Services;
 using Lexichord.Modules.RAG.Chunking;
 using Lexichord.Modules.RAG.Configuration;
 using Lexichord.Modules.RAG.Data;
@@ -71,7 +72,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 5, 4),
+        Version: new Version(0, 5, 5),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search, query understanding, and context-aware assistance"
     );
@@ -468,6 +469,25 @@ public sealed class RAGModule : IModule
         // Publishes QueryAnalyticsEvent via MediatR for opt-in telemetry.
         // License-gated via FeatureFlags.RAG.RelevanceTuner (WriterPro+).
         services.AddScoped<IQueryHistoryService, Search.QueryHistoryService>();
+
+        // =============================================================================
+        // v0.5.5a: Filter System (Filter Model)
+        // =============================================================================
+
+        // LOGIC: Register FilterValidator as singleton (v0.5.5a).
+        // Stateless validation service for SearchFilter instances.
+        // Validates path patterns, file extensions, and date ranges.
+        services.AddSingleton<IFilterValidator, FilterValidator>();
+
+        // =============================================================================
+        // v0.5.5b: Filter System (Filter UI Component)
+        // =============================================================================
+
+        // LOGIC: Register SearchFilterPanelViewModel as transient (v0.5.5b).
+        // Each filter panel instance gets its own ViewModel.
+        // Manages folder tree, extension toggles, date range picker, and saved presets.
+        // License-gated features: DateRangeFilter and SavedPresets (WriterPro+).
+        services.AddTransient<SearchFilterPanelViewModel>();
     }
 
     /// <inheritdoc/>

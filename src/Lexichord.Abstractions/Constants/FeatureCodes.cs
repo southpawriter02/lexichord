@@ -205,4 +205,34 @@ public static class FeatureCodes
     public const string ContextExpansion = "Feature.ContextExpansion";
 
     #endregion
+
+    #region Filter System Features (v0.5.5)
+
+    /// <summary>
+    /// The Date Range Filter feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to date range filtering in the search filter panel.
+    /// When this feature is not enabled, the date range section shows a lock
+    /// icon and clicking it triggers an upgrade prompt. Core tier users can
+    /// still use path and extension filtering.
+    /// Introduced in v0.5.5b.
+    /// </remarks>
+    public const string DateRangeFilter = "Feature.DateRangeFilter";
+
+    /// <summary>
+    /// The Saved Presets feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to saving and managing filter presets. When this feature
+    /// is not enabled, the presets section shows a lock icon and preset
+    /// save/apply functionality is disabled. Users can still manually configure
+    /// filters but cannot save them for quick reuse.
+    /// Introduced in v0.5.5b.
+    /// </remarks>
+    public const string SavedPresets = "Feature.SavedPresets";
+
+    #endregion
 }

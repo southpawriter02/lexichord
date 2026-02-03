@@ -1155,11 +1155,11 @@ dotnet test --filter "Category=Unit&FullyQualifiedName~Modules.RAG"
 | 4   | `IFilterValidator` interface                   | [x]    |
 | 4a  | `FilterValidationError` record                 | [x]    |
 | 4b  | `FilterValidator` implementation               | [x]    |
-| 5   | `SearchFilterPanel.axaml` with all sections    | [ ]    |
-| 6   | `SearchFilterPanelViewModel` with filter state | [ ]    |
-| 7   | Folder tree with checkboxes                    | [ ]    |
-| 8   | Extension toggle buttons                       | [ ]    |
-| 9   | Date range picker (Writer Pro gated)           | [ ]    |
+| 5   | `SearchFilterPanel.axaml` with all sections    | [x]    |
+| 6   | `SearchFilterPanelViewModel` with filter state | [x]    |
+| 7   | Folder tree with checkboxes                    | [x]    |
+| 8   | Extension toggle buttons                       | [x]    |
+| 9   | Date range picker (Writer Pro gated)           | [x]    |
 | 10  | `IFilterQueryBuilder` interface                | [ ]    |
 | 11  | `FilterQueryBuilder` implementation            | [ ]    |
 | 12  | Glob-to-SQL pattern conversion                 | [ ]    |

@@ -16,12 +16,14 @@ This release introduces the Filter System — scoped search that allows users to
 
 - **Filter Model** — Implemented `SearchFilter` record with path patterns (glob syntax), file extensions, date ranges, and heading filters. Includes `DateRange` record with factory methods (`LastDays`, `LastHours`, `Today`, `ForMonth`) for common temporal filters. Added `FilterPreset` record for saved filter configurations with Create/Rename/UpdateFilter methods. Implemented `IFilterValidator` interface and `FilterValidator` service for security validation (path traversal, null bytes) and structural checks. Available to all users (Core tier). Includes 60 unit tests.
 
+- **Filter UI Component** — Implemented the filter panel UI with folder tree (checkbox selection with propagation), extension toggles (md, txt, json, yaml, rst), date range picker (preset and custom ranges), and saved presets dropdown. Added `DateRangeOption` and `FilterChipType` enums, `FilterChipViewModel` record for visual chip display, `ExtensionToggleViewModel` and `FolderNodeViewModel` for tree/toggle management, and `SearchFilterPanelViewModel` for orchestrating all filter state. Features license-gated date filtering and presets (WriterPro+) with lock icon display for Core tier. Filter chips show active filters with one-click removal. Includes 66 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                    | Status       |
 | -------------------------------- | ------------------------ | ------------ |
 | [v0.5.5a](v0.5.x/LCS-CL-055a.md) | Filter Model             | ✅ Complete  |
-| v0.5.5b                          | Filter UI Component      | 🔜 Planned   |
+| [v0.5.5b](v0.5.x/LCS-CL-055b.md) | Filter UI Component      | ✅ Complete  |
 | v0.5.5c                          | Filter Query Builder     | 🔜 Planned   |
 | v0.5.5d                          | Saved Filters            | 🔜 Planned   |
 
