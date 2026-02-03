@@ -159,4 +159,20 @@ public static class FeatureCodes
     public const string HybridSearch = "Feature.HybridSearch";
 
     #endregion
+
+    #region Citation Engine Features (v0.5.2)
+
+    /// <summary>
+    /// The Citation feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to formatted citation creation and copy actions.
+    /// When this feature is not enabled, users see basic document paths only
+    /// and are prompted to upgrade for formatted citations.
+    /// Introduced in v0.5.2a.
+    /// </remarks>
+    public const string Citation = "Feature.Citation";
+
+    #endregion
 }

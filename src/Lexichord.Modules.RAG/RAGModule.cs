@@ -70,7 +70,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 5, 1),
+        Version: new Version(0, 5, 2),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -318,6 +318,16 @@ public sealed class RAGModule : IModule
         // Settings page registration for the Index Status View in Settings dialog.
         // Registered as ISettingsPage for discovery by the settings page registry.
         services.AddSingleton<ISettingsPage, Settings.IndexStatusSettingsPage>();
+
+        // =============================================================================
+        // v0.5.2a: Citation Engine (Citation Model)
+        // =============================================================================
+
+        // LOGIC: Register CitationService as singleton (v0.5.2a).
+        // Thread-safe and stateless — creates citations on-demand from search hits.
+        // Uses IWorkspaceService for relative path resolution, ILicenseContext for
+        // license gating at the formatting layer, and IMediator for event publishing.
+        services.AddSingleton<ICitationService, CitationService>();
     }
 
     /// <inheritdoc/>

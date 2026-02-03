@@ -1398,12 +1398,12 @@ graph TB
 
 ### v0.5.2 Prerequisites for v0.5.3+
 
-- [ ] Citation record with provenance fields (v0.5.2a)
-- [ ] CitationStyle enum (v0.5.2a)
-- [ ] ICitationService interface (v0.5.2a)
-- [ ] CitationService implementation (v0.5.2a)
-- [ ] Line number calculation from offset (v0.5.2a)
-- [ ] CitationCreatedEvent (v0.5.2a)
+- [x] Citation record with provenance fields (v0.5.2a)
+- [x] CitationStyle enum (v0.5.2a)
+- [x] ICitationService interface (v0.5.2a)
+- [x] CitationService implementation (v0.5.2a)
+- [x] Line number calculation from offset (v0.5.2a)
+- [x] CitationCreatedEvent (v0.5.2a)
 - [ ] ICitationFormatter interface (v0.5.2b)
 - [ ] InlineCitationFormatter (v0.5.2b)
 - [ ] FootnoteCitationFormatter (v0.5.2b)

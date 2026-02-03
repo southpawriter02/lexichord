@@ -7,7 +7,7 @@
 | **Document ID**  | LCS-SBD-052                                                                      |
 | **Version**      | v0.5.2                                                                           |
 | **Codename**     | The Citation Engine (Source Attribution)                                         |
-| **Status**       | Draft                                                                            |
+| **Status**       | In Progress                                                                      |
 | **Last Updated** | 2026-01-27                                                                       |
 | **Owner**        | Lead Architect                                                                   |
 | **Depends On**   | v0.5.1 (The Hybrid Engine), v0.4.5 (Semantic Search), v0.4.1 (Vector Foundation) |
@@ -451,15 +451,15 @@ public interface ICitationClipboardService
 
 | #         | Sub-Part | Task                                                | Est. Hours   |
 | :-------- | :------- | :-------------------------------------------------- | :----------- |
-| 1         | v0.5.2a  | Create `Citation` record in Abstractions            | 0.5          |
-| 2         | v0.5.2a  | Create `CitationStyle` enum                         | 0.25         |
-| 3         | v0.5.2a  | Create `ICitationService` interface                 | 0.5          |
-| 4         | v0.5.2a  | Implement `CitationService.CreateCitation()`        | 2            |
-| 5         | v0.5.2a  | Implement line number calculation from chunk offset | 1.5          |
-| 6         | v0.5.2a  | Implement `FormatCitation()` with all styles        | 1.5          |
-| 7         | v0.5.2a  | Implement `ValidateCitationAsync()` basic check     | 1            |
-| 8         | v0.5.2a  | Create `CitationCreatedEvent` MediatR notification  | 0.5          |
-| 9         | v0.5.2a  | Unit tests for citation creation                    | 2            |
+| 1 ✅      | v0.5.2a  | Create `Citation` record in Abstractions            | 0.5          |
+| 2 ✅      | v0.5.2a  | Create `CitationStyle` enum                         | 0.25         |
+| 3 ✅      | v0.5.2a  | Create `ICitationService` interface                 | 0.5          |
+| 4 ✅      | v0.5.2a  | Implement `CitationService.CreateCitation()`        | 2            |
+| 5 ✅      | v0.5.2a  | Implement line number calculation from chunk offset | 1.5          |
+| 6 ✅      | v0.5.2a  | Implement `FormatCitation()` with all styles        | 1.5          |
+| 7 ✅      | v0.5.2a  | Implement `ValidateCitationAsync()` basic check     | 1            |
+| 8 ✅      | v0.5.2a  | Create `CitationCreatedEvent` MediatR notification  | 0.5          |
+| 9 ✅      | v0.5.2a  | Unit tests for citation creation                    | 2            |
 | 10        | v0.5.2b  | Create `ICitationFormatter` interface               | 0.25         |
 | 11        | v0.5.2b  | Implement `InlineCitationFormatter`                 | 1            |
 | 12        | v0.5.2b  | Implement `FootnoteCitationFormatter`               | 1            |
@@ -1024,11 +1024,11 @@ ls src/Lexichord.Abstractions/Contracts/ICitation*.cs
 
 | #   | Deliverable                                     | Status |
 | :-- | :---------------------------------------------- | :----- |
-| 1   | `Citation` record with all provenance fields    | [ ]    |
-| 2   | `CitationStyle` enum (Inline/Footnote/Markdown) | [ ]    |
-| 3   | `ICitationService` interface                    | [ ]    |
-| 4   | `CitationService` implementation                | [ ]    |
-| 5   | `CitationCreatedEvent` MediatR notification     | [ ]    |
+| 1   | `Citation` record with all provenance fields    | [x]    |
+| 2   | `CitationStyle` enum (Inline/Footnote/Markdown) | [x]    |
+| 3   | `ICitationService` interface                    | [x]    |
+| 4   | `CitationService` implementation                | [x]    |
+| 5   | `CitationCreatedEvent` MediatR notification     | [x]    |
 | 6   | `ICitationFormatter` interface                  | [ ]    |
 | 7   | `InlineCitationFormatter` implementation        | [ ]    |
 | 8   | `FootnoteCitationFormatter` implementation      | [ ]    |
@@ -1043,9 +1043,9 @@ ls src/Lexichord.Abstractions/Contracts/ICitation*.cs
 | 17  | `CitationClipboardService` implementation       | [ ]    |
 | 18  | Context menu integration                        | [ ]    |
 | 19  | Toast notification component                    | [ ]    |
-| 20  | Unit tests for all components                   | [ ]    |
+| 20  | Unit tests for all components                   | [~]    |
 | 21  | Integration tests for citation workflow         | [ ]    |
-| 22  | DI registration in RAGModule.cs                 | [ ]    |
+| 22  | DI registration in RAGModule.cs                 | [x]    |
 
 ---
 

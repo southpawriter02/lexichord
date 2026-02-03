@@ -6,7 +6,28 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
-## [v0.5.1] - 2026-02 (In Progress)
+## [v0.5.2] - 2026-02 (In Progress)
+
+### The Citation Engine (Source Attribution)
+
+This release introduces the Citation Engine — comprehensive source attribution for every retrieved chunk. Every search result now carries complete provenance information, enabling writers to trace information back to its exact source location.
+
+#### What's New
+
+- **Citation Model** — Implemented `Citation` record with complete provenance fields (document path, heading, line number, indexing timestamp) and `ICitationService` interface for creating, formatting, and validating citations. Citations are created from search hits with automatic line number calculation from character offsets. Three formatting styles (Inline, Footnote, Markdown) are supported with license gating (WriterPro+). Includes 56 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                            | Title                    | Status      |
+| ---------------------------------- | ------------------------ | ----------- |
+| [v0.5.2a](v0.5.x/LCS-CL-052a.md) | Citation Model           | ✅ Complete |
+| v0.5.2b                            | Citation Styles          | 🔜 Planned  |
+| v0.5.2c                            | Stale Citation Detection | 🔜 Planned  |
+| v0.5.2d                            | Citation Copy Actions    | 🔜 Planned  |
+
+---
+
+## [v0.5.1] - 2026-02 (Complete)
 
 ### The Hybrid Engine (BM25 + Semantic)
 
