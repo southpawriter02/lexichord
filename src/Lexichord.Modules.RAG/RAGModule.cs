@@ -374,6 +374,21 @@ public sealed class RAGModule : IModule
         services.AddSingleton<ICitationClipboardService, CitationClipboardService>();
 
         // =============================================================================
+        // v0.5.3b: Context Window (Sibling Chunk Retrieval)
+        // =============================================================================
+
+        // LOGIC: Register SiblingCache as singleton (v0.5.3b).
+        // LRU cache for sibling chunk queries with document-level invalidation.
+        // MaxEntries=500, EvictionBatch=50 for optimal memory/performance tradeoff.
+        // Thread-safe via ConcurrentDictionary. Automatically invalidates on
+        // DocumentIndexedEvent and DocumentRemovedFromIndexEvent via MediatR handlers.
+        services.AddSingleton<SiblingCache>();
+        services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentIndexedEvent>>(
+            sp => sp.GetRequiredService<SiblingCache>());
+        services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentRemovedFromIndexEvent>>(
+            sp => sp.GetRequiredService<SiblingCache>());
+
+        // =============================================================================
         // v0.5.3a: Context Window (Context Expansion Service)
         // =============================================================================
 

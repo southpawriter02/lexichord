@@ -12,8 +12,8 @@
 | **Swimlane**         | Memory                           |
 | **License Tier**     | Writer Pro                       |
 | **Feature Gate Key** | `FeatureFlags.RAG.ContextWindow` |
-| **Status**           | Draft                            |
-| **Last Updated**     | 2026-01-27                       |
+| **Status**           | ✅ Complete                      |
+| **Last Updated**     | 2026-02-03                       |
 
 ---
 
@@ -866,20 +866,21 @@ public class SiblingCacheTests
 
 | #   | Deliverable                                              | Status |
 | :-- | :------------------------------------------------------- | :----- |
-| 1   | `GetSiblingsAsync()` method added to `IChunkRepository`  | [ ]    |
-| 2   | `GetSiblingsAsync()` implementation in `ChunkRepository` | [ ]    |
-| 3   | `SiblingCacheKey` record struct                          | [ ]    |
-| 4   | `SiblingCache` class with LRU eviction                   | [ ]    |
-| 5   | MediatR handlers for cache invalidation                  | [ ]    |
-| 6   | Unit tests for `GetSiblingsAsync()`                      | [ ]    |
-| 7   | Unit tests for `SiblingCache`                            | [ ]    |
-| 8   | Verify `idx_chunks_document_index` is used               | [ ]    |
-| 9   | DI registration for `SiblingCache`                       | [ ]    |
+| 1   | `GetSiblingsAsync()` method added to `IChunkRepository`  | [x]    |
+| 2   | `GetSiblingsAsync()` implementation in `ChunkRepository` | [x]    |
+| 3   | `SiblingCacheKey` record struct                          | [x]    |
+| 4   | `SiblingCache` class with LRU eviction                   | [x]    |
+| 5   | MediatR handlers for cache invalidation                  | [x]    |
+| 6   | Unit tests for `GetSiblingsAsync()`                      | [x]    |
+| 7   | Unit tests for `SiblingCache`                            | [x]    |
+| 8   | Verify `idx_chunks_document_index` is used               | [x]    |
+| 9   | DI registration for `SiblingCache`                       | [x]    |
 
 ---
 
 ## Document History
 
-| Version | Date       | Author         | Changes       |
-| :------ | :--------- | :------------- | :------------ |
-| 1.0     | 2026-01-27 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes              |
+| :------ | :--------- | :------------- | :------------------- |
+| 1.0     | 2026-01-27 | Lead Architect | Initial draft        |
+| 1.1     | 2026-02-03 | Implementation | All items completed  |

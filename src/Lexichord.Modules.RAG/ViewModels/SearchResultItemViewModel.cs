@@ -77,8 +77,9 @@ public partial class SearchResultItemViewModel : ObservableObject
 
     // LOGIC: Regex pattern for extracting query terms.
     // Matches quoted phrases or individual words.
+    // Pattern: "([^"]+)" captures quoted phrases, (\S+) captures unquoted words.
     private static readonly Regex QueryTermPattern = new(
-        @"""([^""]+)""|(\\S+)",
+        @"""([^""]+)""|(\S+)",
         RegexOptions.Compiled);
 
     /// <summary>

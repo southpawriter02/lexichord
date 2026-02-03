@@ -18,12 +18,14 @@ This release introduces the Context Window — intelligent context expansion for
 
 - **Context Abstractions** — Added `ContextOptions` record for configuring expansion parameters with validation and clamping (max 5 chunks per direction), `ExpandedChunk` record with computed properties (`HasBefore`, `HasAfter`, `HasBreadcrumb`, `TotalChunks`) and a `FormatBreadcrumb()` method, and `IHeadingHierarchyService` interface for heading resolution (stub implementation until v0.5.3c).
 
+- **Sibling Chunk Retrieval** — Implemented dedicated `SiblingCache` class providing LRU-based caching for sibling chunk queries with document-level invalidation. Cache holds up to 500 entries with 50-entry batch eviction. Subscribes to `DocumentIndexedEvent` and `DocumentRemovedFromIndexEvent` for automatic cache invalidation when documents are re-indexed or removed. Added `SiblingCacheKey` record struct for efficient dictionary lookup. Integrated with `ChunkRepository.GetSiblingsAsync()` for transparent caching with cache-first lookup and automatic population on miss. Includes 27 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                     | Status         |
 | -------------------------------- | ------------------------- | -------------- |
 | [v0.5.3a](v0.5.x/LCS-CL-053a.md) | Context Expansion Service | ✅ Complete    |
-| v0.5.3b                          | Expand/Collapse Controls  | 🔲 Not Started |
+| [v0.5.3b](v0.5.x/LCS-CL-053b.md) | Sibling Chunk Retrieval   | ✅ Complete    |
 | v0.5.3c                          | Heading Hierarchy Service | 🔲 Not Started |
 
 ---

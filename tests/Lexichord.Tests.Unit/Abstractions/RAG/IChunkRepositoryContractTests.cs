@@ -58,6 +58,36 @@ public class IChunkRepositoryContractTests
     }
 
     [Fact]
+    public void GetSiblingsAsync_HasCorrectSignature()
+    {
+        // Arrange (v0.5.3a)
+        var method = _interfaceType.GetMethod("GetSiblingsAsync");
+
+        // Assert
+        method.Should().NotBeNull();
+        method!.ReturnType.Should().Be(typeof(Task<IReadOnlyList<Chunk>>));
+
+        var parameters = method.GetParameters();
+        parameters.Should().HaveCount(5);
+
+        // Verify parameter types and names
+        parameters[0].ParameterType.Should().Be(typeof(Guid));
+        parameters[0].Name.Should().Be("documentId");
+
+        parameters[1].ParameterType.Should().Be(typeof(int));
+        parameters[1].Name.Should().Be("centerIndex");
+
+        parameters[2].ParameterType.Should().Be(typeof(int));
+        parameters[2].Name.Should().Be("beforeCount");
+
+        parameters[3].ParameterType.Should().Be(typeof(int));
+        parameters[3].Name.Should().Be("afterCount");
+
+        parameters[4].ParameterType.Should().Be(typeof(CancellationToken));
+        parameters[4].HasDefaultValue.Should().BeTrue();
+    }
+
+    [Fact]
     public void SearchSimilarAsync_HasCorrectSignature()
     {
         // Arrange
@@ -158,13 +188,14 @@ public class IChunkRepositoryContractTests
         var methods = _interfaceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
         // Assert
-        // 2 read + 2 write = 4 methods
-        methods.Should().HaveCount(4,
-            because: "IChunkRepository should have exactly 4 methods");
+        // 3 read (GetByDocumentIdAsync, GetSiblingsAsync, SearchSimilarAsync) + 2 write = 5 methods
+        methods.Should().HaveCount(5,
+            because: "IChunkRepository should have exactly 5 methods");
     }
 
     [Theory]
     [InlineData("GetByDocumentIdAsync")]
+    [InlineData("GetSiblingsAsync")]
     [InlineData("SearchSimilarAsync")]
     [InlineData("AddRangeAsync")]
     [InlineData("DeleteByDocumentIdAsync")]

@@ -2,6 +2,7 @@
 // File: ChunkRepositoryTests.cs
 // Project: Lexichord.Tests.Unit
 // Description: Unit tests for ChunkRepository constructor and argument validation.
+// Version: v0.5.3b - Updated for SiblingCache integration.
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
@@ -20,10 +21,18 @@ namespace Lexichord.Tests.Unit.Modules.RAG;
 /// These tests focus on constructor validation and embedding dimension validation.
 /// Full repository functionality is tested in integration tests with a real database.
 /// </remarks>
+[Trait("Category", "Unit")]
 public class ChunkRepositoryTests
 {
     private readonly Mock<IDbConnectionFactory> _mockConnectionFactory = new();
+    private readonly Mock<ILogger<SiblingCache>> _mockSiblingCacheLogger = new();
+    private readonly SiblingCache _siblingCache;
     private readonly Mock<ILogger<ChunkRepository>> _mockLogger = new();
+
+    public ChunkRepositoryTests()
+    {
+        _siblingCache = new SiblingCache(_mockSiblingCacheLogger.Object);
+    }
 
     #region Constructor Tests
 
@@ -33,6 +42,7 @@ public class ChunkRepositoryTests
         // Act
         var act = () => new ChunkRepository(
             _mockConnectionFactory.Object,
+            _siblingCache,
             _mockLogger.Object);
 
         // Assert
@@ -45,6 +55,7 @@ public class ChunkRepositoryTests
         // Act
         var act = () => new ChunkRepository(
             null!,
+            _siblingCache,
             _mockLogger.Object);
 
         // Assert
@@ -53,11 +64,27 @@ public class ChunkRepositoryTests
     }
 
     [Fact]
+    [Trait("Feature", "v0.5.3b")]
+    public void Constructor_WithNullSiblingCache_ThrowsArgumentNullException()
+    {
+        // Act
+        var act = () => new ChunkRepository(
+            _mockConnectionFactory.Object,
+            null!,
+            _mockLogger.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+           .WithParameterName("siblingCache");
+    }
+
+    [Fact]
     public void Constructor_WithNullLogger_ThrowsArgumentNullException()
     {
         // Act
         var act = () => new ChunkRepository(
             _mockConnectionFactory.Object,
+            _siblingCache,
             null!);
 
         // Assert
@@ -75,6 +102,7 @@ public class ChunkRepositoryTests
         // Arrange
         var repository = new ChunkRepository(
             _mockConnectionFactory.Object,
+            _siblingCache,
             _mockLogger.Object);
 
         // Act
@@ -91,6 +119,7 @@ public class ChunkRepositoryTests
         // Arrange
         var repository = new ChunkRepository(
             _mockConnectionFactory.Object,
+            _siblingCache,
             _mockLogger.Object);
 
         // 100 dimensions instead of 1536
@@ -111,6 +140,7 @@ public class ChunkRepositoryTests
         // Arrange
         var repository = new ChunkRepository(
             _mockConnectionFactory.Object,
+            _siblingCache,
             _mockLogger.Object);
 
         // Act

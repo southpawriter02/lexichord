@@ -12,8 +12,8 @@
 | **Swimlane**         | Memory                                   |
 | **License Tier**     | Writer Pro                               |
 | **Feature Gate Key** | `FeatureFlags.RAG.ContextWindow`         |
-| **Status**           | Draft                                    |
-| **Last Updated**     | 2026-01-27                               |
+| **Status**           | In Progress                              |
+| **Last Updated**     | 2026-02-03                               |
 
 ---
 

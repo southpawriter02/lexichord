@@ -168,9 +168,14 @@ public class PostgresRagFixture : IAsyncLifetime
                 sp.GetRequiredService<IDbConnectionFactory>(),
                 NullLogger<DocumentRepository>.Instance));
 
+        // SiblingCache for ChunkRepository (v0.5.3b)
+        services.AddSingleton<SiblingCache>(sp =>
+            new SiblingCache(NullLogger<SiblingCache>.Instance));
+
         services.AddSingleton<IChunkRepository>(sp =>
             new ChunkRepository(
                 sp.GetRequiredService<IDbConnectionFactory>(),
+                sp.GetRequiredService<SiblingCache>(),
                 NullLogger<ChunkRepository>.Instance));
 
         // Mock embedding service with deterministic embeddings

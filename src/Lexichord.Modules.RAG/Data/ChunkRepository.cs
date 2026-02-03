@@ -2,11 +2,13 @@
 // File: ChunkRepository.cs
 // Project: Lexichord.Modules.RAG
 // Description: Dapper implementation of IChunkRepository with vector similarity search.
+// Version: v0.5.3b - Added SiblingCache integration
 // =============================================================================
 // LOGIC: Provides chunk storage and pgvector-based semantic search.
 //   - SearchSimilarAsync uses the <=> operator for cosine distance.
 //   - AddRangeAsync uses batch INSERT for efficiency.
 //   - Embedding dimension validation prevents costly database errors.
+//   - GetSiblingsAsync uses SiblingCache for LRU-based caching (v0.5.3b).
 // =============================================================================
 
 using System.Data;
@@ -38,10 +40,16 @@ namespace Lexichord.Modules.RAG.Data;
 /// have 1536 dimensions (OpenAI text-embedding-3-small) to prevent costly
 /// database errors.
 /// </para>
+/// <para>
+/// <b>Sibling Caching (v0.5.3b):</b> The <see cref="GetSiblingsAsync"/> method uses
+/// <see cref="SiblingCache"/> for LRU-based caching to avoid repeated database queries
+/// for the same context expansion requests.
+/// </para>
 /// </remarks>
 public sealed class ChunkRepository : IChunkRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
+    private readonly SiblingCache _siblingCache;
     private readonly ILogger<ChunkRepository> _logger;
 
     private const string TableName = "chunks";
@@ -51,15 +59,19 @@ public sealed class ChunkRepository : IChunkRepository
     /// Creates a new <see cref="ChunkRepository"/> instance.
     /// </summary>
     /// <param name="connectionFactory">Factory for database connections.</param>
+    /// <param name="siblingCache">Cache for sibling chunk queries.</param>
     /// <param name="logger">Logger for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="connectionFactory"/> or <paramref name="logger"/> is null.
+    /// Thrown when <paramref name="connectionFactory"/>, <paramref name="siblingCache"/>,
+    /// or <paramref name="logger"/> is null.
     /// </exception>
     public ChunkRepository(
         IDbConnectionFactory connectionFactory,
+        SiblingCache siblingCache,
         ILogger<ChunkRepository> logger)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        _siblingCache = siblingCache ?? throw new ArgumentNullException(nameof(siblingCache));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -99,17 +111,39 @@ public sealed class ChunkRepository : IChunkRepository
         int afterCount,
         CancellationToken cancellationToken = default)
     {
+        // LOGIC: Validate and clamp counts to [0, 5] range per specification.
+        beforeCount = Math.Clamp(beforeCount, 0, 5);
+        afterCount = Math.Clamp(afterCount, 0, 5);
+
+        var minIndex = Math.Max(0, centerIndex - beforeCount);
+        var maxIndex = centerIndex + afterCount;
+
+        // LOGIC: Create cache key and check cache first (v0.5.3b).
+        var cacheKey = new SiblingCacheKey(documentId, centerIndex, beforeCount, afterCount);
+
+        if (_siblingCache.TryGet(cacheKey, out var cached))
+        {
+            _logger.LogDebug(
+                "Cache hit for siblings: doc={DocumentId}, center={CenterIndex}",
+                documentId, centerIndex);
+            return cached;
+        }
+
+        _logger.LogDebug(
+            "Querying siblings for doc={DocumentId}, center={CenterIndex}, range=[{MinIndex},{MaxIndex}]",
+            documentId, centerIndex, minIndex, maxIndex);
+
         await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
         // LOGIC: Query chunks within range [centerIndex - beforeCount, centerIndex + afterCount]
         // excluding the center chunk itself. Order by chunk_index for consistent results.
         const string sql = @"
-            SELECT id AS ""Id"", 
-                   document_id AS ""DocumentId"", 
-                   content AS ""Content"", 
-                   embedding AS ""Embedding"", 
-                   chunk_index AS ""ChunkIndex"", 
-                   start_offset AS ""StartOffset"", 
+            SELECT id AS ""Id"",
+                   document_id AS ""DocumentId"",
+                   content AS ""Content"",
+                   embedding AS ""Embedding"",
+                   chunk_index AS ""ChunkIndex"",
+                   start_offset AS ""StartOffset"",
                    end_offset AS ""EndOffset""
             FROM chunks
             WHERE document_id = @DocumentId
@@ -117,9 +151,6 @@ public sealed class ChunkRepository : IChunkRepository
               AND chunk_index <= @MaxIndex
               AND chunk_index <> @CenterIndex
             ORDER BY chunk_index";
-
-        var minIndex = Math.Max(0, centerIndex - beforeCount);
-        var maxIndex = centerIndex + afterCount;
 
         var parameters = new
         {
@@ -133,9 +164,12 @@ public sealed class ChunkRepository : IChunkRepository
         var results = await connection.QueryAsync<Chunk>(command);
         var resultList = results.ToList();
 
+        // LOGIC: Cache the result (v0.5.3b).
+        _siblingCache.Set(cacheKey, resultList);
+
         _logger.LogDebug(
-            "GetSiblings {Table} DocumentId={DocumentId} Center={CenterIndex} Before={BeforeCount} After={AfterCount}: {Count} siblings",
-            TableName, documentId, centerIndex, beforeCount, afterCount, resultList.Count);
+            "Retrieved {Count} siblings for doc={DocumentId}, center={CenterIndex}",
+            resultList.Count, documentId, centerIndex);
 
         return resultList;
     }
