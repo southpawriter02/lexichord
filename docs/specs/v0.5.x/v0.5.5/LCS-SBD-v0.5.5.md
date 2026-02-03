@@ -1160,16 +1160,16 @@ dotnet test --filter "Category=Unit&FullyQualifiedName~Modules.RAG"
 | 7   | Folder tree with checkboxes                    | [x]    |
 | 8   | Extension toggle buttons                       | [x]    |
 | 9   | Date range picker (Writer Pro gated)           | [x]    |
-| 10  | `IFilterQueryBuilder` interface                | [ ]    |
-| 11  | `FilterQueryBuilder` implementation            | [ ]    |
-| 12  | Glob-to-SQL pattern conversion                 | [ ]    |
+| 10  | `IFilterQueryBuilder` interface                | [x]    |
+| 11  | `FilterQueryBuilder` implementation            | [x]    |
+| 12  | Glob-to-SQL pattern conversion                 | [x]    |
 | 13  | `IFilterPresetService` interface               | [ ]    |
 | 14  | `FilterPresetService` implementation           | [ ]    |
 | 15  | Preset management UI                           | [ ]    |
 | 16  | `FilterAppliedEvent` MediatR notification      | [ ]    |
-| 17  | Unit tests for all components                  | [ ]    |
+| 17  | Unit tests for all components                  | [x]    |
 | 18  | Integration tests for filter pipeline          | [ ]    |
-| 19  | DI registration in RAGModule.cs                | [ ]    |
+| 19  | DI registration in RAGModule.cs                | [x]    |
 
 ---
 

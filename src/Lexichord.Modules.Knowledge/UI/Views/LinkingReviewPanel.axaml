@@ -1,0 +1,409 @@
+<!--
+=============================================================================
+File: LinkingReviewPanel.axaml
+Project: Lexichord.Modules.Knowledge
+Description: Review panel for entity linking decisions (v0.5.5c-i).
+=============================================================================
+LOGIC: Three-column layout for efficient entity link review:
+  - Left: Queue list with statistics and filters
+  - Center: Mention context and action buttons
+  - Right: Candidate entities for selection
+
+Keyboard shortcuts:
+  - Ctrl+A: Accept
+  - Ctrl+R: Reject
+  - Ctrl+S: Skip
+  - Ctrl+N: Create New Entity
+
+v0.5.5c-i: Linking Review UI
+Dependencies: LinkingReviewViewModel (v0.5.5c-i)
+=============================================================================
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lexichord.Modules.Knowledge.UI.ViewModels.LinkingReview"
+             xmlns:conv="using:Lexichord.Modules.Knowledge.UI.Converters"
+             x:Class="Lexichord.Modules.Knowledge.UI.Views.LinkingReviewPanel"
+             x:DataType="vm:LinkingReviewViewModel">
+
+    <UserControl.Resources>
+        <!-- Converters -->
+        <conv:ConfidenceToColorConverter x:Key="ConfidenceToColor"/>
+    </UserControl.Resources>
+
+    <UserControl.KeyBindings>
+        <!-- Keyboard shortcuts for review actions -->
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding AcceptCommand}" />
+        <KeyBinding Gesture="Ctrl+R" Command="{Binding RejectCommand}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SkipCommand}" />
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding CreateNewEntityCommand}" />
+    </UserControl.KeyBindings>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" MinWidth="250" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" MinWidth="400" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="350" MinWidth="280" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ================================================================ -->
+        <!-- LEFT PANEL: Queue List                                          -->
+        <!-- ================================================================ -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource PanelBackground}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto,Auto,*">
+
+                <!-- Stats Card -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource CardBackground}"
+                        CornerRadius="8"
+                        Margin="8"
+                        Padding="12">
+                    <Grid RowDefinitions="Auto,8,Auto">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <TextBlock Text="{Binding Stats.PendingCount}"
+                                       FontSize="28"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                            <TextBlock Text=" pending"
+                                       FontSize="14"
+                                       VerticalAlignment="Bottom"
+                                       Margin="0,0,0,4"
+                                       Opacity="0.7" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <TextBlock FontSize="12" Opacity="0.7">
+                                <Run Text="{Binding Stats.ReviewedToday}" />
+                                <Run Text=" reviewed today • " />
+                                <Run Text="{Binding Stats.AcceptanceRate, StringFormat={}{0:P0}}" />
+                                <Run Text=" accepted" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Filter Bar -->
+                <StackPanel Grid.Row="1" Margin="8,0,8,8">
+                    <Grid ColumnDefinitions="*,8,*">
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding EntityTypes}"
+                                  SelectedItem="{Binding SelectedEntityType}"
+                                  PlaceholderText="Filter by type..."
+                                  HorizontalAlignment="Stretch" />
+                        <ComboBox Grid.Column="2"
+                                  SelectedItem="{Binding SelectedSortOrder}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBoxItem Content="Priority" Tag="Priority" />
+                            <ComboBoxItem Content="Confidence ↑" Tag="ConfidenceAsc" />
+                            <ComboBoxItem Content="Confidence ↓" Tag="ConfidenceDesc" />
+                            <ComboBoxItem Content="Oldest First" Tag="CreatedAtAsc" />
+                            <ComboBoxItem Content="Newest First" Tag="CreatedAtDesc" />
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Queue List -->
+                <ListBox Grid.Row="2"
+                         ItemsSource="{Binding PendingItems}"
+                         SelectedItem="{Binding SelectedItem}"
+                         Margin="8,0,8,8"
+                         Background="Transparent"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="8" CornerRadius="4" Margin="0,2">
+                                <Grid RowDefinitions="Auto,Auto,Auto">
+                                    <!-- Mention Value -->
+                                    <TextBlock Grid.Row="0"
+                                               Text="{Binding Mention.Value}"
+                                               FontWeight="SemiBold"
+                                               FontSize="13"
+                                               TextTrimming="CharacterEllipsis" />
+
+                                    <!-- Entity Type -->
+                                    <TextBlock Grid.Row="1"
+                                               Text="{Binding Mention.EntityType}"
+                                               FontSize="11"
+                                               Opacity="0.7"
+                                               Margin="0,2,0,0" />
+
+                                    <!-- Confidence and Group Info -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,4,0,0">
+                                        <Border Background="{Binding Confidence, Converter={StaticResource ConfidenceToColor}}"
+                                                CornerRadius="4"
+                                                Padding="6,2">
+                                            <TextBlock Text="{Binding Confidence, StringFormat={}{0:P0}}"
+                                                       FontSize="10"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="White" />
+                                        </Border>
+                                        <TextBlock Text="{Binding GroupCount, StringFormat='({0} similar)'}"
+                                                   FontSize="10"
+                                                   Opacity="0.6"
+                                                   Margin="8,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   IsVisible="{Binding IsGrouped}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Loading Indicator -->
+                <Border Grid.Row="2"
+                        Background="{DynamicResource PanelBackground}"
+                        IsVisible="{Binding IsLoading}">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True" Width="100" />
+                        <TextBlock Text="Loading..."
+                                   Margin="0,8,0,0"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.7" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="1" Width="4" Background="Transparent" />
+
+        <!-- ================================================================ -->
+        <!-- CENTER PANEL: Context and Decision                              -->
+        <!-- ================================================================ -->
+        <Grid Grid.Column="2" Margin="16" RowDefinitions="Auto,*,Auto">
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="Review Entity Link"
+                           FontSize="20"
+                           FontWeight="Bold" />
+                <TextBlock Text="{Binding SelectedItem.DocumentTitle}"
+                           FontSize="12"
+                           Opacity="0.7"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="0,4,0,0" />
+            </StackPanel>
+
+            <!-- Context View -->
+            <Border Grid.Row="1"
+                    Background="{DynamicResource CardBackground}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16"
+                    IsVisible="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <Grid RowDefinitions="Auto,*,Auto">
+
+                    <!-- Mention Info -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Mention: " FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding SelectedItem.Mention.Value}"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       FontWeight="Bold" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Text="Type: " FontSize="12" Opacity="0.7" />
+                            <TextBlock Text="{Binding SelectedItem.Mention.EntityType}" FontSize="12" />
+                            <TextBlock Text=" • Confidence: " FontSize="12" Opacity="0.7" />
+                            <TextBlock Text="{Binding SelectedItem.Confidence, StringFormat={}{0:P0}}" FontSize="12" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Context Text -->
+                    <Border Grid.Row="1"
+                            Background="{DynamicResource CodeBackground}"
+                            CornerRadius="4"
+                            Padding="12">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <TextBlock Text="{Binding SelectedItem.ExtendedContext}"
+                                       FontFamily="Consolas, Menlo, monospace"
+                                       FontSize="13"
+                                       TextWrapping="Wrap" />
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- Proposed Entity -->
+                    <Border Grid.Row="2"
+                            Background="{DynamicResource HighlightBackground}"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,12,0,0"
+                            IsVisible="{Binding SelectedItem.ProposedEntityId, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <TextBlock Grid.Column="0"
+                                       Text="→"
+                                       FontSize="20"
+                                       Margin="0,0,12,0"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Proposed Link" FontSize="11" Opacity="0.7" />
+                                <TextBlock Text="{Binding SelectedItem.ProposedEntityName}"
+                                           FontWeight="SemiBold"
+                                           FontSize="14" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Empty State -->
+            <Border Grid.Row="1"
+                    Background="{DynamicResource CardBackground}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    IsVisible="{Binding SelectedItem, Converter={x:Static ObjectConverters.IsNull}}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="No items to review"
+                               FontSize="16"
+                               Opacity="0.5"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="All entity links have been reviewed!"
+                               FontSize="12"
+                               Opacity="0.4"
+                               HorizontalAlignment="Center"
+                               Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="2" Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="✓ Accept (Ctrl+A)"
+                            Command="{Binding AcceptCommand}"
+                            Classes="Primary"
+                            Width="140"
+                            Margin="4" />
+                    <Button Content="✗ Reject (Ctrl+R)"
+                            Command="{Binding RejectCommand}"
+                            Classes="Danger"
+                            Width="140"
+                            Margin="4" />
+                    <Button Content="Skip (Ctrl+S)"
+                            Command="{Binding SkipCommand}"
+                            Classes="Secondary"
+                            Width="100"
+                            Margin="4" />
+                </StackPanel>
+
+                <!-- Group Checkbox -->
+                <CheckBox Content="Apply to all similar mentions"
+                          IsChecked="{Binding ApplyToGroup}"
+                          HorizontalAlignment="Center"
+                          Margin="0,8,0,0"
+                          IsVisible="{Binding SelectedItem.IsGrouped, FallbackValue=False}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="3" Width="4" Background="Transparent" />
+
+        <!-- ================================================================ -->
+        <!-- RIGHT PANEL: Candidates                                         -->
+        <!-- ================================================================ -->
+        <Border Grid.Column="4"
+                Background="{DynamicResource PanelBackground}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1,0,0,0">
+            <Grid RowDefinitions="Auto,*,Auto" Margin="16">
+
+                <!-- Header -->
+                <TextBlock Grid.Row="0"
+                           Text="Candidates"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,0,0,12" />
+
+                <!-- Candidate List -->
+                <ListBox Grid.Row="1"
+                         ItemsSource="{Binding SelectedItem.Candidates}"
+                         Background="Transparent"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding $parent[UserControl].((vm:LinkingReviewViewModel)DataContext).SelectAlternateCommand}"
+                                    CommandParameter="{Binding}"
+                                    HorizontalContentAlignment="Stretch"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="0"
+                                    Margin="0,2">
+                                <Border Background="{DynamicResource CardBackground}"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <Grid RowDefinitions="Auto,Auto,Auto">
+                                        <!-- Entity Name -->
+                                        <TextBlock Grid.Row="0"
+                                                   Text="{Binding EntityName}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="13" />
+
+                                        <!-- Entity Type -->
+                                        <TextBlock Grid.Row="1"
+                                                   Text="{Binding EntityType}"
+                                                   FontSize="11"
+                                                   Opacity="0.7"
+                                                   Margin="0,2,0,0" />
+
+                                        <!-- Score -->
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,4,0,0">
+                                            <TextBlock Text="Score: " FontSize="11" Opacity="0.6" />
+                                            <TextBlock Text="{Binding Score, StringFormat={}{0:P0}}"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Additional Actions -->
+                <StackPanel Grid.Row="2" Margin="0,16,0,0">
+                    <Button Content="+ Create New Entity (Ctrl+N)"
+                            Command="{Binding CreateNewEntityCommand}"
+                            Classes="Secondary"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,4" />
+                    <Button Content="Not an Entity"
+                            Command="{Binding MarkNotEntityCommand}"
+                            Classes="Ghost"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,4" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Error Message Overlay -->
+        <Border Grid.ColumnSpan="5"
+                Background="#80000000"
+                IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <Border Background="{DynamicResource CardBackground}"
+                    CornerRadius="8"
+                    Padding="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MaxWidth="400">
+                <StackPanel>
+                    <TextBlock Text="⚠ Error"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource DangerBrush}" />
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,16" />
+                    <Button Content="Dismiss"
+                            HorizontalAlignment="Right"
+                            Command="{Binding RefreshCommand}" />
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

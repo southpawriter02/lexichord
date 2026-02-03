@@ -236,6 +236,16 @@ public sealed class KnowledgeModule : IModule
         // LOGIC: Register AxiomViewerViewModel as transient.
         // Each axiom viewer instance needs independent state for filtering and grouping.
         services.AddTransient<UI.ViewModels.AxiomViewerViewModel>();
+
+        // =============================================================================
+        // v0.5.5c-i: Linking Review UI
+        // =============================================================================
+
+        // LOGIC: Register LinkingReviewViewModel as transient (v0.5.5c-i).
+        // Each review panel instance gets its own ViewModel.
+        // Manages pending link queue, review decisions, and statistics.
+        // License-gated: WriterPro (view-only), Teams+ (full review).
+        services.AddTransient<UI.ViewModels.LinkingReview.LinkingReviewViewModel>();
     }
 
     /// <inheritdoc/>

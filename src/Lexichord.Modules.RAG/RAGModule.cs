@@ -488,6 +488,15 @@ public sealed class RAGModule : IModule
         // Manages folder tree, extension toggles, date range picker, and saved presets.
         // License-gated features: DateRangeFilter and SavedPresets (WriterPro+).
         services.AddTransient<SearchFilterPanelViewModel>();
+
+        // =============================================================================
+        // v0.5.5c: Filter System (Filter Query Builder)
+        // =============================================================================
+
+        // LOGIC: Register FilterQueryBuilder as singleton (v0.5.5c).
+        // Stateless service that builds SQL queries from SearchFilter criteria.
+        // Generates CTEs for efficient filtered vector search.
+        services.AddSingleton<IFilterQueryBuilder, FilterQueryBuilder>();
     }
 
     /// <inheritdoc/>

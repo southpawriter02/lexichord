@@ -18,14 +18,18 @@ This release introduces the Filter System — scoped search that allows users to
 
 - **Filter UI Component** — Implemented the filter panel UI with folder tree (checkbox selection with propagation), extension toggles (md, txt, json, yaml, rst), date range picker (preset and custom ranges), and saved presets dropdown. Added `DateRangeOption` and `FilterChipType` enums, `FilterChipViewModel` record for visual chip display, `ExtensionToggleViewModel` and `FolderNodeViewModel` for tree/toggle management, and `SearchFilterPanelViewModel` for orchestrating all filter state. Features license-gated date filtering and presets (WriterPro+) with lock icon display for Core tier. Filter chips show active filters with one-click removal. Includes 66 unit tests.
 
+- **Filter Query Builder** — Implemented `IFilterQueryBuilder` interface and `FilterQueryBuilder` service for translating `SearchFilter` criteria into parameterized SQL. Features glob-to-SQL conversion (`**`→`%`, `*`→`%`, `?`→`_`), path pattern LIKE clauses, extension array ANY() clauses, date range conditions, and heading IS NOT NULL checks. Uses CTE (Common Table Expression) pattern for efficient filtered vector search while preserving HNSW index performance. Added `FilterQueryResult` record with `WhereClause`, `Parameters`, `CteClause`, `JoinClause`, and summary properties. Thread-safe and stateless design. Includes 35 unit tests.
+
+- **Linking Review UI** — Implemented human review interface for entity links. Added `ILinkingReviewService` interface for managing the review queue with `GetPendingAsync`, `SubmitDecisionAsync`, `SubmitDecisionsBatchAsync`, and `GetStatsAsync` methods. Created `PendingLinkItem` record for pending links with mention details, candidates, and group support; `LinkReviewDecision` record for capturing reviewer decisions; `ReviewStats` record for queue statistics; and `ReviewFilter`/`ReviewSortOrder` for queue filtering. Implemented `LinkingReviewViewModel` with Accept, Reject, Skip, SelectAlternate, CreateNew, and MarkNotEntity commands. Created `LinkingReviewPanel.axaml` with three-column layout (queue, context, candidates), keyboard shortcuts (Ctrl+A/R/S/N), and group decision support. License-gated: WriterPro (view-only), Teams+ (full review). Includes 35 unit tests.
+
 #### Sub-Part Changelogs
 
-| Version                          | Title                    | Status       |
-| -------------------------------- | ------------------------ | ------------ |
-| [v0.5.5a](v0.5.x/LCS-CL-055a.md) | Filter Model             | ✅ Complete  |
-| [v0.5.5b](v0.5.x/LCS-CL-055b.md) | Filter UI Component      | ✅ Complete  |
-| v0.5.5c                          | Filter Query Builder     | 🔜 Planned   |
-| v0.5.5d                          | Saved Filters            | 🔜 Planned   |
+| Version                              | Title                    | Status       |
+| ------------------------------------ | ------------------------ | ------------ |
+| [v0.5.5a](v0.5.x/LCS-CL-055a.md)     | Filter Model             | ✅ Complete  |
+| [v0.5.5b](v0.5.x/LCS-CL-055b.md)     | Filter UI Component      | ✅ Complete  |
+| [v0.5.5c-i](v0.5.x/LCS-CL-055c-i.md) | Filter Query Builder + Linking Review UI | ✅ Complete |
+| v0.5.5d                              | Saved Filters            | 🔜 Planned   |
 
 ---
 
