@@ -869,6 +869,14 @@
 | `SnippetOptions`   | v0.5.6a    | Abstractions | Extraction configuration  |
 | `HighlightTheme`   | v0.5.6b    | Modules.RAG  | Highlight colors          |
 | `SentenceBoundary` | v0.5.6c    | Abstractions | Sentence position         |
+| `MatchInfo`        | v0.5.6d    | Modules.RAG  | Match position and type   |
+| `MatchCluster`     | v0.5.6d    | Modules.RAG  | Clustered match region    |
+
+**New Static Classes (v0.5.6):**
+
+| Static Class             | Defined In | Module      | Purpose                    |
+| :----------------------- | :--------- | :---------- | :------------------------- |
+| `MatchClusteringService` | v0.5.6d    | Modules.RAG | Clustering and dedup logic |
 
 **New Enums (v0.5.6):**
 
@@ -1513,13 +1521,15 @@ graph TB
 - [x] IHighlightRenderer interface (v0.5.6b)
 - [x] HighlightedSnippetControl UI (v0.5.6b)
 - [x] HighlightTheme record (v0.5.6b)
-- [ ] ISentenceBoundaryDetector interface (v0.5.6c)
-- [ ] SentenceBoundaryDetector implementation (v0.5.6c)
-- [ ] SentenceBoundary record (v0.5.6c)
-- [ ] Match density scoring algorithm (v0.5.6c)
-- [ ] MultiSnippetViewModel (v0.5.6d)
-- [ ] Region clustering algorithm (v0.5.6d)
-- [ ] Snippet deduplication logic (v0.5.6d)
+- [x] ISentenceBoundaryDetector interface (v0.5.6c)
+- [x] SentenceBoundaryDetector implementation (v0.5.6c)
+- [x] SentenceBoundary record (v0.5.6c)
+- [x] Match density scoring algorithm (v0.5.6c)
+- [x] MultiSnippetViewModel (v0.5.6d)
+- [x] Region clustering algorithm (v0.5.6d)
+- [x] Snippet deduplication logic (v0.5.6d)
+- [x] MatchClusteringService static class (v0.5.6d)
+- [x] MultiSnippetPanel UI control (v0.5.6d)
 
 ### v0.5.7 Prerequisites for v0.5.8+
 

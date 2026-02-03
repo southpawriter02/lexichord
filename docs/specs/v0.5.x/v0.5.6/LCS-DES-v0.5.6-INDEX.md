@@ -12,8 +12,8 @@
 | **Swimlane**         | Memory                                  |
 | **License Tier**     | Core (basic) / Writer Pro (config)      |
 | **Feature Gate Key** | `FeatureFlags.RAG.AnswerPreview`        |
-| **Status**           | Draft                                   |
-| **Last Updated**     | 2026-01-27                              |
+| **Status**           | In Progress (a,b,c ✅)                  |
+| **Last Updated**     | 2026-02-03                              |
 
 ---
 
@@ -61,12 +61,12 @@ Implement a comprehensive snippet system that:
 
 ### 2.2 Sub-Part Design Specifications
 
-| Sub-Part | Document                              | Title                   | Description                         |
-| :------- | :------------------------------------ | :---------------------- | :---------------------------------- |
-| v0.5.6a  | **[LCS-DES-056a](./LCS-DES-056a.md)** | Snippet Extraction      | Core extraction service and records |
-| v0.5.6b  | **[LCS-DES-056b](./LCS-DES-056b.md)** | Query Term Highlighting | Highlight rendering and styling     |
-| v0.5.6c  | **[LCS-DES-056c](./LCS-DES-056c.md)** | Smart Truncation        | Sentence boundary detection         |
-| v0.5.6d  | **[LCS-DES-056d](./LCS-DES-056d.md)** | Multi-Snippet Results   | Expandable multi-region display     |
+| Sub-Part | Document                              | Title                   | Description                         | Status         |
+| :------- | :------------------------------------ | :---------------------- | :---------------------------------- | :------------- |
+| v0.5.6a  | **[LCS-DES-056a](./LCS-DES-056a.md)** | Snippet Extraction      | Core extraction service and records | ✅ Implemented |
+| v0.5.6b  | **[LCS-DES-056b](./LCS-DES-056b.md)** | Query Term Highlighting | Highlight rendering and styling     | ✅ Implemented |
+| v0.5.6c  | **[LCS-DES-056c](./LCS-DES-056c.md)** | Smart Truncation        | Sentence boundary detection         | ✅ Implemented |
+| v0.5.6d  | **[LCS-DES-056d](./LCS-DES-v0.5.6d.md)** | Multi-Snippet Results   | Expandable multi-region display     | ✅ Implemented |
 
 ---
 

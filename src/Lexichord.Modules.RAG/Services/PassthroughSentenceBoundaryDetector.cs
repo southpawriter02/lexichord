@@ -10,7 +10,7 @@
 //   - Thread-safe and stateless.
 // =============================================================================
 // VERSION: v0.5.6a (Snippet Extraction) - Placeholder
-//          v0.5.6c (Sentence Boundary Detection) - Will be replaced
+//          v0.5.6c (Smart Truncation) - Replaced by SentenceBoundaryDetector
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
@@ -38,6 +38,9 @@ namespace Lexichord.Modules.RAG.Services;
 /// </para>
 /// <para>
 /// <b>Introduced in:</b> v0.5.6a as a placeholder for v0.5.6c.
+/// </para>
+/// <para>
+/// <b>Superseded by:</b> <see cref="SentenceBoundaryDetector"/> in v0.5.6c.
 /// </para>
 /// </remarks>
 public sealed class PassthroughSentenceBoundaryDetector : ISentenceBoundaryDetector
@@ -83,4 +86,38 @@ public sealed class PassthroughSentenceBoundaryDetector : ISentenceBoundaryDetec
             ? 0
             : Math.Min(content.Length, position);
     }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Returns the entire text as a single sentence boundary.
+    /// </remarks>
+    public IReadOnlyList<SentenceBoundary> GetBoundaries(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return Array.Empty<SentenceBoundary>();
+        }
+
+        // LOGIC: Treat entire text as one sentence.
+        return new[] { new SentenceBoundary(0, text.Length) };
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Returns the input position unchanged.
+    /// </remarks>
+    public int FindWordStart(string text, int position)
+    {
+        return Math.Max(0, position);
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Returns the input position unchanged.
+    /// </remarks>
+    public int FindWordEnd(string text, int position)
+    {
+        return string.IsNullOrEmpty(text) ? 0 : Math.Min(text.Length, position);
+    }
 }
+

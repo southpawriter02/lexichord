@@ -68,4 +68,43 @@ public interface ISentenceBoundaryDetector
     /// (typically . ! or ?), suitable for use as an exclusive end index.
     /// </remarks>
     int FindSentenceEnd(string content, int position);
+
+    /// <summary>
+    /// Gets all sentence boundaries in the text.
+    /// </summary>
+    /// <param name="text">The text to analyze.</param>
+    /// <returns>
+    /// A list of <see cref="SentenceBoundary"/> records representing each sentence.
+    /// Returns an empty list for empty or whitespace-only text.
+    /// </returns>
+    /// <remarks>
+    /// <para>Sentences are identified by terminators (. ! ?) while accounting for
+    /// abbreviations and decimal numbers.</para>
+    /// <para>Text without explicit terminators is treated as a single sentence.</para>
+    /// </remarks>
+    IReadOnlyList<SentenceBoundary> GetBoundaries(string text);
+
+    /// <summary>
+    /// Finds the nearest word boundary before or at the given position.
+    /// </summary>
+    /// <param name="text">The text to search.</param>
+    /// <param name="position">The starting position.</param>
+    /// <returns>Position of the word start (first character of the word).</returns>
+    /// <remarks>
+    /// Used as a fallback when sentence boundary detection would exceed length limits.
+    /// Word boundaries are identified by whitespace characters.
+    /// </remarks>
+    int FindWordStart(string text, int position);
+
+    /// <summary>
+    /// Finds the nearest word boundary after or at the given position.
+    /// </summary>
+    /// <param name="text">The text to search.</param>
+    /// <param name="position">The starting position.</param>
+    /// <returns>Position after the word end (suitable as exclusive index).</returns>
+    /// <remarks>
+    /// Used as a fallback when sentence boundary detection would exceed length limits.
+    /// Word boundaries are identified by whitespace characters.
+    /// </remarks>
+    int FindWordEnd(string text, int position);
 }

@@ -12,8 +12,8 @@
 | **Depends On**   | v0.5.6a (SnippetOptions) |
 | **Required By**  | v0.5.6a (SnippetService) |
 | **License Tier** | Core                     |
-| **Status**       | Draft                    |
-| **Last Updated** | 2026-01-27               |
+| **Status**       | ✅ Implemented           |
+| **Last Updated** | 2026-02-03               |
 
 ---
 

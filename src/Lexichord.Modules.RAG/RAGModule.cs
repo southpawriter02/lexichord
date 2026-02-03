@@ -72,7 +72,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 5, 5),
+        Version: new Version(0, 5, 6),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search, query understanding, and context-aware assistance"
     );
@@ -502,10 +502,10 @@ public sealed class RAGModule : IModule
         // v0.5.6a: Answer Preview (Snippet Extraction)
         // =============================================================================
 
-        // LOGIC: Register PassthroughSentenceBoundaryDetector as singleton (v0.5.6a).
-        // Placeholder implementation that passes through positions unchanged.
-        // Will be replaced by actual sentence detection logic in v0.5.6c.
-        services.AddSingleton<ISentenceBoundaryDetector, PassthroughSentenceBoundaryDetector>();
+        // LOGIC: Register SentenceBoundaryDetector as singleton (v0.5.6c).
+        // Provides abbreviation-aware sentence boundary detection for smart truncation.
+        // Replaces PassthroughSentenceBoundaryDetector from v0.5.6a.
+        services.AddSingleton<ISentenceBoundaryDetector, SentenceBoundaryDetector>();
 
         // LOGIC: Register SnippetService as singleton (v0.5.6a).
         // Extracts contextual snippets from chunks with query highlighting.

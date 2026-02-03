@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.RAG.ViewModels"
+             xmlns:controls="using:Lexichord.Modules.RAG.Controls"
+             xmlns:contracts="using:Lexichord.Abstractions.Contracts"
+             mc:Ignorable="d"
+             x:Class="Lexichord.Modules.RAG.Views.MultiSnippetPanel"
+             x:DataType="vm:MultiSnippetViewModel">
+
+    <!-- =================================================================== -->
+    <!-- File: MultiSnippetPanel.axaml                                      -->
+    <!-- Project: Lexichord.Modules.RAG                                     -->
+    <!-- Description: Expandable panel for displaying multiple snippets.    -->
+    <!-- =================================================================== -->
+    <!-- LOGIC: Displays primary snippet with optional additional snippets. -->
+    <!--   - Primary snippet is always visible in a bordered container.     -->
+    <!--   - Expander button appears when additional snippets exist.        -->
+    <!--   - Additional snippets shown in ItemsControl when expanded.       -->
+    <!-- =================================================================== -->
+    <!-- VERSION: v0.5.6d (Multi-Snippet Results)                           -->
+    <!-- =================================================================== -->
+
+    <UserControl.Styles>
+        <!-- Snippet container style -->
+        <Style Selector="Border.snippet-container">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="12,8"/>
+        </Style>
+
+        <!-- Last snippet container (no bottom border) -->
+        <Style Selector="Border.snippet-container-last">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,8"/>
+        </Style>
+
+        <!-- Expander button style -->
+        <Style Selector="Button.expander-button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <!-- Expander button hover state -->
+        <Style Selector="Button.expander-button:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceHover}"/>
+        </Style>
+
+        <!-- Chevron icon style -->
+        <Style Selector="PathIcon.expander-icon">
+            <Setter Property="Width" Value="12"/>
+            <Setter Property="Height" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+        </Style>
+
+        <!-- Chevron rotation when expanded -->
+        <Style Selector="PathIcon.expander-icon.expanded">
+            <Setter Property="RenderTransform">
+                <RotateTransform Angle="180"/>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Spacing="0">
+        <!-- Primary Snippet (always visible) -->
+        <Border Classes="snippet-container">
+            <controls:HighlightedSnippetControl
+                Snippet="{Binding PrimarySnippet}"/>
+        </Border>
+
+        <!-- Expander Button -->
+        <Button Classes="expander-button"
+                Command="{Binding ToggleExpandedCommand}"
+                IsVisible="{Binding HasAdditionalSnippets}"
+                HorizontalAlignment="Left"
+                Margin="12,4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <PathIcon Classes="expander-icon"
+                          Classes.expanded="{Binding IsExpanded}"
+                          Data="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
+                <TextBlock Text="{Binding ExpanderText}"/>
+            </StackPanel>
+        </Button>
+
+        <!-- Additional Snippets (visible when expanded) -->
+        <ItemsControl ItemsSource="{Binding AdditionalSnippets}"
+                      IsVisible="{Binding IsExpanded}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="contracts:Snippet">
+                    <Border Classes="snippet-container">
+                        <controls:HighlightedSnippetControl
+                            Snippet="{Binding}"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

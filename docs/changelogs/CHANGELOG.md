@@ -14,16 +14,20 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 
 #### What's New
 
-- **Snippet Extraction** — Implemented `ISnippetService` interface and `SnippetService` class for extracting contextual snippets from `TextChunk` content. Features match density calculation to center snippets on query-relevant regions, sliding window algorithm for optimal placement, highlight span generation for exact and fuzzy matches, and sentence-aware boundary expansion (placeholder until v0.5.6c). Includes `Snippet`, `HighlightSpan`, `HighlightType`, and `SnippetOptions` records with factory methods (`Empty`, `FromPlainText`) and preset configurations (`Default`, `Compact`, `Extended`). Added `ISentenceBoundaryDetector` interface and `PassthroughSentenceBoundaryDetector` placeholder. Includes 46 unit tests.
+- **Snippet Extraction** — Implemented `ISnippetService` interface and `SnippetService` class for extracting contextual snippets from `TextChunk` content. Features match density calculation to center snippets on query-relevant regions, sliding window algorithm for optimal placement, highlight span generation for exact and fuzzy matches, and sentence-aware boundary expansion. Includes `Snippet`, `HighlightSpan`, `HighlightType`, and `SnippetOptions` records with factory methods (`Empty`, `FromPlainText`) and preset configurations (`Default`, `Compact`, `Extended`). Added `ISentenceBoundaryDetector` interface for boundary detection. Includes 46 unit tests.
+
+- **Query Term Highlighting** — Implemented `IHighlightRenderer` interface and `HighlightRenderer` for converting snippet highlight spans into styled text runs. Added `HighlightThemeStyle` configuration record with 4 built-in theme presets (Dark, Light, HighContrast, Monokai). Created `HighlightedSnippetControl` Avalonia control for rendering styled text with support for match type colors and optional underlines. Includes 27 unit tests.
+
+- **Smart Truncation** — Implemented `SentenceBoundaryDetector` with 50+ abbreviation recognition (titles, Latin, initialisms like U.S.A.), decimal number detection, and forward-looking pattern matching. Added `SentenceBoundary` record with `Contains()` and `OverlapsWith()` helpers. Created `MatchDensityCalculator` with sliding window algorithm and HighlightType weights (QueryMatch: 2.0, FuzzyMatch: 1.0, other: 0.5). Replaces placeholder implementation. Includes 68 unit tests.
 
 #### Sub-Part Changelogs
 
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.6a](v0.5.x/LCS-CL-056a.md) | Snippet Extraction       | ✅ Complete |
-| v0.5.6b                          | Preview UI Component     | 🔜 Planned  |
-| v0.5.6c                          | Sentence Boundary Detection | 🔜 Planned |
-| v0.5.6d                          | Highlight Rendering      | 🔜 Planned  |
+| [v0.5.6b](v0.5.x/LCS-CL-056b.md) | Query Term Highlighting  | ✅ Complete |
+| [v0.5.6c](v0.5.x/LCS-CL-056c.md) | Smart Truncation         | ✅ Complete |
+| [v0.5.6d](v0.5.x/LCS-CL-056d.md) | Multi-Snippet Results    | ✅ Complete |
 
 ---
 
