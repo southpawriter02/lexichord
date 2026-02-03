@@ -22,6 +22,8 @@ This release introduces the Context Window — intelligent context expansion for
 
 - **Heading Hierarchy Service** — Implemented `HeadingHierarchyService` to resolve heading breadcrumb trails for document chunks, replacing the stub implementation from v0.5.3a. Uses stack-based tree construction from chunk heading metadata and recursive depth-first search for breadcrumb resolution. Extended `Chunk` model with `Heading` and `HeadingLevel` properties, added `ChunkHeadingInfo` record for efficient heading queries, and updated all `ChunkRepository` queries to include heading columns. Includes document-level caching (50 entries) with automatic invalidation via MediatR event handlers. Handles edge cases including multiple H1 headings, skipped levels (H1→H3), and chunks before/after headings. Includes 30 unit tests.
 
+- **Context Preview UI** — Implemented expandable context previews in search results with `ContextPreviewViewModel` for state management, custom `BreadcrumbControl` and `ContextChunkControl` Avalonia controls, and `ContextPreviewViewModelFactory` for TextChunk to Chunk conversion. Features include expand/collapse with cached context data, heading breadcrumb display, before/after chunk visualization with muted styling, and license gating (WriterPro+) with upgrade prompt. Added `LicenseTooltipConverter` for license-aware tooltips and `UpgradePromptRequestedEvent` for cross-module upgrade dialog communication. Includes 44 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                     | Status         |
@@ -29,6 +31,7 @@ This release introduces the Context Window — intelligent context expansion for
 | [v0.5.3a](v0.5.x/LCS-CL-053a.md) | Context Expansion Service | ✅ Complete    |
 | [v0.5.3b](v0.5.x/LCS-CL-053b.md) | Sibling Chunk Retrieval   | ✅ Complete    |
 | [v0.5.3c](v0.5.x/LCS-CL-053c.md) | Heading Hierarchy Service | ✅ Complete    |
+| [v0.5.3d](v0.5.x/LCS-CL-053d.md) | Context Preview UI        | ✅ Complete    |
 
 ---
 

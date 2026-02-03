@@ -12,6 +12,7 @@
 //   - SectionHeading: From Chunk.Heading metadata (if present).
 //   - NavigateCommand: Opens the source document at the chunk's offset.
 //   - Copy commands: Clipboard operations for citations and content (v0.5.2d).
+//   - ContextPreview: Manages context expansion state and display (v0.5.3d).
 // =============================================================================
 // DEPENDENCIES (referenced by version):
 //   - v0.4.5a: SearchHit, TextChunk, Document
@@ -19,6 +20,7 @@
 //   - v0.4.6c: IReferenceNavigationService (future)
 //   - v0.5.2a: Citation, ICitationService
 //   - v0.5.2d: ICitationClipboardService, CitationStyle
+//   - v0.5.3d: IContextPreviewViewModelFactory, ContextPreviewViewModel
 // =============================================================================
 
 using System.Text.RegularExpressions;
@@ -59,8 +61,13 @@ namespace Lexichord.Modules.RAG.ViewModels;
 /// </list>
 /// </para>
 /// <para>
+/// <b>Context Preview (v0.5.3d):</b> Each search result can optionally have a
+/// <see cref="ContextPreviewViewModel"/> for managing expand/collapse state and
+/// displaying surrounding context from the document.
+/// </para>
+/// <para>
 /// <b>Introduced in:</b> v0.4.6a, enhanced in v0.4.6b with ScoreColor and QueryTerms,
-/// enhanced in v0.5.2d with copy commands.
+/// enhanced in v0.5.2d with copy commands, enhanced in v0.5.3d with context preview.
 /// </para>
 /// </remarks>
 public partial class SearchResultItemViewModel : ObservableObject
@@ -74,6 +81,10 @@ public partial class SearchResultItemViewModel : ObservableObject
 
     // LOGIC: Cached citation created on-demand for copy operations (v0.5.2d).
     private Citation? _cachedCitation;
+
+    // LOGIC: ContextPreviewViewModel for managing expand/collapse state (v0.5.3d).
+    // Created via factory when IContextPreviewViewModelFactory is provided.
+    private readonly ContextPreviewViewModel? _contextPreview;
 
     // LOGIC: Regex pattern for extracting query terms.
     // Matches quoted phrases or individual words.
@@ -102,6 +113,10 @@ public partial class SearchResultItemViewModel : ObservableObject
     /// Optional clipboard service for copy operations (v0.5.2d).
     /// If null, copy commands are disabled.
     /// </param>
+    /// <param name="contextPreviewFactory">
+    /// Optional factory for creating context preview ViewModels (v0.5.3d).
+    /// If null, context preview functionality is disabled.
+    /// </param>
     /// <param name="logger">Optional logger for diagnostics.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="hit"/> is null.</exception>
     public SearchResultItemViewModel(
@@ -110,6 +125,7 @@ public partial class SearchResultItemViewModel : ObservableObject
         string? query = null,
         ICitationService? citationService = null,
         ICitationClipboardService? clipboardService = null,
+        IContextPreviewViewModelFactory? contextPreviewFactory = null,
         ILogger<SearchResultItemViewModel>? logger = null)
     {
         _hit = hit ?? throw new ArgumentNullException(nameof(hit));
@@ -118,6 +134,17 @@ public partial class SearchResultItemViewModel : ObservableObject
         _citationService = citationService;
         _clipboardService = clipboardService;
         _logger = logger;
+
+        // LOGIC: Create context preview ViewModel if factory is provided (v0.5.3d).
+        // The factory handles conversion from SearchHit to RAG Chunk.
+        _contextPreview = contextPreviewFactory?.Create(hit);
+
+        if (_contextPreview is not null)
+        {
+            _logger?.LogDebug(
+                "[SearchResultItemViewModel] ContextPreview created for {Document}",
+                DocumentName);
+        }
     }
 
     // =========================================================================
@@ -128,6 +155,36 @@ public partial class SearchResultItemViewModel : ObservableObject
     /// Gets the underlying search hit.
     /// </summary>
     public SearchHit Hit => _hit;
+
+    /// <summary>
+    /// Gets the context preview ViewModel for managing expand/collapse state (v0.5.3d).
+    /// </summary>
+    /// <value>
+    /// The <see cref="ContextPreviewViewModel"/> instance if the factory was provided;
+    /// otherwise, <c>null</c>.
+    /// </value>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: The context preview is created via <see cref="IContextPreviewViewModelFactory"/>
+    /// during construction. If the factory is not provided (e.g., when creating ViewModels
+    /// outside of the full DI container), context preview functionality is disabled.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.3d as part of The Context Window feature.
+    /// </para>
+    /// </remarks>
+    public ContextPreviewViewModel? ContextPreview => _contextPreview;
+
+    /// <summary>
+    /// Gets whether this result has context preview functionality available.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if <see cref="ContextPreview"/> is not null; otherwise, <c>false</c>.
+    /// </value>
+    /// <remarks>
+    /// Use this property to conditionally display the expand button in the UI.
+    /// </remarks>
+    public bool HasContextPreview => _contextPreview is not null;
 
     /// <summary>
     /// Gets the original search query.

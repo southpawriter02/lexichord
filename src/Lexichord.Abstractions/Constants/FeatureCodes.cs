@@ -187,4 +187,22 @@ public static class FeatureCodes
     public const string CitationValidation = "Feature.CitationValidation";
 
     #endregion
+
+    #region Context Window Features (v0.5.3)
+
+    /// <summary>
+    /// The Context Expansion feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the context expansion preview in search results.
+    /// When this feature is not enabled, the expand button shows a lock icon
+    /// and clicking it triggers an upgrade prompt instead of expanding context.
+    /// Context expansion retrieves sibling chunks (before/after) and heading
+    /// breadcrumbs for a retrieved search result.
+    /// Introduced in v0.5.3d.
+    /// </remarks>
+    public const string ContextExpansion = "Feature.ContextExpansion";
+
+    #endregion
 }

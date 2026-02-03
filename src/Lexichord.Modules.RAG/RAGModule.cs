@@ -22,6 +22,7 @@ using Lexichord.Modules.RAG.Embedding;
 using Lexichord.Modules.RAG.Indexing;
 using Lexichord.Modules.RAG.Search;
 using Lexichord.Modules.RAG.Services;
+using Lexichord.Modules.RAG.ViewModels;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -414,6 +415,17 @@ public sealed class RAGModule : IModule
             sp => sp.GetRequiredService<HeadingHierarchyService>());
         services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentRemovedFromIndexEvent>>(
             sp => sp.GetRequiredService<HeadingHierarchyService>());
+
+        // =============================================================================
+        // v0.5.3d: Context Window (Context Preview UI)
+        // =============================================================================
+
+        // LOGIC: Register ContextPreviewViewModelFactory as singleton (v0.5.3d).
+        // Factory for creating ContextPreviewViewModel instances from SearchHit data.
+        // Converts TextChunk to RAG Chunk for IContextExpansionService compatibility.
+        // Injects IContextExpansionService, ILicenseContext, and ILoggerFactory into
+        // created ViewModels. Stateless and thread-safe.
+        services.AddSingleton<IContextPreviewViewModelFactory, ViewModels.ContextPreviewViewModelFactory>();
     }
 
     /// <inheritdoc/>
