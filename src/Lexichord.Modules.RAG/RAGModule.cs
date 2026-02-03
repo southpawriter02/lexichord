@@ -512,6 +512,16 @@ public sealed class RAGModule : IModule
         // Thread-safe and stateless. Uses IQueryAnalyzer for keyword extraction
         // and ISentenceBoundaryDetector for natural boundary snapping.
         services.AddSingleton<ISnippetService, SnippetService>();
+
+        // =============================================================================
+        // v0.5.6b: Answer Preview (Query Term Highlighting)
+        // =============================================================================
+
+        // LOGIC: Register HighlightRenderer as singleton (v0.5.6b).
+        // Converts Snippet with HighlightSpan positions into styled text runs.
+        // Thread-safe and stateless. Platform-agnostic output enables unit testing
+        // without UI dependencies and potential reuse across UI frameworks.
+        services.AddSingleton<Rendering.IHighlightRenderer, Rendering.HighlightRenderer>();
     }
 
     /// <inheritdoc/>

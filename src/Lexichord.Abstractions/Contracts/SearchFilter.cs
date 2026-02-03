@@ -277,7 +277,7 @@ public record SearchFilter(
         FileExtensions?.Count > 0 ||
         ModifiedRange is not null ||
         Tags?.Count > 0 ||
-        HasHeadings.HasValue;
+        HasHeadings == true;  // Only true is considered a filter; false/null means no restriction
 
     /// <summary>
     /// Gets the total number of distinct criteria applied.
@@ -297,7 +297,7 @@ public record SearchFilter(
             if (FileExtensions?.Count > 0) count++;
             if (ModifiedRange is not null) count++;
             if (Tags?.Count > 0) count++;
-            if (HasHeadings.HasValue) count++;
+            if (HasHeadings == true) count++;
             return count;
         }
     }

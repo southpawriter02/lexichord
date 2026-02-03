@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.RAG.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+             x:Class="Lexichord.Modules.RAG.Controls.HighlightedSnippetControl"
+             x:DataType="vm:HighlightedSnippetViewModel">
+
+    <!-- =============================================================================
+    File: HighlightedSnippetControl.axaml
+    Project: Lexichord.Modules.RAG
+    Description: Custom control for displaying snippets with styled query highlights.
+    ============================================================================= -->
+    <!-- LOGIC: Uses SelectableTextBlock with bound Inlines for styled text display.
+         Supports keyboard navigation and text selection for accessibility.
+    -->
+    <!-- DEPENDENCIES:
+         - v0.5.6a: Snippet record with HighlightSpan positions
+         - v0.5.6b: IHighlightRenderer, HighlightedSnippetViewModel
+    -->
+
+    <UserControl.Styles>
+        <!-- Base snippet text style -->
+        <Style Selector="SelectableTextBlock.snippet">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"/>
+            <Setter Property="LineHeight" Value="18"/>
+        </Style>
+
+        <!-- Exact match highlight style (bold, blue) -->
+        <Style Selector="Run.exact-match">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource HighlightExactForeground}"/>
+        </Style>
+
+        <!-- Fuzzy match highlight style (italic, purple) -->
+        <Style Selector="Run.fuzzy-match">
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Foreground" Value="{DynamicResource HighlightFuzzyForeground}"/>
+        </Style>
+
+        <!-- Ellipsis style (muted gray) -->
+        <Style Selector="Run.ellipsis">
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <SelectableTextBlock Classes="snippet"
+                         Inlines="{Binding FormattedInlines}"
+                         IsTabStop="True"
+                         Focusable="True"
+                         ToolTip.Tip="Select text to copy"/>
+</UserControl>

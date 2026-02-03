@@ -16,7 +16,6 @@
 //   - ILogger<T> (v0.0.3b) for structured logging
 // =============================================================================
 
-using System.Collections.Concurrent;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.RAG;
 using Microsoft.Extensions.Logging;
@@ -50,11 +49,6 @@ public sealed class QueryExpander : IQueryExpander
 {
     private readonly ILicenseContext _licenseContext;
     private readonly ILogger<QueryExpander> _logger;
-
-    /// <summary>
-    /// Cache for expanded terms (term → synonyms).
-    /// </summary>
-    private readonly ConcurrentDictionary<string, IReadOnlyList<Synonym>> _expansionCache = new();
 
     /// <summary>
     /// Feature flag for Writer Pro gating.
@@ -194,23 +188,31 @@ public sealed class QueryExpander : IQueryExpander
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var synonyms = await GetSynonymsAsync(keyword, options, cancellationToken);
+            var (databaseSynonyms, algorithmicSynonyms) = await GetSynonymsAsync(keyword, options, cancellationToken);
 
-            if (synonyms.Count > 0)
+            // LOGIC: Only add to Expansions dictionary if there are database synonyms.
+            // Algorithmic variants are added to keywords but not tracked in Expansions.
+            if (databaseSynonyms.Count > 0)
             {
-                expansions[keyword] = synonyms;
+                expansions[keyword] = databaseSynonyms;
 
-                // Add synonym terms to expanded keywords.
-                foreach (var synonym in synonyms)
+                _logger.LogDebug("Expanded '{Term}' to {SynonymCount} database synonyms",
+                    keyword, databaseSynonyms.Count);
+            }
+
+            // Add all synonym terms (both database and algorithmic) to expanded keywords.
+            foreach (var synonym in databaseSynonyms.Concat(algorithmicSynonyms))
+            {
+                if (!allKeywords.Contains(synonym.Term, StringComparer.OrdinalIgnoreCase))
                 {
-                    if (!allKeywords.Contains(synonym.Term, StringComparer.OrdinalIgnoreCase))
-                    {
-                        allKeywords.Add(synonym.Term);
-                    }
+                    allKeywords.Add(synonym.Term);
                 }
+            }
 
-                _logger.LogDebug("Expanded '{Term}' to {SynonymCount} synonyms",
-                    keyword, synonyms.Count);
+            if (algorithmicSynonyms.Count > 0)
+            {
+                _logger.LogDebug("Added {SynonymCount} algorithmic variants for '{Term}'",
+                    algorithmicSynonyms.Count, keyword);
             }
         }
 
@@ -229,60 +231,64 @@ public sealed class QueryExpander : IQueryExpander
     #region Private Methods
 
     /// <summary>
-    /// Gets synonyms for a single keyword.
+    /// Gets synonyms for a single keyword, returning database and algorithmic synonyms separately.
     /// </summary>
-    private Task<IReadOnlyList<Synonym>> GetSynonymsAsync(
+    private Task<(IReadOnlyList<Synonym> Database, IReadOnlyList<Synonym> Algorithmic)> GetSynonymsAsync(
         string keyword,
         ExpansionOptions options,
         CancellationToken cancellationToken)
     {
-        // LOGIC: Check cache first.
-        var cacheKey = $"{keyword.ToLowerInvariant()}:{options.MaxSynonymsPerTerm}:{options.MinSynonymWeight}";
-
-        if (_expansionCache.TryGetValue(cacheKey, out var cached))
-        {
-            return Task.FromResult(cached);
-        }
-
-        var synonyms = new List<Synonym>();
+        var databaseSynonyms = new List<Synonym>();
+        var algorithmicSynonyms = new List<Synonym>();
 
         // LOGIC: Look up in built-in technical synonyms.
         if (TechnicalSynonyms.TryGetValue(keyword, out var builtInSynonyms))
         {
             foreach (var (term, weight) in builtInSynonyms)
             {
-                if (weight >= options.MinSynonymWeight && synonyms.Count < options.MaxSynonymsPerTerm)
+                if (weight >= options.MinSynonymWeight && databaseSynonyms.Count < options.MaxSynonymsPerTerm)
                 {
-                    synonyms.Add(new Synonym(term, weight, SynonymSource.TerminologyDatabase));
+                    databaseSynonyms.Add(new Synonym(term, weight, SynonymSource.TerminologyDatabase));
                 }
             }
         }
 
         // LOGIC: Add algorithmic variants (stemming) if enabled.
-        if (options.IncludeAlgorithmic && synonyms.Count < options.MaxSynonymsPerTerm)
+        // Only add algorithmic variants if they meet the minimum weight threshold.
+        if (options.IncludeAlgorithmic)
         {
-            var stemmed = GetStemVariants(keyword);
-            foreach (var variant in stemmed)
+            const float algorithmicWeight = 0.75f;
+            if (algorithmicWeight >= options.MinSynonymWeight)
             {
-                if (!synonyms.Any(s => s.Term.Equals(variant, StringComparison.OrdinalIgnoreCase)))
+                var totalCount = databaseSynonyms.Count;
+                var stemmed = GetStemVariants(keyword);
+                foreach (var variant in stemmed)
                 {
-                    synonyms.Add(new Synonym(variant, 0.75f, SynonymSource.Algorithmic));
-                    if (synonyms.Count >= options.MaxSynonymsPerTerm) break;
+                    if (totalCount >= options.MaxSynonymsPerTerm) break;
+                    if (!databaseSynonyms.Any(s => s.Term.Equals(variant, StringComparison.OrdinalIgnoreCase)) &&
+                        !algorithmicSynonyms.Any(s => s.Term.Equals(variant, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        algorithmicSynonyms.Add(new Synonym(variant, algorithmicWeight, SynonymSource.Algorithmic));
+                        totalCount++;
+                    }
                 }
             }
         }
 
         // LOGIC: Sort by weight descending and limit.
-        var result = synonyms
+        var dbResult = databaseSynonyms
             .OrderByDescending(s => s.Weight)
             .Take(options.MaxSynonymsPerTerm)
             .ToList()
             .AsReadOnly();
 
-        // LOGIC: Cache the result.
-        _expansionCache.TryAdd(cacheKey, result);
+        var algoResult = algorithmicSynonyms
+            .OrderByDescending(s => s.Weight)
+            .Take(Math.Max(0, options.MaxSynonymsPerTerm - dbResult.Count))
+            .ToList()
+            .AsReadOnly();
 
-        return Task.FromResult<IReadOnlyList<Synonym>>(result);
+        return Task.FromResult<(IReadOnlyList<Synonym>, IReadOnlyList<Synonym>)>((dbResult, algoResult));
     }
 
     /// <summary>

@@ -188,9 +188,9 @@ public class IChunkRepositoryContractTests
         var methods = _interfaceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
         // Assert
-        // 3 read (GetByDocumentIdAsync, GetSiblingsAsync, SearchSimilarAsync) + 2 write = 5 methods
-        methods.Should().HaveCount(5,
-            because: "IChunkRepository should have exactly 5 methods");
+        // 4 read (GetByDocumentIdAsync, GetSiblingsAsync, GetChunksWithHeadingsAsync, SearchSimilarAsync) + 2 write = 6 methods
+        methods.Should().HaveCount(6,
+            because: "IChunkRepository should have exactly 6 methods");
     }
 
     [Theory]

@@ -116,16 +116,24 @@ public sealed class QueryAnalyzer : IQueryAnalyzer
 
     /// <summary>
     /// Matches PascalCase or camelCase identifiers (e.g., IQueryAnalyzer, handleAsync).
+    /// Supports:
+    /// - PascalCase: QueryAnalyzer, MyService
+    /// - camelCase: handleAsync, getUserById
+    /// - Interface prefix: IQueryAnalyzer, IDisposable
     /// </summary>
     private static readonly Regex CodeIdentifierPattern = new(
-        @"\b([A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+|[a-z]+(?:[A-Z][a-z0-9]+)+)\b",
+        @"\b(I[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)+|[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]*)+|[a-z]+(?:[A-Z][a-z0-9]*)+)\b",
         RegexOptions.Compiled);
 
     /// <summary>
-    /// Matches file paths (e.g., src/Services/MyService.cs, ./config.json).
+    /// Matches file paths (e.g., src/Services/MyService.cs, ./config.json, docs/api/*.md).
+    /// Supports:
+    /// - Relative paths: ./config.json, ../settings.json
+    /// - Directory paths: src/Services/MyService.cs
+    /// - Glob patterns: *.md, docs/api/*.md
     /// </summary>
     private static readonly Regex FilePathPattern = new(
-        @"(?:\.{0,2}/)?(?:[\w-]+/)+[\w.-]+(?:\.\w+)?|\*\.\w+|[\w-]+\.\w{2,4}\b",
+        @"\.{1,2}/[\w.*/-]+\.\w+|(?:[\w-]+/)+[\w.*-]+(?:\.\w+)?|\*\.\w+",
         RegexOptions.Compiled);
 
     /// <summary>
@@ -390,12 +398,14 @@ public sealed class QueryAnalyzer : IQueryAnalyzer
             >= 4 => 0.7f
         };
 
-        // LOGIC: Entity bonus (entities indicate specific technical queries).
+        // LOGIC: Entity bonus (entities indicate highly specific technical queries).
+        // Entities are weighted more heavily than additional keywords since they
+        // represent concrete code artifacts, paths, versions, etc.
         float entityBonus = entityList.Count switch
         {
             <= 0 => 0.0f,
-            1 => 0.15f,
-            >= 2 => 0.25f
+            1 => 0.25f,
+            >= 2 => 0.35f
         };
 
         // LOGIC: Query length factor (longer queries tend to be more specific).

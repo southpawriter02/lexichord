@@ -113,14 +113,16 @@ public class SearchFilterTests
     }
 
     [Fact]
-    public void SearchFilter_HasCriteria_ReturnsTrue_WhenHasHeadingsSetToFalse()
+    public void SearchFilter_HasCriteria_ReturnsFalse_WhenHasHeadingsSetToFalse()
     {
         // Arrange
+        // Per the documentation: "When false or null, no heading restriction is applied."
+        // So HasHeadings: false is semantically equivalent to null (no filter).
         var filter = new SearchFilter(HasHeadings: false);
 
         // Assert
-        filter.HasCriteria.Should().BeTrue();
-        filter.CriteriaCount.Should().Be(1);
+        filter.HasCriteria.Should().BeFalse();
+        filter.CriteriaCount.Should().Be(0);
     }
 
     [Fact]
