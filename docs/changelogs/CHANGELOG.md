@@ -6,6 +6,27 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.5.5] - 2026-02 (In Progress)
+
+### The Filter System (Scoped Search)
+
+This release introduces the Filter System — scoped search that allows users to narrow results to specific documents, folders, file types, or metadata criteria. Filters can be saved as presets for quick reuse.
+
+#### What's New
+
+- **Filter Model** — Implemented `SearchFilter` record with path patterns (glob syntax), file extensions, date ranges, and heading filters. Includes `DateRange` record with factory methods (`LastDays`, `LastHours`, `Today`, `ForMonth`) for common temporal filters. Added `FilterPreset` record for saved filter configurations with Create/Rename/UpdateFilter methods. Implemented `IFilterValidator` interface and `FilterValidator` service for security validation (path traversal, null bytes) and structural checks. Available to all users (Core tier). Includes 60 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                    | Status       |
+| -------------------------------- | ------------------------ | ------------ |
+| [v0.5.5a](v0.5.x/LCS-CL-055a.md) | Filter Model             | ✅ Complete  |
+| v0.5.5b                          | Filter UI Component      | 🔜 Planned   |
+| v0.5.5c                          | Filter Query Builder     | 🔜 Planned   |
+| v0.5.5d                          | Saved Filters            | 🔜 Planned   |
+
+---
+
 ## [v0.5.4] - 2026-02 (In Progress)
 
 ### The Relevance Tuner (Query Intelligence)

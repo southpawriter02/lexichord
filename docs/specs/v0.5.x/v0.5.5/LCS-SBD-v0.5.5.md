@@ -1149,10 +1149,12 @@ dotnet test --filter "Category=Unit&FullyQualifiedName~Modules.RAG"
 
 | #   | Deliverable                                    | Status |
 | :-- | :--------------------------------------------- | :----- |
-| 1   | `SearchFilter` record in Abstractions          | [ ]    |
-| 2   | `DateRange` record with factory methods        | [ ]    |
-| 3   | `FilterPreset` record                          | [ ]    |
-| 4   | `IFilterValidator` interface                   | [ ]    |
+| 1   | `SearchFilter` record in Abstractions          | [x]    |
+| 2   | `DateRange` record with factory methods        | [x]    |
+| 3   | `FilterPreset` record                          | [x]    |
+| 4   | `IFilterValidator` interface                   | [x]    |
+| 4a  | `FilterValidationError` record                 | [x]    |
+| 4b  | `FilterValidator` implementation               | [x]    |
 | 5   | `SearchFilterPanel.axaml` with all sections    | [ ]    |
 | 6   | `SearchFilterPanelViewModel` with filter state | [ ]    |
 | 7   | Folder tree with checkboxes                    | [ ]    |

@@ -821,19 +821,21 @@
 
 | Class                        | Defined In | Module      | Purpose                    |
 | :--------------------------- | :--------- | :---------- | :------------------------- |
-| `FilterQueryBuilder`         | v0.5.5c    | Modules.RAG | SQL WHERE clause builder   |
-| `FilterPresetService`        | v0.5.5d    | Modules.RAG | Preset persistence service |
-| `SearchFilterPanel`          | v0.5.5b    | Modules.RAG | Filter panel UI view       |
-| `SearchFilterPanelViewModel` | v0.5.5b    | Modules.RAG | Filter state management    |
+| `FilterValidator`            | v0.5.5a    | Abstractions | Security and format validation |
+| `FilterQueryBuilder`         | v0.5.5c    | Modules.RAG  | SQL WHERE clause builder       |
+| `FilterPresetService`        | v0.5.5d    | Modules.RAG  | Preset persistence service     |
+| `SearchFilterPanel`          | v0.5.5b    | Modules.RAG  | Filter panel UI view           |
+| `SearchFilterPanelViewModel` | v0.5.5b    | Modules.RAG  | Filter state management        |
 
 **New Records (v0.5.5):**
 
-| Record              | Defined In | Module       | Purpose                   |
-| :------------------ | :--------- | :----------- | :------------------------ |
-| `SearchFilter`      | v0.5.5a    | Abstractions | Filter criteria container |
-| `DateRange`         | v0.5.5a    | Abstractions | Temporal filter bounds    |
-| `FilterPreset`      | v0.5.5a    | Abstractions | Saved configuration       |
-| `FilterQueryResult` | v0.5.5c    | Abstractions | SQL clauses + parameters  |
+| Record                    | Defined In | Module       | Purpose                       |
+| :------------------------ | :--------- | :----------- | :---------------------------- |
+| `SearchFilter`            | v0.5.5a    | Abstractions | Filter criteria container     |
+| `DateRange`               | v0.5.5a    | Abstractions | Temporal filter bounds        |
+| `FilterPreset`            | v0.5.5a    | Abstractions | Saved configuration           |
+| `FilterValidationError`   | v0.5.5a    | Abstractions | Validation error with code    |
+| `FilterQueryResult`       | v0.5.5c    | Abstractions | SQL clauses + parameters      |
 
 **New Enums (v0.5.5):**
 
@@ -1466,10 +1468,12 @@ graph TB
 
 ### v0.5.5 Prerequisites for v0.5.6+
 
-- [ ] SearchFilter record (v0.5.5a)
-- [ ] DateRange record with factory methods (v0.5.5a)
-- [ ] FilterPreset record (v0.5.5a)
-- [ ] IFilterValidator interface (v0.5.5a)
+- [x] SearchFilter record (v0.5.5a)
+- [x] DateRange record with factory methods (v0.5.5a)
+- [x] FilterPreset record (v0.5.5a)
+- [x] IFilterValidator interface (v0.5.5a)
+- [x] FilterValidator implementation (v0.5.5a)
+- [x] FilterValidationError record (v0.5.5a)
 - [ ] SearchFilterPanel UI component (v0.5.5b)
 - [ ] SearchFilterPanelViewModel (v0.5.5b)
 - [ ] DateRangeOption enum (v0.5.5b)

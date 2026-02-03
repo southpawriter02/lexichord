@@ -383,7 +383,7 @@ public sealed class QueryAnalyzer : IQueryAnalyzer
         // LOGIC: Base score from keyword count (more keywords = more specific).
         float keywordScore = keywordList.Count switch
         {
-            0 => 0.0f,
+            <= 0 => 0.0f,
             1 => 0.2f,
             2 => 0.4f,
             3 => 0.6f,
@@ -393,7 +393,7 @@ public sealed class QueryAnalyzer : IQueryAnalyzer
         // LOGIC: Entity bonus (entities indicate specific technical queries).
         float entityBonus = entityList.Count switch
         {
-            0 => 0.0f,
+            <= 0 => 0.0f,
             1 => 0.15f,
             >= 2 => 0.25f
         };
