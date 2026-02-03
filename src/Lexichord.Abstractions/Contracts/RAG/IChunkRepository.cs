@@ -52,6 +52,48 @@ public interface IChunkRepository
     Task<IEnumerable<Chunk>> GetByDocumentIdAsync(Guid documentId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Retrieves chunks adjacent to a center chunk within the same document.
+    /// </summary>
+    /// <param name="documentId">The document's unique identifier.</param>
+    /// <param name="centerIndex">The zero-based index of the center chunk.</param>
+    /// <param name="beforeCount">Number of chunks to retrieve before the center (0-5).</param>
+    /// <param name="afterCount">Number of chunks to retrieve after the center (0-5).</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A collection of sibling chunks ordered by <see cref="Chunk.ChunkIndex"/>.
+    /// Does NOT include the center chunk itself.
+    /// May contain fewer chunks than requested if near document boundaries.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.3a as part of The Context Window feature.
+    /// </para>
+    /// <para>
+    /// This method supports context expansion by retrieving surrounding chunks
+    /// for a given search result. The caller partitions results into before/after
+    /// based on the center index.
+    /// </para>
+    /// <para>
+    /// <b>Query behavior:</b> Retrieves chunks where:
+    /// <c>chunk_index BETWEEN (centerIndex - beforeCount) AND (centerIndex + afterCount)</c>
+    /// excluding the center chunk itself.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // For chunk at index 5, get 2 before and 1 after
+    /// var siblings = await repo.GetSiblingsAsync(docId, centerIndex: 5, beforeCount: 2, afterCount: 1);
+    /// // Returns chunks at indices 3, 4, 6 (if they exist)
+    /// </code>
+    /// </example>
+    Task<IReadOnlyList<Chunk>> GetSiblingsAsync(
+        Guid documentId,
+        int centerIndex,
+        int beforeCount,
+        int afterCount,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Searches for chunks similar to the provided query embedding.
     /// </summary>
     /// <param name="queryEmbedding">

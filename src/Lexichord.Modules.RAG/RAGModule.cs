@@ -70,7 +70,7 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 5, 2),
+        Version: new Version(0, 5, 3),
         Author: "Lexichord Team",
         Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
     );
@@ -372,6 +372,21 @@ public sealed class RAGModule : IModule
         // CitationFormatterRegistry for user style preferences, and IMediator for
         // publishing CitationCopiedEvent telemetry notifications.
         services.AddSingleton<ICitationClipboardService, CitationClipboardService>();
+
+        // =============================================================================
+        // v0.5.3a: Context Window (Context Expansion Service)
+        // =============================================================================
+
+        // LOGIC: Register StubHeadingHierarchyService as singleton (v0.5.3a).
+        // Placeholder implementation until v0.5.3c provides real heading hierarchy.
+        // Returns empty breadcrumbs for all queries. Thread-safe and stateless.
+        services.AddSingleton<IHeadingHierarchyService, StubHeadingHierarchyService>();
+
+        // LOGIC: Register ContextExpansionService as scoped (v0.5.3a).
+        // Scoped to align with IChunkRepository lifetime for sibling chunk queries.
+        // Provides context expansion with LRU caching (100 entries, FIFO eviction).
+        // License-gated via FeatureFlags.RAG.ContextWindow (WriterPro+).
+        services.AddScoped<IContextExpansionService, ContextExpansionService>();
     }
 
     /// <inheritdoc/>

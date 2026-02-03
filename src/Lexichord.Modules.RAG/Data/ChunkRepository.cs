@@ -92,6 +92,55 @@ public sealed class ChunkRepository : IChunkRepository
     }
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<Chunk>> GetSiblingsAsync(
+        Guid documentId,
+        int centerIndex,
+        int beforeCount,
+        int afterCount,
+        CancellationToken cancellationToken = default)
+    {
+        await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        // LOGIC: Query chunks within range [centerIndex - beforeCount, centerIndex + afterCount]
+        // excluding the center chunk itself. Order by chunk_index for consistent results.
+        const string sql = @"
+            SELECT id AS ""Id"", 
+                   document_id AS ""DocumentId"", 
+                   content AS ""Content"", 
+                   embedding AS ""Embedding"", 
+                   chunk_index AS ""ChunkIndex"", 
+                   start_offset AS ""StartOffset"", 
+                   end_offset AS ""EndOffset""
+            FROM chunks
+            WHERE document_id = @DocumentId
+              AND chunk_index >= @MinIndex
+              AND chunk_index <= @MaxIndex
+              AND chunk_index <> @CenterIndex
+            ORDER BY chunk_index";
+
+        var minIndex = Math.Max(0, centerIndex - beforeCount);
+        var maxIndex = centerIndex + afterCount;
+
+        var parameters = new
+        {
+            DocumentId = documentId,
+            MinIndex = minIndex,
+            MaxIndex = maxIndex,
+            CenterIndex = centerIndex
+        };
+
+        var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+        var results = await connection.QueryAsync<Chunk>(command);
+        var resultList = results.ToList();
+
+        _logger.LogDebug(
+            "GetSiblings {Table} DocumentId={DocumentId} Center={CenterIndex} Before={BeforeCount} After={AfterCount}: {Count} siblings",
+            TableName, documentId, centerIndex, beforeCount, afterCount, resultList.Count);
+
+        return resultList;
+    }
+
+    /// <inheritdoc />
     public async Task<IEnumerable<ChunkSearchResult>> SearchSimilarAsync(
         float[] queryEmbedding,
         int topK = 10,

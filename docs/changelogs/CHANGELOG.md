@@ -6,6 +6,28 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.5.3] - 2026-02 (In Progress)
+
+### The Context Window (Relevance Expansion)
+
+This release introduces the Context Window — intelligent context expansion for search results. Each retrieved chunk can now be expanded to include surrounding content and the document's heading hierarchy, providing writers with more contextual information without leaving the search results.
+
+#### What's New
+
+- **Context Expansion Service** — Implemented `IContextExpansionService` interface and `ContextExpansionService` class with LRU-style caching (FIFO eviction, 100-entry limit). Retrieves sibling chunks before and after a match (configurable 0-5 chunks each direction) via the new `IChunkRepository.GetSiblingsAsync` method. Includes graceful degradation for heading resolution and MediatR-based telemetry via `ContextExpandedEvent`. License-gated to WriterPro+ tier. Includes 31 unit tests.
+
+- **Context Abstractions** — Added `ContextOptions` record for configuring expansion parameters with validation and clamping (max 5 chunks per direction), `ExpandedChunk` record with computed properties (`HasBefore`, `HasAfter`, `HasBreadcrumb`, `TotalChunks`) and a `FormatBreadcrumb()` method, and `IHeadingHierarchyService` interface for heading resolution (stub implementation until v0.5.3c).
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                     | Status         |
+| -------------------------------- | ------------------------- | -------------- |
+| [v0.5.3a](v0.5.x/LCS-CL-053a.md) | Context Expansion Service | ✅ Complete    |
+| v0.5.3b                          | Expand/Collapse Controls  | 🔲 Not Started |
+| v0.5.3c                          | Heading Hierarchy Service | 🔲 Not Started |
+
+---
+
 ## [v0.5.2] - 2026-02 (In Progress)
 
 ### The Citation Engine (Source Attribution)
@@ -24,8 +46,8 @@ This release introduces the Citation Engine — comprehensive source attribution
 
 #### Sub-Part Changelogs
 
-| Version                            | Title                    | Status      |
-| ---------------------------------- | ------------------------ | ----------- |
+| Version                          | Title                    | Status      |
+| -------------------------------- | ------------------------ | ----------- |
 | [v0.5.2a](v0.5.x/LCS-CL-052a.md) | Citation Model           | ✅ Complete |
 | [v0.5.2b](v0.5.x/LCS-CL-052b.md) | Citation Styles          | ✅ Complete |
 | [v0.5.2c](v0.5.x/LCS-CL-052c.md) | Stale Citation Detection | ✅ Complete |
