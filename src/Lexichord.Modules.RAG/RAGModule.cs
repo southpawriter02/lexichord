@@ -497,6 +497,21 @@ public sealed class RAGModule : IModule
         // Stateless service that builds SQL queries from SearchFilter criteria.
         // Generates CTEs for efficient filtered vector search.
         services.AddSingleton<IFilterQueryBuilder, FilterQueryBuilder>();
+
+        // =============================================================================
+        // v0.5.6a: Answer Preview (Snippet Extraction)
+        // =============================================================================
+
+        // LOGIC: Register PassthroughSentenceBoundaryDetector as singleton (v0.5.6a).
+        // Placeholder implementation that passes through positions unchanged.
+        // Will be replaced by actual sentence detection logic in v0.5.6c.
+        services.AddSingleton<ISentenceBoundaryDetector, PassthroughSentenceBoundaryDetector>();
+
+        // LOGIC: Register SnippetService as singleton (v0.5.6a).
+        // Extracts contextual snippets from chunks with query highlighting.
+        // Thread-safe and stateless. Uses IQueryAnalyzer for keyword extraction
+        // and ISentenceBoundaryDetector for natural boundary snapping.
+        services.AddSingleton<ISnippetService, SnippetService>();
     }
 
     /// <inheritdoc/>

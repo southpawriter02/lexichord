@@ -6,6 +6,27 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.5.6] - 2026-02 (In Progress)
+
+### The Answer Preview (Snippet Generation)
+
+This release introduces the Answer Preview — contextual snippet extraction from search results that highlights matching query terms. Snippets are intelligently centered on the most relevant portions of each result, improving scan-ability and helping users quickly assess document relevance.
+
+#### What's New
+
+- **Snippet Extraction** — Implemented `ISnippetService` interface and `SnippetService` class for extracting contextual snippets from `TextChunk` content. Features match density calculation to center snippets on query-relevant regions, sliding window algorithm for optimal placement, highlight span generation for exact and fuzzy matches, and sentence-aware boundary expansion (placeholder until v0.5.6c). Includes `Snippet`, `HighlightSpan`, `HighlightType`, and `SnippetOptions` records with factory methods (`Empty`, `FromPlainText`) and preset configurations (`Default`, `Compact`, `Extended`). Added `ISentenceBoundaryDetector` interface and `PassthroughSentenceBoundaryDetector` placeholder. Includes 46 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                    | Status      |
+| -------------------------------- | ------------------------ | ----------- |
+| [v0.5.6a](v0.5.x/LCS-CL-056a.md) | Snippet Extraction       | ✅ Complete |
+| v0.5.6b                          | Preview UI Component     | 🔜 Planned  |
+| v0.5.6c                          | Sentence Boundary Detection | 🔜 Planned |
+| v0.5.6d                          | Highlight Rendering      | 🔜 Planned  |
+
+---
+
 ## [v0.5.5] - 2026-02 (In Progress)
 
 ### The Filter System (Scoped Search)
