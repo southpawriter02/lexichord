@@ -12,7 +12,7 @@
 | **Swimlane**          | Memory                                                             |
 | **License Tier**      | Writer Pro (Custom styles: Teams+)                                 |
 | **Feature Gate Key**  | `FeatureFlags.RAG.CitationStyles`                                  |
-| **Status**            | Draft                                                              |
+| **Status**            | Complete                                                           |
 | **Related Documents** | [LCS-SBD-052](./LCS-SBD-052.md), [LCS-DES-052a](./LCS-DES-052a.md) |
 
 ---
@@ -588,17 +588,17 @@ services.AddSingleton<CitationFormatterRegistry>();
 
 | #   | Deliverable                                | Status |
 | :-- | :----------------------------------------- | :----- |
-| 1   | `ICitationFormatter` interface             | [ ]    |
-| 2   | `InlineCitationFormatter` implementation   | [ ]    |
-| 3   | `FootnoteCitationFormatter` implementation | [ ]    |
-| 4   | `MarkdownCitationFormatter` implementation | [ ]    |
-| 5   | `CitationFormatterRegistry` service        | [ ]    |
-| 6   | `CitationSettingsKeys` constants           | [ ]    |
+| 1   | `ICitationFormatter` interface             | [x]    |
+| 2   | `InlineCitationFormatter` implementation   | [x]    |
+| 3   | `FootnoteCitationFormatter` implementation | [x]    |
+| 4   | `MarkdownCitationFormatter` implementation | [x]    |
+| 5   | `CitationFormatterRegistry` service        | [x]    |
+| 6   | `CitationSettingsKeys` constants           | [x]    |
 | 7   | Settings UI for citation style selection   | [ ]    |
 | 8   | Context menu "Copy as..." submenu          | [ ]    |
-| 9   | Unit tests for each formatter              | [ ]    |
-| 10  | Unit tests for registry                    | [ ]    |
-| 11  | DI registration                            | [ ]    |
+| 9   | Unit tests for each formatter              | [x]    |
+| 10  | Unit tests for registry                    | [x]    |
+| 11  | DI registration                            | [x]    |
 
 ---
 

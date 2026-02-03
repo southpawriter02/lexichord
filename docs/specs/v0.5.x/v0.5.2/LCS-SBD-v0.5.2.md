@@ -460,13 +460,13 @@ public interface ICitationClipboardService
 | 7 ✅      | v0.5.2a  | Implement `ValidateCitationAsync()` basic check     | 1            |
 | 8 ✅      | v0.5.2a  | Create `CitationCreatedEvent` MediatR notification  | 0.5          |
 | 9 ✅      | v0.5.2a  | Unit tests for citation creation                    | 2            |
-| 10        | v0.5.2b  | Create `ICitationFormatter` interface               | 0.25         |
-| 11        | v0.5.2b  | Implement `InlineCitationFormatter`                 | 1            |
-| 12        | v0.5.2b  | Implement `FootnoteCitationFormatter`               | 1            |
-| 13        | v0.5.2b  | Implement `MarkdownCitationFormatter`               | 1            |
-| 14        | v0.5.2b  | Add citation style setting to `ISettingsService`    | 1            |
+| 10 ✅     | v0.5.2b  | Create `ICitationFormatter` interface               | 0.25         |
+| 11 ✅     | v0.5.2b  | Implement `InlineCitationFormatter`                 | 1            |
+| 12 ✅     | v0.5.2b  | Implement `FootnoteCitationFormatter`               | 1            |
+| 13 ✅     | v0.5.2b  | Implement `MarkdownCitationFormatter`               | 1            |
+| 14 ✅     | v0.5.2b  | Add citation style setting to `ISettingsService`    | 1            |
 | 15        | v0.5.2b  | Create settings UI for citation style selection     | 1.5          |
-| 16        | v0.5.2b  | Unit tests for all formatters                       | 1.5          |
+| 16 ✅     | v0.5.2b  | Unit tests for all formatters                       | 1.5          |
 | 17        | v0.5.2c  | Create `CitationValidationResult` record            | 0.25         |
 | 18        | v0.5.2c  | Create `CitationValidationStatus` enum              | 0.25         |
 | 19        | v0.5.2c  | Create `ICitationValidator` interface               | 0.5          |
@@ -1029,11 +1029,11 @@ ls src/Lexichord.Abstractions/Contracts/ICitation*.cs
 | 3   | `ICitationService` interface                    | [x]    |
 | 4   | `CitationService` implementation                | [x]    |
 | 5   | `CitationCreatedEvent` MediatR notification     | [x]    |
-| 6   | `ICitationFormatter` interface                  | [ ]    |
-| 7   | `InlineCitationFormatter` implementation        | [ ]    |
-| 8   | `FootnoteCitationFormatter` implementation      | [ ]    |
-| 9   | `MarkdownCitationFormatter` implementation      | [ ]    |
-| 10  | Citation style user preference in settings      | [ ]    |
+| 6   | `ICitationFormatter` interface                  | [x]    |
+| 7   | `InlineCitationFormatter` implementation        | [x]    |
+| 8   | `FootnoteCitationFormatter` implementation      | [x]    |
+| 9   | `MarkdownCitationFormatter` implementation      | [x]    |
+| 10  | Citation style user preference in settings      | [x]    |
 | 11  | `ICitationValidator` interface                  | [ ]    |
 | 12  | `CitationValidator` implementation              | [ ]    |
 | 13  | `CitationValidationResult` record               | [ ]    |

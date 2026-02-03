@@ -267,7 +267,7 @@ if (!_licenseContext.HasFeature(FeatureFlags.RAG.Citation))
 | Sub-Part    | Tasks             | Est. Hours   |
 | :---------- | :---------------- | :----------- |
 | v0.5.2a ✅  | Citation Model    | 9.75         |
-| v0.5.2b     | Citation Styles   | 7.25         |
+| v0.5.2b ✅  | Citation Styles   | 7.25         |
 | v0.5.2c     | Stale Detection   | 8.5          |
 | v0.5.2d     | Copy Actions      | 6            |
 | Integration | DI, Events, Tests | 2.5          |

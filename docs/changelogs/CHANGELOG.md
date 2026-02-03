@@ -16,12 +16,14 @@ This release introduces the Citation Engine — comprehensive source attribution
 
 - **Citation Model** — Implemented `Citation` record with complete provenance fields (document path, heading, line number, indexing timestamp) and `ICitationService` interface for creating, formatting, and validating citations. Citations are created from search hits with automatic line number calculation from character offsets. Three formatting styles (Inline, Footnote, Markdown) are supported with license gating (WriterPro+). Includes 56 unit tests.
 
+- **Citation Styles** — Implemented `ICitationFormatter` interface and three built-in formatters: `InlineCitationFormatter` ([filename.md, §Heading]), `FootnoteCitationFormatter` ([^id]: /path:line), and `MarkdownCitationFormatter` ([Title](file:///path#L42)). Added `CitationFormatterRegistry` for style lookup and user preference persistence via `ISystemSettingsRepository`, with `CitationSettingsKeys` constants. Includes 53 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                            | Title                    | Status      |
 | ---------------------------------- | ------------------------ | ----------- |
 | [v0.5.2a](v0.5.x/LCS-CL-052a.md) | Citation Model           | ✅ Complete |
-| v0.5.2b                            | Citation Styles          | 🔜 Planned  |
+| [v0.5.2b](v0.5.x/LCS-CL-052b.md) | Citation Styles          | ✅ Complete |
 | v0.5.2c                            | Stale Citation Detection | 🔜 Planned  |
 | v0.5.2d                            | Citation Copy Actions    | 🔜 Planned  |
 

@@ -328,6 +328,22 @@ public sealed class RAGModule : IModule
         // Uses IWorkspaceService for relative path resolution, ILicenseContext for
         // license gating at the formatting layer, and IMediator for event publishing.
         services.AddSingleton<ICitationService, CitationService>();
+
+        // =============================================================================
+        // v0.5.2b: Citation Engine (Citation Styles)
+        // =============================================================================
+
+        // LOGIC: Register the three built-in citation formatters as singletons (v0.5.2b).
+        // Each formatter handles a single CitationStyle and is stateless/thread-safe.
+        // They are collected by CitationFormatterRegistry via IEnumerable<ICitationFormatter>.
+        services.AddSingleton<ICitationFormatter, Formatters.InlineCitationFormatter>();
+        services.AddSingleton<ICitationFormatter, Formatters.FootnoteCitationFormatter>();
+        services.AddSingleton<ICitationFormatter, Formatters.MarkdownCitationFormatter>();
+
+        // LOGIC: Register CitationFormatterRegistry as singleton (v0.5.2b).
+        // Provides style lookup, user preference management (via ISystemSettingsRepository),
+        // and preferred formatter access for downstream consumers (v0.5.2d copy actions).
+        services.AddSingleton<CitationFormatterRegistry>();
     }
 
     /// <inheritdoc/>
