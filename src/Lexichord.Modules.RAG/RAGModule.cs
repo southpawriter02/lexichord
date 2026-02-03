@@ -361,6 +361,17 @@ public sealed class RAGModule : IModule
         // independently track validation state and display the stale/missing
         // indicator with re-verify and dismiss actions.
         services.AddTransient<ViewModels.StaleIndicatorViewModel>();
+
+        // =============================================================================
+        // v0.5.2d: Citation Engine (Citation Copy Actions)
+        // =============================================================================
+
+        // LOGIC: Register CitationClipboardService as singleton (v0.5.2d).
+        // Provides clipboard operations for copying formatted citations, chunk text,
+        // and document paths. Uses ICitationService for formatting (license-gated),
+        // CitationFormatterRegistry for user style preferences, and IMediator for
+        // publishing CitationCopiedEvent telemetry notifications.
+        services.AddSingleton<ICitationClipboardService, CitationClipboardService>();
     }
 
     /// <inheritdoc/>

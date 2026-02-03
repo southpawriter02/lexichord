@@ -11,11 +11,14 @@
 //   - QueryTerms: Parsed query terms for highlighting (v0.4.6b).
 //   - SectionHeading: From Chunk.Heading metadata (if present).
 //   - NavigateCommand: Opens the source document at the chunk's offset.
+//   - Copy commands: Clipboard operations for citations and content (v0.5.2d).
 // =============================================================================
 // DEPENDENCIES (referenced by version):
 //   - v0.4.5a: SearchHit, TextChunk, Document
 //   - v0.4.6b: ScoreColor, QueryTerms for UI highlighting
 //   - v0.4.6c: IReferenceNavigationService (future)
+//   - v0.5.2a: Citation, ICitationService
+//   - v0.5.2d: ICitationClipboardService, CitationStyle
 // =============================================================================
 
 using System.Text.RegularExpressions;
@@ -47,7 +50,17 @@ namespace Lexichord.Modules.RAG.ViewModels;
 /// </list>
 /// </para>
 /// <para>
-/// <b>Introduced in:</b> v0.4.6a, enhanced in v0.4.6b with ScoreColor and QueryTerms.
+/// <b>Copy Commands (v0.5.2d):</b>
+/// <list type="bullet">
+///   <item><description>CopyCitationCommand: Copies formatted citation using preferred style.</description></item>
+///   <item><description>CopyAsCitationStyleCommand: Copies citation in specified style.</description></item>
+///   <item><description>CopyChunkTextCommand: Copies raw chunk content.</description></item>
+///   <item><description>CopyDocumentPathCommand: Copies document path.</description></item>
+/// </list>
+/// </para>
+/// <para>
+/// <b>Introduced in:</b> v0.4.6a, enhanced in v0.4.6b with ScoreColor and QueryTerms,
+/// enhanced in v0.5.2d with copy commands.
 /// </para>
 /// </remarks>
 public partial class SearchResultItemViewModel : ObservableObject
@@ -56,11 +69,16 @@ public partial class SearchResultItemViewModel : ObservableObject
     private readonly string _query;
     private readonly ILogger<SearchResultItemViewModel>? _logger;
     private readonly Action<SearchHit>? _navigateAction;
+    private readonly ICitationService? _citationService;
+    private readonly ICitationClipboardService? _clipboardService;
+
+    // LOGIC: Cached citation created on-demand for copy operations (v0.5.2d).
+    private Citation? _cachedCitation;
 
     // LOGIC: Regex pattern for extracting query terms.
     // Matches quoted phrases or individual words.
     private static readonly Regex QueryTermPattern = new(
-        @"""([^""]+)""|(\S+)",
+        @"""([^""]+)""|(\\S+)",
         RegexOptions.Compiled);
 
     /// <summary>
@@ -75,17 +93,29 @@ public partial class SearchResultItemViewModel : ObservableObject
     /// Optional original search query for term highlighting.
     /// If null or empty, no terms will be highlighted.
     /// </param>
+    /// <param name="citationService">
+    /// Optional citation service for creating citations (v0.5.2d).
+    /// If null, copy commands are disabled.
+    /// </param>
+    /// <param name="clipboardService">
+    /// Optional clipboard service for copy operations (v0.5.2d).
+    /// If null, copy commands are disabled.
+    /// </param>
     /// <param name="logger">Optional logger for diagnostics.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="hit"/> is null.</exception>
     public SearchResultItemViewModel(
         SearchHit hit,
         Action<SearchHit>? navigateAction = null,
         string? query = null,
+        ICitationService? citationService = null,
+        ICitationClipboardService? clipboardService = null,
         ILogger<SearchResultItemViewModel>? logger = null)
     {
         _hit = hit ?? throw new ArgumentNullException(nameof(hit));
         _navigateAction = navigateAction;
         _query = query ?? string.Empty;
+        _citationService = citationService;
+        _clipboardService = clipboardService;
         _logger = logger;
     }
 
@@ -123,6 +153,15 @@ public partial class SearchResultItemViewModel : ObservableObject
     /// Gets a truncated preview of the chunk content.
     /// </summary>
     public string PreviewText => _hit.GetPreview(200);
+
+    /// <summary>
+    /// Gets the full chunk text for copy operations.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Returns the complete chunk content without truncation.
+    /// Used by <see cref="CopyChunkTextCommand"/> (v0.5.2d).
+    /// </remarks>
+    public string ChunkText => _hit.Chunk.Content;
 
     // =========================================================================
     // Score Properties
@@ -288,5 +327,163 @@ public partial class SearchResultItemViewModel : ObservableObject
     /// Gets whether navigation is available for this result.
     /// </summary>
     private bool CanNavigate => _navigateAction is not null;
-}
 
+    // =========================================================================
+    // Copy Commands (v0.5.2d)
+    // =========================================================================
+
+    /// <summary>
+    /// Gets whether copy commands are available for this result.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Copy commands require both ICitationService (for creating the citation)
+    /// and ICitationClipboardService (for clipboard operations). If either is
+    /// missing, copy commands are disabled (v0.5.2d).
+    /// </remarks>
+    private bool CanCopy => _citationService is not null && _clipboardService is not null;
+
+    /// <summary>
+    /// Gets or creates a citation for this search result.
+    /// </summary>
+    /// <returns>The cached or newly created citation.</returns>
+    /// <remarks>
+    /// LOGIC: Creates the citation on first access and caches it for subsequent
+    /// copy operations. The citation is created via ICitationService.CreateCitation
+    /// which calculates line numbers and resolves relative paths (v0.5.2a).
+    /// </remarks>
+    private Citation GetOrCreateCitation()
+    {
+        if (_cachedCitation is not null)
+            return _cachedCitation;
+
+        if (_citationService is null)
+            throw new InvalidOperationException("Citation service not available");
+
+        _cachedCitation = _citationService.CreateCitation(_hit);
+        return _cachedCitation;
+    }
+
+    /// <summary>
+    /// Copies a formatted citation using the user's preferred style.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Uses ICitationClipboardService.CopyCitationAsync with style=null
+    /// to trigger preferred style resolution from CitationFormatterRegistry.
+    /// License gating is applied at the service layer (v0.5.2d).
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanCopy))]
+    private async Task CopyCitationAsync()
+    {
+        if (_clipboardService is null)
+        {
+            _logger?.LogWarning("CopyCitation called but clipboard service not available");
+            return;
+        }
+
+        _logger?.LogDebug(
+            "Copying citation for {Document} using preferred style",
+            DocumentName);
+
+        try
+        {
+            var citation = GetOrCreateCitation();
+            await _clipboardService.CopyCitationAsync(citation);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to copy citation for {Document}", DocumentName);
+        }
+    }
+
+    /// <summary>
+    /// Copies a formatted citation using the specified style.
+    /// </summary>
+    /// <param name="style">The citation style to use for formatting.</param>
+    /// <remarks>
+    /// LOGIC: Uses ICitationClipboardService.CopyCitationAsync with the explicit
+    /// style parameter. Called from the "Copy as..." submenu items (v0.5.2d).
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanCopy))]
+    private async Task CopyAsCitationStyleAsync(CitationStyle style)
+    {
+        if (_clipboardService is null)
+        {
+            _logger?.LogWarning("CopyAsCitationStyle called but clipboard service not available");
+            return;
+        }
+
+        _logger?.LogDebug(
+            "Copying citation for {Document} as {Style}",
+            DocumentName, style);
+
+        try
+        {
+            var citation = GetOrCreateCitation();
+            await _clipboardService.CopyCitationAsync(citation, style);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to copy citation as {Style} for {Document}", style, DocumentName);
+        }
+    }
+
+    /// <summary>
+    /// Copies the raw chunk text to the clipboard.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Uses ICitationClipboardService.CopyChunkTextAsync to copy the
+    /// unformatted source content. Not license-gated (v0.5.2d).
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanCopy))]
+    private async Task CopyChunkTextAsync()
+    {
+        if (_clipboardService is null)
+        {
+            _logger?.LogWarning("CopyChunkText called but clipboard service not available");
+            return;
+        }
+
+        _logger?.LogDebug(
+            "Copying chunk text ({Length} chars) for {Document}",
+            ChunkText.Length, DocumentName);
+
+        try
+        {
+            var citation = GetOrCreateCitation();
+            await _clipboardService.CopyChunkTextAsync(citation, ChunkText);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to copy chunk text for {Document}", DocumentName);
+        }
+    }
+
+    /// <summary>
+    /// Copies the document path to the clipboard.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Uses ICitationClipboardService.CopyDocumentPathAsync to copy
+    /// the absolute file path. Not license-gated (v0.5.2d).
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanCopy))]
+    private async Task CopyDocumentPathAsync()
+    {
+        if (_clipboardService is null)
+        {
+            _logger?.LogWarning("CopyDocumentPath called but clipboard service not available");
+            return;
+        }
+
+        _logger?.LogDebug("Copying document path for {Document}", DocumentName);
+
+        try
+        {
+            var citation = GetOrCreateCitation();
+            await _clipboardService.CopyDocumentPathAsync(citation);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to copy document path for {Document}", DocumentName);
+        }
+    }
+}

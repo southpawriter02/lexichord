@@ -20,6 +20,8 @@ This release introduces the Citation Engine — comprehensive source attribution
 
 - **Stale Citation Detection** — Implemented `ICitationValidator` interface and `CitationValidator` service for detecting when source documents have changed since indexing. Compares file modification timestamps against citation IndexedAt values. Supports single and batch validation with throttled parallel execution (up to 10 concurrent). License-gated to WriterPro+ via `FeatureCodes.CitationValidation`. Publishes `CitationValidationFailedEvent` for stale and missing citations. Added `StaleIndicatorViewModel` with Validate, Re-verify (re-indexes document), and Dismiss commands, with computed properties for stale/missing status icons and messages. Includes 58 unit tests.
 
+- **Citation Copy Actions** — Implemented `ICitationClipboardService` interface and `CitationClipboardService` for copying citation data to the clipboard. Supports four copy formats: formatted citation (user's preferred or specified style), raw chunk text, document path, and file:// URI. Extended `SearchResultItemViewModel` with copy commands and added a context menu to `SearchResultItemView` with "Copy Citation" (Ctrl+C), "Copy as..." submenu (Inline/Footnote/Markdown styles), "Copy Chunk Text", and "Copy Path" options. All copy operations publish `CitationCopiedEvent` for telemetry. Includes 10 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                            | Title                    | Status      |
@@ -27,7 +29,7 @@ This release introduces the Citation Engine — comprehensive source attribution
 | [v0.5.2a](v0.5.x/LCS-CL-052a.md) | Citation Model           | ✅ Complete |
 | [v0.5.2b](v0.5.x/LCS-CL-052b.md) | Citation Styles          | ✅ Complete |
 | [v0.5.2c](v0.5.x/LCS-CL-052c.md) | Stale Citation Detection | ✅ Complete |
-| v0.5.2d                            | Citation Copy Actions    | 🔜 Planned  |
+| [v0.5.2d](v0.5.x/LCS-CL-052d.md) | Citation Copy Actions    | ✅ Complete |
 
 ---
 
