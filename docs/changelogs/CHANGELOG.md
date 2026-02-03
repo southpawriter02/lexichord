@@ -6,6 +6,33 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.5.4] - 2026-02 (In Progress)
+
+### The Relevance Tuner (Query Intelligence)
+
+This release introduces the Relevance Tuner — intelligent query analysis and enhancement for more precise search results. Queries are now analyzed for keywords, entities, and intent, expanded with synonyms and morphological variants, and tracked for analytics and content gap identification.
+
+#### What's New
+
+- **Query Analyzer** — Implemented `IQueryAnalyzer` interface and `QueryAnalyzer` service for extracting keywords (with stop-word filtering), recognizing entities (code identifiers, file paths, versions, error codes), detecting query intent (Factual, Procedural, Conceptual, Navigational), and calculating specificity scores (0.0-1.0). Uses regex-based entity recognition and heuristic intent detection. Available to all users (Core tier). Includes 30 unit tests.
+
+- **Query Expander** — Implemented `IQueryExpander` interface and `QueryExpander` service for enhancing queries with synonyms from the terminology database and built-in technical abbreviations (50+ mappings like api→application programming interface, db→database). Includes Porter stemming for morphological variants (e.g., running→run, runs, runner). Results are cached via ConcurrentDictionary. License-gated to WriterPro+ tier. Includes 20 unit tests.
+
+- **Query Suggestions** — Implemented `IQuerySuggestionService` interface and `QuerySuggestionService` for autocomplete suggestions from multiple sources: query history, document headings, content n-grams, and domain terms. Features prefix matching with frequency-weighted scoring, 30-second cache TTL, and automatic cleanup on document re-index. Database schema includes `query_suggestions` table with prefix index (text_pattern_ops) for efficient LIKE queries. License-gated to WriterPro+ tier. Includes 15 unit tests.
+
+- **Query History & Analytics** — Implemented `IQueryHistoryService` interface and `QueryHistoryService` for tracking executed queries with metadata (intent, result count, duration). Features SHA256 query hashing for anonymous aggregation, 60-second deduplication window, and zero-result query identification for content gap analysis. Database schema includes `query_history` table with partial index for zero-result queries. Publishes `QueryAnalyticsEvent` via MediatR for opt-in telemetry. Includes 24 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                    | Status      |
+| -------------------------------- | ------------------------ | ----------- |
+| [v0.5.4a](v0.5.x/LCS-CL-054a.md) | Query Analyzer           | ✅ Complete |
+| [v0.5.4b](v0.5.x/LCS-CL-054b.md) | Query Expansion          | ✅ Complete |
+| [v0.5.4c](v0.5.x/LCS-CL-054c.md) | Query Suggestions        | ✅ Complete |
+| [v0.5.4d](v0.5.x/LCS-CL-054d.md) | Query History & Analytics| ✅ Complete |
+
+---
+
 ## [v0.5.3] - 2026-02 (In Progress)
 
 ### The Context Window (Relevance Expansion)

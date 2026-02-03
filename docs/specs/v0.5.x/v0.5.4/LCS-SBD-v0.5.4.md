@@ -13,8 +13,8 @@
 | **License Tier**     | Writer Pro                                |
 | **Feature Gate Key** | `FeatureFlags.RAG.RelevanceTuner`         |
 | **Parent Roadmap**   | [roadmap-v0.5.x.md](../roadmap-v0.5.x.md) |
-| **Status**           | Draft                                     |
-| **Last Updated**     | 2026-01-27                                |
+| **Status**           | ✅ Complete                               |
+| **Last Updated**     | 2026-02-03                                |
 
 ---
 
@@ -1081,20 +1081,20 @@ dotnet run --project src/Lexichord.App -- --benchmark query-analysis
 
 | #   | Deliverable                                                 | Status |
 | :-- | :---------------------------------------------------------- | :----- |
-| 1   | `IQueryAnalyzer` interface and implementation               | [ ]    |
-| 2   | `QueryAnalysis`, `QueryEntity`, `QueryIntent` records/enums | [ ]    |
-| 3   | `IQueryExpander` interface and implementation               | [ ]    |
-| 4   | `ExpandedQuery`, `Synonym`, `ExpansionOptions` records      | [ ]    |
-| 5   | `IQuerySuggestionService` interface and implementation      | [ ]    |
-| 6   | `query_suggestions` database migration                      | [ ]    |
-| 7   | N-gram extraction in indexing pipeline                      | [ ]    |
+| 1   | `IQueryAnalyzer` interface and implementation               | [x]    |
+| 2   | `QueryAnalysis`, `QueryEntity`, `QueryIntent` records/enums | [x]    |
+| 3   | `IQueryExpander` interface and implementation               | [x]    |
+| 4   | `ExpandedQuery`, `Synonym`, `ExpansionOptions` records      | [x]    |
+| 5   | `IQuerySuggestionService` interface and implementation      | [x]    |
+| 6   | `query_suggestions` database migration                      | [x]    |
+| 7   | N-gram extraction in indexing pipeline                      | [x]    |
 | 8   | `SuggestionPopup` UI component                              | [ ]    |
-| 9   | `IQueryHistoryService` interface and implementation         | [ ]    |
-| 10  | `query_history` database migration                          | [ ]    |
-| 11  | `QueryAnalyticsEvent` MediatR notification                  | [ ]    |
+| 9   | `IQueryHistoryService` interface and implementation         | [x]    |
+| 10  | `query_history` database migration                          | [x]    |
+| 11  | `QueryAnalyticsEvent` MediatR notification                  | [x]    |
 | 12  | Recent queries UI section                                   | [ ]    |
-| 13  | DI registration in RAGModule.cs                             | [ ]    |
-| 14  | Unit tests for all components (90%+ coverage)               | [ ]    |
+| 13  | DI registration in RAGModule.cs                             | [x]    |
+| 14  | Unit tests for all components (90%+ coverage)               | [x]    |
 | 15  | Integration tests for query pipeline                        | [ ]    |
 
 ---
@@ -1211,6 +1211,7 @@ The following features are explicitly **out of scope** for v0.5.4:
 
 ## Document History
 
-| Version | Date       | Author         | Changes       |
-| :------ | :--------- | :------------- | :------------ |
-| 1.0     | 2026-01-27 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes                                      |
+| :------ | :--------- | :------------- | :------------------------------------------- |
+| 1.0     | 2026-01-27 | Lead Architect | Initial draft                                |
+| 1.1     | 2026-02-03 | Claude         | Implementation complete (backend services)   |

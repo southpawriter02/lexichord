@@ -71,9 +71,9 @@ public sealed class RAGModule : IModule
     public ModuleInfo Info => new(
         Id: "rag",
         Name: "RAG Subsystem",
-        Version: new Version(0, 5, 3),
+        Version: new Version(0, 5, 4),
         Author: "Lexichord Team",
-        Description: "Retrieval-Augmented Generation subsystem for semantic search and context-aware assistance"
+        Description: "Retrieval-Augmented Generation subsystem for semantic search, query understanding, and context-aware assistance"
     );
 
     /// <inheritdoc/>
@@ -426,6 +426,48 @@ public sealed class RAGModule : IModule
         // Injects IContextExpansionService, ILicenseContext, and ILoggerFactory into
         // created ViewModels. Stateless and thread-safe.
         services.AddSingleton<IContextPreviewViewModelFactory, ViewModels.ContextPreviewViewModelFactory>();
+
+        // =============================================================================
+        // v0.5.4a: Relevance Tuner (Query Analyzer)
+        // =============================================================================
+
+        // LOGIC: Register QueryAnalyzer as singleton (v0.5.4a).
+        // Analyzes search queries to extract keywords, entities, intent, and specificity.
+        // Stateless and thread-safe. Uses pre-compiled regex patterns and in-memory
+        // stop-word lists for < 20ms analysis latency.
+        services.AddSingleton<IQueryAnalyzer, Search.QueryAnalyzer>();
+
+        // =============================================================================
+        // v0.5.4b: Relevance Tuner (Query Expansion)
+        // =============================================================================
+
+        // LOGIC: Register QueryExpander as singleton (v0.5.4b).
+        // Expands queries with synonyms from built-in technical abbreviations and
+        // Porter stemming. Uses ConcurrentDictionary for thread-safe caching.
+        // License-gated via FeatureFlags.RAG.RelevanceTuner (WriterPro+).
+        services.AddSingleton<IQueryExpander, Search.QueryExpander>();
+
+        // =============================================================================
+        // v0.5.4c: Relevance Tuner (Query Suggestions)
+        // =============================================================================
+
+        // LOGIC: Register QuerySuggestionService as scoped (v0.5.4c).
+        // Scoped to align with IDbConnectionFactory lifetime for database queries.
+        // Provides autocomplete suggestions from query history, document headings,
+        // content n-grams, and domain terms. Uses in-memory cache with 30s TTL.
+        // License-gated via FeatureFlags.RAG.RelevanceTuner (WriterPro+).
+        services.AddScoped<IQuerySuggestionService, Search.QuerySuggestionService>();
+
+        // =============================================================================
+        // v0.5.4d: Relevance Tuner (Query History & Analytics)
+        // =============================================================================
+
+        // LOGIC: Register QueryHistoryService as scoped (v0.5.4d).
+        // Scoped to align with IDbConnectionFactory lifetime for database queries.
+        // Tracks executed queries for recent queries panel and zero-result analysis.
+        // Publishes QueryAnalyticsEvent via MediatR for opt-in telemetry.
+        // License-gated via FeatureFlags.RAG.RelevanceTuner (WriterPro+).
+        services.AddScoped<IQueryHistoryService, Search.QueryHistoryService>();
     }
 
     /// <inheritdoc/>

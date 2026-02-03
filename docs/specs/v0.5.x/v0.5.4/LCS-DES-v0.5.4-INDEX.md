@@ -12,8 +12,8 @@
 | **Swimlane**         | Memory                                    |
 | **License Tier**     | Writer Pro                                |
 | **Feature Gate Key** | `FeatureFlags.RAG.RelevanceTuner`         |
-| **Status**           | Draft                                     |
-| **Last Updated**     | 2026-01-27                                |
+| **Status**           | ✅ Complete                               |
+| **Last Updated**     | 2026-02-03                                |
 
 ---
 
@@ -309,6 +309,7 @@ See individual design specs for detailed test scenarios.
 
 ## Document History
 
-| Version | Date       | Author         | Changes       |
-| :------ | :--------- | :------------- | :------------ |
-| 1.0     | 2026-01-27 | Lead Architect | Initial draft |
+| Version | Date       | Author         | Changes                           |
+| :------ | :--------- | :------------- | :-------------------------------- |
+| 1.0     | 2026-01-27 | Lead Architect | Initial draft                     |
+| 1.1     | 2026-02-03 | Claude         | Implementation complete (v0.5.4a-d)|
