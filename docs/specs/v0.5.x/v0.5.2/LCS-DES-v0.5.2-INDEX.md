@@ -13,7 +13,7 @@
 | **License Tier**     | Writer Pro                               |
 | **Feature Gate Key** | `FeatureFlags.RAG.Citation`              |
 | **Status**           | In Progress                              |
-| **Last Updated**     | 2026-01-27                               |
+| **Last Updated**     | 2026-02-02                               |
 
 ---
 
@@ -268,7 +268,7 @@ if (!_licenseContext.HasFeature(FeatureFlags.RAG.Citation))
 | :---------- | :---------------- | :----------- |
 | v0.5.2a ✅  | Citation Model    | 9.75         |
 | v0.5.2b ✅  | Citation Styles   | 7.25         |
-| v0.5.2c     | Stale Detection   | 8.5          |
+| v0.5.2c ✅  | Stale Detection   | 8.5          |
 | v0.5.2d     | Copy Actions      | 6            |
 | Integration | DI, Events, Tests | 2.5          |
 | **Total**   |                   | **34 hours** |

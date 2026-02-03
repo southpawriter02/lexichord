@@ -174,5 +174,17 @@ public static class FeatureCodes
     /// </remarks>
     public const string Citation = "Feature.Citation";
 
+    /// <summary>
+    /// The Citation Validation feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to stale citation detection and validation.
+    /// When this feature is not enabled, ValidateIfLicensedAsync returns null
+    /// and stale indicators are hidden in the UI.
+    /// Introduced in v0.5.2c.
+    /// </remarks>
+    public const string CitationValidation = "Feature.CitationValidation";
+
     #endregion
 }

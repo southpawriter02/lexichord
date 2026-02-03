@@ -467,15 +467,15 @@ public interface ICitationClipboardService
 | 14 ✅     | v0.5.2b  | Add citation style setting to `ISettingsService`    | 1            |
 | 15        | v0.5.2b  | Create settings UI for citation style selection     | 1.5          |
 | 16 ✅     | v0.5.2b  | Unit tests for all formatters                       | 1.5          |
-| 17        | v0.5.2c  | Create `CitationValidationResult` record            | 0.25         |
-| 18        | v0.5.2c  | Create `CitationValidationStatus` enum              | 0.25         |
-| 19        | v0.5.2c  | Create `ICitationValidator` interface               | 0.5          |
-| 20        | v0.5.2c  | Implement `CitationValidator` with file checks      | 2            |
-| 21        | v0.5.2c  | Implement batch validation with parallelism         | 1            |
-| 22        | v0.5.2c  | Create `CitationValidationFailedEvent`              | 0.5          |
-| 23        | v0.5.2c  | Create stale indicator UI component                 | 1.5          |
-| 24        | v0.5.2c  | Implement "Re-verify" action                        | 1            |
-| 25        | v0.5.2c  | Unit tests for validation scenarios                 | 2            |
+| 17 ✅     | v0.5.2c  | Create `CitationValidationResult` record            | 0.25         |
+| 18 ✅     | v0.5.2c  | Create `CitationValidationStatus` enum              | 0.25         |
+| 19 ✅     | v0.5.2c  | Create `ICitationValidator` interface               | 0.5          |
+| 20 ✅     | v0.5.2c  | Implement `CitationValidator` with file checks      | 2            |
+| 21 ✅     | v0.5.2c  | Implement batch validation with parallelism         | 1            |
+| 22 ✅     | v0.5.2c  | Create `CitationValidationFailedEvent`              | 0.5          |
+| 23 ✅     | v0.5.2c  | Create stale indicator UI component                 | 1.5          |
+| 24 ✅     | v0.5.2c  | Implement "Re-verify" action                        | 1            |
+| 25 ✅     | v0.5.2c  | Unit tests for validation scenarios                 | 2            |
 | 26        | v0.5.2d  | Create `ICitationClipboardService` interface        | 0.5          |
 | 27        | v0.5.2d  | Implement `CitationClipboardService`                | 1.5          |
 | 28        | v0.5.2d  | Integrate context menu with search results          | 1.5          |
@@ -1034,11 +1034,11 @@ ls src/Lexichord.Abstractions/Contracts/ICitation*.cs
 | 8   | `FootnoteCitationFormatter` implementation      | [x]    |
 | 9   | `MarkdownCitationFormatter` implementation      | [x]    |
 | 10  | Citation style user preference in settings      | [x]    |
-| 11  | `ICitationValidator` interface                  | [ ]    |
-| 12  | `CitationValidator` implementation              | [ ]    |
-| 13  | `CitationValidationResult` record               | [ ]    |
-| 14  | `CitationValidationFailedEvent` notification    | [ ]    |
-| 15  | Stale indicator UI component                    | [ ]    |
+| 11  | `ICitationValidator` interface                  | [x]   |
+| 12  | `CitationValidator` implementation              | [x]   |
+| 13  | `CitationValidationResult` record               | [x]   |
+| 14  | `CitationValidationFailedEvent` notification    | [x]   |
+| 15  | Stale indicator UI component                    | [x]   |
 | 16  | `ICitationClipboardService` interface           | [ ]    |
 | 17  | `CitationClipboardService` implementation       | [ ]    |
 | 18  | Context menu integration                        | [ ]    |

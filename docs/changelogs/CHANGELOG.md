@@ -18,13 +18,15 @@ This release introduces the Citation Engine — comprehensive source attribution
 
 - **Citation Styles** — Implemented `ICitationFormatter` interface and three built-in formatters: `InlineCitationFormatter` ([filename.md, §Heading]), `FootnoteCitationFormatter` ([^id]: /path:line), and `MarkdownCitationFormatter` ([Title](file:///path#L42)). Added `CitationFormatterRegistry` for style lookup and user preference persistence via `ISystemSettingsRepository`, with `CitationSettingsKeys` constants. Includes 53 unit tests.
 
+- **Stale Citation Detection** — Implemented `ICitationValidator` interface and `CitationValidator` service for detecting when source documents have changed since indexing. Compares file modification timestamps against citation IndexedAt values. Supports single and batch validation with throttled parallel execution (up to 10 concurrent). License-gated to WriterPro+ via `FeatureCodes.CitationValidation`. Publishes `CitationValidationFailedEvent` for stale and missing citations. Added `StaleIndicatorViewModel` with Validate, Re-verify (re-indexes document), and Dismiss commands, with computed properties for stale/missing status icons and messages. Includes 58 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                            | Title                    | Status      |
 | ---------------------------------- | ------------------------ | ----------- |
 | [v0.5.2a](v0.5.x/LCS-CL-052a.md) | Citation Model           | ✅ Complete |
 | [v0.5.2b](v0.5.x/LCS-CL-052b.md) | Citation Styles          | ✅ Complete |
-| v0.5.2c                            | Stale Citation Detection | 🔜 Planned  |
+| [v0.5.2c](v0.5.x/LCS-CL-052c.md) | Stale Citation Detection | ✅ Complete |
 | v0.5.2d                            | Citation Copy Actions    | 🔜 Planned  |
 
 ---

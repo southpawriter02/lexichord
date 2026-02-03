@@ -344,6 +344,23 @@ public sealed class RAGModule : IModule
         // Provides style lookup, user preference management (via ISystemSettingsRepository),
         // and preferred formatter access for downstream consumers (v0.5.2d copy actions).
         services.AddSingleton<CitationFormatterRegistry>();
+
+        // =============================================================================
+        // v0.5.2c: Citation Engine (Stale Citation Detection)
+        // =============================================================================
+
+        // LOGIC: Register CitationValidator as singleton (v0.5.2c).
+        // Validates citations against current file state to detect staleness by
+        // comparing file LastWriteTimeUtc against Citation.IndexedAt. Publishes
+        // CitationValidationFailedEvent for stale/missing citations. License-gated
+        // via FeatureCodes.CitationValidation (WriterPro+).
+        services.AddSingleton<ICitationValidator, CitationValidator>();
+
+        // LOGIC: Register StaleIndicatorViewModel as transient (v0.5.2c).
+        // Each search result item gets its own stale indicator instance to
+        // independently track validation state and display the stale/missing
+        // indicator with re-verify and dismiss actions.
+        services.AddTransient<ViewModels.StaleIndicatorViewModel>();
     }
 
     /// <inheritdoc/>
