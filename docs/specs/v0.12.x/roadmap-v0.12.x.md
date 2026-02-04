@@ -55,12 +55,12 @@ In v0.11.x, we delivered comprehensive security infrastructure with RBAC/ABAC, a
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.12.1e | Agent Schema & Contracts | 8 |
-| v0.12.1f | Capability Declaration | 8 |
-| v0.12.1g | Agent Configuration | 6 |
-| v0.12.1h | Agent Registry | 10 |
-| v0.12.1i | Agent Validation | 8 |
-| v0.12.1j | Agent Definition UI | 8 |
+| v0.12.1a | Agent Schema & Contracts | 8 |
+| v0.12.1b | Capability Declaration | 8 |
+| v0.12.1c | Agent Configuration | 6 |
+| v0.12.1d | Agent Registry | 10 |
+| v0.12.1e | Agent Validation | 8 |
+| v0.12.1f | Agent Definition UI | 8 |
 
 ### Key Interfaces
 
@@ -82,9 +82,19 @@ public interface IAgent
 /// <summary>
 /// Immutable identifier for an agent instance.
 /// </summary>
-public readonly record struct AgentId(Guid Value)
+public readonly record struct AgentId
 {
+    public Guid Value { get; }
+
+    public AgentId(Guid value)
+    {
+        if (value == Guid.Empty)
+            throw new ArgumentException("AgentId cannot be empty", nameof(value));
+        Value = value;
+    }
+
     public static AgentId New() => new(Guid.NewGuid());
+    public static AgentId Parse(string s) => new(Guid.Parse(s));
     public override string ToString() => $"agent:{Value:N}";
 }
 
@@ -152,7 +162,9 @@ public enum CapabilityCategory
     Translation,
     Summarization,
     Planning,
-    Execution
+    Execution,
+    Review,
+    Formatting
 }
 
 /// <summary>
@@ -194,7 +206,7 @@ public interface IAgentRegistry
         CancellationToken ct = default);
 
     Task<IReadOnlyList<AgentManifest>> FindByCapabilityAsync(
-        CapabilityCategory category,
+        CapabilityQuery query,
         CancellationToken ct = default);
 
     Task<IReadOnlyList<AgentManifest>> SearchAsync(
@@ -212,6 +224,19 @@ public record AgentSearchQuery
     public IReadOnlyList<CapabilityCategory>? Categories { get; init; }
     public IReadOnlyList<string>? Tags { get; init; }
     public AgentType? Type { get; init; }
+}
+
+/// <summary>
+/// Query for finding agents by capability.
+/// </summary>
+public record CapabilityQuery
+{
+    public IReadOnlyList<CapabilityCategory>? Categories { get; init; }
+    public IReadOnlyList<string>? RequiredCapabilityIds { get; init; }
+    public IReadOnlyList<string>? RequiredInputTypes { get; init; }
+    public IReadOnlyList<string>? RequiredOutputTypes { get; init; }
+    public float? MinQualityScore { get; init; }
+    public string? SearchText { get; init; }
 }
 ```
 
@@ -244,12 +269,12 @@ public record AgentSearchQuery
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.12.2e | Agent Spawner | 10 |
-| v0.12.2f | Agent Monitor | 10 |
-| v0.12.2g | Health Check System | 8 |
-| v0.12.2h | Graceful Shutdown | 8 |
-| v0.12.2i | Agent Restart Policies | 8 |
-| v0.12.2j | Lifecycle Dashboard UI | 8 |
+| v0.12.2a | Agent Spawner | 10 |
+| v0.12.2b | Agent Monitor | 10 |
+| v0.12.2c | Health Check System | 8 |
+| v0.12.2d | Graceful Shutdown | 8 |
+| v0.12.2e | Agent Restart Policies | 8 |
+| v0.12.2f | Lifecycle Dashboard UI | 8 |
 
 ### Key Interfaces
 
@@ -446,12 +471,12 @@ public record AgentMetrics
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.12.3e | Message Bus Core | 10 |
-| v0.12.3f | Event System | 8 |
-| v0.12.3g | Request/Response | 10 |
-| v0.12.3h | Broadcast & Multicast | 8 |
-| v0.12.3i | Message Routing | 8 |
-| v0.12.3j | Communication Monitor UI | 6 |
+| v0.12.3a | Message Bus Core | 10 |
+| v0.12.3b | Event System | 8 |
+| v0.12.3c | Request/Response | 10 |
+| v0.12.3d | Broadcast & Multicast | 8 |
+| v0.12.3e | Message Routing | 8 |
+| v0.12.3f | Communication Monitor UI | 6 |
 
 ### Key Interfaces
 
@@ -627,12 +652,12 @@ public enum RoutingStrategy
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.12.4e | Working Memory | 10 |
-| v0.12.4f | Long-Term Memory | 10 |
-| v0.12.4g | Context Window Manager | 10 |
-| v0.12.4h | Memory Retrieval | 8 |
-| v0.12.4i | Memory Persistence | 6 |
-| v0.12.4j | Memory Inspector UI | 4 |
+| v0.12.4a | Working Memory | 10 |
+| v0.12.4b | Long-Term Memory | 10 |
+| v0.12.4c | Context Window Manager | 10 |
+| v0.12.4d | Memory Retrieval | 8 |
+| v0.12.4e | Memory Persistence | 6 |
+| v0.12.4f | Memory Inspector UI | 4 |
 
 ### Key Interfaces
 
@@ -830,12 +855,12 @@ public enum CompactionStrategy
 
 | Sub-Part | Title | Est. Hours |
 |:---------|:------|:-----------|
-| v0.12.5e | Tool Definition Schema | 8 |
-| v0.12.5f | Tool Registry | 8 |
-| v0.12.5g | Tool Executor | 12 |
-| v0.12.5h | Execution Sandbox | 10 |
-| v0.12.5i | Result Handling | 6 |
-| v0.12.5j | Tool Management UI | 6 |
+| v0.12.5a | Tool Definition Schema | 8 |
+| v0.12.5b | Tool Registry | 8 |
+| v0.12.5c | Tool Executor | 12 |
+| v0.12.5d | Execution Sandbox | 10 |
+| v0.12.5e | Result Handling | 6 |
+| v0.12.5f | Tool Management UI | 6 |
 
 ### Key Interfaces
 

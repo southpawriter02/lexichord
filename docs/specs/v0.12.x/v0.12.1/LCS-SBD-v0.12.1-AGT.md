@@ -1177,7 +1177,7 @@ public abstract class AgentBase : IAgent
     public abstract AgentManifest Manifest { get; }
     public AgentState State { get; protected set; } = AgentState.Initializing;
 
-    protected IAgentContext? Context { get; private set; }
+    protected AgentContext? Context { get; private set; }
     protected ILogger Logger => Context?.Logger ?? NullLogger.Instance;
 
     protected AgentBase()
@@ -1196,7 +1196,7 @@ public abstract class AgentBase : IAgent
     {
         if (State != AgentState.Ready && State != AgentState.Waiting)
         {
-            return AgentResponse.Error($"Agent not ready. Current state: {State}");
+            return AgentResponse.Error(request.RequestId, $"Agent not ready. Current state: {State}", "AGENT_NOT_READY");
         }
 
         State = AgentState.Processing;
