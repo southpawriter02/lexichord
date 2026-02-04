@@ -41,12 +41,12 @@ Lexichord requires integration with Large Language Models (LLMs) to provide AI-a
 
 ### 2.1 Design Specifications
 
-| Document ID    | Title                        | Status |
-| :------------- | :--------------------------- | :----- |
-| [LCS-DES-061a] | Chat Completion Abstractions | Draft  |
-| [LCS-DES-061b] | Chat Options Model           | Draft  |
-| [LCS-DES-061c] | Provider Registry            | Draft  |
-| [LCS-DES-061d] | API Key Management UI        | Draft  |
+| Document ID    | Title                        | Status   |
+| :------------- | :--------------------------- | :------- |
+| [LCS-DES-061a] | Chat Completion Abstractions | Complete |
+| [LCS-DES-061b] | Chat Options Model           | Draft    |
+| [LCS-DES-061c] | Provider Registry            | Draft    |
+| [LCS-DES-061d] | API Key Management UI        | Draft    |
 
 ### 2.2 Upstream Dependencies
 

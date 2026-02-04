@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.1] - 2026-02 (In Progress)
+
+### The Gateway (LLM Abstractions)
+
+This release establishes the foundational abstraction layer for Large Language Model (LLM) communication, enabling provider-agnostic integration with various AI providers (OpenAI, Anthropic, etc.).
+
+#### What's New
+
+- **Chat Completion Abstractions (v0.6.1a)** — Core data contracts and interfaces for LLM communication. Added `ChatRole` enum, `ChatMessage`/`ChatOptions`/`ChatRequest`/`ChatResponse`/`StreamingChatToken` immutable records with factory methods, presets, and fluent APIs. Added `IChatCompletionService` interface for provider implementations, `ChatRequestBuilder` for complex request construction, `ChatSerialization` for JSON utilities, `SseParser` for streaming SSE support, and exception hierarchy (`ChatCompletionException`, `AuthenticationException`, `RateLimitException`, `ProviderNotConfiguredException`). Added `ChatRoleExtensions` for provider-specific role mapping. Includes 135 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                        | Status      |
+| -------------------------------- | ---------------------------- | ----------- |
+| [v0.6.1a](v0.6.x/LCS-CL-v061a.md) | Chat Completion Abstractions | ✅ Complete |
+
+---
+
 ## [v0.5.7] - 2026-02 (In Progress)
 
 ### The Panel Redesign (Reference Dock UX)
