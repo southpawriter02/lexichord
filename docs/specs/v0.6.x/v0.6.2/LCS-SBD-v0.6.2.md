@@ -260,18 +260,18 @@ See [LCS-DES-062d](LCS-DES-062d.md) for full specification.
 - [x] Create unit tests with mocked HttpClient
 - [ ] Create integration tests with sandbox API
 
-### 4.2 v0.6.2b: Anthropic Connector
+### 4.2 v0.6.2b: Anthropic Connector ✅ Complete
 
-- [ ] Create `AnthropicOptions` configuration record
-- [ ] Implement `AnthropicChatCompletionService` class
-- [ ] Add `[RequiresLicense(LicenseTier.WriterPro)]` attribute
-- [ ] Implement message format conversion (ChatMessage → Anthropic)
-- [ ] Add `anthropic-version` header (2024-01-01)
-- [ ] Implement `CompleteAsync` with Messages API
-- [ ] Implement `StreamAsync` with event type handling
-- [ ] Map Anthropic errors to exception hierarchy
-- [ ] Register with `ILLMProviderRegistry`
-- [ ] Create unit tests with mocked HttpClient
+- [x] Create `AnthropicOptions` configuration record
+- [x] Implement `AnthropicChatCompletionService` class
+- [x] Add `[RequiresLicense(LicenseTier.WriterPro)]` attribute
+- [x] Implement message format conversion (ChatMessage → Anthropic)
+- [x] Add `anthropic-version` header (2024-01-01)
+- [x] Implement `CompleteAsync` with Messages API
+- [x] Implement `StreamAsync` with event type handling
+- [x] Map Anthropic errors to exception hierarchy
+- [x] Register with `ILLMProviderRegistry`
+- [x] Create unit tests with mocked HttpClient
 - [ ] Create integration tests with sandbox API
 
 ### 4.3 v0.6.2c: Retry Policy Implementation

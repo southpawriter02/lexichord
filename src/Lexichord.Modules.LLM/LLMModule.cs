@@ -61,7 +61,7 @@ public class LLMModule : IModule
         Name: "LLM Gateway",
         Version: new Version(0, 6, 2),
         Author: "Lexichord Team",
-        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, provider registry, and OpenAI connector");
+        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, provider registry, OpenAI connector, and Anthropic connector");
 
     /// <inheritdoc />
     public void RegisterServices(IServiceCollection services)
@@ -114,6 +114,11 @@ public class LLMModule : IModule
         // LOGIC: Register the OpenAI provider (v0.6.2a).
         // This adds the HTTP client, configuration binding, and keyed service registration.
         services.AddOpenAIProvider(configuration);
+
+        // LOGIC: Register the Anthropic provider (v0.6.2b).
+        // This adds the HTTP client with resilience policies (retry, circuit breaker),
+        // configuration binding, and keyed service registration for Claude models.
+        services.AddAnthropicProvider(configuration);
     }
 
     /// <inheritdoc />

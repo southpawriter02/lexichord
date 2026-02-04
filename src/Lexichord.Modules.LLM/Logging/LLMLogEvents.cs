@@ -768,4 +768,189 @@ internal static partial class LLMLogEvents
         Level = LogLevel.Trace,
         Message = "Raw OpenAI response: {ResponseLength} bytes")]
     public static partial void OpenAIRawResponse(ILogger logger, int responseLength);
+
+    // =========================================================================
+    // Anthropic Provider Events (1700-1799) - v0.6.2b
+    // =========================================================================
+
+    /// <summary>
+    /// Logs the start of an Anthropic completion request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier being used.</param>
+    [LoggerMessage(
+        EventId = 1700,
+        Level = LogLevel.Debug,
+        Message = "Starting Anthropic completion request for model '{Model}'")]
+    public static partial void AnthropicCompletionStarting(ILogger logger, string model);
+
+    /// <summary>
+    /// Logs the estimated prompt tokens for an Anthropic request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="promptTokens">The estimated number of prompt tokens.</param>
+    [LoggerMessage(
+        EventId = 1701,
+        Level = LogLevel.Debug,
+        Message = "Estimated Anthropic prompt tokens: {PromptTokens}")]
+    public static partial void AnthropicPromptTokensEstimated(ILogger logger, int promptTokens);
+
+    /// <summary>
+    /// Logs successful completion of an Anthropic request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="durationMs">The request duration in milliseconds.</param>
+    /// <param name="inputTokens">The number of input tokens used.</param>
+    /// <param name="outputTokens">The number of output tokens generated.</param>
+    [LoggerMessage(
+        EventId = 1702,
+        Level = LogLevel.Information,
+        Message = "Anthropic completion succeeded in {DurationMs}ms. Tokens: {InputTokens}/{OutputTokens}")]
+    public static partial void AnthropicCompletionSucceeded(ILogger logger, long durationMs, int inputTokens, int outputTokens);
+
+    /// <summary>
+    /// Logs the start of an Anthropic streaming request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier being used.</param>
+    [LoggerMessage(
+        EventId = 1703,
+        Level = LogLevel.Debug,
+        Message = "Starting Anthropic streaming request for model '{Model}'")]
+    public static partial void AnthropicStreamingStarting(ILogger logger, string model);
+
+    /// <summary>
+    /// Logs when an Anthropic stream has started receiving data.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1704,
+        Level = LogLevel.Debug,
+        Message = "Anthropic stream started")]
+    public static partial void AnthropicStreamStarted(ILogger logger);
+
+    /// <summary>
+    /// Logs receipt of an Anthropic streaming chunk.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="contentLength">The length of the content in the chunk.</param>
+    [LoggerMessage(
+        EventId = 1705,
+        Level = LogLevel.Trace,
+        Message = "Anthropic stream chunk received: {ContentLength} chars")]
+    public static partial void AnthropicStreamChunkReceived(ILogger logger, int contentLength);
+
+    /// <summary>
+    /// Logs completion of an Anthropic streaming request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="finishReason">The reason the stream finished.</param>
+    [LoggerMessage(
+        EventId = 1706,
+        Level = LogLevel.Information,
+        Message = "Anthropic stream completed. Finish reason: {FinishReason}")]
+    public static partial void AnthropicStreamCompleted(ILogger logger, string? finishReason);
+
+    /// <summary>
+    /// Logs an error response from the Anthropic API.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="statusCode">The HTTP status code returned.</param>
+    /// <param name="errorType">The type of error from Anthropic.</param>
+    [LoggerMessage(
+        EventId = 1707,
+        Level = LogLevel.Warning,
+        Message = "Anthropic API returned error: {StatusCode} - {ErrorType}")]
+    public static partial void AnthropicApiError(ILogger logger, int statusCode, string? errorType);
+
+    /// <summary>
+    /// Logs an HTTP request failure to Anthropic.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="exception">The exception that occurred.</param>
+    /// <param name="message">The error message.</param>
+    [LoggerMessage(
+        EventId = 1708,
+        Level = LogLevel.Error,
+        Message = "Anthropic HTTP request failed: {Message}")]
+    public static partial void AnthropicHttpRequestFailed(ILogger logger, Exception exception, string message);
+
+    /// <summary>
+    /// Logs a failure to parse an Anthropic streaming chunk.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="error">The parsing error message.</param>
+    [LoggerMessage(
+        EventId = 1709,
+        Level = LogLevel.Warning,
+        Message = "Failed to parse Anthropic streaming chunk: {Error}")]
+    public static partial void AnthropicStreamChunkParseFailed(ILogger logger, string error);
+
+    /// <summary>
+    /// Logs the building of an Anthropic HTTP request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="endpoint">The API endpoint being called.</param>
+    [LoggerMessage(
+        EventId = 1710,
+        Level = LogLevel.Debug,
+        Message = "Building Anthropic HTTP request for endpoint {Endpoint}")]
+    public static partial void AnthropicBuildingRequest(ILogger logger, string endpoint);
+
+    /// <summary>
+    /// Logs retrieval of the Anthropic API key from the vault.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Security:</b> The API key value is never logged; only the retrieval action is recorded.
+    /// </para>
+    /// </remarks>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1711,
+        Level = LogLevel.Debug,
+        Message = "Retrieving Anthropic API key from vault")]
+    public static partial void AnthropicRetrievingApiKey(ILogger logger);
+
+    /// <summary>
+    /// Logs when the Anthropic API key is not found in the vault.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1712,
+        Level = LogLevel.Warning,
+        Message = "Anthropic API key not found in vault")]
+    public static partial void AnthropicApiKeyNotFound(ILogger logger);
+
+    /// <summary>
+    /// Logs parsing of a successful Anthropic response.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1713,
+        Level = LogLevel.Debug,
+        Message = "Parsing Anthropic success response")]
+    public static partial void AnthropicParsingSuccessResponse(ILogger logger);
+
+    /// <summary>
+    /// Logs parsing of an Anthropic error response.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="statusCode">The HTTP status code of the error response.</param>
+    [LoggerMessage(
+        EventId = 1714,
+        Level = LogLevel.Debug,
+        Message = "Parsing Anthropic error response: {StatusCode}")]
+    public static partial void AnthropicParsingErrorResponse(ILogger logger, int statusCode);
+
+    /// <summary>
+    /// Logs the raw Anthropic response size for debugging.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="responseLength">The length of the response in bytes.</param>
+    [LoggerMessage(
+        EventId = 1715,
+        Level = LogLevel.Trace,
+        Message = "Raw Anthropic response: {ResponseLength} bytes")]
+    public static partial void AnthropicRawResponse(ILogger logger, int responseLength);
 }
