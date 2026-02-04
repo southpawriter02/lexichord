@@ -262,5 +262,17 @@ public static class FeatureCodes
     /// </remarks>
     public const string DeduplicationService = "RAG.Dedup.Service";
 
+    /// <summary>
+    /// The Batch Deduplication feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: Teams
+    /// Controls access to batch retroactive deduplication job execution.
+    /// When this feature is not enabled, batch job execution throws
+    /// InvalidOperationException requiring Teams tier upgrade.
+    /// Introduced in v0.5.9g.
+    /// </remarks>
+    public const string BatchDeduplication = "RAG.Dedup.Batch";
+
     #endregion
 }

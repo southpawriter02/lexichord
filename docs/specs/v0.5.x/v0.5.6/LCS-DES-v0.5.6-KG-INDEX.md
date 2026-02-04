@@ -9,7 +9,7 @@
 | **Codename** | Claim Extraction (CKVS Phase 2b) |
 | **Total Sub-Parts** | 5 |
 | **Total Estimated Hours** | 28 hours |
-| **Status** | Draft |
+| **Status** | Implemented |
 | **Last Updated** | 2026-01-31 |
 
 ---

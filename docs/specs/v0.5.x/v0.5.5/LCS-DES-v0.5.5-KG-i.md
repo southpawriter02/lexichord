@@ -12,7 +12,7 @@
 | **Swimlane** | User Interface |
 | **License Tier** | WriterPro (view), Teams (review) |
 | **Feature Gate Key** | `knowledge.linking.review.enabled` |
-| **Status** | Draft |
+| **Status** | Implemented |
 | **Last Updated** | 2026-01-31 |
 
 ---

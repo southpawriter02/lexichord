@@ -12,7 +12,7 @@
 | **Swimlane** | Memory |
 | **License Tier** | Teams (full), Enterprise (full) |
 | **Feature Gate Key** | `knowledge.claims.repository.enabled` |
-| **Status** | Draft |
+| **Status** | Implemented |
 | **Last Updated** | 2026-01-31 |
 
 ---

@@ -689,6 +689,25 @@ public sealed class RAGModule : IModule
         // IChunkRepository lifetimes. Manages the full lifecycle of detected
         // contradictions: flagging, review, resolution, and dismissal.
         services.AddScoped<IContradictionService, Services.ContradictionService>();
+
+        // =============================================================================
+        // v0.5.9g: Batch Retroactive Deduplication
+        // =============================================================================
+
+        // LOGIC: Configure BatchDeduplicationOptions with defaults using Options pattern (v0.5.9g).
+        // Provides configuration for batch job execution:
+        // - SimilarityThreshold: 0.92 (balanced for batch processing)
+        // - BatchSize: 100 (optimized for throughput)
+        // - BatchDelayMs: 50 (throttling to minimize system impact)
+        // - DryRun: false (execute changes by default)
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(BatchDeduplicationOptions.Default));
+
+        // LOGIC: Register BatchDeduplicationJob as scoped (v0.5.9g).
+        // Scoped to align with ISimilarityDetector, IRelationshipClassifier,
+        // ICanonicalManager, and IContradictionService lifetimes.
+        // Provides batch processing for retroactive deduplication of existing chunks.
+        // License-gated via FeatureCodes.BatchDeduplication (Teams+).
+        services.AddScoped<IBatchDeduplicationJob, Services.BatchDeduplicationJob>();
     }
 
     /// <inheritdoc/>

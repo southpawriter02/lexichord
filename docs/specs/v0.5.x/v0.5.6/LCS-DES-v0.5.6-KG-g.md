@@ -12,7 +12,7 @@
 | **Swimlane** | NLU Pipeline |
 | **License Tier** | Teams (full), Enterprise (custom patterns) |
 | **Feature Gate Key** | `knowledge.claims.extractor.enabled` |
-| **Status** | Draft |
+| **Status** | Implemented |
 | **Last Updated** | 2026-01-31 |
 
 ---

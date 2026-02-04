@@ -9,7 +9,7 @@
 | **Codename** | Entity Linking (CKVS Phase 2a) |
 | **Total Sub-Parts** | 5 |
 | **Total Estimated Hours** | 30 hours |
-| **Status** | Draft |
+| **Status** | Implemented |
 | **Last Updated** | 2026-01-31 |
 
 ---

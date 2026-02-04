@@ -13,7 +13,7 @@
 | **Feature Gate Key** | `RAG.Dedup.SimilarityDetection` | The string key used in `ILicenseService`. |
 | **Author** | Lexichord Architecture | Primary Architect. |
 | **Reviewer** | — | Lead Architect / Peer. |
-| **Status** | Draft | Current lifecycle state. |
+| **Status** | Implemented | Current lifecycle state. |
 | **Last Updated** | 2026-02-03 | Date of last modification. |
 
 ---

@@ -12,7 +12,7 @@
 | **Swimlane** | NLU Pipeline |
 | **License Tier** | WriterPro (basic), Teams (full) |
 | **Feature Gate Key** | `knowledge.linking.recognizer.enabled` |
-| **Status** | Draft |
+| **Status** | Implemented |
 | **Last Updated** | 2026-01-31 |
 
 ---
