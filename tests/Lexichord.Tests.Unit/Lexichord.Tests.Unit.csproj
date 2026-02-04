@@ -80,6 +80,8 @@
     <ProjectReference Include="..\..\src\Lexichord.Modules.Knowledge\Lexichord.Modules.Knowledge.csproj" />
     <!-- v0.6.1b: LLM Module for testing -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.LLM\Lexichord.Modules.LLM.csproj" />
+    <!-- v0.6.3b: Agents Module for testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.Agents\Lexichord.Modules.Agents.csproj" />
   </ItemGroup>
 
   <ItemGroup>

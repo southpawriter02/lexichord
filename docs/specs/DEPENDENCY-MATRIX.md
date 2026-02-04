@@ -1229,6 +1229,7 @@
 | `Respawn`                                                    | 6.x     | v0.4.8b       | Database reset for integration tests  |
 | `Neo4j.Driver`                                               | 5.27.x  | v0.4.5e       | Neo4j Bolt driver for Knowledge Graph |
 | `Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions` | 9.0.x   | v0.4.5e       | Health check abstractions for Neo4j   |
+| `Stubble.Core`                                               | 1.10.x  | v0.6.3b       | Mustache template rendering           |
 
 ---
 

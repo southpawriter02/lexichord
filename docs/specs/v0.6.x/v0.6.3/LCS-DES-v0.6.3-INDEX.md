@@ -98,7 +98,7 @@ public interface IPromptRenderer
 | **Title**    | Mustache Renderer               |
 | **Module**   | `Lexichord.Modules.Agents`      |
 | **License**  | WriterPro                       |
-| **Status**   | Draft                           |
+| **Status**   | Complete                        |
 
 **Scope:**
 

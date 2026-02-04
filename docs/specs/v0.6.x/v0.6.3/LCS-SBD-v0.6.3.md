@@ -765,17 +765,17 @@ dotnet run --project tests/Lexichord.Benchmarks -- --filter "*Template*"
 
 | #   | Deliverable                                       | Status |
 | :-- | :------------------------------------------------ | :----- |
-| 1   | `IPromptTemplate` interface in Abstractions       | [ ]    |
-| 2   | `IPromptRenderer` interface in Abstractions       | [ ]    |
+| 1   | `IPromptTemplate` interface in Abstractions       | [x]    |
+| 2   | `IPromptRenderer` interface in Abstractions       | [x]    |
 | 3   | `IPromptTemplateRepository` interface             | [ ]    |
-| 4   | `IContextInjector` interface in Abstractions      | [ ]    |
-| 5   | `MustachePromptRenderer` implementation           | [ ]    |
+| 4   | `IContextInjector` interface in Abstractions      | [x]    |
+| 5   | `MustachePromptRenderer` implementation           | [x]    |
 | 6   | `PromptTemplateRepository` implementation         | [ ]    |
 | 7   | `ContextInjector` implementation                  | [ ]    |
 | 8   | Built-in template YAML files (embedded resources) | [ ]    |
-| 9   | Unit tests for all components                     | [ ]    |
+| 9   | Unit tests for all components                     | [x]    |
 | 10  | Integration tests for template pipeline           | [ ]    |
-| 11  | DI registration in AgentsModule.cs                | [ ]    |
+| 11  | DI registration in AgentsModule.cs                | [x]    |
 | 12  | Performance benchmarks                            | [ ]    |
 
 ---
