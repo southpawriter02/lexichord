@@ -257,8 +257,29 @@ public sealed class DockRegionManager : IRegionManager
         var args = new RegionNavigationRequestedEventArgs(id);
         NavigationRequested?.Invoke(this, args);
 
-        // LOGIC: Publish MediatR notification
+        // LOGIC: Publish MediatR notification for handlers to create the dockable
         await _mediator.Publish(new RegionNavigationRequestNotification(id));
+
+        // LOGIC: After handlers have run, check if the dockable was created
+        // The MediatR handler may have called RegisterDocumentAsync which adds
+        // the dockable to the layout. Try to find and activate it now.
+        var created = _dockFactory.FindDockable(id);
+        if (created is not null)
+        {
+            await _dispatcher.InvokeAsync(() =>
+            {
+                if (created.Owner is IDock parentDock)
+                {
+                    parentDock.ActiveDockable = created;
+                }
+            });
+
+            var region = GetRegionForDockable(created);
+            await RaiseRegionChangedAsync(region, id, RegionChangeType.Activated);
+
+            _logger.LogDebug("Navigated to newly created dockable: {Id}", id);
+            return true;
+        }
 
         if (!args.Handled)
         {
