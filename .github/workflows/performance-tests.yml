@@ -1,0 +1,96 @@
+# =============================================================================
+# File: performance-tests.yml
+# Project: Lexichord
+# Description: GitHub Actions workflow for performance benchmarks and regression detection.
+# =============================================================================
+# v0.5.8b: CI integration for search performance testing.
+# =============================================================================
+
+name: Performance Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'benchmarks/**'
+      - 'src/Lexichord.Modules.RAG/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'benchmarks/**'
+      - 'src/Lexichord.Modules.RAG/**'
+  workflow_dispatch:
+    inputs:
+      full_run:
+        description: 'Run full benchmarks (not CI mode)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  benchmark:
+    name: Search Performance Benchmarks
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    services:
+      # Docker is already available on ubuntu-latest
+      # Testcontainers will spin up its own PostgreSQL instance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore benchmarks/Lexichord.Benchmarks/Lexichord.Benchmarks.csproj
+
+      - name: Build Release
+        run: dotnet build benchmarks/Lexichord.Benchmarks/Lexichord.Benchmarks.csproj -c Release --no-restore
+
+      - name: Run Benchmarks
+        env:
+          CI: ${{ github.event.inputs.full_run != 'true' && 'true' || 'false' }}
+        run: |
+          dotnet run \
+            --project benchmarks/Lexichord.Benchmarks \
+            -c Release \
+            --no-build \
+            -- \
+            --filter "*SearchBenchmarks*" \
+            --exporters json
+
+      - name: Check for Regressions
+        run: |
+          python3 scripts/check-performance-regression.py \
+            benchmarks/baselines/performance-baselines.json \
+            BenchmarkDotNet.Artifacts/results/Lexichord.Benchmarks.Search.SearchBenchmarks-report.json \
+            --threshold 10
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results
+          path: BenchmarkDotNet.Artifacts/
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Performance Regression Detected**\n\nThe benchmark results show performance regressions exceeding the 10% threshold. Please review the benchmark artifacts for details.'
+            })

@@ -14,12 +14,28 @@
     <!-- Windows-specific diagnostics (optional, only on Windows) -->
     <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.14.0"
                       Condition="'$(OS)' == 'Windows_NT'" />
+
+    <!-- v0.5.8b: Testcontainers for isolated PostgreSQL environment -->
+    <PackageReference Include="Testcontainers.PostgreSql" Version="3.7.0" />
+
+    <!-- v0.5.8b: Microsoft.Extensions for DI and configuration -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+
+    <!-- v0.5.8b: Database access for benchmark seeding -->
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="Pgvector" Version="0.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Project references for benchmarking RAG module components -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.RAG\Lexichord.Modules.RAG.csproj" />
     <ProjectReference Include="..\..\src\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />
+    <!-- v0.5.8b: Infrastructure for database connection factory -->
+    <ProjectReference Include="..\..\src\Lexichord.Infrastructure\Lexichord.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
+

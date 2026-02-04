@@ -43,14 +43,16 @@ This release hardens the RAG retrieval system with quality metrics infrastructur
 
 - **Retrieval Quality Tests (v0.5.8a)** — Comprehensive test infrastructure for measuring retrieval accuracy. Includes curated test corpus (50 queries across 5 categories and 3 difficulty levels), `IRetrievalMetricsCalculator` interface with P@K, R@K, F1@K, MRR, NDCG@K metrics, `QualityReport` generation with category/difficulty stratification, and gold-standard relevance judgments. Includes 24 unit tests.
 
+- **Search Performance Tests (v0.5.8b)** — BenchmarkDotNet performance benchmarks for all search operations. Features `SearchBenchmarks` class with 6 benchmark methods (HybridSearch, BM25Search, SemanticSearchOnly, FilteredSearch, QuerySuggestions, ContextExpansion) across 3 corpus sizes (1K, 10K, 50K chunks). Includes `BenchmarkDataSeeder` with Testcontainers PostgreSQL/pgvector, `BenchmarkConfig` with CI mode detection, P95/Max latency columns, and JSON/Markdown exporters. CI integration via GitHub Actions workflow with regression detection script (10% threshold).
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.8a](v0.5.x/LCS-CL-v058a.md) | Retrieval Quality Tests  | ✅ Complete |
-| v0.5.8b                          | Integration Quality Tests| 🔜 Planned  |
-| v0.5.8c                          | Performance Benchmarks   | 🔜 Planned  |
-| v0.5.8d                          | Baseline Documentation   | 🔜 Planned  |
+| [v0.5.8b](v0.5.x/LCS-CL-v058b.md) | Search Performance Tests | ✅ Complete |
+| v0.5.8c                          | Caching Strategy         | 🔜 Planned  |
+| v0.5.8d                          | Error Resilience         | 🔜 Planned  |
 
 ---
 

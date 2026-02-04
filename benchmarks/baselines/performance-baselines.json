@@ -1,0 +1,168 @@
+{
+    "_comment": "v0.5.8b: Initial baseline placeholder. Replace with actual benchmark results.",
+    "Title": "Lexichord.Benchmarks.Search.SearchBenchmarks",
+    "Benchmarks": [
+        {
+            "Method": "HybridSearch",
+            "Parameters": "ChunkCount=1000",
+            "Statistics": {
+                "Mean": 45000000,
+                "P95": 50000000,
+                "Max": 60000000
+            }
+        },
+        {
+            "Method": "HybridSearch",
+            "Parameters": "ChunkCount=10000",
+            "Statistics": {
+                "Mean": 130000000,
+                "P95": 150000000,
+                "Max": 180000000
+            }
+        },
+        {
+            "Method": "HybridSearch",
+            "Parameters": "ChunkCount=50000",
+            "Statistics": {
+                "Mean": 400000000,
+                "P95": 500000000,
+                "Max": 600000000
+            }
+        },
+        {
+            "Method": "BM25Search",
+            "Parameters": "ChunkCount=1000",
+            "Statistics": {
+                "Mean": 25000000,
+                "P95": 30000000,
+                "Max": 40000000
+            }
+        },
+        {
+            "Method": "BM25Search",
+            "Parameters": "ChunkCount=10000",
+            "Statistics": {
+                "Mean": 80000000,
+                "P95": 100000000,
+                "Max": 120000000
+            }
+        },
+        {
+            "Method": "BM25Search",
+            "Parameters": "ChunkCount=50000",
+            "Statistics": {
+                "Mean": 280000000,
+                "P95": 350000000,
+                "Max": 420000000
+            }
+        },
+        {
+            "Method": "SemanticSearchOnly",
+            "Parameters": "ChunkCount=1000",
+            "Statistics": {
+                "Mean": 35000000,
+                "P95": 40000000,
+                "Max": 50000000
+            }
+        },
+        {
+            "Method": "SemanticSearchOnly",
+            "Parameters": "ChunkCount=10000",
+            "Statistics": {
+                "Mean": 100000000,
+                "P95": 120000000,
+                "Max": 150000000
+            }
+        },
+        {
+            "Method": "SemanticSearchOnly",
+            "Parameters": "ChunkCount=50000",
+            "Statistics": {
+                "Mean": 320000000,
+                "P95": 400000000,
+                "Max": 480000000
+            }
+        },
+        {
+            "Method": "FilteredSearch",
+            "Parameters": "ChunkCount=1000",
+            "Statistics": {
+                "Mean": 50000000,
+                "P95": 60000000,
+                "Max": 75000000
+            }
+        },
+        {
+            "Method": "FilteredSearch",
+            "Parameters": "ChunkCount=10000",
+            "Statistics": {
+                "Mean": 150000000,
+                "P95": 180000000,
+                "Max": 220000000
+            }
+        },
+        {
+            "Method": "FilteredSearch",
+            "Parameters": "ChunkCount=50000",
+            "Statistics": {
+                "Mean": 480000000,
+                "P95": 600000000,
+                "Max": 720000000
+            }
+        },
+        {
+            "Method": "QuerySuggestions",
+            "Parameters": "ChunkCount=1000",
+            "Statistics": {
+                "Mean": 15000000,
+                "P95": 20000000,
+                "Max": 25000000
+            }
+        },
+        {
+            "Method": "QuerySuggestions",
+            "Parameters": "ChunkCount=10000",
+            "Statistics": {
+                "Mean": 40000000,
+                "P95": 50000000,
+                "Max": 65000000
+            }
+        },
+        {
+            "Method": "QuerySuggestions",
+            "Parameters": "ChunkCount=50000",
+            "Statistics": {
+                "Mean": 120000000,
+                "P95": 150000000,
+                "Max": 180000000
+            }
+        },
+        {
+            "Method": "ContextExpansion",
+            "Parameters": "ChunkCount=1000",
+            "Statistics": {
+                "Mean": 10000000,
+                "P95": 15000000,
+                "Max": 20000000
+            }
+        },
+        {
+            "Method": "ContextExpansion",
+            "Parameters": "ChunkCount=10000",
+            "Statistics": {
+                "Mean": 30000000,
+                "P95": 40000000,
+                "Max": 50000000
+            }
+        },
+        {
+            "Method": "ContextExpansion",
+            "Parameters": "ChunkCount=50000",
+            "Statistics": {
+                "Mean": 95000000,
+                "P95": 120000000,
+                "Max": 150000000
+            }
+        }
+    ]
+}
