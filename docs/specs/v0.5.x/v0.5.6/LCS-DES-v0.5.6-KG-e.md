@@ -12,8 +12,8 @@
 | **Swimlane** | Memory |
 | **License Tier** | WriterPro (types), Teams (full) |
 | **Feature Gate Key** | `knowledge.claims.enabled` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-31 |
+| **Status** | Complete |
+| **Last Updated** | 2026-02-04 |
 
 ---
 

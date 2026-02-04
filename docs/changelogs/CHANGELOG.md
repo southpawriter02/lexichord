@@ -29,6 +29,21 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 | [v0.5.6c](v0.5.x/LCS-CL-056c.md) | Smart Truncation         | ✅ Complete |
 | [v0.5.6d](v0.5.x/LCS-CL-056d.md) | Multi-Snippet Results    | ✅ Complete |
 
+#### Knowledge Graph Sub-Parts (v0.5.6-KG)
+
+- **Claim Data Model** — Implemented core data contracts for claim extraction pipeline. Records include `Claim` (subject-predicate-object assertions with confidence and validation), `ClaimEntity` (entity references with resolved/unresolved states), `ClaimObject` (entity or literal values), `ClaimEvidence` (source text provenance), and supporting enums (`ClaimValidationStatus`, `ClaimExtractionMethod`, `ClaimRelationType`). Added `ClaimPredicate` static class with 26 standard predicates and inverse lookup. License-gated to WriterPro tier. Includes 23 unit tests.
+
+- **Sentence Parser** — Implemented `ISentenceParser` interface with `SpacySentenceParser` for parsing text into linguistic structures. Features sentence segmentation, tokenization with POS tagging and lemmatization, dependency parsing for grammatical relations (`Token`, `DependencyNode`, `DependencyRelation`), and semantic role labeling (`SemanticFrame`, `SemanticArgument`, `SemanticRole` enum). Includes helper methods on `ParsedSentence` for extracting root verbs, subjects, and objects. Supports caching via `IMemoryCache` and multi-language (en, de, fr, es). License-gated to WriterPro tier. Includes 35 unit tests.
+
+| Version                          | Title                    | Status      |
+| -------------------------------- | ------------------------ | ----------- |
+| [v0.5.6e](v0.5.x/LCS-CL-056e.md) | Claim Data Model         | ✅ Complete |
+| [v0.5.6f](v0.5.x/LCS-CL-056f.md) | Sentence Parser          | ✅ Complete |
+| v0.5.6g                          | Entity Linker            | 🔜 Planned  |
+| v0.5.6h                          | Axiom Validator          | 🔜 Planned  |
+| v0.5.6i                          | Claim Store              | 🔜 Planned  |
+
+
 ---
 
 ## [v0.5.5] - 2026-02 (In Progress)

@@ -18,7 +18,7 @@
 
 | ID | Document | Title | Hours | Description |
 | :- | :------- | :---- | :---- | :---------- |
-| v0.5.6e | [LCS-DES-056-KG-e](LCS-DES-056-KG-e.md) | Claim Data Model | 4 | Core data types: `Claim`, `ClaimTriple`, `ClaimEvidence` |
+| v0.5.6e | [LCS-DES-056-KG-e](LCS-DES-056-KG-e.md) | Claim Data Model | 4 | ✅ Core data types: `Claim`, `ClaimEntity`, `ClaimObject`, `ClaimEvidence` |
 | v0.5.6f | [LCS-DES-056-KG-f](LCS-DES-056-KG-f.md) | Sentence Parser | 6 | Dependency parsing for claim structure |
 | v0.5.6g | [LCS-DES-056-KG-g](LCS-DES-056-KG-g.md) | Claim Extractor | 8 | Extract claims from parsed sentences |
 | v0.5.6h | [LCS-DES-056-KG-h](LCS-DES-056-KG-h.md) | Claim Repository | 5 | PostgreSQL storage with search |

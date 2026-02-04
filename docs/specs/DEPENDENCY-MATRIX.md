@@ -884,6 +884,64 @@
 | :-------------- | :--------- | :----------- | :------------------------------ |
 | `HighlightType` | v0.5.6a    | Abstractions | QueryMatch/FuzzyMatch/KeyPhrase |
 
+### 1.19b v0.5.6-KG Claim Extraction Data Model (CKVS Phase 2b)
+
+| Record                  | Defined In | Module       | Purpose                                      |
+| :---------------------- | :--------- | :----------- | :------------------------------------------- |
+| `Claim`                 | v0.5.6e    | Abstractions | Subject-predicate-object assertion           |
+| `ClaimEntity`           | v0.5.6e    | Abstractions | Entity reference (resolved/unresolved)       |
+| `ClaimObject`           | v0.5.6e    | Abstractions | Claim object (entity or literal)             |
+| `ClaimEvidence`         | v0.5.6e    | Abstractions | Source text provenance                       |
+| `ClaimRelation`         | v0.5.6e    | Abstractions | Relationship between claims                  |
+| `ClaimValidationMessage`| v0.5.6e    | Abstractions | Validation feedback message                  |
+| `ClaimExtractionResult` | v0.5.6e    | Abstractions | Extraction operation result container        |
+| `ClaimExtractionStats`  | v0.5.6e    | Abstractions | Extraction aggregate metrics                 |
+
+**New Static Classes (v0.5.6-KG):**
+
+| Static Class      | Defined In | Module       | Purpose                           |
+| :---------------- | :--------- | :----------- | :-------------------------------- |
+| `ClaimPredicate`  | v0.5.6e    | Abstractions | 26 standard predicates + inverse  |
+
+**New Enums (v0.5.6-KG):**
+
+| Enum                    | Defined In | Module       | Purpose                               |
+| :---------------------- | :--------- | :----------- | :------------------------------------ |
+| `ClaimValidationStatus` | v0.5.6e    | Abstractions | Pending/Valid/Invalid/Conflict        |
+| `ClaimObjectType`       | v0.5.6e    | Abstractions | Entity/Literal discrimination         |
+| `ClaimExtractionMethod` | v0.5.6e    | Abstractions | PatternRule/SRL/LLM/Manual            |
+| `ClaimRelationType`     | v0.5.6e    | Abstractions | DerivedFrom/Supports/Contradicts/etc. |
+| `ClaimMessageSeverity`  | v0.5.6e    | Abstractions | Info/Warning/Error/Critical           |
+
+### 1.19c v0.5.6f Sentence Parser (CKVS Phase 2c)
+
+| Interface/Record      | Defined In | Module           | Purpose                                   |
+| :-------------------- | :--------- | :--------------- | :---------------------------------------- |
+| `ISentenceParser`     | v0.5.6f    | Abstractions     | Sentence parsing service contract         |
+| `ParseOptions`        | v0.5.6f    | Abstractions     | Parsing configuration options             |
+| `ParseResult`         | v0.5.6f    | Abstractions     | Parse operation result container          |
+| `ParseStats`          | v0.5.6f    | Abstractions     | Parse operation statistics                |
+| `ParsedSentence`      | v0.5.6f    | Abstractions     | Sentence with linguistic annotations      |
+| `Token`               | v0.5.6f    | Abstractions     | Word with POS, lemma, offsets             |
+| `DependencyNode`      | v0.5.6f    | Abstractions     | Node in dependency tree                   |
+| `DependencyRelation`  | v0.5.6f    | Abstractions     | Head-dependent grammatical relation       |
+| `SemanticFrame`       | v0.5.6f    | Abstractions     | Predicate-argument structure              |
+| `SemanticArgument`    | v0.5.6f    | Abstractions     | Argument in semantic frame                |
+| `NamedEntity`         | v0.5.6f    | Abstractions     | NER result (text, label, offsets)         |
+| `SpacySentenceParser` | v0.5.6f    | Modules.Knowledge| SpaCy-based parser implementation         |
+
+**New Static Classes (v0.5.6f):**
+
+| Static Class           | Defined In | Module       | Purpose                              |
+| :--------------------- | :--------- | :----------- | :----------------------------------- |
+| `DependencyRelations`  | v0.5.6f    | Abstractions | Constants for dependency types       |
+
+**New Enums (v0.5.6f):**
+
+| Enum           | Defined In | Module       | Purpose                                     |
+| :------------- | :--------- | :----------- | :------------------------------------------ |
+| `SemanticRole` | v0.5.6f    | Abstractions | ARG0/ARG1/ARGM-* PropBank-style roles       |
+
 ### 1.20 v0.5.7 Reference Dock Interfaces
 
 | Interface                | Defined In | Module      | Purpose                       |
