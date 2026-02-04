@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Lexichord.Host.Views.Sections.MemorySectionView">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    MEMORY SECTION VIEW
+    Main content area for the Memory/RAG section.
+
+    LOGIC: This is the central area shown when the Memory section is selected
+    in the NavigationRail. It provides access to:
+    - Semantic search across indexed documents
+    - Reference management
+    - Knowledge base exploration
+    - Index status and management
+
+    The actual search and indexing functionality comes from the RAGModule.
+    This view provides overview and navigation to RAG-related functionality.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,16">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Memory"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="Search and retrieve information from your indexed documents."
+                           FontSize="13"
+                           Opacity="0.7" />
+            </StackPanel>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <StackPanel Spacing="24">
+                <!-- Search Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Semantic Search"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Search across your indexed documents using natural language queries. Find relevant passages and references."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <TextBox Name="SearchBox"
+                                 Watermark="Enter your search query..."
+                                 Margin="0,8,0,0" />
+                        <Button Content="Search"
+                                HorizontalAlignment="Left"
+                                Padding="16,8"
+                                Name="SearchButton"
+                                Click="OnSearchClick" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Index Status Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Index Status"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="View and manage your document index. Re-index documents or remove them from the knowledge base."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <Button Content="Open Index Status"
+                                HorizontalAlignment="Left"
+                                Padding="16,8"
+                                Name="IndexStatusButton"
+                                Click="OnIndexStatusClick" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Knowledge Graph Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Knowledge Base"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Explore entities, relationships, and axioms extracted from your documents."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <TextBlock Text="Knowledge graph features coming soon."
+                                   FontStyle="Italic"
+                                   Opacity="0.6" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+
+</UserControl>

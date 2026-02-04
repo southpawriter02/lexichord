@@ -20,11 +20,19 @@
     <!-- v0.6.3b: Mustache template rendering -->
     <PackageReference Include="Stubble.Core" Version="1.10.8" />
 
+    <!-- v0.6.3c: YAML template parsing -->
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+
     <!-- DI Abstractions -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+  </ItemGroup>
+
+  <!-- v0.6.3c: Embed built-in prompt templates as resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Prompts\*.yaml" />
   </ItemGroup>
 
   <ItemGroup>

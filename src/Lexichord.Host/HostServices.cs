@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Commands;
+using Lexichord.Abstractions.Contracts.Navigation;
 using Lexichord.Abstractions.Contracts.Security;
 using Lexichord.Host.Infrastructure;
 using Lexichord.Host.Services;
@@ -165,6 +166,10 @@ public static class HostServices
 
         // LOGIC (v0.1.1a): Register dock layout services
         services.AddDockServices();
+
+        // LOGIC (v0.6.4a): Register section navigation service
+        // Enables navigation rail buttons to switch between main application sections
+        services.AddSingleton<ISectionNavigationService, SectionNavigationService>();
 
         // LOGIC (v0.1.4c): Register shutdown service for safe close workflow
         // Coordinates dirty document checking and save confirmation on close

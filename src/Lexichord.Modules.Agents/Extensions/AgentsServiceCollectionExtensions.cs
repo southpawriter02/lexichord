@@ -8,6 +8,7 @@
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Templates;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Lexichord.Modules.Agents.Extensions;
 
@@ -164,6 +165,122 @@ public static class AgentsServiceCollectionExtensions
                 logger,
                 Microsoft.Extensions.Options.Options.Create(options));
         });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the prompt template repository to the service collection with default options.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="PromptTemplateOptions"/> - Configuration options (via <see cref="Microsoft.Extensions.Options.IOptions{TOptions}"/>)
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="PromptTemplateRepository"/> as <see cref="IPromptTemplateRepository"/> - Singleton for application-wide template management
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// The repository is registered as a singleton because:
+    /// </para>
+    /// <list type="number">
+    ///   <item><description>Templates should be cached application-wide</description></item>
+    ///   <item><description>Hot-reload requires a single watcher instance</description></item>
+    ///   <item><description>The repository is thread-safe</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// The repository requires <see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> to be registered.
+    /// Optionally uses <see cref="Lexichord.Abstractions.Contracts.IFileSystemWatcher"/> for hot-reload.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Basic registration with default options
+    /// services.AddTemplateRepository();
+    ///
+    /// // Later, resolve via DI
+    /// var repository = serviceProvider.GetRequiredService&lt;IPromptTemplateRepository&gt;();
+    /// var template = repository.GetTemplate("co-pilot-editor");
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddTemplateRepository(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register default options via Options pattern.
+        services.AddOptions<PromptTemplateOptions>();
+
+        // LOGIC: Register repository as singleton for application-wide template management.
+        // TryAdd to avoid duplicate registrations if called multiple times.
+        services.TryAddSingleton<IPromptTemplateRepository, PromptTemplateRepository>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the prompt template repository to the service collection with custom options.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <param name="configureOptions">An action to configure the repository options.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="services"/> or <paramref name="configureOptions"/> is null.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This overload allows customization of the repository behavior via
+    /// <see cref="PromptTemplateOptions"/>.
+    /// </para>
+    /// <para>
+    /// Available options:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="PromptTemplateOptions.EnableBuiltInTemplates"/> - Whether to load embedded templates</description></item>
+    ///   <item><description><see cref="PromptTemplateOptions.EnableHotReload"/> - Whether to enable hot-reload</description></item>
+    ///   <item><description><see cref="PromptTemplateOptions.GlobalTemplatesPath"/> - Path to global templates</description></item>
+    ///   <item><description><see cref="PromptTemplateOptions.UserTemplatesPath"/> - Path to user templates</description></item>
+    ///   <item><description><see cref="PromptTemplateOptions.FileWatcherDebounceMs"/> - Debounce delay for file changes</description></item>
+    /// </list>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Register with custom paths
+    /// services.AddTemplateRepository(options =>
+    /// {
+    ///     options.UserTemplatesPath = Path.Combine(
+    ///         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+    ///         "LexichordTemplates");
+    ///     options.EnableHotReload = true;
+    ///     options.FileWatcherDebounceMs = 500;
+    /// });
+    ///
+    /// // Register without built-in templates (testing)
+    /// services.AddTemplateRepository(options =>
+    /// {
+    ///     options.EnableBuiltInTemplates = false;
+    /// });
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddTemplateRepository(
+        this IServiceCollection services,
+        Action<PromptTemplateOptions> configureOptions)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configureOptions);
+
+        // LOGIC: Register options with configuration action.
+        services.Configure(configureOptions);
+
+        // LOGIC: Register repository as singleton.
+        services.TryAddSingleton<IPromptTemplateRepository, PromptTemplateRepository>();
 
         return services;
     }

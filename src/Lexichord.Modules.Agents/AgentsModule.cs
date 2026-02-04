@@ -24,7 +24,7 @@ namespace Lexichord.Modules.Agents;
 /// </para>
 /// <list type="bullet">
 ///   <item><description><strong>v0.6.3b:</strong> Mustache-based prompt template rendering via <see cref="MustachePromptRenderer"/></description></item>
-///   <item><description><strong>v0.6.3c:</strong> Template repository for built-in and custom prompts (future)</description></item>
+///   <item><description><strong>v0.6.3c:</strong> Template repository for built-in and custom prompts via <see cref="PromptTemplateRepository"/></description></item>
 ///   <item><description><strong>v0.6.3d:</strong> Context injection from style rules and RAG (future)</description></item>
 /// </list>
 /// <para>
@@ -83,10 +83,16 @@ public class AgentsModule : IModule
     /// </para>
     /// <list type="bullet">
     ///   <item><description>
-    ///     <see cref="IPromptRenderer"/> → <see cref="MustachePromptRenderer"/> (Singleton)
+    ///     <see cref="IPromptRenderer"/> → <see cref="MustachePromptRenderer"/> (Singleton) - v0.6.3b
     ///   </description></item>
     ///   <item><description>
-    ///     <see cref="MustacheRendererOptions"/> via IOptions pattern
+    ///     <see cref="MustacheRendererOptions"/> via IOptions pattern - v0.6.3b
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IPromptTemplateRepository"/> → <see cref="PromptTemplateRepository"/> (Singleton) - v0.6.3c
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="PromptTemplateOptions"/> via IOptions pattern - v0.6.3c
     ///   </description></item>
     /// </list>
     /// </remarks>
@@ -95,6 +101,10 @@ public class AgentsModule : IModule
         // LOGIC: Register Mustache prompt renderer services (v0.6.3b).
         // The renderer is registered as a singleton for thread-safe reuse.
         services.AddMustacheRenderer();
+
+        // LOGIC: Register template repository services (v0.6.3c).
+        // The repository manages built-in and custom templates with hot-reload support.
+        services.AddTemplateRepository();
     }
 
     /// <inheritdoc />
@@ -104,6 +114,7 @@ public class AgentsModule : IModule
     /// </para>
     /// <list type="bullet">
     ///   <item><description>Verifies the prompt renderer is available</description></item>
+    ///   <item><description>Initializes the template repository and loads templates</description></item>
     ///   <item><description>Logs module initialization status</description></item>
     /// </list>
     /// </remarks>
@@ -116,7 +127,7 @@ public class AgentsModule : IModule
             Info.Name,
             Info.Version);
 
-        // LOGIC: Verify the prompt renderer is available.
+        // LOGIC: Verify the prompt renderer is available (v0.6.3b).
         var renderer = provider.GetService<IPromptRenderer>();
         if (renderer is not null)
         {
@@ -129,10 +140,31 @@ public class AgentsModule : IModule
             logger.LogWarning("Prompt renderer is not registered. Template rendering will not be available.");
         }
 
+        // LOGIC: Initialize the template repository (v0.6.3c).
+        // This loads embedded templates and sets up hot-reload if licensed.
+        var repository = provider.GetService<IPromptTemplateRepository>();
+        if (repository is PromptTemplateRepository repoImpl)
+        {
+            await repoImpl.InitializeAsync();
+
+            var templates = repository.GetAllTemplates();
+            logger.LogDebug(
+                "Template repository initialized with {Count} templates",
+                templates.Count);
+        }
+        else if (repository is not null)
+        {
+            logger.LogDebug(
+                "Template repository registered: {RepositoryType}",
+                repository.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Template repository is not registered. Template management will not be available.");
+        }
+
         logger.LogInformation(
             "{ModuleName} module initialized successfully",
             Info.Name);
-
-        await Task.CompletedTask;
     }
 }

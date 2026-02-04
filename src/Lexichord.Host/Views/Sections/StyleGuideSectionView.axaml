@@ -1,0 +1,110 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Lexichord.Host.Views.Sections.StyleGuideSectionView">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    STYLE GUIDE SECTION VIEW
+    Main content area for the Style Guide section.
+
+    LOGIC: This is the central area shown when the Style Guide section is
+    selected in the NavigationRail. It provides access to:
+    - Terminology management (Lexicon)
+    - Writing rules and style configuration
+    - Readability analysis tools
+    - Voice profiling
+
+    The actual tools come from the StyleModule. This view provides overview
+    and navigation to style-related functionality.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,16">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Style Guide"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="Configure writing rules and terminology for your project."
+                           FontSize="13"
+                           Opacity="0.7" />
+            </StackPanel>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <StackPanel Spacing="24">
+                <!-- Lexicon Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Lexicon"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Manage your project's terminology, including preferred terms, forbidden words, and suggestions."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <Button Content="Open Lexicon"
+                                HorizontalAlignment="Left"
+                                Padding="16,8"
+                                Name="OpenLexiconButton"
+                                Click="OnOpenLexiconClick" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Problems Panel Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Problems"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="View style violations and writing issues detected in your documents."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <Button Content="Open Problems"
+                                HorizontalAlignment="Left"
+                                Padding="16,8"
+                                Name="OpenProblemsButton"
+                                Click="OnOpenProblemsClick" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Readability Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Readability"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Analyze the readability of your writing with metrics like Flesch-Kincaid and sentence complexity."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <TextBlock Text="Open a document to view readability metrics."
+                                   FontStyle="Italic"
+                                   Opacity="0.6" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+
+</UserControl>

@@ -18,12 +18,15 @@ This release delivers the prompt templating infrastructure that enables structur
 
 - **Mustache Renderer (v0.6.3b)** — Implemented `MustachePromptRenderer` in new `Lexichord.Modules.Agents` module using Stubble.Core 1.10.8. Implements `IPromptRenderer` interface with full Mustache specification support: variable substitution (`{{variable}}`), sections (`{{#section}}...{{/section}}`), inverted sections (`{{^inverted}}...{{/inverted}}`), raw output (`{{{raw}}}`), list iteration (`{{#items}}{{.}}{{/items}}`), and nested object access (`{{user.name}}`). Added `MustacheRendererOptions` configuration record with `Default`/`Strict`/`Lenient` presets controlling case sensitivity, validation behavior, and performance thresholds. Created `AgentsModule` implementing `IModule` for automatic discovery and service registration. Added `AddMustacheRenderer()` DI extension methods for singleton registration. Features thread-safe design for concurrent usage, HTML escaping disabled by default for prompt content, configurable case-insensitive variable lookup (default: enabled), comprehensive logging at Debug/Information levels. Includes 39 unit tests.
 
+- **Template Repository (v0.6.3c)** — Implemented `IPromptTemplateRepository` for managing prompt templates from multiple sources with priority-based loading. Added `TemplateSource` enum (Embedded, Global, User) for priority ordering, `TemplateInfo` record for template metadata, `TemplateChangedEventArgs` for change notifications. Implemented `PromptTemplateRepository` with thread-safe `ConcurrentDictionary` cache, priority-based template override (User > Global > Embedded), hot-reload via `IFileSystemWatcher` integration, and license gating (custom templates at WriterPro+, hot-reload at Teams+). Created `PromptTemplateLoader` for YAML template parsing using YamlDotNet 16.3.0 with `UnderscoredNamingConvention`. Added 5 built-in YAML templates: `co-pilot-editor` (editing), `document-reviewer` (review), `summarizer` (analysis), `style-checker` (linting), `translator` (translation). Added `PromptTemplateOptions` configuration with `EnableBuiltInTemplates`, `EnableHotReload`, `FileWatcherDebounceMs`, and platform-specific default paths. Added `AddTemplateRepository()` DI extension methods. Includes 74 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
 | -------------------------------- | ---------------------------- | ----------- |
 | [v0.6.3a](v0.6.x/LCS-CL-v063a.md) | Template Abstractions        | ✅ Complete |
 | [v0.6.3b](v0.6.x/LCS-CL-v063b.md) | Mustache Renderer            | ✅ Complete |
+| [v0.6.3c](v0.6.x/LCS-CL-v063c.md) | Template Repository          | ✅ Complete |
 
 ---
 

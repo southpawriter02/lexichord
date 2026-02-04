@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Lexichord.Host.Views.Sections.AgentsSectionView">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    AGENTS SECTION VIEW
+    Main content area for the Agents section.
+
+    LOGIC: This is the central area shown when the Agents section is selected
+    in the NavigationRail. It provides access to:
+    - AI agent configuration
+    - Prompt template management
+    - Agent interactions and chat
+    - LLM settings and API configuration
+
+    The actual agent functionality comes from the AgentsModule and LLMModule.
+    This view provides overview and navigation to agent-related functionality.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,16">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Agents"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="Configure and interact with AI writing assistants."
+                           FontSize="13"
+                           Opacity="0.7" />
+            </StackPanel>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Padding="24">
+            <StackPanel Spacing="24">
+                <!-- AI Assistant Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Writing Assistant"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Get AI-powered writing suggestions, improvements, and feedback on your documents."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <TextBlock Text="Open a document to use the writing assistant."
+                                   FontStyle="Italic"
+                                   Opacity="0.6" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Prompt Templates Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Prompt Templates"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Manage reusable prompt templates for common writing tasks like summarization, expansion, and tone adjustment."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <TextBlock Text="Template management coming soon."
+                                   FontStyle="Italic"
+                                   Opacity="0.6" />
+                    </StackPanel>
+                </Border>
+
+                <!-- LLM Configuration Card -->
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="LLM Configuration"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Configure your API keys and model preferences for AI-powered features."
+                                   TextWrapping="Wrap"
+                                   Opacity="0.8" />
+                        <Button Content="Open LLM Settings"
+                                HorizontalAlignment="Left"
+                                Padding="16,8"
+                                Name="LLMSettingsButton"
+                                Click="OnLLMSettingsClick" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+
+</UserControl>

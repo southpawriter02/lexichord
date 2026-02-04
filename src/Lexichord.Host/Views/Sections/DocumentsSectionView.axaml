@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Lexichord.Host.Views.Sections.DocumentsSectionView">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    DOCUMENTS SECTION VIEW
+    Main content area for the Documents section.
+
+    LOGIC: This is the central document editing area shown when the Documents
+    section is selected in the NavigationRail. It displays:
+    - Active document tabs (via EditorModule)
+    - Welcome/empty state when no documents are open
+
+    The actual document content comes from the EditorModule's ManuscriptView.
+    This view provides the container and coordination.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Grid>
+        <!-- Welcome message when no documents are open -->
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16"
+                    Name="WelcomePanel">
+            <TextBlock Text="Documents"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       Opacity="0.8" />
+            <TextBlock Text="Open or create a document to get started."
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       Opacity="0.6" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="Open File"
+                        Padding="16,8"
+                        Name="OpenFileButton"
+                        Click="OnOpenFileClick" />
+                <Button Content="New Document"
+                        Padding="16,8"
+                        Name="NewDocumentButton"
+                        Click="OnNewDocumentClick" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

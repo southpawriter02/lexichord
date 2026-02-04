@@ -1,7 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Lexichord.Abstractions.Contracts.Navigation;
 using Lexichord.Host.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Lexichord.Host.Views.Shell;
 
@@ -10,10 +12,13 @@ namespace Lexichord.Host.Views.Shell;
 /// </summary>
 /// <remarks>
 /// LOGIC: Displays icon buttons for switching between application sections.
-/// Currently implements Settings button; other sections are placeholders.
+/// v0.6.4a: Now functional - clicking section buttons navigates to the
+/// corresponding section view via ISectionNavigationService.
 /// </remarks>
 public partial class NavigationRail : UserControl
 {
+    private ILogger<NavigationRail>? _logger;
+
     public NavigationRail()
     {
         InitializeComponent();
@@ -46,15 +51,46 @@ public partial class NavigationRail : UserControl
     }
 
     /// <summary>
-    /// Placeholder handler for section buttons.
+    /// Handles section button clicks to navigate between application sections.
     /// </summary>
     /// <remarks>
-    /// LOGIC: Future versions will navigate to different sections.
-    /// For now, these buttons show a visual feedback but take no action.
+    /// LOGIC (v0.6.4a): Determines which section was clicked based on the button's
+    /// ToolTip and navigates to that section via ISectionNavigationService.
     /// </remarks>
-    private void OnSectionClick(object? sender, RoutedEventArgs e)
+    private async void OnSectionClick(object? sender, RoutedEventArgs e)
     {
-        // TODO: Implement section navigation
-        // For now, just consume the event for visual feedback
+        e.Handled = true;
+
+        if (sender is not Button button)
+            return;
+
+        // LOGIC: Get the section from the button's tooltip
+        var tooltip = ToolTip.GetTip(button)?.ToString();
+        if (string.IsNullOrEmpty(tooltip))
+            return;
+
+        // LOGIC: Map tooltip text to NavigationSection
+        var section = tooltip switch
+        {
+            "Documents" => NavigationSection.Documents,
+            "Style Guide" => NavigationSection.StyleGuide,
+            "Memory" => NavigationSection.Memory,
+            "Agents" => NavigationSection.Agents,
+            _ => (NavigationSection?)null
+        };
+
+        if (section is null)
+            return;
+
+        // LOGIC: Navigate to the section
+        var navigationService = App.Services.GetService<ISectionNavigationService>();
+        if (navigationService is null)
+        {
+            _logger ??= App.Services.GetService<ILogger<NavigationRail>>();
+            _logger?.LogWarning("ISectionNavigationService not available");
+            return;
+        }
+
+        await navigationService.NavigateToSectionAsync(section.Value);
     }
 }

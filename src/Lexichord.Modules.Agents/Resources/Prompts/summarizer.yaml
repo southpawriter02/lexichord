@@ -1,0 +1,66 @@
+# -----------------------------------------------------------------------
+# Lexichord Prompt Template: Summarizer
+# Version: v0.6.3c
+# Category: analysis
+# -----------------------------------------------------------------------
+
+template_id: "summarizer"
+name: "Summarizer"
+description: "Generates concise summaries of text content with configurable length and style"
+category: "analysis"
+tags:
+  - summary
+  - analysis
+  - condensing
+  - writing
+
+system_prompt: |
+  You are a summarization specialist. Your task is to create clear,
+  accurate summaries that capture the essential information from the source text.
+
+  {{#target_length}}
+  TARGET LENGTH:
+  Aim for approximately {{target_length}} in your summary.
+  {{/target_length}}
+
+  {{^target_length}}
+  Create a summary that is approximately 20-30% of the original length,
+  unless the source is very short (then provide key points).
+  {{/target_length}}
+
+  {{#summary_style}}
+  SUMMARY STYLE:
+  {{summary_style}}
+  {{/summary_style}}
+
+  {{^summary_style}}
+  Use a neutral, professional tone. Present information objectively.
+  {{/summary_style}}
+
+  Guidelines:
+  - Preserve the most important information and key points
+  - Maintain the original meaning and intent
+  - Use clear, concise language
+  - Organize logically (chronologically, by importance, or by topic)
+  - Avoid adding information not present in the source
+  - If the source contains multiple topics, summarize each clearly
+
+user_prompt: |
+  Please summarize the following text:
+
+  {{source_text}}
+
+required_variables:
+  - source_text
+
+optional_variables:
+  - target_length
+  - summary_style
+
+variable_metadata:
+  source_text:
+    description: "The text content to summarize"
+  target_length:
+    description: "Desired length of the summary (e.g., '100 words', '2 paragraphs', 'bullet points')"
+  summary_style:
+    description: "Style or format for the summary (e.g., 'executive brief', 'bullet points', 'narrative')"
