@@ -1,0 +1,130 @@
+# =============================================================================
+# File: BuiltInPatterns.yaml
+# Project: Lexichord.Modules.Knowledge
+# Description: Built-in extraction patterns for claim extraction.
+# =============================================================================
+# LOGIC: Default patterns for common claim structures in API documentation.
+#
+# v0.5.6g: Claim Extractor (Knowledge Graph Claim Extraction Pipeline)
+# =============================================================================
+
+patterns:
+  # API/Endpoint patterns
+  - id: endpoint-accepts-parameter
+    name: "Endpoint Accepts Parameter"
+    type: Template
+    template: "{SUBJECT} accepts {OBJECT}"
+    predicate: ACCEPTS
+    subject_type: Endpoint
+    object_type: Parameter
+    base_confidence: 0.85
+    priority: 10
+    tags: [api, endpoint, parameter]
+
+  - id: endpoint-returns-response
+    name: "Endpoint Returns Response"
+    type: Template
+    template: "{SUBJECT} returns {OBJECT}"
+    predicate: RETURNS
+    subject_type: Endpoint
+    object_type: Response
+    base_confidence: 0.85
+    priority: 10
+    tags: [api, endpoint, response]
+
+  - id: endpoint-requires-auth
+    name: "Endpoint Requires Authentication"
+    type: Regex
+    regex_pattern: "(?<subject>[A-Z]+\\s*/[\\w/]+|the\\s+\\w+\\s+endpoint)\\s+requires\\s+(?<object>authentication|authorization|an?\\s+API\\s+key)"
+    predicate: REQUIRES
+    subject_type: Endpoint
+    object_type: Concept
+    base_confidence: 0.9
+    priority: 15
+    tags: [api, security]
+
+  # Property patterns
+  - id: parameter-defaults-to
+    name: "Parameter Has Default"
+    type: Template
+    template: "{SUBJECT} defaults to {OBJECT}"
+    predicate: HAS_DEFAULT
+    subject_type: Parameter
+    object_type: literal
+    object_is_literal: true
+    base_confidence: 0.9
+    priority: 10
+    tags: [parameter, default]
+
+  - id: rate-limit-value
+    name: "Rate Limit Value"
+    type: Regex
+    regex_pattern: "(?<subject>rate\\s+limit(?:ing)?)\\s+(?:is\\s+)?(?:set\\s+to\\s+)?(?<object>\\d+\\s*(?:requests?)?(?:\\s*(?:per|/)\\s*(?:minute|hour|second|day))?)"
+    predicate: HAS_VALUE
+    subject_type: Concept
+    object_type: literal
+    object_is_literal: true
+    literal_type: string
+    base_confidence: 0.85
+    priority: 12
+    tags: [rate-limit]
+
+  # Deprecation patterns
+  - id: deprecated-endpoint
+    name: "Deprecated Endpoint"
+    type: Regex
+    regex_pattern: "(?<subject>[A-Z]+\\s*/[\\w/]+|this\\s+endpoint)\\s+(?:is|has\\s+been)\\s+(?<object>deprecated)"
+    predicate: IS_DEPRECATED
+    subject_type: Endpoint
+    object_type: literal
+    object_is_literal: true
+    literal_type: bool
+    base_confidence: 0.95
+    priority: 20
+    tags: [deprecation]
+
+  # Relationship patterns
+  - id: entity-contains
+    name: "Entity Contains"
+    type: Template
+    template: "{SUBJECT} contains {OBJECT}"
+    predicate: CONTAINS
+    subject_type: "*"
+    object_type: "*"
+    base_confidence: 0.8
+    priority: 5
+    tags: [relationship]
+
+  - id: entity-implements
+    name: "Entity Implements"
+    type: Template
+    template: "{SUBJECT} implements {OBJECT}"
+    predicate: IMPLEMENTS
+    subject_type: "*"
+    object_type: "*"
+    base_confidence: 0.85
+    priority: 8
+    tags: [relationship]
+
+  # Requirement patterns
+  - id: entity-requires
+    name: "Entity Requires"
+    type: Template
+    template: "{SUBJECT} requires {OBJECT}"
+    predicate: REQUIRES
+    subject_type: "*"
+    object_type: "*"
+    base_confidence: 0.85
+    priority: 8
+    tags: [requirement]
+
+  - id: must-have
+    name: "Must Have"
+    type: Regex
+    regex_pattern: "(?<subject>\\w+(?:\\s+\\w+)?)\\s+must\\s+(?:have|include)\\s+(?<object>.+?)(?:\\.|$)"
+    predicate: REQUIRES
+    subject_type: "*"
+    object_type: "*"
+    base_confidence: 0.8
+    priority: 7
+    tags: [requirement]

@@ -35,13 +35,16 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 
 - **Sentence Parser** — Implemented `ISentenceParser` interface with `SpacySentenceParser` for parsing text into linguistic structures. Features sentence segmentation, tokenization with POS tagging and lemmatization, dependency parsing for grammatical relations (`Token`, `DependencyNode`, `DependencyRelation`), and semantic role labeling (`SemanticFrame`, `SemanticArgument`, `SemanticRole` enum). Includes helper methods on `ParsedSentence` for extracting root verbs, subjects, and objects. Supports caching via `IMemoryCache` and multi-language (en, de, fr, es). License-gated to WriterPro tier. Includes 35 unit tests.
 
+- **Claim Extractor** — Implemented `IClaimExtractionService` interface with `ClaimExtractionService` orchestrating claim extraction from parsed text. Features pattern-based extraction (regex/template patterns) via `PatternClaimExtractor`, dependency-based extraction via `DependencyClaimExtractor`, semantic deduplication via `ClaimDeduplicator`, and confidence scoring via `ConfidenceScorer`. Includes `ClaimExtractionContext` configuration, `ExtractedClaim` intermediate representation, and YAML-based pattern loading. Built-in patterns for common API documentation structures (ACCEPTS, RETURNS, REQUIRES, etc.). License-gated to WriterPro tier. Includes 22 unit tests.
+
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.6e](v0.5.x/LCS-CL-056e.md) | Claim Data Model         | ✅ Complete |
 | [v0.5.6f](v0.5.x/LCS-CL-056f.md) | Sentence Parser          | ✅ Complete |
-| v0.5.6g                          | Entity Linker            | 🔜 Planned  |
-| v0.5.6h                          | Axiom Validator          | 🔜 Planned  |
-| v0.5.6i                          | Claim Store              | 🔜 Planned  |
+| [v0.5.6g](v0.5.x/LCS-CL-056g.md) | Claim Extractor          | ✅ Complete |
+| v0.5.6h                          | Entity Linker            | 🔜 Planned  |
+| v0.5.6i                          | Axiom Validator          | 🔜 Planned  |
+| v0.5.6j                          | Claim Store              | 🔜 Planned  |
 
 
 ---
