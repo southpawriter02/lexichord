@@ -551,6 +551,17 @@ public sealed class RAGModule : IModule
         // Each preview pane instance gets its own ViewModel for independent
         // loading state, visibility, and selection management.
         services.AddTransient<PreviewPaneViewModel>();
+
+        // =============================================================================
+        // v0.5.7d: Search Actions (Copy, Export, Open All)
+        // =============================================================================
+
+        // LOGIC: Register SearchActionsService as singleton (v0.5.7d).
+        // Thread-safe service providing copy, export, and open-all operations
+        // for grouped search results. Integrates with ICitationService for
+        // formatted output and IEditorService for document navigation.
+        // License-gated: Export and CitationFormatted copy require Writer Pro.
+        services.AddSingleton<ISearchActionsService, SearchActionsService>();
     }
 
     /// <inheritdoc/>
