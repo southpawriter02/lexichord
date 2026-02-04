@@ -143,6 +143,34 @@ public class IChunkRepositoryContractTests
             because: "default threshold should be 0.5");
     }
 
+    [Fact]
+    [Trait("Feature", "v0.5.9f")]
+    public void SearchSimilarWithDeduplicationAsync_HasCorrectSignature()
+    {
+        // Arrange
+        var method = _interfaceType.GetMethod("SearchSimilarWithDeduplicationAsync");
+
+        // Assert
+        method.Should().NotBeNull();
+        method!.ReturnType.Should().Be(typeof(Task<IReadOnlyList<DeduplicatedSearchResult>>));
+
+        var parameters = method.GetParameters();
+        parameters.Should().HaveCount(4);
+
+        // Verify parameter types and names
+        parameters[0].ParameterType.Should().Be(typeof(float[]));
+        parameters[0].Name.Should().Be("queryEmbedding");
+
+        parameters[1].ParameterType.Should().Be(typeof(Lexichord.Abstractions.Contracts.SearchOptions));
+        parameters[1].Name.Should().Be("options");
+
+        parameters[2].ParameterType.Should().Be(typeof(Guid?));
+        parameters[2].Name.Should().Be("projectId");
+        parameters[2].HasDefaultValue.Should().BeTrue();
+
+        parameters[3].ParameterType.Should().Be(typeof(CancellationToken));
+    }
+
     #endregion
 
     #region Write Operation Methods
@@ -188,15 +216,16 @@ public class IChunkRepositoryContractTests
         var methods = _interfaceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
         // Assert
-        // 4 read (GetByDocumentIdAsync, GetSiblingsAsync, GetChunksWithHeadingsAsync, SearchSimilarAsync) + 2 write = 6 methods
-        methods.Should().HaveCount(6,
-            because: "IChunkRepository should have exactly 6 methods");
+        // 5 read (GetByDocumentIdAsync, GetSiblingsAsync, GetChunksWithHeadingsAsync, SearchSimilarAsync, SearchSimilarWithDeduplicationAsync) + 2 write = 7 methods
+        methods.Should().HaveCount(7,
+            because: "IChunkRepository should have exactly 7 methods");
     }
 
     [Theory]
     [InlineData("GetByDocumentIdAsync")]
     [InlineData("GetSiblingsAsync")]
     [InlineData("SearchSimilarAsync")]
+    [InlineData("SearchSimilarWithDeduplicationAsync")]
     [InlineData("AddRangeAsync")]
     [InlineData("DeleteByDocumentIdAsync")]
     public void Interface_HasMethod(string methodName)

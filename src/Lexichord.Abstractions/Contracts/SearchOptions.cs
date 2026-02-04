@@ -13,6 +13,11 @@
 //   - DocumentFilter enables scoped search within a single document.
 //   - ExpandAbbreviations triggers IQueryPreprocessor abbreviation expansion.
 //   - UseCache enables short-lived query embedding caching (5 min TTL).
+//   - v0.5.9f: Added deduplication-aware options:
+//       - RespectCanonicals: Filter out variant chunks (default true).
+//       - IncludeVariantMetadata: Include merge counts in results.
+//       - IncludeArchived: Include archived chunks in results.
+//       - IncludeProvenance: Load provenance records for each result.
 // =============================================================================
 
 namespace Lexichord.Abstractions.Contracts;
@@ -127,4 +132,99 @@ public record SearchOptions
     /// </remarks>
     /// <value>Default: <c>true</c> (caching enabled).</value>
     public bool UseCache { get; init; } = true;
+
+    #region Deduplication Options (v0.5.9f)
+
+    /// <summary>
+    /// Whether to respect canonical records and filter out variant chunks.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: When enabled, the search query returns only canonical chunks (the authoritative
+    /// version) and standalone chunks (those not part of any canonical grouping). Variant
+    /// chunks that have been merged into a canonical record are excluded from results.
+    /// </para>
+    /// <para>
+    /// This prevents duplicate content from appearing in search results when multiple
+    /// semantically equivalent chunks have been deduplicated.
+    /// </para>
+    /// <para>
+    /// <b>License gating:</b> Requires Writer Pro tier. When unlicensed, this property
+    /// is ignored and search behaves as if <c>false</c> (pre-dedup behavior).
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.9f as part of the Retrieval Integration feature.
+    /// </para>
+    /// </remarks>
+    /// <value>Default: <c>true</c> (filter out variants, return canonicals only).</value>
+    public bool RespectCanonicals { get; init; } = true;
+
+    /// <summary>
+    /// Whether to include variant metadata in search results.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: When enabled, each search result includes the number of variants that have
+    /// been merged into the canonical record. This enables UI display of "Merged from N sources"
+    /// badges and helps users understand the authority of the result.
+    /// </para>
+    /// <para>
+    /// Has no effect when <see cref="RespectCanonicals"/> is <c>false</c>.
+    /// </para>
+    /// <para>
+    /// <b>Performance impact:</b> Adds a subquery for each result to count variants.
+    /// For large result sets, consider disabling if variant counts are not needed.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.9f as part of the Retrieval Integration feature.
+    /// </para>
+    /// </remarks>
+    /// <value>Default: <c>false</c> (variant counts not loaded).</value>
+    public bool IncludeVariantMetadata { get; init; } = false;
+
+    /// <summary>
+    /// Whether to include archived chunks in search results.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Archived chunks are those that have been superseded or manually archived
+    /// but not deleted. By default, these are excluded from search results to prevent
+    /// outdated information from surfacing.
+    /// </para>
+    /// <para>
+    /// Enable this option for audit, research, or administrative purposes where
+    /// historical content is relevant.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.9f as part of the Retrieval Integration feature.
+    /// </para>
+    /// </remarks>
+    /// <value>Default: <c>false</c> (archived chunks excluded).</value>
+    public bool IncludeArchived { get; init; } = false;
+
+    /// <summary>
+    /// Whether to include provenance information in search results.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: When enabled, each search result includes provenance records that trace
+    /// the chunk back to its source document, ingestion timestamp, and any verification
+    /// metadata. This enables UI display of "View Sources" functionality.
+    /// </para>
+    /// <para>
+    /// Provenance is loaded for both the canonical chunk and any merged variants,
+    /// providing a complete picture of all sources that contributed to the canonical.
+    /// </para>
+    /// <para>
+    /// <b>Performance impact:</b> Adds a database query per result to load provenance.
+    /// For large result sets, consider disabling if provenance is not needed.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.9f as part of the Retrieval Integration feature.
+    /// </para>
+    /// </remarks>
+    /// <value>Default: <c>false</c> (provenance not loaded).</value>
+    public bool IncludeProvenance { get; init; } = false;
+
+    #endregion
 }

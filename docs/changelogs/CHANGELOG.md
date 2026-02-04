@@ -51,6 +51,8 @@ This release establishes the infrastructure for detecting and consolidating near
 
 - **Contradiction Detection (v0.5.9e)** — Complete workflow for detecting and resolving contradictory content between chunks. Added `IContradictionService` interface with `FlagAsync` for detection, `ResolveAsync` for resolution, `DismissAsync` for false positives, and `AutoResolveAsync` for system-initiated resolution. Features 5 resolution types (KeepOlder, KeepNewer, KeepBoth, CreateSynthesis, DeleteBoth), lifecycle status tracking (Pending, UnderReview, Resolved, Dismissed, AutoResolved), and MediatR event publishing. Includes `Contradiction`, `ContradictionResolution`, `ContradictionStatus`, `ContradictionResolutionType` records, `ContradictionDetectedEvent`/`ContradictionResolvedEvent` events, and `Migration_010_Contradictions` for the Contradictions table with unique normalized chunk pair index. Includes 54 unit tests.
 
+- **Retrieval Integration (v0.5.9f)** — Search layer integration for deduplication-aware results. Added `SearchSimilarWithDeduplicationAsync` method to `IChunkRepository` with canonical-aware filtering, variant metadata loading, contradiction status flags, and optional provenance history. Features `DeduplicatedSearchResult` record with extended metadata (`CanonicalRecordId`, `VariantCount`, `HasContradictions`, `Provenance`) and helper properties (`IsCanonical`, `IsStandalone`, `HasVariants`, `HasProvenance`). Extended `SearchOptions` with deduplication controls (`RespectCanonicals`, `IncludeVariantMetadata`, `IncludeArchived`, `IncludeProvenance`). Includes `Migration_011_RetrievalIntegrationIndexes` for query optimization. Includes 28 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -60,6 +62,7 @@ This release establishes the infrastructure for detecting and consolidating near
 | [v0.5.9c](v0.5.x/LCS-CL-v059c.md) | Canonical Record Management  | ✅ Complete |
 | [v0.5.9d](v0.5.x/LCS-CL-v059d.md) | Deduplication Service        | ✅ Complete |
 | [v0.5.9e](v0.5.x/LCS-CL-v059e.md) | Contradiction Detection      | ✅ Complete |
+| [v0.5.9f](v0.5.x/LCS-CL-v059f.md) | Retrieval Integration        | ✅ Complete |
 
 ---
 

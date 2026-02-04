@@ -13,8 +13,8 @@
 | **Feature Gate Key** | `RAG.Dedup.RetrievalIntegration` | The string key used in `ILicenseService`. |
 | **Author** | Lexichord Architecture | Primary Architect. |
 | **Reviewer** | — | Lead Architect / Peer. |
-| **Status** | Draft | Current lifecycle state. |
-| **Last Updated** | 2026-02-03 | Date of last modification. |
+| **Status** | Complete | Current lifecycle state. |
+| **Last Updated** | 2026-02-04 | Date of last modification. |
 
 ---
 

@@ -6,6 +6,7 @@
 // =============================================================================
 
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Modules.RAG.Data;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,7 @@ public class ChunkRepositoryTests
     private readonly Mock<IDbConnectionFactory> _mockConnectionFactory = new();
     private readonly Mock<ILogger<SiblingCache>> _mockSiblingCacheLogger = new();
     private readonly SiblingCache _siblingCache;
+    private readonly Mock<ICanonicalManager> _mockCanonicalManager = new();
     private readonly Mock<ILogger<ChunkRepository>> _mockLogger = new();
 
     public ChunkRepositoryTests()
@@ -43,6 +45,7 @@ public class ChunkRepositoryTests
         var act = () => new ChunkRepository(
             _mockConnectionFactory.Object,
             _siblingCache,
+            _mockCanonicalManager.Object,
             _mockLogger.Object);
 
         // Assert
@@ -56,6 +59,7 @@ public class ChunkRepositoryTests
         var act = () => new ChunkRepository(
             null!,
             _siblingCache,
+            _mockCanonicalManager.Object,
             _mockLogger.Object);
 
         // Assert
@@ -71,6 +75,7 @@ public class ChunkRepositoryTests
         var act = () => new ChunkRepository(
             _mockConnectionFactory.Object,
             null!,
+            _mockCanonicalManager.Object,
             _mockLogger.Object);
 
         // Assert
@@ -85,11 +90,28 @@ public class ChunkRepositoryTests
         var act = () => new ChunkRepository(
             _mockConnectionFactory.Object,
             _siblingCache,
+            _mockCanonicalManager.Object,
             null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
            .WithParameterName("logger");
+    }
+
+    [Fact]
+    [Trait("Feature", "v0.5.9f")]
+    public void Constructor_WithNullCanonicalManager_ThrowsArgumentNullException()
+    {
+        // Act
+        var act = () => new ChunkRepository(
+            _mockConnectionFactory.Object,
+            _siblingCache,
+            null!,
+            _mockLogger.Object);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+           .WithParameterName("canonicalManager");
     }
 
     #endregion
@@ -103,6 +125,7 @@ public class ChunkRepositoryTests
         var repository = new ChunkRepository(
             _mockConnectionFactory.Object,
             _siblingCache,
+            _mockCanonicalManager.Object,
             _mockLogger.Object);
 
         // Act
@@ -120,6 +143,7 @@ public class ChunkRepositoryTests
         var repository = new ChunkRepository(
             _mockConnectionFactory.Object,
             _siblingCache,
+            _mockCanonicalManager.Object,
             _mockLogger.Object);
 
         // 100 dimensions instead of 1536
@@ -141,6 +165,7 @@ public class ChunkRepositoryTests
         var repository = new ChunkRepository(
             _mockConnectionFactory.Object,
             _siblingCache,
+            _mockCanonicalManager.Object,
             _mockLogger.Object);
 
         // Act

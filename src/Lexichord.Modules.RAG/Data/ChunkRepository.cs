@@ -2,7 +2,7 @@
 // File: ChunkRepository.cs
 // Project: Lexichord.Modules.RAG
 // Description: Dapper implementation of IChunkRepository with vector similarity search.
-// Version: v0.5.3c - Added Heading/HeadingLevel columns and GetChunksWithHeadingsAsync
+// Version: v0.5.9f - Added SearchSimilarWithDeduplicationAsync for canonical-aware search
 // =============================================================================
 // LOGIC: Provides chunk storage and pgvector-based semantic search.
 //   - SearchSimilarAsync uses the <=> operator for cosine distance.
@@ -10,6 +10,7 @@
 //   - Embedding dimension validation prevents costly database errors.
 //   - GetSiblingsAsync uses SiblingCache for LRU-based caching (v0.5.3b).
 //   - GetChunksWithHeadingsAsync supports heading hierarchy resolution (v0.5.3c).
+//   - v0.5.9f: SearchSimilarWithDeduplicationAsync filters variants and loads metadata.
 // =============================================================================
 
 using System.Data;
@@ -51,6 +52,7 @@ public sealed class ChunkRepository : IChunkRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
     private readonly SiblingCache _siblingCache;
+    private readonly ICanonicalManager _canonicalManager;
     private readonly ILogger<ChunkRepository> _logger;
 
     private const string TableName = "chunks";
@@ -61,18 +63,20 @@ public sealed class ChunkRepository : IChunkRepository
     /// </summary>
     /// <param name="connectionFactory">Factory for database connections.</param>
     /// <param name="siblingCache">Cache for sibling chunk queries.</param>
+    /// <param name="canonicalManager">Manager for canonical record operations (v0.5.9f).</param>
     /// <param name="logger">Logger for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="connectionFactory"/>, <paramref name="siblingCache"/>,
-    /// or <paramref name="logger"/> is null.
+    /// Thrown when any parameter is null.
     /// </exception>
     public ChunkRepository(
         IDbConnectionFactory connectionFactory,
         SiblingCache siblingCache,
+        ICanonicalManager canonicalManager,
         ILogger<ChunkRepository> logger)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         _siblingCache = siblingCache ?? throw new ArgumentNullException(nameof(siblingCache));
+        _canonicalManager = canonicalManager ?? throw new ArgumentNullException(nameof(canonicalManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -278,6 +282,193 @@ public sealed class ChunkRepository : IChunkRepository
         return resultList;
     }
 
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<DeduplicatedSearchResult>> SearchSimilarWithDeduplicationAsync(
+        float[] queryEmbedding,
+        SearchOptions options,
+        Guid? projectId = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(queryEmbedding);
+        ArgumentNullException.ThrowIfNull(options);
+
+        // LOGIC: v0.5.9f - Validate embedding dimensions.
+        if (queryEmbedding.Length != ExpectedEmbeddingDimensions)
+        {
+            throw new ArgumentException(
+                $"Query embedding must have {ExpectedEmbeddingDimensions} dimensions, " +
+                $"but has {queryEmbedding.Length}.",
+                nameof(queryEmbedding));
+        }
+
+        var stopwatch = Stopwatch.StartNew();
+        await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        _logger.LogDebug(
+            "SearchSimilarWithDeduplication starting: TopK={TopK}, MinScore={MinScore}, " +
+            "RespectCanonicals={RespectCanonicals}, IncludeVariantMetadata={IncludeVariantMetadata}, " +
+            "IncludeArchived={IncludeArchived}, IncludeProvenance={IncludeProvenance}, ProjectId={ProjectId}",
+            options.TopK, options.MinScore, options.RespectCanonicals, options.IncludeVariantMetadata,
+            options.IncludeArchived, options.IncludeProvenance, projectId);
+
+        // LOGIC: v0.5.9f - Build SQL query with canonical-aware filtering.
+        // When RespectCanonicals=true, we exclude chunks that are variants of other chunks.
+        // A chunk is a variant if it exists in the chunk_variants table as VariantChunkId.
+        // We include:
+        //   - Canonical chunks (chunks designated as authoritative)
+        //   - Standalone chunks (not part of any deduplication relationship)
+        var sql = BuildDeduplicationSearchQuery(options, projectId);
+        var parameters = BuildDeduplicationSearchParameters(queryEmbedding, options, projectId);
+
+        var command = new DapperCommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+        var rows = await connection.QueryAsync<DeduplicatedChunkRow>(command);
+        var rowList = rows.ToList();
+
+        // LOGIC: v0.5.9f - Convert rows to DeduplicatedSearchResult, optionally loading provenance.
+        var results = new List<DeduplicatedSearchResult>(rowList.Count);
+        foreach (var row in rowList)
+        {
+            var chunk = new Chunk(
+                row.Id, row.DocumentId, row.Content, row.Embedding,
+                row.ChunkIndex, row.StartOffset, row.EndOffset, row.Heading, row.HeadingLevel);
+
+            IReadOnlyList<ChunkProvenance>? provenance = null;
+            if (options.IncludeProvenance && row.CanonicalRecordId.HasValue)
+            {
+                // LOGIC: Load provenance from ICanonicalManager.
+                try
+                {
+                    provenance = await _canonicalManager.GetProvenanceAsync(row.CanonicalRecordId.Value, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to load provenance for canonical {CanonicalId}", row.CanonicalRecordId);
+                    provenance = Array.Empty<ChunkProvenance>();
+                }
+            }
+
+            results.Add(new DeduplicatedSearchResult(
+                Chunk: chunk,
+                SimilarityScore: row.SimilarityScore,
+                CanonicalRecordId: row.CanonicalRecordId,
+                VariantCount: row.VariantCount,
+                HasContradictions: row.HasContradictions,
+                Provenance: provenance));
+        }
+
+        stopwatch.Stop();
+        var elapsed = stopwatch.Elapsed;
+
+        _logger.LogDebug(
+            "SearchSimilarWithDeduplication {Table}: {Count} results in {ElapsedMs}ms " +
+            "(TopK={TopK}, Threshold={Threshold}, ProjectId={ProjectId}, RespectCanonicals={RespectCanonicals})",
+            TableName, results.Count, elapsed.TotalMilliseconds, options.TopK, options.MinScore,
+            projectId, options.RespectCanonicals);
+
+        // LOGIC: Warn if query is slow (>100ms).
+        if (elapsed.TotalMilliseconds > 100)
+        {
+            _logger.LogWarning(
+                "Slow deduplication search: {ElapsedMs}ms for TopK={TopK}. Consider index tuning.",
+                elapsed.TotalMilliseconds, options.TopK);
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// Builds the SQL query for deduplication-aware search.
+    /// </summary>
+    /// <param name="options">Search options.</param>
+    /// <param name="projectId">Optional project filter.</param>
+    /// <returns>The SQL query string.</returns>
+    private static string BuildDeduplicationSearchQuery(SearchOptions options, Guid? projectId)
+    {
+        // LOGIC: v0.5.9f - Canonical-aware search query.
+        // Key joins:
+        //   - LEFT JOIN CanonicalRecords cr ON c.id = cr.canonical_chunk_id: Find if chunk is canonical
+        //   - LEFT JOIN ChunkVariants cv ON c.id = cv.variant_chunk_id: Find if chunk is a variant
+        // When RespectCanonicals=true, we add: AND cv.id IS NULL (exclude variants)
+        // VariantCount comes from cr.merge_count (0 for standalone chunks)
+        // HasContradictions comes from EXISTS subquery on Contradictions table
+
+        var projectFilter = projectId.HasValue
+            ? "INNER JOIN documents d ON c.document_id = d.id"
+            : "";
+        var projectCondition = projectId.HasValue
+            ? "AND d.project_id = @ProjectId"
+            : "";
+        var archivedCondition = options.IncludeArchived
+            ? ""
+            : "AND (c.is_archived IS NULL OR c.is_archived = false)";
+        var variantFilter = options.RespectCanonicals
+            ? "AND cv.\"\"Id\"\" IS NULL"
+            : "";
+
+        // LOGIC: Build metadata columns based on options.
+        var variantCountColumn = options.IncludeVariantMetadata
+            ? "COALESCE(cr.\"MergeCount\", 0) AS \"VariantCount\","
+            : "0 AS \"VariantCount\",";
+
+        var contradictionColumn = @"
+            EXISTS (
+                SELECT 1 FROM ""Contradictions"" con
+                WHERE (con.""ChunkAId"" = c.id OR con.""ChunkBId"" = c.id)
+                  AND con.""Status"" = 'Flagged'
+            ) AS ""HasContradictions"",";
+
+        return $@"
+            SELECT c.id AS ""Id"",
+                   c.document_id AS ""DocumentId"",
+                   c.content AS ""Content"",
+                   c.embedding AS ""Embedding"",
+                   c.chunk_index AS ""ChunkIndex"",
+                   c.start_offset AS ""StartOffset"",
+                   c.end_offset AS ""EndOffset"",
+                   c.heading AS ""Heading"",
+                   c.heading_level AS ""HeadingLevel"",
+                   1 - (c.embedding <=> @QueryEmbedding::vector) AS ""SimilarityScore"",
+                   cr.""Id"" AS ""CanonicalRecordId"",
+                   {variantCountColumn}
+                   {contradictionColumn}
+                   1 AS ""_dummy""
+            FROM chunks c
+            {projectFilter}
+            LEFT JOIN ""CanonicalRecords"" cr ON c.id = cr.""CanonicalChunkId""
+            LEFT JOIN ""ChunkVariants"" cv ON c.id = cv.""VariantChunkId""
+            WHERE c.embedding IS NOT NULL
+              AND 1 - (c.embedding <=> @QueryEmbedding::vector) >= @Threshold
+              {projectCondition}
+              {archivedCondition}
+              {variantFilter}
+            ORDER BY c.embedding <=> @QueryEmbedding::vector
+            LIMIT @TopK";
+    }
+
+    /// <summary>
+    /// Builds parameters for the deduplication search query.
+    /// </summary>
+    private static object BuildDeduplicationSearchParameters(float[] queryEmbedding, SearchOptions options, Guid? projectId)
+    {
+        if (projectId.HasValue)
+        {
+            return new
+            {
+                QueryEmbedding = queryEmbedding,
+                TopK = options.TopK,
+                Threshold = options.MinScore,
+                ProjectId = projectId.Value
+            };
+        }
+
+        return new
+        {
+            QueryEmbedding = queryEmbedding,
+            TopK = options.TopK,
+            Threshold = options.MinScore
+        };
+    }
+
     #endregion
 
     #region Write Operations
@@ -391,4 +582,26 @@ public sealed class ChunkRepository : IChunkRepository
         string? Heading,
         int HeadingLevel,
         double SimilarityScore);
+
+    /// <summary>
+    /// Internal record for mapping deduplication search query results (v0.5.9f).
+    /// </summary>
+    /// <remarks>
+    /// Extends ChunkWithScore with canonical record metadata, variant count,
+    /// and contradiction status for deduplication-aware search results.
+    /// </remarks>
+    private record DeduplicatedChunkRow(
+        Guid Id,
+        Guid DocumentId,
+        string Content,
+        float[]? Embedding,
+        int ChunkIndex,
+        int StartOffset,
+        int EndOffset,
+        string? Heading,
+        int HeadingLevel,
+        double SimilarityScore,
+        Guid? CanonicalRecordId,
+        int VariantCount,
+        bool HasContradictions);
 }

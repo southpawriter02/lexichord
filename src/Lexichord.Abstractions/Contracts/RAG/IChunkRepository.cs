@@ -8,6 +8,7 @@
 //   - SearchSimilarAsync is the core vector similarity search method.
 //   - Uses pgvector's HNSW index for fast approximate nearest neighbor search.
 //   - v0.5.3c: Added GetChunksWithHeadingsAsync for heading hierarchy support.
+//   - v0.5.9f: Added SearchSimilarWithDeduplicationAsync for canonical-aware search.
 // =============================================================================
 
 namespace Lexichord.Abstractions.Contracts.RAG;
@@ -186,6 +187,101 @@ public interface IChunkRepository
         float[] queryEmbedding,
         int topK = 10,
         double threshold = 0.5,
+        Guid? projectId = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Searches for similar chunks with deduplication-aware filtering.
+    /// </summary>
+    /// <param name="queryEmbedding">
+    /// The embedding vector to search for. Must have the same dimensionality
+    /// as the stored chunk embeddings (typically 1536 for OpenAI).
+    /// </param>
+    /// <param name="options">
+    /// Search configuration including deduplication options. Use <see cref="SearchOptions.Default"/>
+    /// for standard behavior. Key deduplication properties:
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="SearchOptions.RespectCanonicals"/>: Filter out variant chunks.
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="SearchOptions.IncludeVariantMetadata"/>: Load variant counts.
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="SearchOptions.IncludeArchived"/>: Include archived chunks.
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="SearchOptions.IncludeProvenance"/>: Load provenance records.
+    ///   </description></item>
+    /// </list>
+    /// </param>
+    /// <param name="projectId">
+    /// Optional project ID to scope the search. If provided, only chunks
+    /// from documents in this project are searched.
+    /// </param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A list of <see cref="DeduplicatedSearchResult"/> ordered by descending
+    /// similarity score. When <see cref="SearchOptions.RespectCanonicals"/> is true,
+    /// only canonical and standalone chunks are returned (variants are filtered out).
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="queryEmbedding"/> or <paramref name="options"/> is <c>null</c>.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// <b>Introduced in:</b> v0.5.9f as part of the Retrieval Integration feature.
+    /// </para>
+    /// <para>
+    /// This method extends <see cref="SearchSimilarAsync"/> with support for the
+    /// deduplication subsystem introduced in v0.5.9. When canonical records are
+    /// respected, the query:
+    /// </para>
+    /// <list type="number">
+    ///   <item><description>
+    ///     Excludes chunks that are variants (merged into a canonical record).
+    ///   </description></item>
+    ///   <item><description>
+    ///     Returns canonical chunks (authoritative versions) with metadata.
+    ///   </description></item>
+    ///   <item><description>
+    ///     Returns standalone chunks (not part of any deduplication relationship).
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>SQL strategy:</b> Uses LEFT JOINs to canonical_records and chunk_variants
+    /// tables with a WHERE clause to exclude variant chunks. Variant metadata and
+    /// provenance are loaded via subqueries when requested.
+    /// </para>
+    /// <para>
+    /// <b>Performance:</b> Adds minimal overhead compared to <see cref="SearchSimilarAsync"/>
+    /// when <see cref="SearchOptions.RespectCanonicals"/> is the only enabled option.
+    /// Loading variant metadata and provenance adds N+1 queries.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Standard deduplication-aware search
+    /// var results = await repo.SearchSimilarWithDeduplicationAsync(
+    ///     embedding,
+    ///     new SearchOptions { TopK = 5, RespectCanonicals = true },
+    ///     projectId: myProject);
+    ///
+    /// // With full metadata
+    /// var detailed = await repo.SearchSimilarWithDeduplicationAsync(
+    ///     embedding,
+    ///     new SearchOptions
+    ///     {
+    ///         TopK = 10,
+    ///         RespectCanonicals = true,
+    ///         IncludeVariantMetadata = true,
+    ///         IncludeProvenance = true
+    ///     });
+    /// </code>
+    /// </example>
+    Task<IReadOnlyList<DeduplicatedSearchResult>> SearchSimilarWithDeduplicationAsync(
+        float[] queryEmbedding,
+        SearchOptions options,
         Guid? projectId = null,
         CancellationToken cancellationToken = default);
 

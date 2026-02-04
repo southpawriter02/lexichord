@@ -172,10 +172,18 @@ public class PostgresRagFixture : IAsyncLifetime
         services.AddSingleton<SiblingCache>(sp =>
             new SiblingCache(NullLogger<SiblingCache>.Instance));
 
+        // Mock ICanonicalManager for ChunkRepository (v0.5.9f)
+        var mockCanonicalManager = new Mock<ICanonicalManager>();
+        mockCanonicalManager
+            .Setup(c => c.GetProvenanceAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<ChunkProvenance>());
+        services.AddSingleton(mockCanonicalManager.Object);
+
         services.AddSingleton<IChunkRepository>(sp =>
             new ChunkRepository(
                 sp.GetRequiredService<IDbConnectionFactory>(),
                 sp.GetRequiredService<SiblingCache>(),
+                sp.GetRequiredService<ICanonicalManager>(),
                 NullLogger<ChunkRepository>.Instance));
 
         // Mock embedding service with deterministic embeddings
