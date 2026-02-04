@@ -652,6 +652,16 @@ public sealed class RAGModule : IModule
         // Scoped to align with repository and cache lifetimes.
         // Provides hybrid rule-based and LLM-based classification for chunk pairs.
         services.AddScoped<IRelationshipClassifier, Services.RelationshipClassifier>();
+
+        // =============================================================================
+        // v0.5.9c: Canonical Record Management
+        // =============================================================================
+
+        // LOGIC: Register CanonicalManager as scoped (v0.5.9c).
+        // Scoped to align with repository and database connection lifetimes.
+        // Provides atomic operations for canonical records, variant merging,
+        // promotion, detachment, and provenance tracking.
+        services.AddScoped<ICanonicalManager, Services.CanonicalManager>();
     }
 
     /// <inheritdoc/>

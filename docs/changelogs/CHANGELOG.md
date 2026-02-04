@@ -45,14 +45,16 @@ This release establishes the infrastructure for detecting and consolidating near
 
 - **Relationship Classification (v0.5.9b)** — Hybrid classification of semantic relationships between similar chunks. Added `IRelationshipClassifier` interface with single and batch classification methods. Features rule-based fast-path for high-confidence matches (similarity >= 0.95), in-memory caching with configurable TTL (default 1 hour), and license gating for Writer Pro. Classifies relationships as Equivalent, Complementary, Contradictory, Superseding, Subset, or Distinct. Includes `RelationshipClassification`, `ChunkPair`, `ClassificationOptions` records and `RelationshipType`/`ClassificationMethod` enums. Includes 20 unit tests.
 
+- **Canonical Record Management (v0.5.9c)** — Data model and service layer for tracking authoritative chunks and merged duplicates. Added `ICanonicalManager` interface with CRUD operations for canonical records, variant merging, promotion, detachment, and provenance tracking. Features atomic database transactions, 4 MediatR events (`CanonicalRecordCreatedEvent`, `ChunkDeduplicatedEvent`, `VariantPromotedEvent`, `VariantDetachedEvent`), and license gating for Writer Pro. Includes `CanonicalRecord`, `ChunkVariant`, `ChunkProvenance` records and database migration for 3 new tables. Includes 24 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
 | -------------------------------- | ---------------------------- | ----------- |
 | [v0.5.9a](v0.5.x/LCS-CL-v059a.md) | Similarity Detection         | ✅ Complete |
 | [v0.5.9b](v0.5.x/LCS-CL-v059b.md) | Relationship Classification  | ✅ Complete |
-| v0.5.9c                          | Deduplication Policies       | 🔲 Planned  |
-| v0.5.9d                          | Deduplication UI             | 🔲 Planned  |
+| [v0.5.9c](v0.5.x/LCS-CL-v059c.md) | Canonical Record Management  | ✅ Complete |
+| v0.5.9d                          | Deduplication Orchestrator   | 🔲 Planned  |
 
 ---
 
