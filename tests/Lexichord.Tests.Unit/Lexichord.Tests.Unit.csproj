@@ -78,6 +78,8 @@
     <ProjectReference Include="..\..\src\Lexichord.Modules.RAG\Lexichord.Modules.RAG.csproj" />
     <!-- v0.4.5e: Knowledge Graph Module for testing -->
     <ProjectReference Include="..\..\src\Lexichord.Modules.Knowledge\Lexichord.Modules.Knowledge.csproj" />
+    <!-- v0.6.1b: LLM Module for testing -->
+    <ProjectReference Include="..\..\src\Lexichord.Modules.LLM\Lexichord.Modules.LLM.csproj" />
   </ItemGroup>
 
   <ItemGroup>

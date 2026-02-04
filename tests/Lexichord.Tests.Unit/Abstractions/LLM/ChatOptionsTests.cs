@@ -300,4 +300,106 @@ public class ChatOptionsTests
         options.MaxTokens.Should().Be(1000);
         options.TopP.Should().Be(0.9);
     }
+
+    #region v0.6.1b New Preset Tests
+
+    /// <summary>
+    /// Tests that CodeGeneration preset has expected values.
+    /// </summary>
+    [Fact]
+    public void CodeGeneration_ShouldHaveExpectedValues()
+    {
+        // Act
+        var options = ChatOptions.CodeGeneration;
+
+        // Assert
+        options.Temperature.Should().Be(0.0);
+        options.TopP.Should().Be(1.0);
+        options.FrequencyPenalty.Should().Be(0.0);
+        options.PresencePenalty.Should().Be(0.0);
+        options.StopSequences.Should().NotBeNull();
+        options.StopSequences!.Value.Should().Contain("```");
+        options.StopSequences!.Value.Should().Contain("---");
+    }
+
+    /// <summary>
+    /// Tests that Conversational preset has expected values.
+    /// </summary>
+    [Fact]
+    public void Conversational_ShouldHaveExpectedValues()
+    {
+        // Act
+        var options = ChatOptions.Conversational;
+
+        // Assert
+        options.Temperature.Should().Be(0.7);
+        options.TopP.Should().Be(0.9);
+        options.FrequencyPenalty.Should().Be(0.3);
+        options.PresencePenalty.Should().Be(0.3);
+    }
+
+    /// <summary>
+    /// Tests that Summarization preset has expected values.
+    /// </summary>
+    [Fact]
+    public void Summarization_ShouldHaveExpectedValues()
+    {
+        // Act
+        var options = ChatOptions.Summarization;
+
+        // Assert
+        options.Temperature.Should().Be(0.5);
+        options.MaxTokens.Should().Be(1024);
+        options.TopP.Should().Be(0.85);
+        options.FrequencyPenalty.Should().Be(0.0);
+        options.PresencePenalty.Should().Be(0.0);
+    }
+
+    /// <summary>
+    /// Tests that Editing preset has expected values.
+    /// </summary>
+    [Fact]
+    public void Editing_ShouldHaveExpectedValues()
+    {
+        // Act
+        var options = ChatOptions.Editing;
+
+        // Assert
+        options.Temperature.Should().Be(0.4);
+        options.TopP.Should().Be(0.9);
+        options.FrequencyPenalty.Should().Be(0.2);
+        options.PresencePenalty.Should().Be(0.1);
+    }
+
+    /// <summary>
+    /// Tests that Brainstorming preset has expected values.
+    /// </summary>
+    [Fact]
+    public void Brainstorming_ShouldHaveExpectedValues()
+    {
+        // Act
+        var options = ChatOptions.Brainstorming;
+
+        // Assert
+        options.Temperature.Should().Be(1.5);
+        options.TopP.Should().Be(0.98);
+        options.FrequencyPenalty.Should().Be(0.8);
+        options.PresencePenalty.Should().Be(0.8);
+    }
+
+    /// <summary>
+    /// Tests that all presets return value-equivalent instances.
+    /// </summary>
+    [Fact]
+    public void AllPresets_ShouldReturnEquivalentInstances()
+    {
+        // Arrange & Act
+        var codeGen1 = ChatOptions.CodeGeneration;
+        var codeGen2 = ChatOptions.CodeGeneration;
+
+        // Assert - Records have value equality, so same values = equal
+        codeGen1.Should().BeEquivalentTo(codeGen2);
+    }
+
+    #endregion
 }

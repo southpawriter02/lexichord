@@ -122,6 +122,105 @@ public record ChatOptions(
     public static ChatOptions Balanced => new(Temperature: 0.7);
 
     /// <summary>
+    /// Gets options optimized for code generation with deterministic output.
+    /// </summary>
+    /// <value>
+    /// A <see cref="ChatOptions"/> instance with Temperature = 0, TopP = 1.0,
+    /// and stop sequences for code blocks.
+    /// </value>
+    /// <remarks>
+    /// <para>
+    /// Use this preset for generating code, scripts, configuration files,
+    /// or any structured output requiring high consistency.
+    /// </para>
+    /// <para>
+    /// The stop sequences ("```", "---") are designed to stop generation
+    /// at natural code block boundaries.
+    /// </para>
+    /// </remarks>
+    public static ChatOptions CodeGeneration => new(
+        Temperature: 0.0,
+        TopP: 1.0,
+        FrequencyPenalty: 0.0,
+        PresencePenalty: 0.0,
+        StopSequences: ImmutableArray.Create("```", "---"));
+
+    /// <summary>
+    /// Gets options optimized for conversational interactions.
+    /// </summary>
+    /// <value>
+    /// A <see cref="ChatOptions"/> instance with balanced temperature and light penalties
+    /// to encourage natural conversation flow.
+    /// </value>
+    /// <remarks>
+    /// Use this preset for chatbots, assistants, and interactive dialogue
+    /// where natural, engaging responses are preferred.
+    /// </remarks>
+    public static ChatOptions Conversational => new(
+        Temperature: 0.7,
+        TopP: 0.9,
+        FrequencyPenalty: 0.3,
+        PresencePenalty: 0.3);
+
+    /// <summary>
+    /// Gets options optimized for summarization tasks.
+    /// </summary>
+    /// <value>
+    /// A <see cref="ChatOptions"/> instance with moderate temperature, focused sampling,
+    /// and limited token output for concise summaries.
+    /// </value>
+    /// <remarks>
+    /// Use this preset for generating summaries, abstracts, TL;DRs,
+    /// and other condensed versions of longer content.
+    /// </remarks>
+    public static ChatOptions Summarization => new(
+        Temperature: 0.5,
+        MaxTokens: 1024,
+        TopP: 0.85,
+        FrequencyPenalty: 0.0,
+        PresencePenalty: 0.0);
+
+    /// <summary>
+    /// Gets options optimized for editing and revision tasks.
+    /// </summary>
+    /// <value>
+    /// A <see cref="ChatOptions"/> instance with low temperature for consistency
+    /// and light penalties to maintain original style while improving clarity.
+    /// </value>
+    /// <remarks>
+    /// Use this preset for proofreading, grammar correction, style improvement,
+    /// and refining existing text while preserving the author's voice.
+    /// </remarks>
+    public static ChatOptions Editing => new(
+        Temperature: 0.4,
+        TopP: 0.9,
+        FrequencyPenalty: 0.2,
+        PresencePenalty: 0.1);
+
+    /// <summary>
+    /// Gets options optimized for brainstorming with maximum creativity.
+    /// </summary>
+    /// <value>
+    /// A <see cref="ChatOptions"/> instance with high temperature and strong penalties
+    /// to encourage diverse, novel ideas.
+    /// </value>
+    /// <remarks>
+    /// <para>
+    /// Use this preset for idea generation, creative exploration, and tasks
+    /// that benefit from unconventional thinking.
+    /// </para>
+    /// <para>
+    /// <b>Warning:</b> The high temperature (1.5) may produce more varied
+    /// and sometimes unexpected outputs. Review results carefully.
+    /// </para>
+    /// </remarks>
+    public static ChatOptions Brainstorming => new(
+        Temperature: 1.5,
+        TopP: 0.98,
+        FrequencyPenalty: 0.8,
+        PresencePenalty: 0.8);
+
+    /// <summary>
     /// Creates a new instance with the specified model.
     /// </summary>
     /// <param name="model">The model identifier to use.</param>

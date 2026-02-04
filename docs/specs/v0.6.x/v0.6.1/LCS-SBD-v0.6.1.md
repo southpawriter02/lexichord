@@ -358,8 +358,53 @@ For development and testing, implement `MockChatCompletionService`:
 
 ---
 
-## 9. Version History
+## 9. Implementation Status
 
-| Version | Date       | Author              | Changes       |
-| :------ | :--------- | :------------------ | :------------ |
-| 0.1     | 2026-01-28 | Documentation Agent | Initial draft |
+### v0.6.1a: Chat Completion Abstractions ✅
+
+| Component                | Status      | Tests |
+| :----------------------- | :---------- | :---- |
+| `ChatRole` enum          | ✅ Complete | 8     |
+| `ChatMessage` record     | ✅ Complete | 11    |
+| `ChatOptions` record     | ✅ Complete | 19    |
+| `ChatRequest` record     | ✅ Complete | 13    |
+| `ChatResponse` record    | ✅ Complete | 10    |
+| `StreamingChatToken`     | ✅ Complete | 6     |
+| `IChatCompletionService` | ✅ Complete | -     |
+| `ChatRequestBuilder`     | ✅ Complete | 18    |
+| `ChatSerialization`      | ✅ Complete | 8     |
+| `SseParser`              | ✅ Complete | 14    |
+| Exception hierarchy      | ✅ Complete | 16    |
+| `ChatRoleExtensions`     | ✅ Complete | 12    |
+
+### v0.6.1b: Chat Options Model ✅
+
+| Component                       | Status      | Tests |
+| :------------------------------ | :---------- | :---- |
+| Extended presets (5 new)        | ✅ Complete | 6     |
+| `ChatOptionsValidator`          | ✅ Complete | 17    |
+| `ChatOptionsValidationException`| ✅ Complete | -     |
+| `ContextWindowExceededException`| ✅ Complete | -     |
+| `IModelProvider` interface      | ✅ Complete | -     |
+| `ModelInfo` record              | ✅ Complete | -     |
+| `TokenEstimate` record          | ✅ Complete | -     |
+| `ChatOptionsContextExtensions`  | ✅ Complete | -     |
+| `Lexichord.Modules.LLM` module  | ✅ Complete | -     |
+| `LLMOptions` configuration      | ✅ Complete | -     |
+| `ModelDefaults` static registry | ✅ Complete | 19    |
+| `ModelRegistry` service         | ✅ Complete | -     |
+| `TokenEstimator` service        | ✅ Complete | -     |
+| `ChatOptionsResolver` service   | ✅ Complete | -     |
+| `OpenAIParameterMapper`         | ✅ Complete | -     |
+| `AnthropicParameterMapper`      | ✅ Complete | 10    |
+| `ProviderAwareChatOptionsValidator` | ✅ Complete | -     |
+| `LLMLogEvents` structured logging | ✅ Complete | -     |
+
+---
+
+## 10. Version History
+
+| Version | Date       | Author              | Changes                    |
+| :------ | :--------- | :------------------ | :------------------------- |
+| 0.1     | 2026-01-28 | Documentation Agent | Initial draft              |
+| 0.2     | 2026-02-04 | Claude Opus 4.5     | Added v0.6.1b status table |

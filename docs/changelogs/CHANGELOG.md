@@ -16,11 +16,14 @@ This release establishes the foundational abstraction layer for Large Language M
 
 - **Chat Completion Abstractions (v0.6.1a)** — Core data contracts and interfaces for LLM communication. Added `ChatRole` enum, `ChatMessage`/`ChatOptions`/`ChatRequest`/`ChatResponse`/`StreamingChatToken` immutable records with factory methods, presets, and fluent APIs. Added `IChatCompletionService` interface for provider implementations, `ChatRequestBuilder` for complex request construction, `ChatSerialization` for JSON utilities, `SseParser` for streaming SSE support, and exception hierarchy (`ChatCompletionException`, `AuthenticationException`, `RateLimitException`, `ProviderNotConfiguredException`). Added `ChatRoleExtensions` for provider-specific role mapping. Includes 135 unit tests.
 
+- **Chat Options Model (v0.6.1b)** — Extended chat options with FluentValidation, model discovery, token estimation, and provider-specific mapping. Added 5 new presets (`CodeGeneration`, `Conversational`, `Summarization`, `Editing`, `Brainstorming`) to `ChatOptions`. Added `ChatOptionsValidator` with FluentValidation rules, `ChatOptionsValidationException` and `ContextWindowExceededException`. Added `IModelProvider` interface and `ModelInfo`/`TokenEstimate` records for model discovery. Created new `Lexichord.Modules.LLM` module with `LLMOptions`/`ProviderOptions`/`ChatOptionsDefaults` configuration classes, `ModelDefaults` static model registry, `ModelRegistry` caching service, `TokenEstimator` for context window management, `ChatOptionsResolver` resolution pipeline, `OpenAIParameterMapper`/`AnthropicParameterMapper` provider mappers, and `ProviderAwareChatOptionsValidator` for provider-specific validation. Includes structured logging via `LLMLogEvents`. Includes 89 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
 | -------------------------------- | ---------------------------- | ----------- |
 | [v0.6.1a](v0.6.x/LCS-CL-v061a.md) | Chat Completion Abstractions | ✅ Complete |
+| [v0.6.1b](v0.6.x/LCS-CL-v061b.md) | Chat Options Model           | ✅ Complete |
 
 ---
 
