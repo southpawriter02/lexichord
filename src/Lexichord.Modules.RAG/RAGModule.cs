@@ -708,6 +708,17 @@ public sealed class RAGModule : IModule
         // Provides batch processing for retroactive deduplication of existing chunks.
         // License-gated via FeatureCodes.BatchDeduplication (Teams+).
         services.AddScoped<IBatchDeduplicationJob, Services.BatchDeduplicationJob>();
+
+        // =============================================================================
+        // v0.5.9h: Hardening & Metrics
+        // =============================================================================
+
+        // LOGIC: Register DeduplicationMetricsService as scoped (v0.5.9h).
+        // Scoped to align with ICanonicalManager, IDeduplicationService, and
+        // IContradictionService lifetimes for dashboard data queries.
+        // Recording methods delegate to static DeduplicationMetrics class.
+        // License-gated via FeatureCodes.DeduplicationMetrics (WriterPro+).
+        services.AddScoped<IDeduplicationMetricsService, Services.DeduplicationMetricsService>();
     }
 
     /// <inheritdoc/>

@@ -169,6 +169,11 @@ public sealed class ContradictionService : IContradictionService
         // LOGIC: Publish event for downstream consumers.
         await _mediator.Publish(ContradictionDetectedEvent.FromContradiction(created), ct);
 
+        // LOGIC: Record metrics for observability (v0.5.9h).
+        // Using Medium severity as the default since we don't have severity in the model.
+        Metrics.DeduplicationMetrics.RecordContradictionDetected(
+            Abstractions.Contracts.RAG.ContradictionSeverity.Medium);
+
         return created;
     }
 

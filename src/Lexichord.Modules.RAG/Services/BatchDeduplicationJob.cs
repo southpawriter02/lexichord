@@ -165,6 +165,9 @@ public sealed class BatchDeduplicationJob : IBatchDeduplicationJob
             // LOGIC: Publish completion event.
             await _mediator.Publish(new BatchDeduplicationCompletedEvent(result), ct);
 
+            // LOGIC: Record metrics for observability (v0.5.9h).
+            Metrics.DeduplicationMetrics.RecordBatchJobCompleted();
+
             _logger.LogInformation(
                 "Batch deduplication completed: JobId={JobId}, Processed={Processed}, Merged={Merged}, Duration={Duration}",
                 jobId, result.ChunksProcessed, result.MergedCount, result.Duration);

@@ -133,6 +133,11 @@ public sealed class DeduplicationService : IDeduplicationService
                 // No duplicates found - create canonical and store as new.
                 await _canonicalManager.CreateCanonicalAsync(newChunk, ct);
 
+                // LOGIC: Record metrics for observability (v0.5.9h).
+                Metrics.DeduplicationMetrics.RecordChunkProcessed(
+                    DeduplicationAction.StoredAsNew,
+                    stopwatch.Elapsed.TotalMilliseconds);
+
                 _logger.LogInformation(
                     "Stored as new canonical: ChunkId={ChunkId}, Duration={Duration:F2}ms",
                     newChunk.Id,
@@ -155,6 +160,9 @@ public sealed class DeduplicationService : IDeduplicationService
         }
         catch (Exception ex)
         {
+            // LOGIC: Record error metrics for observability (v0.5.9h).
+            Metrics.DeduplicationMetrics.RecordProcessingError();
+
             _logger.LogError(
                 ex,
                 "Error processing chunk for deduplication: ChunkId={ChunkId}",
@@ -399,6 +407,11 @@ public sealed class DeduplicationService : IDeduplicationService
         {
             await QueueForReviewAsync(newChunk, allCandidates, $"Low confidence ({confidence:F2})", options, ct);
 
+            // LOGIC: Record metrics for observability (v0.5.9h).
+            Metrics.DeduplicationMetrics.RecordChunkProcessed(
+                DeduplicationAction.QueuedForReview,
+                stopwatch.Elapsed.TotalMilliseconds);
+
             _logger.LogInformation(
                 "Queued for review: ChunkId={ChunkId}, Confidence={Confidence:F2}",
                 newChunk.Id,
@@ -469,6 +482,11 @@ public sealed class DeduplicationService : IDeduplicationService
                 canonicalId,
                 similarity);
 
+            // LOGIC: Record metrics for observability (v0.5.9h).
+            Metrics.DeduplicationMetrics.RecordChunkProcessed(
+                DeduplicationAction.MergedIntoExisting,
+                stopwatch.Elapsed.TotalMilliseconds);
+
             return DeduplicationResult.Merged(canonicalId, newChunk.Id, stopwatch.Elapsed);
         }
 
@@ -492,6 +510,11 @@ public sealed class DeduplicationService : IDeduplicationService
             "Linked complementary chunk: ChunkId={ChunkId}, LinkedTo={LinkedToId}",
             newChunk.Id,
             candidate.ExistingChunk.Id);
+
+        // LOGIC: Record metrics for observability (v0.5.9h).
+        Metrics.DeduplicationMetrics.RecordChunkProcessed(
+            DeduplicationAction.LinkedToExisting,
+            stopwatch.Elapsed.TotalMilliseconds);
 
         return new DeduplicationResult(
             canonical.CanonicalChunkId,
@@ -539,6 +562,11 @@ public sealed class DeduplicationService : IDeduplicationService
             newChunk.Id,
             candidate.ExistingChunk.Id,
             candidate.Classification.Confidence);
+
+        // LOGIC: Record metrics for observability (v0.5.9h).
+        Metrics.DeduplicationMetrics.RecordChunkProcessed(
+            DeduplicationAction.FlaggedAsContradiction,
+            stopwatch.Elapsed.TotalMilliseconds);
 
         return new DeduplicationResult(
             canonical.CanonicalChunkId,
@@ -596,6 +624,11 @@ public sealed class DeduplicationService : IDeduplicationService
             newChunk.Id,
             candidate.ExistingChunk.Id);
 
+        // LOGIC: Record metrics for observability (v0.5.9h).
+        Metrics.DeduplicationMetrics.RecordChunkProcessed(
+            DeduplicationAction.SupersededExisting,
+            stopwatch.Elapsed.TotalMilliseconds);
+
         return new DeduplicationResult(
             canonicalId,
             DeduplicationAction.SupersededExisting,
@@ -616,6 +649,11 @@ public sealed class DeduplicationService : IDeduplicationService
         _logger.LogInformation(
             "Stored as distinct: ChunkId={ChunkId}",
             newChunk.Id);
+
+        // LOGIC: Record metrics for observability (v0.5.9h).
+        Metrics.DeduplicationMetrics.RecordChunkProcessed(
+            DeduplicationAction.StoredAsNew,
+            stopwatch.Elapsed.TotalMilliseconds);
 
         return DeduplicationResult.StoredAsNew(newChunk.Id, stopwatch.Elapsed);
     }

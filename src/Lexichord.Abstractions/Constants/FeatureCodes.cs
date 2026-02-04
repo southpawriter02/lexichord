@@ -274,5 +274,19 @@ public static class FeatureCodes
     /// </remarks>
     public const string BatchDeduplication = "RAG.Dedup.Batch";
 
+    /// <summary>
+    /// The Deduplication Metrics Dashboard feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the full deduplication metrics dashboard with trends,
+    /// statistics, and detailed breakdowns. When this feature is not enabled,
+    /// GetDashboardDataAsync returns empty data and GetTrendsAsync returns an
+    /// empty list. Basic health status via GetHealthStatusAsync remains available
+    /// to all tiers.
+    /// Introduced in v0.5.9h.
+    /// </remarks>
+    public const string DeduplicationMetrics = "RAG.Dedup.Metrics";
+
     #endregion
 }

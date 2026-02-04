@@ -154,6 +154,11 @@ public sealed class RelationshipClassifier : IRelationshipClassifier
 
             stopwatch.Stop();
 
+            // LOGIC: Record metrics for observability (v0.5.9h).
+            Metrics.DeduplicationMetrics.RecordClassification(
+                result.Method,
+                stopwatch.Elapsed.TotalMilliseconds);
+
             _logger.LogInformation(
                 "Classified relationship: ChunkA={ChunkAId}, ChunkB={ChunkBId}, " +
                 "Type={Type}, Confidence={Confidence:F2}, Method={Method}, Duration={DurationMs}ms",

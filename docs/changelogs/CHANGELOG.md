@@ -53,6 +53,10 @@ This release establishes the infrastructure for detecting and consolidating near
 
 - **Retrieval Integration (v0.5.9f)** — Search layer integration for deduplication-aware results. Added `SearchSimilarWithDeduplicationAsync` method to `IChunkRepository` with canonical-aware filtering, variant metadata loading, contradiction status flags, and optional provenance history. Features `DeduplicatedSearchResult` record with extended metadata (`CanonicalRecordId`, `VariantCount`, `HasContradictions`, `Provenance`) and helper properties (`IsCanonical`, `IsStandalone`, `HasVariants`, `HasProvenance`). Extended `SearchOptions` with deduplication controls (`RespectCanonicals`, `IncludeVariantMetadata`, `IncludeArchived`, `IncludeProvenance`). Includes `Migration_011_RetrievalIntegrationIndexes` for query optimization. Includes 28 unit tests.
 
+- **Batch Deduplication (v0.5.9g)** — Background job for processing existing chunks through the deduplication pipeline. Added `IBatchDeduplicationJob` interface with `StartAsync`, `StopAsync`, `WaitForCompletionAsync` for job lifecycle management. Features `BatchDeduplicationRequest` for configuring scope (all, project, document), batch sizing, and statistics collection. Includes `BatchDeduplicationResult` with comprehensive success/failure tracking (chunks processed, duplicates found, merged, linked, contradictions, errors) and duration metrics. Added `BatchDeduplicationProgressedEvent` and `BatchDeduplicationCompletedEvent` for real-time monitoring. Gated to Writer Pro tier. Includes 30 unit tests.
+
+- **Hardening & Metrics (v0.5.9h)** — Production readiness infrastructure with comprehensive observability for deduplication operations. Added static `DeduplicationMetrics` class with thread-safe counters (chunks processed by action type, similarity queries, classification requests, contradictions detected, batch jobs) and histogram sampling for P50/P90/P99 latency calculations. Added `IDeduplicationMetricsService` interface with recording methods (`RecordChunkProcessed`, `RecordSimilarityQuery`, `RecordClassification`, `RecordContradictionDetected`, `RecordBatchJobCompleted`) and query methods (`GetDashboardDataAsync`, `GetTrendsAsync`, `GetHealthStatusAsync`). Features `DeduplicationDashboardData` with deduplication rate, storage savings, operation breakdown, pending items counts. Added `DeduplicationHealthStatus` with P99 latency targets and warning generation. Integrated metrics recording into `SimilarityDetector`, `RelationshipClassifier`, `DeduplicationService`, `ContradictionService`, and `BatchDeduplicationJob`. Dashboard access gated to Writer Pro tier. Includes 59 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -63,6 +67,8 @@ This release establishes the infrastructure for detecting and consolidating near
 | [v0.5.9d](v0.5.x/LCS-CL-v059d.md) | Deduplication Service        | ✅ Complete |
 | [v0.5.9e](v0.5.x/LCS-CL-v059e.md) | Contradiction Detection      | ✅ Complete |
 | [v0.5.9f](v0.5.x/LCS-CL-v059f.md) | Retrieval Integration        | ✅ Complete |
+| [v0.5.9g](v0.5.x/LCS-CL-v059g.md) | Batch Deduplication          | ✅ Complete |
+| [v0.5.9h](v0.5.x/LCS-CL-v059h.md) | Hardening & Metrics          | ✅ Complete |
 
 ---
 

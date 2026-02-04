@@ -25,7 +25,7 @@ This index catalogs all design specifications for the v0.5.9 Semantic Memory Ded
 | v0.5.9e | [LCS-DES-v0.5.9e.md](./LCS-DES-v0.5.9e.md) | Contradiction Detection & Resolution | Complete |
 | v0.5.9f | [LCS-DES-v0.5.9f.md](./LCS-DES-v0.5.9f.md) | Retrieval Integration | Complete |
 | v0.5.9g | [LCS-DES-v0.5.9g.md](./LCS-DES-v0.5.9g.md) | Batch Retroactive Deduplication | Complete |
-| v0.5.9h | [LCS-DES-v0.5.9h.md](./LCS-DES-v0.5.9h.md) | Hardening & Metrics | Draft |
+| v0.5.9h | [LCS-DES-v0.5.9h.md](./LCS-DES-v0.5.9h.md) | Hardening & Metrics | Complete |
 
 ---
 

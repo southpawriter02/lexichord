@@ -159,6 +159,11 @@ public sealed class SimilarityDetector : ISimilarityDetector
 
             stopwatch.Stop();
 
+            // LOGIC: Record metrics for observability (v0.5.9h).
+            Metrics.DeduplicationMetrics.RecordSimilarityQuery(
+                stopwatch.Elapsed.TotalMilliseconds,
+                results.Count);
+
             _logger.LogInformation(
                 "Found {Count} similar chunks for ChunkId={ChunkId} in {ElapsedMs}ms",
                 results.Count,
