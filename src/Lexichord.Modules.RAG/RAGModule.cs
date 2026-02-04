@@ -537,6 +537,20 @@ public sealed class RAGModule : IModule
         // Each grouped results display gets its own ViewModel for independent
         // expansion state and sort mode management.
         services.AddTransient<GroupedResultsViewModel>();
+
+        // =============================================================================
+        // v0.5.7c: Preview Pane (Split-View Preview)
+        // =============================================================================
+
+        // LOGIC: Register PreviewContentBuilder as singleton (v0.5.7c).
+        // Thread-safe and stateless — coordinates between IContextExpansionService
+        // and ISnippetService to build preview content for search hits.
+        services.AddSingleton<IPreviewContentBuilder, PreviewContentBuilder>();
+
+        // LOGIC: Register PreviewPaneViewModel as transient (v0.5.7c).
+        // Each preview pane instance gets its own ViewModel for independent
+        // loading state, visibility, and selection management.
+        services.AddTransient<PreviewPaneViewModel>();
     }
 
     /// <inheritdoc/>

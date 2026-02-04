@@ -18,12 +18,15 @@ This release introduces a keyboard-centric Reference Panel experience with dismi
 
 - **Result Grouping (v0.5.7b)** — Implemented document-grouped results display. Search hits now organized by source document with collapsible headers showing match counts (~X matches~) and relevance scores. Added `IResultGroupingService` with LINQ-based grouping, `GroupedResultsViewModel` with expand/collapse commands, and multi-mode sorting (Relevance, Document Path, Match Count). Includes 36 unit tests.
 
+- **Preview Pane (v0.5.7c)** — Split-view preview pane shows expanded context for selected search hits. Features async content loading, heading breadcrumb display with unicode arrows, visibility toggle, clipboard copy commands (matched content or full context), and license gating for Writer Pro. Added `IPreviewContentBuilder` service and `PreviewPaneViewModel`. Includes 26 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.7a](v0.5.x/LCS-CL-v057a.md) | Panel Redesign           | ✅ Complete |
 | [v0.5.7b](v0.5.x/LCS-CL-v057b.md) | Result Grouping          | ✅ Complete |
+| [v0.5.7c](v0.5.x/LCS-CL-v057c.md) | Preview Pane             | ✅ Complete |
 
 ---
 
