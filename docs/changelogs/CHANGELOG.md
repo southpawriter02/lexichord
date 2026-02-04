@@ -20,6 +20,8 @@ This release establishes the foundational abstraction layer for Large Language M
 
 - **Provider Registry (v0.6.1c)** — Central management for LLM provider instances and selection. Added `ILLMProviderRegistry` interface with provider discovery (`AvailableProviders`), resolution (`GetProvider`, `GetDefaultProvider`), configuration (`SetDefaultProvider`, `IsProviderConfigured`). Added `LLMProviderInfo` record with factory methods (`Unconfigured`, `Create`) and helper methods (`SupportsModel`, `WithConfigurationStatus`, `WithModels`). Added `ProviderNotFoundException` exception for registry-level errors. Implemented `LLMProviderRegistry` with thread-safe `ConcurrentDictionary`, .NET 8+ keyed services for provider resolution, `ISystemSettingsRepository` for default persistence, `ISecureVault` for API key checking, and case-insensitive name matching. Added `AddLLMProviderRegistry()` and `AddChatCompletionProvider<T>()` DI extensions. Includes 16 new structured log events (1400-1415 range). Includes 72 unit tests.
 
+- **API Key Management UI (v0.6.1d)** — Settings dialog integration for LLM provider configuration. Added `ConnectionStatus` enum (Unknown, Checking, Connected, Failed) for connection state tracking. Added `ProviderConfigViewModel` for per-provider configuration with API key masking (`MaskApiKey` showing first 4 + 12 mask + last 4 chars), async vault operations (`LoadApiKeyAsync`, `SaveApiKeyAsync`, `DeleteApiKeyAsync`), and connection status updates. Added `LLMSettingsViewModel` as main settings page ViewModel with provider loading, connection testing via minimal chat request, default provider selection, and license gating (view at Core, configure at WriterPro+). Added `LLMSettingsPage` implementing `ISettingsPage` with category "llm.providers", sort order 75, and AI-related search keywords. Added `ConnectionStatusBadge` Avalonia control with color-coded status indicator (gray/blue/green/red). Added `LLMSettingsView` with split-panel layout showing provider list and configuration panel. Includes 11 new structured log events (1500-1510 range). Includes 108 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -27,6 +29,7 @@ This release establishes the foundational abstraction layer for Large Language M
 | [v0.6.1a](v0.6.x/LCS-CL-v061a.md) | Chat Completion Abstractions | ✅ Complete |
 | [v0.6.1b](v0.6.x/LCS-CL-v061b.md) | Chat Options Model           | ✅ Complete |
 | [v0.6.1c](v0.6.x/LCS-CL-v061c.md) | Provider Registry            | ✅ Complete |
+| [v0.6.1d](v0.6.x/LCS-CL-v061d.md) | API Key Management UI        | ✅ Complete |
 
 ---
 

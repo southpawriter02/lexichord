@@ -11,7 +11,9 @@ using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.LLM.Configuration;
 using Lexichord.Modules.LLM.Extensions;
 using Lexichord.Modules.LLM.Infrastructure;
+using Lexichord.Modules.LLM.Presentation.ViewModels;
 using Lexichord.Modules.LLM.Services;
+using Lexichord.Modules.LLM.Settings;
 using Lexichord.Modules.LLM.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,6 +99,17 @@ public class LLMModule : IModule
 
         // LOGIC: Register the provider registry (v0.6.1c).
         services.AddLLMProviderRegistry();
+
+        // LOGIC: Register ViewModels and settings page (v0.6.1d).
+        // ViewModels are registered as transient since each settings page instance
+        // should have its own ViewModel.
+        services.AddTransient<ProviderConfigViewModel>();
+        services.AddTransient<LLMSettingsViewModel>();
+
+        // LOGIC: Register the settings page as a singleton.
+        // ISettingsPage implementations are discovered by the settings service
+        // and should remain stable throughout the application lifecycle.
+        services.AddSingleton<ISettingsPage, LLMSettingsPage>();
     }
 
     /// <inheritdoc />

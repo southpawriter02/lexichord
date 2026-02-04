@@ -5,6 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
+    <!-- v0.6.1d: Enable compiled bindings for LLMSettingsView -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
     <!-- Module metadata -->
     <AssemblyTitle>Lexichord LLM Module</AssemblyTitle>
     <Description>The Gateway - LLM Provider Abstraction Layer</Description>
@@ -33,6 +36,12 @@
 
     <!-- JSON serialization for provider parameter mappers -->
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
+
+    <!-- MVVM toolkit for ViewModels (v0.6.1d) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
+    <!-- v0.6.1d: Avalonia UI for LLMSettingsView -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
   </ItemGroup>
 
   <ItemGroup>

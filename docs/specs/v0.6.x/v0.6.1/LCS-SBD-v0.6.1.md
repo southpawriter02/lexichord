@@ -251,13 +251,17 @@ See [LCS-DES-061d](LCS-DES-061d.md) for full specification.
 
 ### 4.4 v0.6.1d: API Key Management UI
 
-- [ ] Create `LLMSettingsPage` implementing `ISettingsPage`
-- [ ] Create `LLMSettingsViewModel` with provider configuration
-- [ ] Implement `ProviderConfigPanel` XAML view
-- [ ] Create `ConnectionStatusBadge` control
-- [ ] Integrate with `ISecureVault` for key storage
-- [ ] Implement connection testing logic
-- [ ] Create unit tests for ViewModel
+- [x] Create `ConnectionStatus` enum for connection state tracking
+- [x] Create `ProviderConfigViewModel` with API key masking and vault operations
+- [x] Create `LLMSettingsViewModel` with provider loading and commands
+- [x] Create `LLMSettingsPage` implementing `ISettingsPage`
+- [x] Create `ConnectionStatusBadge` Avalonia control
+- [x] Create `LLMSettingsView` with split-panel layout
+- [x] Integrate with `ISecureVault` for key storage
+- [x] Implement connection testing logic
+- [x] Add license gating (view at Core, configure at WriterPro+)
+- [x] Add structured logging events (1500-1510)
+- [x] Create unit tests for ViewModels (108 tests)
 - [ ] Create UI automation tests for settings page
 
 ---
@@ -416,6 +420,19 @@ For development and testing, implement `MockChatCompletionService`:
 | `LLMServiceExtensions` update   | ✅ Complete | -     |
 | `LLMLogEvents` (1400-1415)      | ✅ Complete | -     |
 
+### v0.6.1d: API Key Management UI ✅
+
+| Component                       | Status      | Tests |
+| :------------------------------ | :---------- | :---- |
+| `ConnectionStatus` enum         | ✅ Complete | 18    |
+| `ProviderConfigViewModel`       | ✅ Complete | 48    |
+| `LLMSettingsViewModel`          | ✅ Complete | 26    |
+| `LLMSettingsPage`               | ✅ Complete | 16    |
+| `ConnectionStatusBadge`         | ✅ Complete | -     |
+| `LLMSettingsView`               | ✅ Complete | -     |
+| `LLMModule` DI registrations    | ✅ Complete | -     |
+| `LLMLogEvents` (1500-1510)      | ✅ Complete | -     |
+
 ---
 
 ## 10. Version History
@@ -425,3 +442,4 @@ For development and testing, implement `MockChatCompletionService`:
 | 0.1     | 2026-01-28 | Documentation Agent | Initial draft              |
 | 0.2     | 2026-02-04 | Claude Opus 4.5     | Added v0.6.1b status table |
 | 0.3     | 2026-02-04 | Claude Opus 4.5     | Added v0.6.1c status table |
+| 0.4     | 2026-02-04 | Claude Opus 4.5     | Added v0.6.1d status table |

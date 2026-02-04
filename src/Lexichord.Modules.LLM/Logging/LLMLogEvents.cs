@@ -447,4 +447,140 @@ internal static partial class LLMLogEvents
         Level = LogLevel.Trace,
         Message = "Checking configuration for provider '{ProviderName}' using vault key '{VaultKey}'")]
     public static partial void CheckingProviderConfiguration(ILogger logger, string providerName, string vaultKey);
+
+    // =========================================================================
+    // LLM Settings Page Events (1500-1599) - v0.6.1d
+    // =========================================================================
+
+    /// <summary>
+    /// Logs when the LLM settings page is loaded.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerCount">The number of providers loaded.</param>
+    [LoggerMessage(
+        EventId = 1500,
+        Level = LogLevel.Information,
+        Message = "LLM settings page loaded with {ProviderCount} providers")]
+    public static partial void SettingsPageLoaded(ILogger logger, int providerCount);
+
+    /// <summary>
+    /// Logs when an API key is saved for a provider.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Security:</b> The API key value is never logged; only the provider name is recorded.
+    /// </para>
+    /// </remarks>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    [LoggerMessage(
+        EventId = 1501,
+        Level = LogLevel.Information,
+        Message = "API key saved for provider '{ProviderName}'")]
+    public static partial void ApiKeySaved(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when an API key is deleted for a provider.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    [LoggerMessage(
+        EventId = 1502,
+        Level = LogLevel.Warning,
+        Message = "API key deleted for provider '{ProviderName}'")]
+    public static partial void ApiKeyDeleted(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a connection test is started.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name being tested.</param>
+    [LoggerMessage(
+        EventId = 1503,
+        Level = LogLevel.Debug,
+        Message = "Connection test started for provider '{ProviderName}'")]
+    public static partial void ConnectionTestStarted(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a connection test succeeds.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="latencyMs">The response latency in milliseconds.</param>
+    [LoggerMessage(
+        EventId = 1504,
+        Level = LogLevel.Information,
+        Message = "Connection test succeeded for provider '{ProviderName}' (latency: {LatencyMs}ms)")]
+    public static partial void ConnectionTestSucceeded(ILogger logger, string providerName, long latencyMs);
+
+    /// <summary>
+    /// Logs when a connection test fails.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="reason">The reason for failure.</param>
+    [LoggerMessage(
+        EventId = 1505,
+        Level = LogLevel.Warning,
+        Message = "Connection test failed for provider '{ProviderName}': {Reason}")]
+    public static partial void ConnectionTestFailed(ILogger logger, string providerName, string reason);
+
+    /// <summary>
+    /// Logs when the default provider is changed via settings UI.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The new default provider name.</param>
+    [LoggerMessage(
+        EventId = 1506,
+        Level = LogLevel.Information,
+        Message = "Default provider changed to '{ProviderName}' via settings UI")]
+    public static partial void DefaultProviderChangedViaSettings(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when provider configuration is loaded in the settings page.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="isConfigured">Whether the provider has an API key configured.</param>
+    /// <param name="isDefault">Whether this is the default provider.</param>
+    [LoggerMessage(
+        EventId = 1507,
+        Level = LogLevel.Debug,
+        Message = "Loaded provider configuration: {ProviderName} (IsConfigured={IsConfigured}, IsDefault={IsDefault})")]
+    public static partial void ProviderConfigurationLoaded(ILogger logger, string providerName, bool isConfigured, bool isDefault);
+
+    /// <summary>
+    /// Logs when a provider is selected in the settings UI.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The selected provider name.</param>
+    [LoggerMessage(
+        EventId = 1508,
+        Level = LogLevel.Debug,
+        Message = "Provider '{ProviderName}' selected in settings UI")]
+    public static partial void ProviderSelected(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when API key validation fails before saving.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="reason">The reason for validation failure.</param>
+    [LoggerMessage(
+        EventId = 1509,
+        Level = LogLevel.Warning,
+        Message = "API key validation failed for provider '{ProviderName}': {Reason}")]
+    public static partial void ApiKeyValidationFailed(ILogger logger, string providerName, string reason);
+
+    /// <summary>
+    /// Logs when saving API key fails due to vault error.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="error">The error message.</param>
+    [LoggerMessage(
+        EventId = 1510,
+        Level = LogLevel.Error,
+        Message = "Failed to save API key for provider '{ProviderName}': {Error}")]
+    public static partial void ApiKeySaveFailed(ILogger logger, string providerName, string error);
 }
