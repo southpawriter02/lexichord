@@ -43,13 +43,15 @@ This release establishes the infrastructure for detecting and consolidating near
 
 - **Similarity Detection Infrastructure (v0.5.9a)** — Core foundation for semantic deduplication. Added `ISimilarityDetector` interface with single (`FindSimilarAsync`) and batch (`FindSimilarBatchAsync`) similarity detection methods, leveraging existing pgvector infrastructure. Features configurable similarity thresholds (default 0.95 for conservative matching), batch processing with configurable batch sizes (default 10), and cross-document match detection. Includes `SimilarChunkResult` record with match metadata and `SimilarityDetectorOptions` for tunable detection parameters. Includes 16 unit tests.
 
+- **Relationship Classification (v0.5.9b)** — Hybrid classification of semantic relationships between similar chunks. Added `IRelationshipClassifier` interface with single and batch classification methods. Features rule-based fast-path for high-confidence matches (similarity >= 0.95), in-memory caching with configurable TTL (default 1 hour), and license gating for Writer Pro. Classifies relationships as Equivalent, Complementary, Contradictory, Superseding, Subset, or Distinct. Includes `RelationshipClassification`, `ChunkPair`, `ClassificationOptions` records and `RelationshipType`/`ClassificationMethod` enums. Includes 20 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
 | -------------------------------- | ---------------------------- | ----------- |
 | [v0.5.9a](v0.5.x/LCS-CL-v059a.md) | Similarity Detection         | ✅ Complete |
-| v0.5.9b                          | Duplicate Detection Pipeline | 🔲 Planned  |
-| v0.5.9c                          | Canonical Record Selection   | 🔲 Planned  |
+| [v0.5.9b](v0.5.x/LCS-CL-v059b.md) | Relationship Classification  | ✅ Complete |
+| v0.5.9c                          | Deduplication Policies       | 🔲 Planned  |
 | v0.5.9d                          | Deduplication UI             | 🔲 Planned  |
 
 ---

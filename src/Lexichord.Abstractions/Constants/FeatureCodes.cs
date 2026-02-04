@@ -235,4 +235,20 @@ public static class FeatureCodes
     public const string SavedPresets = "Feature.SavedPresets";
 
     #endregion
+
+    #region Semantic Deduplication Features (v0.5.9)
+
+    /// <summary>
+    /// The Semantic Deduplication feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to semantic deduplication features including similarity
+    /// detection and relationship classification. When this feature is not enabled,
+    /// classification returns Unknown and deduplication suggestions are hidden.
+    /// Introduced in v0.5.9a.
+    /// </remarks>
+    public const string SemanticDeduplication = "Feature.SemanticDeduplication";
+
+    #endregion
 }

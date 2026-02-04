@@ -636,6 +636,22 @@ public sealed class RAGModule : IModule
         // Scoped to align with IChunkRepository and IDocumentRepository lifetimes.
         // Provides semantic similarity detection for deduplication pipeline.
         services.AddScoped<ISimilarityDetector, Services.SimilarityDetector>();
+
+        // =============================================================================
+        // v0.5.9b: Relationship Classification
+        // =============================================================================
+
+        // LOGIC: Configure ClassificationOptions with defaults using Options pattern (v0.5.9b).
+        // Provides configuration for relationship classification thresholds and caching:
+        // - RuleBasedThreshold: 0.95 (high-confidence fast-path)
+        // - EnableLlmClassification: true (when LLM service available)
+        // - CacheDuration: 1 hour
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(ClassificationOptions.Default));
+
+        // LOGIC: Register RelationshipClassifier as scoped (v0.5.9b).
+        // Scoped to align with repository and cache lifetimes.
+        // Provides hybrid rule-based and LLM-based classification for chunk pairs.
+        services.AddScoped<IRelationshipClassifier, Services.RelationshipClassifier>();
     }
 
     /// <inheritdoc/>
