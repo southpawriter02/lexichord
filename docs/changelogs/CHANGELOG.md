@@ -18,12 +18,15 @@ This release establishes the foundational abstraction layer for Large Language M
 
 - **Chat Options Model (v0.6.1b)** — Extended chat options with FluentValidation, model discovery, token estimation, and provider-specific mapping. Added 5 new presets (`CodeGeneration`, `Conversational`, `Summarization`, `Editing`, `Brainstorming`) to `ChatOptions`. Added `ChatOptionsValidator` with FluentValidation rules, `ChatOptionsValidationException` and `ContextWindowExceededException`. Added `IModelProvider` interface and `ModelInfo`/`TokenEstimate` records for model discovery. Created new `Lexichord.Modules.LLM` module with `LLMOptions`/`ProviderOptions`/`ChatOptionsDefaults` configuration classes, `ModelDefaults` static model registry, `ModelRegistry` caching service, `TokenEstimator` for context window management, `ChatOptionsResolver` resolution pipeline, `OpenAIParameterMapper`/`AnthropicParameterMapper` provider mappers, and `ProviderAwareChatOptionsValidator` for provider-specific validation. Includes structured logging via `LLMLogEvents`. Includes 89 unit tests.
 
+- **Provider Registry (v0.6.1c)** — Central management for LLM provider instances and selection. Added `ILLMProviderRegistry` interface with provider discovery (`AvailableProviders`), resolution (`GetProvider`, `GetDefaultProvider`), configuration (`SetDefaultProvider`, `IsProviderConfigured`). Added `LLMProviderInfo` record with factory methods (`Unconfigured`, `Create`) and helper methods (`SupportsModel`, `WithConfigurationStatus`, `WithModels`). Added `ProviderNotFoundException` exception for registry-level errors. Implemented `LLMProviderRegistry` with thread-safe `ConcurrentDictionary`, .NET 8+ keyed services for provider resolution, `ISystemSettingsRepository` for default persistence, `ISecureVault` for API key checking, and case-insensitive name matching. Added `AddLLMProviderRegistry()` and `AddChatCompletionProvider<T>()` DI extensions. Includes 16 new structured log events (1400-1415 range). Includes 72 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
 | -------------------------------- | ---------------------------- | ----------- |
 | [v0.6.1a](v0.6.x/LCS-CL-v061a.md) | Chat Completion Abstractions | ✅ Complete |
 | [v0.6.1b](v0.6.x/LCS-CL-v061b.md) | Chat Options Model           | ✅ Complete |
+| [v0.6.1c](v0.6.x/LCS-CL-v061c.md) | Provider Registry            | ✅ Complete |
 
 ---
 

@@ -238,12 +238,15 @@ See [LCS-DES-061d](LCS-DES-061d.md) for full specification.
 
 ### 4.3 v0.6.1c: Provider Registry
 
-- [ ] Define `ILLMProviderRegistry` interface in `Lexichord.Abstractions`
-- [ ] Create `LLMProviderInfo` record
-- [ ] Implement `LLMProviderRegistry` in `Lexichord.Modules.LLM`
-- [ ] Add DI extension methods for provider registration
-- [ ] Integrate with `ISettingsService` for default provider storage
-- [ ] Create unit tests for registry operations
+- [x] Define `ILLMProviderRegistry` interface in `Lexichord.Abstractions`
+- [x] Create `LLMProviderInfo` record
+- [x] Create `ProviderNotFoundException` exception
+- [x] Implement `LLMProviderRegistry` in `Lexichord.Modules.LLM`
+- [x] Add DI extension methods for provider registration
+- [x] Integrate with `ISystemSettingsRepository` for default provider storage
+- [x] Integrate with `ISecureVault` for API key checking
+- [x] Add structured logging events (1400-1415)
+- [x] Create unit tests for registry operations (72 tests)
 - [ ] Create integration tests for DI resolution
 
 ### 4.4 v0.6.1d: API Key Management UI
@@ -400,6 +403,19 @@ For development and testing, implement `MockChatCompletionService`:
 | `ProviderAwareChatOptionsValidator` | ✅ Complete | -     |
 | `LLMLogEvents` structured logging | ✅ Complete | -     |
 
+### v0.6.1c: Provider Registry ✅
+
+| Component                       | Status      | Tests |
+| :------------------------------ | :---------- | :---- |
+| `ILLMProviderRegistry` interface | ✅ Complete | -     |
+| `LLMProviderInfo` record        | ✅ Complete | 26    |
+| `ProviderNotFoundException`     | ✅ Complete | 15    |
+| `LLMProviderRegistry` impl      | ✅ Complete | 31    |
+| `LLMProviderServiceExtensions`  | ✅ Complete | -     |
+| `LLMModule` registry init       | ✅ Complete | -     |
+| `LLMServiceExtensions` update   | ✅ Complete | -     |
+| `LLMLogEvents` (1400-1415)      | ✅ Complete | -     |
+
 ---
 
 ## 10. Version History
@@ -408,3 +424,4 @@ For development and testing, implement `MockChatCompletionService`:
 | :------ | :--------- | :------------------ | :------------------------- |
 | 0.1     | 2026-01-28 | Documentation Agent | Initial draft              |
 | 0.2     | 2026-02-04 | Claude Opus 4.5     | Added v0.6.1b status table |
+| 0.3     | 2026-02-04 | Claude Opus 4.5     | Added v0.6.1c status table |

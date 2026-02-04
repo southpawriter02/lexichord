@@ -1035,6 +1035,51 @@
 | `SimilarChunkResult`         | v0.5.9a    | Abstractions| Match result with score          |
 | `SimilarityDetectorOptions`  | v0.5.9a    | Abstractions| Detection configuration          |
 
+### 1.23 v0.6.1 LLM Gateway Interfaces
+
+| Interface                | Defined In | Module       | Purpose                         |
+| :----------------------- | :--------- | :----------- | :------------------------------ |
+| `IChatCompletionService` | v0.6.1a    | Abstractions | Provider-agnostic chat interface|
+| `IModelProvider`         | v0.6.1b    | Abstractions | Model discovery interface       |
+| `ILLMProviderRegistry`   | v0.6.1c    | Abstractions | Provider management interface   |
+
+**New Classes (v0.6.1):**
+
+| Class                               | Defined In | Module       | Purpose                          |
+| :---------------------------------- | :--------- | :----------- | :------------------------------- |
+| `ChatOptionsValidator`              | v0.6.1b    | Abstractions | FluentValidation for ChatOptions |
+| `LLMProviderRegistry`               | v0.6.1c    | Modules.LLM  | Provider management impl         |
+| `ModelRegistry`                     | v0.6.1b    | Modules.LLM  | Model caching service            |
+| `TokenEstimator`                    | v0.6.1b    | Modules.LLM  | Token estimation service         |
+| `ChatOptionsResolver`               | v0.6.1b    | Modules.LLM  | Options resolution pipeline      |
+| `ProviderAwareChatOptionsValidator` | v0.6.1b    | Modules.LLM  | Provider-specific validation     |
+
+**New Records (v0.6.1):**
+
+| Record                 | Defined In | Module       | Purpose                          |
+| :--------------------- | :--------- | :----------- | :------------------------------- |
+| `ChatRole`             | v0.6.1a    | Abstractions | System/User/Assistant/Tool enum  |
+| `ChatMessage`          | v0.6.1a    | Abstractions | Message with role and content    |
+| `ChatOptions`          | v0.6.1a    | Abstractions | LLM parameter configuration      |
+| `ChatRequest`          | v0.6.1a    | Abstractions | Request with messages/options    |
+| `ChatResponse`         | v0.6.1a    | Abstractions | Response with content/tokens     |
+| `StreamingChatToken`   | v0.6.1a    | Abstractions | Individual streaming token       |
+| `ModelInfo`            | v0.6.1b    | Abstractions | Model metadata                   |
+| `TokenEstimate`        | v0.6.1b    | Abstractions | Token count estimation           |
+| `LLMProviderInfo`      | v0.6.1c    | Abstractions | Provider metadata                |
+
+**New Exceptions (v0.6.1):**
+
+| Exception                       | Defined In | Module       | Purpose                          |
+| :------------------------------ | :--------- | :----------- | :------------------------------- |
+| `ChatCompletionException`       | v0.6.1a    | Abstractions | Base LLM error                   |
+| `AuthenticationException`       | v0.6.1a    | Abstractions | API auth failure                 |
+| `RateLimitException`            | v0.6.1a    | Abstractions | Rate limit exceeded              |
+| `ProviderNotConfiguredException`| v0.6.1a    | Abstractions | Missing API key                  |
+| `ChatOptionsValidationException`| v0.6.1b    | Abstractions | Invalid chat options             |
+| `ContextWindowExceededException`| v0.6.1b    | Abstractions | Token limit exceeded             |
+| `ProviderNotFoundException`     | v0.6.1c    | Abstractions | Provider not registered          |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

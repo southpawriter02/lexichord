@@ -25,6 +25,7 @@ namespace Lexichord.Modules.LLM.Logging;
 ///   <item><description>1100-1199: Model registry operations</description></item>
 ///   <item><description>1200-1299: Token estimation</description></item>
 ///   <item><description>1300-1399: Provider operations</description></item>
+///   <item><description>1400-1499: Provider registry management (v0.6.1c)</description></item>
 /// </list>
 /// </remarks>
 internal static partial class LLMLogEvents
@@ -262,4 +263,188 @@ internal static partial class LLMLogEvents
         Level = LogLevel.Debug,
         Message = "Provider-aware validation for '{Provider}': IsValid={IsValid}")]
     public static partial void ProviderValidation(ILogger logger, string provider, bool isValid);
+
+    // =========================================================================
+    // Provider Registry Events (1400-1499) - v0.6.1c
+    // =========================================================================
+
+    /// <summary>
+    /// Logs the start of provider resolution.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name being resolved.</param>
+    [LoggerMessage(
+        EventId = 1400,
+        Level = LogLevel.Debug,
+        Message = "Resolving provider '{ProviderName}'")]
+    public static partial void ResolvingProvider(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a requested provider is not found in the registry.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name that was not found.</param>
+    [LoggerMessage(
+        EventId = 1401,
+        Level = LogLevel.Warning,
+        Message = "Provider '{ProviderName}' is not registered in the provider registry")]
+    public static partial void ProviderNotFound(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a provider is registered but not configured (missing API key).
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    [LoggerMessage(
+        EventId = 1402,
+        Level = LogLevel.Warning,
+        Message = "Provider '{ProviderName}' is registered but not configured (missing API key)")]
+    public static partial void ProviderNotConfigured(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs successful provider resolution.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The resolved provider name.</param>
+    [LoggerMessage(
+        EventId = 1403,
+        Level = LogLevel.Debug,
+        Message = "Provider '{ProviderName}' resolved successfully")]
+    public static partial void ProviderResolved(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when using a persisted default provider from settings.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The default provider name from settings.</param>
+    [LoggerMessage(
+        EventId = 1404,
+        Level = LogLevel.Debug,
+        Message = "Using persisted default provider '{ProviderName}' from settings")]
+    public static partial void UsingPersistedDefault(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a persisted default provider is not found in the registry.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The default provider name that was not found.</param>
+    [LoggerMessage(
+        EventId = 1405,
+        Level = LogLevel.Warning,
+        Message = "Persisted default provider '{ProviderName}' is not registered; will fall back to first configured")]
+    public static partial void DefaultProviderNotRegistered(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when no providers are configured.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1406,
+        Level = LogLevel.Error,
+        Message = "No configured providers available; cannot resolve default provider")]
+    public static partial void NoConfiguredProviders(ILogger logger);
+
+    /// <summary>
+    /// Logs falling back to the first configured provider.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider being used as fallback.</param>
+    [LoggerMessage(
+        EventId = 1407,
+        Level = LogLevel.Information,
+        Message = "Falling back to first configured provider '{ProviderName}'")]
+    public static partial void FallingBackToFirstConfigured(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a default provider is set.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name being set as default.</param>
+    [LoggerMessage(
+        EventId = 1408,
+        Level = LogLevel.Information,
+        Message = "Setting default provider to '{ProviderName}'")]
+    public static partial void DefaultProviderSet(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs when a new provider is registered.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The registered provider name.</param>
+    /// <param name="displayName">The provider's display name.</param>
+    /// <param name="modelCount">The number of supported models.</param>
+    [LoggerMessage(
+        EventId = 1409,
+        Level = LogLevel.Information,
+        Message = "Registered provider '{ProviderName}' ({DisplayName}) with {ModelCount} models")]
+    public static partial void ProviderRegistered(ILogger logger, string providerName, string displayName, int modelCount);
+
+    /// <summary>
+    /// Logs the start of configuration status refresh.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerCount">The number of providers being refreshed.</param>
+    [LoggerMessage(
+        EventId = 1410,
+        Level = LogLevel.Debug,
+        Message = "Refreshing configuration status for {ProviderCount} providers")]
+    public static partial void RefreshingConfigurationStatus(ILogger logger, int providerCount);
+
+    /// <summary>
+    /// Logs a provider's configuration status change.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="isConfigured">Whether the provider is now configured.</param>
+    [LoggerMessage(
+        EventId = 1411,
+        Level = LogLevel.Debug,
+        Message = "Provider '{ProviderName}' configuration status: IsConfigured={IsConfigured}")]
+    public static partial void ProviderConfigurationStatusChanged(ILogger logger, string providerName, bool isConfigured);
+
+    /// <summary>
+    /// Logs completion of configuration status refresh.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="configuredCount">The number of providers that are configured.</param>
+    /// <param name="totalCount">The total number of providers.</param>
+    [LoggerMessage(
+        EventId = 1412,
+        Level = LogLevel.Information,
+        Message = "Configuration status refresh completed: {ConfiguredCount}/{TotalCount} providers configured")]
+    public static partial void ConfigurationStatusRefreshCompleted(ILogger logger, int configuredCount, int totalCount);
+
+    /// <summary>
+    /// Logs when a provider is already registered (duplicate registration attempt).
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    [LoggerMessage(
+        EventId = 1413,
+        Level = LogLevel.Debug,
+        Message = "Provider '{ProviderName}' is already registered; updating registration")]
+    public static partial void ProviderAlreadyRegistered(ILogger logger, string providerName);
+
+    /// <summary>
+    /// Logs provider registry initialization.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="registrationCount">The number of pending registrations.</param>
+    [LoggerMessage(
+        EventId = 1414,
+        Level = LogLevel.Information,
+        Message = "Initializing provider registry with {RegistrationCount} pending registrations")]
+    public static partial void InitializingProviderRegistry(ILogger logger, int registrationCount);
+
+    /// <summary>
+    /// Logs when checking provider configuration status.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="providerName">The provider name.</param>
+    /// <param name="vaultKey">The vault key being checked.</param>
+    [LoggerMessage(
+        EventId = 1415,
+        Level = LogLevel.Trace,
+        Message = "Checking configuration for provider '{ProviderName}' using vault key '{VaultKey}'")]
+    public static partial void CheckingProviderConfiguration(ILogger logger, string providerName, string vaultKey);
 }

@@ -10,6 +10,7 @@ using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.LLM.Configuration;
 using Lexichord.Modules.LLM.Extensions;
+using Lexichord.Modules.LLM.Infrastructure;
 using Lexichord.Modules.LLM.Services;
 using Lexichord.Modules.LLM.Validation;
 using Microsoft.Extensions.Configuration;
@@ -47,6 +48,7 @@ namespace Lexichord.Modules.LLM;
 ///   <item><description><see cref="TokenEstimator"/>: Token counting and estimation</description></item>
 ///   <item><description><see cref="ChatOptionsResolver"/>: Options resolution pipeline</description></item>
 ///   <item><description><see cref="ProviderAwareChatOptionsValidatorFactory"/>: Provider-specific validation</description></item>
+///   <item><description><see cref="LLMProviderRegistry"/>: Provider registration and management (v0.6.1c)</description></item>
 /// </list>
 /// </remarks>
 public class LLMModule : IModule
@@ -57,7 +59,7 @@ public class LLMModule : IModule
         Name: "LLM Gateway",
         Version: new Version(0, 6, 1),
         Author: "Lexichord Team",
-        Description: "LLM provider abstraction layer with chat options configuration, validation, and model discovery");
+        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, and provider registry");
 
     /// <inheritdoc />
     public void RegisterServices(IServiceCollection services)
@@ -92,6 +94,9 @@ public class LLMModule : IModule
 
         // LOGIC: Register the provider-aware validator factory.
         services.AddSingleton<ProviderAwareChatOptionsValidatorFactory>();
+
+        // LOGIC: Register the provider registry (v0.6.1c).
+        services.AddLLMProviderRegistry();
     }
 
     /// <inheritdoc />
@@ -154,6 +159,29 @@ public class LLMModule : IModule
                     ex,
                     "Failed to warm up model registry; will load models on demand");
             }
+        }
+
+        // LOGIC: Initialize the provider registry (v0.6.1c).
+        // This registers provider info and refreshes configuration status from secure vault.
+        try
+        {
+            await provider.InitializeProviderRegistryAsync();
+
+            var providerRegistry = provider.GetService<ILLMProviderRegistry>();
+            if (providerRegistry is not null)
+            {
+                var configuredCount = providerRegistry.AvailableProviders.Count(p => p.IsConfigured);
+                logger.LogInformation(
+                    "Provider registry initialized: {TotalCount} providers registered, {ConfiguredCount} configured",
+                    providerRegistry.AvailableProviders.Count,
+                    configuredCount);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(
+                ex,
+                "Failed to initialize provider registry; providers may not be available");
         }
 
         logger.LogInformation("{ModuleName} initialized successfully", Info.Name);

@@ -8,10 +8,12 @@
 using FluentValidation;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.LLM.Configuration;
+using Lexichord.Modules.LLM.Infrastructure;
 using Lexichord.Modules.LLM.Services;
 using Lexichord.Modules.LLM.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Lexichord.Modules.LLM.Extensions;
@@ -47,6 +49,8 @@ public static class LLMServiceExtensions
     ///   <item><description><see cref="TokenEstimator"/> for token estimation</description></item>
     ///   <item><description><see cref="ChatOptionsResolver"/> for options resolution</description></item>
     ///   <item><description><see cref="ProviderAwareChatOptionsValidatorFactory"/> for provider-specific validation</description></item>
+    ///   <item><description><see cref="LLMProviderRegistry"/> for provider management (v0.6.1c)</description></item>
+    ///   <item><description><see cref="ILLMProviderRegistry"/> interface pointing to the registry</description></item>
     /// </list>
     /// <para>
     /// <b>Configuration:</b>
@@ -93,6 +97,9 @@ public static class LLMServiceExtensions
 
         // LOGIC: Register the provider-aware validator factory.
         services.AddSingleton<ProviderAwareChatOptionsValidatorFactory>();
+
+        // LOGIC: Register the provider registry (v0.6.1c).
+        services.AddLLMProviderRegistry();
 
         return services;
     }
@@ -145,6 +152,9 @@ public static class LLMServiceExtensions
         services.AddSingleton<TokenEstimator>();
         services.AddScoped<ChatOptionsResolver>();
         services.AddSingleton<ProviderAwareChatOptionsValidatorFactory>();
+
+        // LOGIC: Register the provider registry (v0.6.1c).
+        services.AddLLMProviderRegistry();
 
         return services;
     }
