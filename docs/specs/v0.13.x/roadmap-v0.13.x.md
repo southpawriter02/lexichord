@@ -1,11 +1,11 @@
-# Lexichord Agent Orchestration Roadmap (v0.13.1 - v0.13.5)
+# Lexichord Agent Orchestration Roadmap (v0.13.1 - v0.13.7)
 
-In v0.12.x, we established **Agent Infrastructure** — the foundational building blocks for agents including definitions, lifecycle management, communication, memory, and tools. In v0.13.x, we deliver **The Orchestration Engine** — the intelligent conductor that coordinates multiple agents to accomplish complex, multi-step goals.
+In v0.12.x, we established **Agent Infrastructure** — the foundational building blocks for agents including definitions, lifecycle management, communication, memory, and tools. In v0.13.x, we deliver **The Orchestration Engine** — the intelligent conductor that coordinates multiple agents to accomplish complex, multi-step goals, with **Interactive Planning & Approval Workflows** that keep users in control.
 
-**Architectural Note:** This version introduces the `Lexichord.Orchestration` module, implementing the "Composer" vision from the original design proposal. The orchestrator elevates users from authors to conductors, delegating complex documentation tasks to coordinated agent ensembles.
+**Architectural Note:** This version introduces the `Lexichord.Orchestration` module, implementing the "Composer" vision from the original design proposal. The orchestrator elevates users from authors to conductors, delegating complex documentation tasks to coordinated agent ensembles. v0.13.6 and v0.13.7 add critical human-in-the-loop capabilities — users can review, comment on, and approve AI-generated plans before execution, and dynamically manage agent lifecycles during orchestration.
 
-**Total Sub-Parts:** 37 distinct implementation steps across 5 versions.
-**Total Estimated Hours:** 276 hours (~6.9 person-months)
+**Total Sub-Parts:** 53 distinct implementation steps across 7 versions.
+**Total Estimated Hours:** 396 hours (~9.9 person-months)
 
 ---
 
@@ -18,6 +18,8 @@ In v0.12.x, we established **Agent Infrastructure** — the foundational buildin
 | v0.13.3-ORC | Execution Coordinator | Parallel execution, sequencing, checkpoints | 58 |
 | v0.13.4-ORC | Result Aggregation & Synthesis | Merge outputs, resolve conflicts, quality scoring | 54 |
 | v0.13.5-ORC | Orchestration Patterns & Templates | Workflows, ensembles, conductor UI | 56 |
+| v0.13.6-ORC | **Planning & Approval Workflows** | **Interactive plan review, commenting, approval gates** | **62** |
+| v0.13.7-ORC | **Dynamic Agent Orchestration** | **Agent creation, status monitoring, lifecycle management** | **58** |
 
 ---
 
@@ -40,10 +42,27 @@ In v0.12.x, we established **Agent Infrastructure** — the foundational buildin
 │         └────────────────────────┬───────────────────────────────┘          │
 │                                  │                                           │
 │                                  ▼                                           │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │              ★ PLANNING & APPROVAL WORKFLOW (v0.13.6) ★               │  │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────┐    │  │
+│  │  │  Plan Display   │─▶│ User Comments   │─▶│  Approval Decision  │    │  │
+│  │  │  & Estimation   │  │ & Modifications │  │  Approve / Reject   │    │  │
+│  │  └─────────────────┘  └─────────────────┘  └─────────────────────┘    │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                  │                                           │
+│                                  ▼                                           │
 │         ┌────────────────────────────────────────────────────────┐          │
 │         │            Agent Selection & Dispatch                   │          │
 │         │                    (v0.13.2)                           │          │
 │         └────────────────────────┬───────────────────────────────┘          │
+│                                  │                                           │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │            ★ DYNAMIC AGENT ORCHESTRATION (v0.13.7) ★                  │  │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────┐    │  │
+│  │  │  Agent Creation │  │ Status Monitor  │  │  Lifecycle Control  │    │  │
+│  │  │  for Sub-tasks  │  │  & Health Check │  │  Pause/Resume/Stop  │    │  │
+│  │  └─────────────────┘  └─────────────────┘  └─────────────────────┘    │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
 │                                  │                                           │
 │              ┌───────────────────┼───────────────────┐                      │
 │              ▼                   ▼                   ▼                      │
@@ -1205,6 +1224,1118 @@ public enum TriggerType { Manual, Scheduled, Event, Webhook }
 
 ---
 
+## v0.13.6-ORC: Planning & Approval Workflows
+
+**Goal:** Implement interactive human-in-the-loop workflows where AI-generated plans are presented to users for review, commenting, modification, and approval before execution proceeds.
+
+### Sub-Parts
+
+| Sub-Part | Title | Est. Hours |
+|:---------|:------|:-----------|
+| v0.13.6a | Plan Presentation Engine | 10 |
+| v0.13.6b | Interactive Plan Editor | 12 |
+| v0.13.6c | Comment & Annotation System | 10 |
+| v0.13.6d | Approval Gate Manager | 10 |
+| v0.13.6e | Plan Versioning & History | 8 |
+| v0.13.6f | Approval Notification System | 6 |
+| v0.13.6g | Plan Review Dashboard UI | 6 |
+
+### Key Interfaces
+
+```csharp
+/// <summary>
+/// Manages the planning and approval workflow for orchestration tasks.
+/// Presents AI-generated plans to users and collects feedback before execution.
+/// </summary>
+public interface IPlanApprovalService
+{
+    /// <summary>
+    /// Submit a decomposition result for user approval.
+    /// </summary>
+    Task<PlanReviewSession> SubmitForApprovalAsync(
+        DecompositionResult decomposition,
+        ApprovalRequestOptions options,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get the current state of a plan review session.
+    /// </summary>
+    Task<PlanReviewSession> GetSessionAsync(
+        PlanReviewSessionId sessionId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Wait for approval decision (blocks until user acts).
+    /// </summary>
+    Task<ApprovalDecision> WaitForDecisionAsync(
+        PlanReviewSessionId sessionId,
+        TimeSpan? timeout = null,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Submit user approval for a plan.
+    /// </summary>
+    Task<ApprovalResult> ApproveAsync(
+        PlanReviewSessionId sessionId,
+        ApprovalSubmission submission,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Submit user rejection for a plan.
+    /// </summary>
+    Task<RejectionResult> RejectAsync(
+        PlanReviewSessionId sessionId,
+        RejectionSubmission submission,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Request plan modification based on user feedback.
+    /// </summary>
+    Task<DecompositionResult> RequestModificationAsync(
+        PlanReviewSessionId sessionId,
+        PlanModificationRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Observable stream of approval events.
+    /// </summary>
+    IObservable<PlanApprovalEvent> ApprovalEvents { get; }
+}
+
+public readonly record struct PlanReviewSessionId(Guid Value)
+{
+    public static PlanReviewSessionId New() => new(Guid.NewGuid());
+}
+
+/// <summary>
+/// Options for submitting a plan for approval.
+/// </summary>
+public record ApprovalRequestOptions
+{
+    /// <summary>
+    /// Whether approval is required before execution.
+    /// </summary>
+    public bool RequireExplicitApproval { get; init; } = true;
+
+    /// <summary>
+    /// How long to wait for approval before timing out.
+    /// </summary>
+    public TimeSpan? ApprovalTimeout { get; init; }
+
+    /// <summary>
+    /// Action to take if approval times out.
+    /// </summary>
+    public TimeoutAction TimeoutAction { get; init; } = TimeoutAction.Cancel;
+
+    /// <summary>
+    /// Users who can approve this plan.
+    /// </summary>
+    public IReadOnlyList<UserId>? AuthorizedApprovers { get; init; }
+
+    /// <summary>
+    /// Whether to allow partial approval (approve some tasks, reject others).
+    /// </summary>
+    public bool AllowPartialApproval { get; init; } = true;
+
+    /// <summary>
+    /// Whether to show cost/resource estimates to user.
+    /// </summary>
+    public bool ShowEstimates { get; init; } = true;
+
+    /// <summary>
+    /// Whether to allow user comments on individual tasks.
+    /// </summary>
+    public bool AllowTaskComments { get; init; } = true;
+
+    /// <summary>
+    /// Notification channels for approval request.
+    /// </summary>
+    public IReadOnlyList<NotificationChannel>? NotifyOn { get; init; }
+}
+
+public enum TimeoutAction
+{
+    Cancel,     // Cancel the plan entirely
+    Proceed,    // Proceed with default approval
+    Escalate,   // Escalate to another approver
+    Remind      // Send reminder and extend timeout
+}
+
+/// <summary>
+/// Represents an active plan review session.
+/// </summary>
+public record PlanReviewSession
+{
+    public PlanReviewSessionId Id { get; init; }
+    public DecompositionResult Plan { get; init; } = null!;
+    public PlanReviewState State { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset? ExpiresAt { get; init; }
+    public UserId? AssignedReviewer { get; init; }
+    public IReadOnlyList<PlanComment> Comments { get; init; } = [];
+    public IReadOnlyList<TaskApprovalStatus> TaskStatuses { get; init; } = [];
+    public IReadOnlyList<PlanVersion> Versions { get; init; } = [];
+    public ApprovalDecision? Decision { get; init; }
+    public PlanEstimate Estimate { get; init; } = new();
+}
+
+public enum PlanReviewState
+{
+    Pending,            // Waiting for review
+    InReview,           // User is actively reviewing
+    ModificationRequested, // User requested changes
+    Approved,           // Plan approved
+    PartiallyApproved,  // Some tasks approved
+    Rejected,           // Plan rejected
+    TimedOut,           // Approval window expired
+    Cancelled           // Session cancelled
+}
+
+/// <summary>
+/// Estimate information displayed to users during review.
+/// </summary>
+public record PlanEstimate
+{
+    public int TotalTasks { get; init; }
+    public int EstimatedTokens { get; init; }
+    public TimeSpan EstimatedDuration { get; init; }
+    public int RequiredAgents { get; init; }
+    public decimal? EstimatedCost { get; init; }
+    public IReadOnlyList<string> ResourceRequirements { get; init; } = [];
+    public IReadOnlyList<string> RiskFactors { get; init; } = [];
+    public float ConfidenceScore { get; init; }
+}
+
+/// <summary>
+/// A comment or annotation on a plan or task.
+/// </summary>
+public record PlanComment
+{
+    public Guid CommentId { get; init; } = Guid.NewGuid();
+    public UserId Author { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset? ModifiedAt { get; init; }
+    public string Content { get; init; } = "";
+    public CommentScope Scope { get; init; }
+    public TaskNodeId? TargetTaskId { get; init; }
+    public CommentType Type { get; init; }
+    public IReadOnlyList<Guid>? ReplyToIds { get; init; }
+    public bool IsResolved { get; init; }
+}
+
+public enum CommentScope
+{
+    Plan,       // Comment on the entire plan
+    Task,       // Comment on a specific task
+    Edge,       // Comment on a dependency relationship
+    Estimate    // Comment on resource estimates
+}
+
+public enum CommentType
+{
+    General,        // General feedback
+    Question,       // Asking for clarification
+    Concern,        // Expressing concern
+    Suggestion,     // Suggesting improvement
+    Approval,       // Noting approval
+    Rejection,      // Noting rejection reason
+    Modification    // Requesting specific change
+}
+
+/// <summary>
+/// Approval status for an individual task.
+/// </summary>
+public record TaskApprovalStatus
+{
+    public TaskNodeId TaskId { get; init; }
+    public TaskApprovalState State { get; init; }
+    public UserId? ApprovedBy { get; init; }
+    public DateTimeOffset? DecidedAt { get; init; }
+    public string? Notes { get; init; }
+    public IReadOnlyList<PlanComment> Comments { get; init; } = [];
+}
+
+public enum TaskApprovalState
+{
+    Pending,
+    Approved,
+    Rejected,
+    Modified,
+    Skipped
+}
+
+/// <summary>
+/// A version of the plan (for tracking modifications).
+/// </summary>
+public record PlanVersion
+{
+    public int VersionNumber { get; init; }
+    public DecompositionResult Plan { get; init; } = null!;
+    public DateTimeOffset CreatedAt { get; init; }
+    public string ChangeDescription { get; init; } = "";
+    public UserId? ModifiedBy { get; init; }
+    public IReadOnlyList<PlanChange> Changes { get; init; } = [];
+}
+
+public record PlanChange
+{
+    public PlanChangeType Type { get; init; }
+    public TaskNodeId? AffectedTaskId { get; init; }
+    public string Description { get; init; } = "";
+    public object? OldValue { get; init; }
+    public object? NewValue { get; init; }
+}
+
+public enum PlanChangeType
+{
+    TaskAdded,
+    TaskRemoved,
+    TaskModified,
+    DependencyAdded,
+    DependencyRemoved,
+    StrategyChanged,
+    EstimateUpdated
+}
+
+/// <summary>
+/// User's decision on a plan.
+/// </summary>
+public record ApprovalDecision
+{
+    public ApprovalOutcome Outcome { get; init; }
+    public UserId DecidedBy { get; init; }
+    public DateTimeOffset DecidedAt { get; init; }
+    public string? Reason { get; init; }
+    public IReadOnlyList<TaskNodeId>? ApprovedTasks { get; init; }
+    public IReadOnlyList<TaskNodeId>? RejectedTasks { get; init; }
+    public IReadOnlyList<string>? Conditions { get; init; }
+}
+
+public enum ApprovalOutcome
+{
+    Approved,
+    PartiallyApproved,
+    Rejected,
+    ModificationRequested,
+    Deferred,
+    TimedOut
+}
+
+/// <summary>
+/// Submission for approving a plan.
+/// </summary>
+public record ApprovalSubmission
+{
+    public UserId ApproverId { get; init; }
+    public string? ApprovalNotes { get; init; }
+    public IReadOnlyList<TaskNodeId>? TasksToSkip { get; init; }
+    public IReadOnlyList<string>? Conditions { get; init; }
+    public bool AcknowledgeRisks { get; init; }
+}
+
+/// <summary>
+/// Submission for rejecting a plan.
+/// </summary>
+public record RejectionSubmission
+{
+    public UserId RejecterId { get; init; }
+    public required string Reason { get; init; }
+    public RejectionAction NextAction { get; init; } = RejectionAction.Cancel;
+    public string? AlternativeSuggestion { get; init; }
+}
+
+public enum RejectionAction
+{
+    Cancel,             // Cancel entirely
+    RequestNewPlan,     // Ask for a new decomposition
+    ModifyAndResubmit   // User will modify and resubmit
+}
+
+/// <summary>
+/// Request to modify the plan based on user feedback.
+/// </summary>
+public record PlanModificationRequest
+{
+    public UserId RequestedBy { get; init; }
+    public string? FreeformFeedback { get; init; }
+    public IReadOnlyList<TaskModification>? TaskModifications { get; init; }
+    public IReadOnlyList<DependencyModification>? DependencyModifications { get; init; }
+    public DecompositionStrategy? PreferredStrategy { get; init; }
+    public ComplexityBudget? RevisedBudget { get; init; }
+}
+
+public record TaskModification
+{
+    public TaskNodeId? TaskId { get; init; }  // null for new task
+    public ModificationType Type { get; init; }
+    public string? NewName { get; init; }
+    public string? NewDescription { get; init; }
+    public TaskObjective? NewObjective { get; init; }
+    public string? UserNote { get; init; }
+}
+
+public enum ModificationType
+{
+    Add,
+    Remove,
+    UpdateObjective,
+    UpdateConstraints,
+    ChangePriority,
+    Split,      // Split into multiple tasks
+    Merge       // Merge with another task
+}
+
+public record DependencyModification
+{
+    public TaskNodeId FromTaskId { get; init; }
+    public TaskNodeId ToTaskId { get; init; }
+    public DependencyModificationType Type { get; init; }
+}
+
+public enum DependencyModificationType
+{
+    Add,
+    Remove,
+    ChangeType
+}
+
+/// <summary>
+/// Events published during the approval workflow.
+/// </summary>
+public abstract record PlanApprovalEvent
+{
+    public PlanReviewSessionId SessionId { get; init; }
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+}
+
+public record PlanSubmittedForApprovalEvent : PlanApprovalEvent
+{
+    public DecompositionResult Plan { get; init; } = null!;
+}
+
+public record PlanReviewStartedEvent : PlanApprovalEvent
+{
+    public UserId ReviewerId { get; init; }
+}
+
+public record PlanCommentAddedEvent : PlanApprovalEvent
+{
+    public PlanComment Comment { get; init; } = null!;
+}
+
+public record PlanModificationRequestedEvent : PlanApprovalEvent
+{
+    public PlanModificationRequest Request { get; init; } = null!;
+}
+
+public record PlanVersionCreatedEvent : PlanApprovalEvent
+{
+    public PlanVersion Version { get; init; } = null!;
+}
+
+public record PlanApprovedEvent : PlanApprovalEvent
+{
+    public ApprovalDecision Decision { get; init; } = null!;
+}
+
+public record PlanRejectedEvent : PlanApprovalEvent
+{
+    public RejectionSubmission Rejection { get; init; } = null!;
+}
+
+public record ApprovalTimeoutEvent : PlanApprovalEvent
+{
+    public TimeoutAction ActionTaken { get; init; }
+}
+```
+
+### Plan Review UI Mockup
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│ Plan Review: "Document Auth v2 Flow"                    [Session #a1b2c3] │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ Status: ⏳ Awaiting Your Approval                                          │
+│ Submitted: 2 minutes ago | Expires in: 28 minutes                          │
+│                                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ ESTIMATES                                                                ││
+│ │ ├── Tasks: 7 total (3 research, 2 generation, 1 validation, 1 review)  ││
+│ │ ├── Tokens: ~18,500 estimated                                          ││
+│ │ ├── Duration: ~8 minutes                                               ││
+│ │ ├── Agents: 3 required (Chronicler, Scribe, Validator)                 ││
+│ │ ├── Confidence: 87%                                                    ││
+│ │ └── Risk Factors: Large dataset, multiple visualization types          ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ TASK GRAPH:                                                                │
+│ ═══════════════════════════════════════════════════════════════════════════│
+│                                                                             │
+│  [✓] Task 1: Fetch Q4 Sales Data              Research    [Approve][Skip] │
+│      └── Retrieve all sales transactions for Oct-Dec 2025                  │
+│          💬 2 comments                                                     │
+│              │                                                              │
+│              ▼                                                              │
+│  [?] Task 2: Aggregate and Validate Data      Analysis    [Approve][Skip] │
+│      └── Clean, validate, and aggregate Q4 sales data                      │
+│          💬 Add comment...                                                 │
+│              │                                                              │
+│       ┌──────┴──────┐                                                      │
+│       ▼             ▼                                                      │
+│  [?] Task 3     [?] Task 4                                                 │
+│  Analyze        Create                                                     │
+│  Trends         Charts                                                     │
+│       │             │                                                      │
+│       └──────┬──────┘                                                      │
+│              ▼                                                              │
+│  [?] Task 5: Generate Report                  Generation  [Approve][Skip] │
+│      └── Create comprehensive Q4 sales analysis report                     │
+│              │                                                              │
+│              ▼                                                              │
+│  [?] Task 6: Email Team                       Integration [Approve][Skip] │
+│                                                                             │
+│ COMMENTS (2):                                                              │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ 👤 You (on Task 1):                                                     ││
+│ │ "Make sure to include the APAC region data which was added in November" ││
+│ │ [Reply] [Resolve]                                                       ││
+│ │                                                                          ││
+│ │ 🤖 AI Response:                                                         ││
+│ │ "Understood. I'll ensure APAC region data is included in the query."    ││
+│ │ [✓ Resolved]                                                            ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ Add Overall Comment:                                                     ││
+│ │ ┌───────────────────────────────────────────────────────────────────┐   ││
+│ │ │                                                                    │   ││
+│ │ └───────────────────────────────────────────────────────────────────┘   ││
+│ │ [Post Comment]                                                          ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ [✓ Approve Plan]  [✗ Reject]  [✎ Request Changes]  [⏸ Save for Later] ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Approval Workflow State Machine
+
+```
+                    ┌─────────────┐
+                    │   Pending   │
+                    └──────┬──────┘
+                           │ User opens review
+                           ▼
+                    ┌─────────────┐
+            ┌───────│  In Review  │───────┐
+            │       └──────┬──────┘       │
+            │              │              │
+     Request│              │Approve       │Reject
+   Modification            │              │
+            │              ▼              ▼
+            │       ┌─────────────┐ ┌───────────┐
+            └──────▶│  Modified   │ │  Rejected │
+                    └──────┬──────┘ └───────────┘
+                           │
+                    Resubmit│
+                           ▼
+                    ┌─────────────┐
+                    │  Approved   │───────▶ Begin Execution
+                    └─────────────┘
+```
+
+### License Gating
+
+| Tier | Features |
+|:-----|:---------|
+| Core | Basic approve/reject only |
+| WriterPro | + Comments, partial approval |
+| Teams | + Plan versioning, multiple approvers |
+| Enterprise | + Custom approval workflows, SLAs |
+
+---
+
+## v0.13.7-ORC: Dynamic Agent Orchestration
+
+**Goal:** Enable dynamic creation, monitoring, and lifecycle management of agents during orchestration, allowing users to spawn agents for sub-tasks, review their status, and terminate them when necessary.
+
+### Sub-Parts
+
+| Sub-Part | Title | Est. Hours |
+|:---------|:------|:-----------|
+| v0.13.7a | Dynamic Agent Spawner | 12 |
+| v0.13.7b | Agent Status Monitor | 10 |
+| v0.13.7c | Agent Health Checker | 8 |
+| v0.13.7d | Lifecycle Controller | 10 |
+| v0.13.7e | Resource Quota Manager | 8 |
+| v0.13.7f | Agent Control Dashboard UI | 10 |
+
+### Key Interfaces
+
+```csharp
+/// <summary>
+/// Manages dynamic agent creation and orchestration during execution.
+/// </summary>
+public interface IDynamicAgentOrchestrator
+{
+    /// <summary>
+    /// Spawn a new agent for a specific task or sub-task.
+    /// </summary>
+    Task<SpawnedAgent> SpawnAgentAsync(
+        AgentSpawnRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Spawn multiple agents in parallel.
+    /// </summary>
+    Task<IReadOnlyList<SpawnedAgent>> SpawnAgentBatchAsync(
+        IReadOnlyList<AgentSpawnRequest> requests,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get status of all active agents in an execution.
+    /// </summary>
+    Task<IReadOnlyList<AgentStatus>> GetActiveAgentsAsync(
+        ExecutionId executionId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get detailed status of a specific agent.
+    /// </summary>
+    Task<AgentStatus> GetAgentStatusAsync(
+        AgentId agentId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Pause an agent's execution.
+    /// </summary>
+    Task PauseAgentAsync(
+        AgentId agentId,
+        string? reason = null,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Resume a paused agent.
+    /// </summary>
+    Task ResumeAgentAsync(
+        AgentId agentId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Terminate an agent.
+    /// </summary>
+    Task TerminateAgentAsync(
+        AgentId agentId,
+        TerminationReason reason,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Reassign a task from one agent to another.
+    /// </summary>
+    Task<AgentId> ReassignTaskAsync(
+        TaskNodeId taskId,
+        AgentId? preferredAgentId = null,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Observable stream of agent lifecycle events.
+    /// </summary>
+    IObservable<AgentLifecycleEvent> LifecycleEvents { get; }
+}
+
+/// <summary>
+/// Request to spawn a new agent.
+/// </summary>
+public record AgentSpawnRequest
+{
+    /// <summary>
+    /// Type of agent to spawn.
+    /// </summary>
+    public required string AgentType { get; init; }
+
+    /// <summary>
+    /// Custom name for this agent instance.
+    /// </summary>
+    public string? CustomName { get; init; }
+
+    /// <summary>
+    /// Task this agent is being spawned for.
+    /// </summary>
+    public TaskNodeId? AssignedTaskId { get; init; }
+
+    /// <summary>
+    /// Execution context for the agent.
+    /// </summary>
+    public ExecutionId? ExecutionId { get; init; }
+
+    /// <summary>
+    /// Configuration overrides for this instance.
+    /// </summary>
+    public AgentConfiguration? Configuration { get; init; }
+
+    /// <summary>
+    /// Resource limits for this agent.
+    /// </summary>
+    public AgentResourceLimits? ResourceLimits { get; init; }
+
+    /// <summary>
+    /// Priority level for resource allocation.
+    /// </summary>
+    public SpawnPriority Priority { get; init; } = SpawnPriority.Normal;
+
+    /// <summary>
+    /// Whether to wait for agent to be ready before returning.
+    /// </summary>
+    public bool WaitForReady { get; init; } = true;
+
+    /// <summary>
+    /// Timeout for agent initialization.
+    /// </summary>
+    public TimeSpan? InitTimeout { get; init; }
+}
+
+public enum SpawnPriority
+{
+    Low,
+    Normal,
+    High,
+    Critical
+}
+
+/// <summary>
+/// A spawned agent instance.
+/// </summary>
+public record SpawnedAgent
+{
+    public AgentId Id { get; init; }
+    public string AgentType { get; init; } = "";
+    public string Name { get; init; } = "";
+    public AgentState State { get; init; }
+    public DateTimeOffset SpawnedAt { get; init; }
+    public TaskNodeId? AssignedTaskId { get; init; }
+    public ExecutionId? ExecutionId { get; init; }
+    public AgentResourceLimits ResourceLimits { get; init; } = new();
+    public AgentCapabilities Capabilities { get; init; } = new();
+}
+
+/// <summary>
+/// Resource limits for an agent.
+/// </summary>
+public record AgentResourceLimits
+{
+    public int? MaxTokensPerRequest { get; init; }
+    public int? MaxTotalTokens { get; init; }
+    public TimeSpan? MaxExecutionTime { get; init; }
+    public long? MaxMemoryBytes { get; init; }
+    public int? MaxConcurrentTools { get; init; }
+    public int? MaxRetries { get; init; }
+}
+
+/// <summary>
+/// Current status of an agent.
+/// </summary>
+public record AgentStatus
+{
+    public AgentId Id { get; init; }
+    public string Name { get; init; } = "";
+    public string AgentType { get; init; } = "";
+    public AgentState State { get; init; }
+    public AgentHealth Health { get; init; }
+    public TaskNodeId? CurrentTaskId { get; init; }
+    public string? CurrentActivity { get; init; }
+    public AgentMetrics Metrics { get; init; } = new();
+    public DateTimeOffset LastActivityAt { get; init; }
+    public IReadOnlyList<AgentIssue> Issues { get; init; } = [];
+    public ExecutionId? ExecutionId { get; init; }
+}
+
+public enum AgentState
+{
+    Initializing,
+    Ready,
+    Working,
+    Paused,
+    Waiting,        // Waiting for input/dependency
+    Error,
+    Terminating,
+    Terminated
+}
+
+public enum AgentHealth
+{
+    Healthy,
+    Degraded,       // Working but with issues
+    Unhealthy,      // Significant problems
+    Unresponsive,   // Not responding
+    Unknown
+}
+
+/// <summary>
+/// Runtime metrics for an agent.
+/// </summary>
+public record AgentMetrics
+{
+    public int TasksCompleted { get; init; }
+    public int TasksFailed { get; init; }
+    public int TotalTokensUsed { get; init; }
+    public TimeSpan TotalRunTime { get; init; }
+    public TimeSpan CurrentTaskDuration { get; init; }
+    public float SuccessRate => TasksCompleted + TasksFailed > 0
+        ? (float)TasksCompleted / (TasksCompleted + TasksFailed)
+        : 0;
+    public float AverageTaskDuration { get; init; }
+    public int RetryCount { get; init; }
+    public int ToolInvocations { get; init; }
+}
+
+/// <summary>
+/// An issue affecting an agent.
+/// </summary>
+public record AgentIssue
+{
+    public Guid IssueId { get; init; } = Guid.NewGuid();
+    public IssueSeverity Severity { get; init; }
+    public string Code { get; init; } = "";
+    public string Description { get; init; } = "";
+    public DateTimeOffset DetectedAt { get; init; }
+    public bool IsResolved { get; init; }
+    public string? Resolution { get; init; }
+}
+
+public enum IssueSeverity
+{
+    Info,
+    Warning,
+    Error,
+    Critical
+}
+
+/// <summary>
+/// Reason for terminating an agent.
+/// </summary>
+public record TerminationReason
+{
+    public TerminationType Type { get; init; }
+    public string? Description { get; init; }
+    public bool SaveState { get; init; } = true;
+    public bool GracefulShutdown { get; init; } = true;
+    public TimeSpan? GracePeriod { get; init; }
+}
+
+public enum TerminationType
+{
+    TaskComplete,       // Task finished successfully
+    TaskFailed,         // Task failed permanently
+    UserRequested,      // User requested termination
+    ResourceExhausted,  // Hit resource limits
+    Timeout,            // Execution timeout
+    Error,              // Unrecoverable error
+    Reassigned,         // Task reassigned to another agent
+    ExecutionCancelled  // Parent execution cancelled
+}
+
+/// <summary>
+/// Monitors agent health and performance.
+/// </summary>
+public interface IAgentHealthMonitor
+{
+    /// <summary>
+    /// Perform health check on an agent.
+    /// </summary>
+    Task<HealthCheckResult> CheckHealthAsync(
+        AgentId agentId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get health history for an agent.
+    /// </summary>
+    Task<IReadOnlyList<HealthCheckResult>> GetHealthHistoryAsync(
+        AgentId agentId,
+        TimeSpan period,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Configure health check settings.
+    /// </summary>
+    Task ConfigureHealthChecksAsync(
+        HealthCheckConfiguration config,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Observable stream of health alerts.
+    /// </summary>
+    IObservable<HealthAlert> HealthAlerts { get; }
+}
+
+public record HealthCheckResult
+{
+    public AgentId AgentId { get; init; }
+    public AgentHealth Health { get; init; }
+    public DateTimeOffset CheckedAt { get; init; }
+    public TimeSpan ResponseTime { get; init; }
+    public IReadOnlyList<HealthCheckItem> Items { get; init; } = [];
+    public string? Summary { get; init; }
+}
+
+public record HealthCheckItem
+{
+    public string Name { get; init; } = "";
+    public bool Passed { get; init; }
+    public string? Details { get; init; }
+}
+
+public record HealthAlert
+{
+    public AgentId AgentId { get; init; }
+    public AgentHealth PreviousHealth { get; init; }
+    public AgentHealth CurrentHealth { get; init; }
+    public DateTimeOffset Timestamp { get; init; }
+    public string Description { get; init; } = "";
+    public SuggestedAction? Suggestion { get; init; }
+}
+
+public record SuggestedAction
+{
+    public string Description { get; init; } = "";
+    public ActionType Type { get; init; }
+    public bool AutomatedAvailable { get; init; }
+}
+
+public enum ActionType
+{
+    Restart,
+    Reassign,
+    Terminate,
+    Investigate,
+    Ignore
+}
+
+/// <summary>
+/// Manages resource quotas for agent orchestration.
+/// </summary>
+public interface IAgentQuotaManager
+{
+    /// <summary>
+    /// Check if resources are available for spawning.
+    /// </summary>
+    Task<QuotaCheckResult> CheckQuotaAsync(
+        AgentSpawnRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Reserve resources for an agent.
+    /// </summary>
+    Task<QuotaReservation> ReserveAsync(
+        AgentSpawnRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Release reserved resources.
+    /// </summary>
+    Task ReleaseAsync(
+        QuotaReservationId reservationId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get current quota usage.
+    /// </summary>
+    Task<QuotaUsage> GetUsageAsync(
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Update quota limits.
+    /// </summary>
+    Task UpdateLimitsAsync(
+        QuotaLimits limits,
+        CancellationToken ct = default);
+}
+
+public record QuotaCheckResult
+{
+    public bool CanSpawn { get; init; }
+    public string? BlockingReason { get; init; }
+    public QuotaUsage CurrentUsage { get; init; } = new();
+    public IReadOnlyList<QuotaWarning> Warnings { get; init; } = [];
+}
+
+public record QuotaUsage
+{
+    public int ActiveAgents { get; init; }
+    public int MaxAgents { get; init; }
+    public int TokensUsedToday { get; init; }
+    public int DailyTokenLimit { get; init; }
+    public int ConcurrentTasks { get; init; }
+    public int MaxConcurrentTasks { get; init; }
+    public long MemoryUsedBytes { get; init; }
+    public long MaxMemoryBytes { get; init; }
+
+    public float AgentUtilization => MaxAgents > 0 ? (float)ActiveAgents / MaxAgents : 0;
+    public float TokenUtilization => DailyTokenLimit > 0 ? (float)TokensUsedToday / DailyTokenLimit : 0;
+}
+
+/// <summary>
+/// Events for agent lifecycle changes.
+/// </summary>
+public abstract record AgentLifecycleEvent
+{
+    public AgentId AgentId { get; init; }
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+}
+
+public record AgentSpawnedEvent : AgentLifecycleEvent
+{
+    public SpawnedAgent Agent { get; init; } = null!;
+    public AgentSpawnRequest Request { get; init; } = null!;
+}
+
+public record AgentStateChangedEvent : AgentLifecycleEvent
+{
+    public AgentState PreviousState { get; init; }
+    public AgentState NewState { get; init; }
+    public string? Reason { get; init; }
+}
+
+public record AgentTaskAssignedEvent : AgentLifecycleEvent
+{
+    public TaskNodeId TaskId { get; init; }
+    public TaskNode Task { get; init; } = null!;
+}
+
+public record AgentTaskCompletedEvent : AgentLifecycleEvent
+{
+    public TaskNodeId TaskId { get; init; }
+    public TaskOutput Output { get; init; } = null!;
+}
+
+public record AgentErrorEvent : AgentLifecycleEvent
+{
+    public string ErrorCode { get; init; } = "";
+    public string ErrorMessage { get; init; } = "";
+    public bool Recoverable { get; init; }
+}
+
+public record AgentTerminatedEvent : AgentLifecycleEvent
+{
+    public TerminationReason Reason { get; init; } = null!;
+    public AgentMetrics FinalMetrics { get; init; } = null!;
+}
+
+public record AgentReassignedEvent : AgentLifecycleEvent
+{
+    public TaskNodeId TaskId { get; init; }
+    public AgentId NewAgentId { get; init; }
+    public string? ReassignmentReason { get; init; }
+}
+```
+
+### Agent Control Dashboard UI Mockup
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│ Agent Orchestration Control Panel          Execution: #exec-7890-abcd     │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ RESOURCE USAGE:                                                            │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ Agents: [████████░░] 4/5     Tokens: [██████░░░░] 12.5k/25k today      ││
+│ │ Memory: [███░░░░░░░] 256MB/1GB    Tasks: [███████░░░] 7/10 concurrent  ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ ACTIVE AGENTS (4):                                                         │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ 🟢 Chronicler-1    │ WORKING │ Task: Research Git commits              ││
+│ │    ├── Tokens: 2,340 | Runtime: 2m 15s | Health: Healthy               ││
+│ │    └── Progress: Analyzing 47 commits...                               ││
+│ │    [Pause] [View Details] [Terminate]                                  ││
+│ ├─────────────────────────────────────────────────────────────────────────┤│
+│ │ 🟢 Scribe-1        │ WORKING │ Task: Generate API overview             ││
+│ │    ├── Tokens: 4,120 | Runtime: 3m 42s | Health: Healthy               ││
+│ │    └── Progress: Writing section 3 of 5...                             ││
+│ │    [Pause] [View Details] [Terminate]                                  ││
+│ ├─────────────────────────────────────────────────────────────────────────┤│
+│ │ 🟡 Validator-1     │ WAITING │ Task: Validate output                   ││
+│ │    ├── Tokens: 0 | Runtime: 0s | Health: Healthy                       ││
+│ │    └── Status: Waiting for Scribe-1 to complete...                     ││
+│ │    [Skip Wait] [View Details] [Terminate]                              ││
+│ ├─────────────────────────────────────────────────────────────────────────┤│
+│ │ 🟠 Researcher-2    │ DEGRADED │ Task: Fetch external docs              ││
+│ │    ├── Tokens: 1,890 | Runtime: 5m 10s | Health: Degraded              ││
+│ │    └── Issue: Rate limited by external API, retrying in 30s...         ││
+│ │    [Pause] [View Details] [Reassign] [Terminate]                       ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ TERMINATED AGENTS (2):                                                     │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ ⚫ Chronicler-0    │ Completed: 10 min ago │ Tokens: 3,200 │ 2 tasks   ││
+│ │ ⚫ Helper-1        │ Terminated: 5 min ago │ Reason: Task reassigned   ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ QUICK ACTIONS:                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ [+ Spawn New Agent] [⏸ Pause All] [⏹ Terminate All] [📊 View Metrics] ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│ EVENT LOG:                                                                 │
+│ ┌─────────────────────────────────────────────────────────────────────────┐│
+│ │ 14:23:45 │ INFO  │ Chronicler-1 assigned to task "Research commits"    ││
+│ │ 14:23:47 │ INFO  │ Scribe-1 spawned for task "Generate overview"       ││
+│ │ 14:25:12 │ WARN  │ Researcher-2 health degraded: API rate limit        ││
+│ │ 14:26:30 │ INFO  │ Chronicler-0 terminated: task complete              ││
+│ └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Agent Lifecycle State Machine
+
+```
+                              SpawnRequested
+                                    │
+                                    ▼
+                            ┌───────────────┐
+                            │ Initializing  │
+                            └───────┬───────┘
+                                    │ Ready
+                                    ▼
+                ┌───────────────────────────────────────┐
+                │                                       │
+          Pause │            ┌─────────┐              │ TaskAssigned
+                │       ┌───▶│  Ready  │◀───┐         │
+                ▼       │    └────┬────┘    │         ▼
+          ┌─────────┐   │         │         │   ┌─────────┐
+          │ Paused  │───┘   Assign│Task  Complete│   │ Working │
+          └─────────┘             ▼         │   └────┬────┘
+                Resume     ┌──────────┐     │        │
+                           │ Waiting  │─────┘        │
+                           └──────────┘              │
+                                                     │ Error/Timeout
+                                                     ▼
+                                               ┌─────────┐
+                                               │  Error  │
+                                               └────┬────┘
+                                                    │
+                        Terminate (any state)       │ Recover or
+                               │                    │ Terminate
+                               ▼                    ▼
+                         ┌─────────────┐    ┌─────────────┐
+                         │ Terminating │───▶│ Terminated  │
+                         └─────────────┘    └─────────────┘
+```
+
+### License Gating
+
+| Tier | Features |
+|:-----|:---------|
+| Core | Max 2 concurrent agents, basic status |
+| WriterPro | Max 5 agents, health monitoring |
+| Teams | Max 10 agents, full lifecycle control |
+| Enterprise | Unlimited agents, custom quotas, API |
+
+---
+
 ## Dependencies on Prior Versions
 
 | Component | Source | Usage in v0.13.x |
@@ -1235,6 +2366,16 @@ public enum TriggerType { Manual, Scheduled, Event, Webhook }
 | `ResultSynthesizedEvent` | v0.13.4 | Final output generated |
 | `PatternAppliedEvent` | v0.13.5 | Pattern used |
 | `WorkflowSavedEvent` | v0.13.5 | Custom workflow saved |
+| `PlanSubmittedForApprovalEvent` | v0.13.6 | Plan submitted for user review |
+| `PlanApprovedEvent` | v0.13.6 | User approved plan |
+| `PlanRejectedEvent` | v0.13.6 | User rejected plan |
+| `PlanModificationRequestedEvent` | v0.13.6 | User requested plan changes |
+| `PlanCommentAddedEvent` | v0.13.6 | Comment added to plan |
+| `AgentSpawnedEvent` | v0.13.7 | New agent dynamically created |
+| `AgentStateChangedEvent` | v0.13.7 | Agent state transition |
+| `AgentHealthChangedEvent` | v0.13.7 | Agent health status changed |
+| `AgentTerminatedEvent` | v0.13.7 | Agent terminated |
+| `AgentReassignedEvent` | v0.13.7 | Task reassigned to different agent |
 
 ---
 
@@ -1262,7 +2403,7 @@ public enum TriggerType { Manual, Scheduled, Event, Webhook }
 
 ## What This Enables
 
-With v0.13.x complete, Lexichord becomes a true agentic orchestration platform:
+With v0.13.x complete, Lexichord becomes a true agentic orchestration platform with human-in-the-loop capabilities:
 
 - **Intent Understanding:** Natural language commands decomposed intelligently
 - **Smart Delegation:** Tasks matched to best-suited agents automatically
@@ -1270,6 +2411,10 @@ With v0.13.x complete, Lexichord becomes a true agentic orchestration platform:
 - **Quality Assurance:** Conflicts detected and resolved, quality assessed
 - **Reusability:** Patterns and ensembles for common workflows
 - **Visibility:** Full observability into orchestration progress
+- **Human Control:** Interactive plan review, commenting, and approval before execution
+- **Dynamic Orchestration:** Spawn agents on-demand, monitor status, manage lifecycles
+
+The planning and approval workflows (v0.13.6) ensure users maintain control over AI actions, while dynamic agent orchestration (v0.13.7) provides the flexibility to scale agent resources during complex tasks.
 
 This enables the visual Agent Studio in v0.14.x.
 
@@ -1279,8 +2424,10 @@ This enables the visual Agent Studio in v0.14.x.
 
 | Phase | Versions | Hours |
 |:------|:---------|:------|
-| Phase 7: Orchestration | v0.13.1 - v0.13.5 | ~276 |
+| Phase 7: Core Orchestration | v0.13.1 - v0.13.5 | ~276 |
+| Phase 7b: Human-in-the-Loop | v0.13.6 - v0.13.7 | ~120 |
+| **Total Phase 7** | **v0.13.1 - v0.13.7** | **~396** |
 
-**Combined with prior phases:** ~1,220 hours (~30 person-months)
+**Combined with prior phases:** ~1,340 hours (~33.5 person-months)
 
 ---
