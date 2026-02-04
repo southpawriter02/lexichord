@@ -6,6 +6,27 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.2] - 2026-02 (In Progress)
+
+### The Providers (LLM Integrations)
+
+This release delivers production-ready LLM provider integrations, implementing the `IChatCompletionService` interface defined in v0.6.1 with proper error handling, retry logic, and streaming support.
+
+#### What's New
+
+- **OpenAI Connector (v0.6.2a)** — Production-ready OpenAI Chat Completions API integration. Implemented `OpenAIChatCompletionService` with `CompleteAsync` for synchronous completion and `StreamAsync` for SSE-based streaming responses. Added `OpenAIOptions` configuration record with VaultKey pattern, HttpClientName, and SupportedModels (gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo). Created `OpenAIResponseParser` for parsing success responses, streaming chunks, and error responses with proper exception mapping (401→AuthenticationException, 429→RateLimitException with RetryAfter support, 5xx→ChatCompletionException). Added `OpenAIServiceCollectionExtensions` with Polly resilience policies (exponential backoff retry with Retry-After header support, circuit breaker with 5-failure threshold and 30-second break). Uses existing `OpenAIParameterMapper.ToRequestBody()` for request building and `SseParser.ParseStreamAsync()` for streaming. Includes 16 new structured log events (1600-1615 range). Includes 54 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                        | Status      |
+| -------------------------------- | ---------------------------- | ----------- |
+| [v0.6.2a](v0.6.x/LCS-CL-v062a.md) | OpenAI Connector            | ✅ Complete |
+| v0.6.2b                          | Anthropic Connector          | 🔜 Planned  |
+| v0.6.2c                          | Retry Policy Implementation  | 🔜 Planned  |
+| v0.6.2d                          | Token Counting Service       | 🔜 Planned  |
+
+---
+
 ## [v0.6.1] - 2026-02 (In Progress)
 
 ### The Gateway (LLM Abstractions)

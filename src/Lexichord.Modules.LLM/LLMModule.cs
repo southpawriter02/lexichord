@@ -59,9 +59,9 @@ public class LLMModule : IModule
     public ModuleInfo Info => new(
         Id: "llm",
         Name: "LLM Gateway",
-        Version: new Version(0, 6, 1),
+        Version: new Version(0, 6, 2),
         Author: "Lexichord Team",
-        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, and provider registry");
+        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, provider registry, and OpenAI connector");
 
     /// <inheritdoc />
     public void RegisterServices(IServiceCollection services)
@@ -110,6 +110,10 @@ public class LLMModule : IModule
         // ISettingsPage implementations are discovered by the settings service
         // and should remain stable throughout the application lifecycle.
         services.AddSingleton<ISettingsPage, LLMSettingsPage>();
+
+        // LOGIC: Register the OpenAI provider (v0.6.2a).
+        // This adds the HTTP client, configuration binding, and keyed service registration.
+        services.AddOpenAIProvider(configuration);
     }
 
     /// <inheritdoc />

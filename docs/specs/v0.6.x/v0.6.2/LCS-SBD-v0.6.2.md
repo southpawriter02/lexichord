@@ -247,17 +247,17 @@ See [LCS-DES-062d](LCS-DES-062d.md) for full specification.
 
 ## 4. Implementation Checklist
 
-### 4.1 v0.6.2a: OpenAI Connector
+### 4.1 v0.6.2a: OpenAI Connector ✅ Complete
 
-- [ ] Create `OpenAIOptions` configuration record
-- [ ] Implement `OpenAIChatCompletionService` class
-- [ ] Add `[RequiresLicense(LicenseTier.WriterPro)]` attribute
-- [ ] Implement `CompleteAsync` with JSON request/response
-- [ ] Implement `StreamAsync` with SSE parsing
-- [ ] Map OpenAI errors to `ChatCompletionException` hierarchy
-- [ ] Register with `ILLMProviderRegistry`
-- [ ] Add configuration binding for `appsettings.json`
-- [ ] Create unit tests with mocked HttpClient
+- [x] Create `OpenAIOptions` configuration record
+- [x] Implement `OpenAIChatCompletionService` class
+- [x] Add `[RequiresLicense(LicenseTier.WriterPro)]` attribute
+- [x] Implement `CompleteAsync` with JSON request/response
+- [x] Implement `StreamAsync` with SSE parsing
+- [x] Map OpenAI errors to `ChatCompletionException` hierarchy
+- [x] Register with `ILLMProviderRegistry`
+- [x] Add configuration binding for `appsettings.json`
+- [x] Create unit tests with mocked HttpClient
 - [ ] Create integration tests with sandbox API
 
 ### 4.2 v0.6.2b: Anthropic Connector

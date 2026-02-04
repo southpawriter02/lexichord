@@ -583,4 +583,189 @@ internal static partial class LLMLogEvents
         Level = LogLevel.Error,
         Message = "Failed to save API key for provider '{ProviderName}': {Error}")]
     public static partial void ApiKeySaveFailed(ILogger logger, string providerName, string error);
+
+    // =========================================================================
+    // OpenAI Provider Events (1600-1699) - v0.6.2a
+    // =========================================================================
+
+    /// <summary>
+    /// Logs the start of an OpenAI completion request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier being used.</param>
+    [LoggerMessage(
+        EventId = 1600,
+        Level = LogLevel.Debug,
+        Message = "Starting OpenAI completion request for model '{Model}'")]
+    public static partial void OpenAICompletionStarting(ILogger logger, string model);
+
+    /// <summary>
+    /// Logs the estimated prompt tokens for an OpenAI request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="promptTokens">The estimated number of prompt tokens.</param>
+    [LoggerMessage(
+        EventId = 1601,
+        Level = LogLevel.Debug,
+        Message = "Estimated prompt tokens: {PromptTokens}")]
+    public static partial void OpenAIPromptTokensEstimated(ILogger logger, int promptTokens);
+
+    /// <summary>
+    /// Logs successful completion of an OpenAI request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="durationMs">The request duration in milliseconds.</param>
+    /// <param name="promptTokens">The number of prompt tokens used.</param>
+    /// <param name="completionTokens">The number of completion tokens generated.</param>
+    [LoggerMessage(
+        EventId = 1602,
+        Level = LogLevel.Information,
+        Message = "OpenAI completion succeeded in {DurationMs}ms. Tokens: {PromptTokens}/{CompletionTokens}")]
+    public static partial void OpenAICompletionSucceeded(ILogger logger, long durationMs, int promptTokens, int completionTokens);
+
+    /// <summary>
+    /// Logs the start of an OpenAI streaming request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier being used.</param>
+    [LoggerMessage(
+        EventId = 1603,
+        Level = LogLevel.Debug,
+        Message = "Starting OpenAI streaming request for model '{Model}'")]
+    public static partial void OpenAIStreamingStarting(ILogger logger, string model);
+
+    /// <summary>
+    /// Logs when an OpenAI stream has started receiving data.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1604,
+        Level = LogLevel.Debug,
+        Message = "OpenAI stream started")]
+    public static partial void OpenAIStreamStarted(ILogger logger);
+
+    /// <summary>
+    /// Logs receipt of an OpenAI streaming chunk.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="contentLength">The length of the content in the chunk.</param>
+    [LoggerMessage(
+        EventId = 1605,
+        Level = LogLevel.Trace,
+        Message = "OpenAI stream chunk received: {ContentLength} chars")]
+    public static partial void OpenAIStreamChunkReceived(ILogger logger, int contentLength);
+
+    /// <summary>
+    /// Logs completion of an OpenAI streaming request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="finishReason">The reason the stream finished.</param>
+    [LoggerMessage(
+        EventId = 1606,
+        Level = LogLevel.Information,
+        Message = "OpenAI stream completed. Finish reason: {FinishReason}")]
+    public static partial void OpenAIStreamCompleted(ILogger logger, string? finishReason);
+
+    /// <summary>
+    /// Logs an error response from the OpenAI API.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="statusCode">The HTTP status code returned.</param>
+    /// <param name="errorType">The type of error from OpenAI.</param>
+    [LoggerMessage(
+        EventId = 1607,
+        Level = LogLevel.Warning,
+        Message = "OpenAI API returned error: {StatusCode} - {ErrorType}")]
+    public static partial void OpenAIApiError(ILogger logger, int statusCode, string? errorType);
+
+    /// <summary>
+    /// Logs an HTTP request failure to OpenAI.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="exception">The exception that occurred.</param>
+    /// <param name="message">The error message.</param>
+    [LoggerMessage(
+        EventId = 1608,
+        Level = LogLevel.Error,
+        Message = "OpenAI HTTP request failed: {Message}")]
+    public static partial void OpenAIHttpRequestFailed(ILogger logger, Exception exception, string message);
+
+    /// <summary>
+    /// Logs a failure to parse an OpenAI streaming chunk.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="error">The parsing error message.</param>
+    [LoggerMessage(
+        EventId = 1609,
+        Level = LogLevel.Warning,
+        Message = "Failed to parse OpenAI streaming chunk: {Error}")]
+    public static partial void OpenAIStreamChunkParseFailed(ILogger logger, string error);
+
+    /// <summary>
+    /// Logs the building of an OpenAI HTTP request.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="endpoint">The API endpoint being called.</param>
+    [LoggerMessage(
+        EventId = 1610,
+        Level = LogLevel.Debug,
+        Message = "Building OpenAI HTTP request for endpoint {Endpoint}")]
+    public static partial void OpenAIBuildingRequest(ILogger logger, string endpoint);
+
+    /// <summary>
+    /// Logs retrieval of the API key from the vault.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Security:</b> The API key value is never logged; only the retrieval action is recorded.
+    /// </para>
+    /// </remarks>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1611,
+        Level = LogLevel.Debug,
+        Message = "Retrieving OpenAI API key from vault")]
+    public static partial void OpenAIRetrievingApiKey(ILogger logger);
+
+    /// <summary>
+    /// Logs when the API key is not found in the vault.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1612,
+        Level = LogLevel.Warning,
+        Message = "OpenAI API key not found in vault")]
+    public static partial void OpenAIApiKeyNotFound(ILogger logger);
+
+    /// <summary>
+    /// Logs parsing of a successful OpenAI response.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1613,
+        Level = LogLevel.Debug,
+        Message = "Parsing OpenAI success response")]
+    public static partial void OpenAIParsingSuccessResponse(ILogger logger);
+
+    /// <summary>
+    /// Logs parsing of an OpenAI error response.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="statusCode">The HTTP status code of the error response.</param>
+    [LoggerMessage(
+        EventId = 1614,
+        Level = LogLevel.Debug,
+        Message = "Parsing OpenAI error response: {StatusCode}")]
+    public static partial void OpenAIParsingErrorResponse(ILogger logger, int statusCode);
+
+    /// <summary>
+    /// Logs the raw OpenAI response size for debugging.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="responseLength">The length of the response in bytes.</param>
+    [LoggerMessage(
+        EventId = 1615,
+        Level = LogLevel.Trace,
+        Message = "Raw OpenAI response: {ResponseLength} bytes")]
+    public static partial void OpenAIRawResponse(ILogger logger, int responseLength);
 }
