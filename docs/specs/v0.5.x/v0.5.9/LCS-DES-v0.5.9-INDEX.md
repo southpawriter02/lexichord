@@ -18,7 +18,7 @@ This index catalogs all design specifications for the v0.5.9 Semantic Memory Ded
 
 | Sub-Version | Document | Feature Name | Status |
 |-------------|----------|--------------|--------|
-| v0.5.9a | [LCS-DES-v0.5.9a.md](./LCS-DES-v0.5.9a.md) | Similarity Detection Infrastructure | Draft |
+| v0.5.9a | [LCS-DES-v0.5.9a.md](./LCS-DES-v0.5.9a.md) | Similarity Detection Infrastructure | Complete |
 | v0.5.9b | [LCS-DES-v0.5.9b.md](./LCS-DES-v0.5.9b.md) | Relationship Classification | Draft |
 | v0.5.9c | [LCS-DES-v0.5.9c.md](./LCS-DES-v0.5.9c.md) | Canonical Record Management | Draft |
 | v0.5.9d | [LCS-DES-v0.5.9d.md](./LCS-DES-v0.5.9d.md) | Deduplication Service | Draft |

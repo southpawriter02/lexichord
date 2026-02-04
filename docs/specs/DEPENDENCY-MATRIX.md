@@ -1016,6 +1016,25 @@
 | :------------------- | :--------- | :---------- | :------------------------------- |
 | `DegradedSearchMode` | v0.5.8d    | Modules.RAG | Full/KeywordOnly/CachedOnly/Down |
 
+### 1.22 v0.5.9 Deduplication Interfaces
+
+| Interface            | Defined In | Module      | Purpose                          |
+| :------------------- | :--------- | :---------- | :------------------------------- |
+| `ISimilarityDetector`| v0.5.9a    | Modules.RAG | Semantic similarity detection    |
+
+**New Classes (v0.5.9):**
+
+| Class                | Defined In | Module      | Purpose                          |
+| :------------------- | :--------- | :---------- | :------------------------------- |
+| `SimilarityDetector` | v0.5.9a    | Modules.RAG | Similarity detection service     |
+
+**New Records (v0.5.9):**
+
+| Record                       | Defined In | Module      | Purpose                          |
+| :--------------------------- | :--------- | :---------- | :------------------------------- |
+| `SimilarChunkResult`         | v0.5.9a    | Abstractions| Match result with score          |
+| `SimilarityDetectorOptions`  | v0.5.9a    | Abstractions| Detection configuration          |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

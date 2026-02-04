@@ -620,6 +620,22 @@ public sealed class RAGModule : IModule
         // Falls back to cached results when database is unavailable.
         // Circuit breaker prevents cascading failures during outages.
         services.AddScoped<IResilientSearchService, Resilience.ResilientSearchService>();
+
+        // =============================================================================
+        // v0.5.9a: Similarity Detection Infrastructure
+        // =============================================================================
+
+        // LOGIC: Configure SimilarityDetectorOptions with defaults using Options pattern (v0.5.9a).
+        // Provides configuration for similarity detection thresholds and batch processing:
+        // - SimilarityThreshold: 0.95 (conservative, avoiding false positives)
+        // - MaxResultsPerChunk: 5
+        // - BatchSize: 10 (optimized for pgvector query performance)
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(SimilarityDetectorOptions.Default));
+
+        // LOGIC: Register SimilarityDetector as scoped (v0.5.9a).
+        // Scoped to align with IChunkRepository and IDocumentRepository lifetimes.
+        // Provides semantic similarity detection for deduplication pipeline.
+        services.AddScoped<ISimilarityDetector, Services.SimilarityDetector>();
     }
 
     /// <inheritdoc/>
