@@ -48,6 +48,7 @@ public sealed class DeduplicationService : IDeduplicationService
     private readonly ISimilarityDetector _similarityDetector;
     private readonly IRelationshipClassifier _relationshipClassifier;
     private readonly ICanonicalManager _canonicalManager;
+    private readonly IContradictionService _contradictionService;
     private readonly IChunkRepository _chunkRepository;
     private readonly IDbConnectionFactory _connectionFactory;
     private readonly ILicenseContext _licenseContext;
@@ -70,6 +71,7 @@ public sealed class DeduplicationService : IDeduplicationService
         ISimilarityDetector similarityDetector,
         IRelationshipClassifier relationshipClassifier,
         ICanonicalManager canonicalManager,
+        IContradictionService contradictionService,
         IChunkRepository chunkRepository,
         IDbConnectionFactory connectionFactory,
         ILicenseContext licenseContext,
@@ -78,6 +80,7 @@ public sealed class DeduplicationService : IDeduplicationService
         _similarityDetector = similarityDetector ?? throw new ArgumentNullException(nameof(similarityDetector));
         _relationshipClassifier = relationshipClassifier ?? throw new ArgumentNullException(nameof(relationshipClassifier));
         _canonicalManager = canonicalManager ?? throw new ArgumentNullException(nameof(canonicalManager));
+        _contradictionService = contradictionService ?? throw new ArgumentNullException(nameof(contradictionService));
         _chunkRepository = chunkRepository ?? throw new ArgumentNullException(nameof(chunkRepository));
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
@@ -498,8 +501,12 @@ public sealed class DeduplicationService : IDeduplicationService
     }
 
     /// <summary>
-    /// Handles contradictory chunks - flag for resolution.
+    /// Handles contradictory chunks - flag for resolution via IContradictionService.
     /// </summary>
+    /// <remarks>
+    /// <b>v0.5.9e:</b> Now integrates with <see cref="IContradictionService.FlagAsync"/>
+    /// to properly record contradictions in the dedicated table.
+    /// </remarks>
     private async Task<DeduplicationResult> HandleContradictoryAsync(
         Chunk newChunk,
         DuplicateCandidate candidate,
@@ -513,13 +520,25 @@ public sealed class DeduplicationService : IDeduplicationService
             return await HandleDistinctAsync(newChunk, stopwatch, ct);
         }
 
-        // LOGIC: Store chunk and flag contradiction (v0.5.9e integration point).
+        // LOGIC: Store chunk and flag contradiction via IContradictionService (v0.5.9e).
         var canonical = await _canonicalManager.CreateCanonicalAsync(newChunk, ct);
 
+        // LOGIC: Record the contradiction in the dedicated contradictions table.
+        // This enables admin review workflow and resolution tracking.
+        await _contradictionService.FlagAsync(
+            chunkAId: candidate.ExistingChunk.Id,
+            chunkBId: newChunk.Id,
+            similarityScore: candidate.SimilarityScore,
+            confidence: candidate.Classification.Confidence,
+            reason: candidate.Classification.Explanation,
+            projectId: options.ProjectScope,
+            ct: ct);
+
         _logger.LogWarning(
-            "Flagged contradiction: ChunkId={ChunkId}, ConflictsWith={ConflictsWithId}",
+            "Flagged contradiction: ChunkId={ChunkId}, ConflictsWith={ConflictsWithId}, Confidence={Confidence:F3}",
             newChunk.Id,
-            candidate.ExistingChunk.Id);
+            candidate.ExistingChunk.Id,
+            candidate.Classification.Confidence);
 
         return new DeduplicationResult(
             canonical.CanonicalChunkId,

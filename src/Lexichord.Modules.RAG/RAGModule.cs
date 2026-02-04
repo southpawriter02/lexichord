@@ -679,6 +679,16 @@ public sealed class RAGModule : IModule
         // ICanonicalManager, and IChunkRepository lifetimes.
         // Orchestrates the full deduplication pipeline during chunk ingestion.
         services.AddScoped<IDeduplicationService, Services.DeduplicationService>();
+
+        // =============================================================================
+        // v0.5.9e: Contradiction Detection & Resolution
+        // =============================================================================
+
+        // LOGIC: Register ContradictionService as scoped (v0.5.9e).
+        // Scoped to align with IDbConnectionFactory, ICanonicalManager, and
+        // IChunkRepository lifetimes. Manages the full lifecycle of detected
+        // contradictions: flagging, review, resolution, and dismissal.
+        services.AddScoped<IContradictionService, Services.ContradictionService>();
     }
 
     /// <inheritdoc/>

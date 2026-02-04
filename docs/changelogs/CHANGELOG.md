@@ -49,6 +49,8 @@ This release establishes the infrastructure for detecting and consolidating near
 
 - **Deduplication Service (v0.5.9d)** — Central orchestrator for the full deduplication pipeline during chunk ingestion. Added `IDeduplicationService` interface with `ProcessChunkAsync` for automatic deduplication, `FindDuplicatesAsync` for preview/dry-run, `ProcessManualDecisionAsync` for review queue handling, and `GetPendingReviewsAsync` for admin access. Features license gating bypass for unlicensed users, configurable thresholds via `DeduplicationOptions`, routing logic for all relationship types (merge, link, flag, queue), and manual review queue. Includes 8 data contracts (`DeduplicationAction`, `DeduplicationResult`, `DeduplicationOptions`, `DuplicateCandidate`, `ManualMergeDecision`, `ManualDecisionType`, `PendingReview`, `IDeduplicationService`) and database migration for pending_reviews table. Includes 23 unit tests.
 
+- **Contradiction Detection (v0.5.9e)** — Complete workflow for detecting and resolving contradictory content between chunks. Added `IContradictionService` interface with `FlagAsync` for detection, `ResolveAsync` for resolution, `DismissAsync` for false positives, and `AutoResolveAsync` for system-initiated resolution. Features 5 resolution types (KeepOlder, KeepNewer, KeepBoth, CreateSynthesis, DeleteBoth), lifecycle status tracking (Pending, UnderReview, Resolved, Dismissed, AutoResolved), and MediatR event publishing. Includes `Contradiction`, `ContradictionResolution`, `ContradictionStatus`, `ContradictionResolutionType` records, `ContradictionDetectedEvent`/`ContradictionResolvedEvent` events, and `Migration_010_Contradictions` for the Contradictions table with unique normalized chunk pair index. Includes 54 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -57,6 +59,7 @@ This release establishes the infrastructure for detecting and consolidating near
 | [v0.5.9b](v0.5.x/LCS-CL-v059b.md) | Relationship Classification  | ✅ Complete |
 | [v0.5.9c](v0.5.x/LCS-CL-v059c.md) | Canonical Record Management  | ✅ Complete |
 | [v0.5.9d](v0.5.x/LCS-CL-v059d.md) | Deduplication Service        | ✅ Complete |
+| [v0.5.9e](v0.5.x/LCS-CL-v059e.md) | Contradiction Detection      | ✅ Complete |
 
 ---
 

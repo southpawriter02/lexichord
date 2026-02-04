@@ -28,6 +28,7 @@ public sealed class DeduplicationServiceTests
     private readonly Mock<ISimilarityDetector> _similarityDetectorMock;
     private readonly Mock<IRelationshipClassifier> _relationshipClassifierMock;
     private readonly Mock<ICanonicalManager> _canonicalManagerMock;
+    private readonly Mock<IContradictionService> _contradictionServiceMock;
     private readonly Mock<IChunkRepository> _chunkRepositoryMock;
     private readonly Mock<IDbConnectionFactory> _connectionFactoryMock;
     private readonly Mock<ILicenseContext> _licenseContextMock;
@@ -38,6 +39,7 @@ public sealed class DeduplicationServiceTests
         _similarityDetectorMock = new Mock<ISimilarityDetector>();
         _relationshipClassifierMock = new Mock<IRelationshipClassifier>();
         _canonicalManagerMock = new Mock<ICanonicalManager>();
+        _contradictionServiceMock = new Mock<IContradictionService>();
         _chunkRepositoryMock = new Mock<IChunkRepository>();
         _connectionFactoryMock = new Mock<IDbConnectionFactory>();
         _licenseContextMock = new Mock<ILicenseContext>();
@@ -55,6 +57,7 @@ public sealed class DeduplicationServiceTests
             _similarityDetectorMock.Object,
             _relationshipClassifierMock.Object,
             _canonicalManagerMock.Object,
+            _contradictionServiceMock.Object,
             _chunkRepositoryMock.Object,
             _connectionFactoryMock.Object,
             _licenseContextMock.Object,
@@ -102,6 +105,7 @@ public sealed class DeduplicationServiceTests
                 null!,
                 _relationshipClassifierMock.Object,
                 _canonicalManagerMock.Object,
+                _contradictionServiceMock.Object,
                 _chunkRepositoryMock.Object,
                 _connectionFactoryMock.Object,
                 _licenseContextMock.Object,
@@ -118,6 +122,7 @@ public sealed class DeduplicationServiceTests
                 _similarityDetectorMock.Object,
                 null!,
                 _canonicalManagerMock.Object,
+                _contradictionServiceMock.Object,
                 _chunkRepositoryMock.Object,
                 _connectionFactoryMock.Object,
                 _licenseContextMock.Object,
@@ -134,12 +139,30 @@ public sealed class DeduplicationServiceTests
                 _similarityDetectorMock.Object,
                 _relationshipClassifierMock.Object,
                 null!,
+                _contradictionServiceMock.Object,
                 _chunkRepositoryMock.Object,
                 _connectionFactoryMock.Object,
                 _licenseContextMock.Object,
                 _loggerMock.Object));
 
         Assert.Equal("canonicalManager", ex.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_WithNullContradictionService_ThrowsArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            new DeduplicationService(
+                _similarityDetectorMock.Object,
+                _relationshipClassifierMock.Object,
+                _canonicalManagerMock.Object,
+                null!,
+                _chunkRepositoryMock.Object,
+                _connectionFactoryMock.Object,
+                _licenseContextMock.Object,
+                _loggerMock.Object));
+
+        Assert.Equal("contradictionService", ex.ParamName);
     }
 
     [Fact]
@@ -150,6 +173,7 @@ public sealed class DeduplicationServiceTests
                 _similarityDetectorMock.Object,
                 _relationshipClassifierMock.Object,
                 _canonicalManagerMock.Object,
+                _contradictionServiceMock.Object,
                 null!,
                 _connectionFactoryMock.Object,
                 _licenseContextMock.Object,
@@ -166,6 +190,7 @@ public sealed class DeduplicationServiceTests
                 _similarityDetectorMock.Object,
                 _relationshipClassifierMock.Object,
                 _canonicalManagerMock.Object,
+                _contradictionServiceMock.Object,
                 _chunkRepositoryMock.Object,
                 null!,
                 _licenseContextMock.Object,
@@ -182,6 +207,7 @@ public sealed class DeduplicationServiceTests
                 _similarityDetectorMock.Object,
                 _relationshipClassifierMock.Object,
                 _canonicalManagerMock.Object,
+                _contradictionServiceMock.Object,
                 _chunkRepositoryMock.Object,
                 _connectionFactoryMock.Object,
                 null!,
@@ -198,6 +224,7 @@ public sealed class DeduplicationServiceTests
                 _similarityDetectorMock.Object,
                 _relationshipClassifierMock.Object,
                 _canonicalManagerMock.Object,
+                _contradictionServiceMock.Object,
                 _chunkRepositoryMock.Object,
                 _connectionFactoryMock.Object,
                 _licenseContextMock.Object,
