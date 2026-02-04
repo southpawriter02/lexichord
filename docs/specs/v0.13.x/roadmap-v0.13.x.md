@@ -1224,9 +1224,13 @@ public enum TriggerType { Manual, Scheduled, Event, Webhook }
 
 ---
 
-## v0.13.6-ORC: Planning & Approval Workflows
+## v0.13.6-ORC: Plan Approval Workflows
 
-**Goal:** Implement interactive human-in-the-loop workflows where AI-generated plans are presented to users for review, commenting, modification, and approval before execution proceeds.
+**Goal:** Implement interactive human-in-the-loop workflows where AI-generated execution plans are presented to users for review, commenting, modification, and approval before orchestration proceeds.
+
+> **Terminology Note:**
+> - **Plan** (Execution Plan): High-level orchestration artifact defining goals, work items, agent assignments, and dependencies. This is what users approve.
+> - **Task Planning**: Granular step-by-step breakdowns created by agents after plan approval (handled by `ITaskPlanningService`).
 
 ### Sub-Parts
 
@@ -1244,13 +1248,17 @@ public enum TriggerType { Manual, Scheduled, Event, Webhook }
 
 ```csharp
 /// <summary>
-/// Manages the planning and approval workflow for orchestration tasks.
-/// Presents AI-generated plans to users and collects feedback before execution.
+/// Manages the approval workflow for execution plans (orchestration-level).
+/// Presents AI-generated plans to users and collects feedback before orchestration begins.
+///
+/// NOTE: This service handles Plan approval, not task-level step planning.
+/// Once a Plan is approved, individual agents perform their own task planning
+/// within the scope of their assigned work items.
 /// </summary>
 public interface IPlanApprovalService
 {
     /// <summary>
-    /// Submit a decomposition result for user approval.
+    /// Submit an execution plan (decomposition result) for user approval.
     /// </summary>
     Task<PlanReviewSession> SubmitForApprovalAsync(
         DecompositionResult decomposition,

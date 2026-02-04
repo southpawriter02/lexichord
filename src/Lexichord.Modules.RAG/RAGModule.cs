@@ -537,6 +537,31 @@ public sealed class RAGModule : IModule
         // Each grouped results display gets its own ViewModel for independent
         // expansion state and sort mode management.
         services.AddTransient<GroupedResultsViewModel>();
+
+        // =============================================================================
+        // v0.5.7c: Preview Pane (Split-View Preview)
+        // =============================================================================
+
+        // LOGIC: Register PreviewContentBuilder as singleton (v0.5.7c).
+        // Thread-safe and stateless — coordinates between IContextExpansionService
+        // and ISnippetService to build preview content for search hits.
+        services.AddSingleton<IPreviewContentBuilder, PreviewContentBuilder>();
+
+        // LOGIC: Register PreviewPaneViewModel as transient (v0.5.7c).
+        // Each preview pane instance gets its own ViewModel for independent
+        // loading state, visibility, and selection management.
+        services.AddTransient<PreviewPaneViewModel>();
+
+        // =============================================================================
+        // v0.5.7d: Search Actions (Copy, Export, Open All)
+        // =============================================================================
+
+        // LOGIC: Register SearchActionsService as singleton (v0.5.7d).
+        // Thread-safe service providing copy, export, and open-all operations
+        // for grouped search results. Integrates with ICitationService for
+        // formatted output and IEditorService for document navigation.
+        // License-gated: Export and CitationFormatted copy require Writer Pro.
+        services.AddSingleton<ISearchActionsService, SearchActionsService>();
     }
 
     /// <inheritdoc/>

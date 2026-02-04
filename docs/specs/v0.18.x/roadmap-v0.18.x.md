@@ -1,11 +1,11 @@
-# Lexichord Security & Sandboxing Roadmap (v0.18.1 - v0.18.5)
+# Lexichord Security & Sandboxing Roadmap (v0.18.1 - v0.18.8)
 
 In v0.17.x, we delivered **The Intelligent Editor** — a deeply AI-integrated writing environment. In v0.18.x, we introduce **Security & Sandboxing** — comprehensive protection mechanisms that ensure AI operations are safe, auditable, and user-controlled, establishing the security foundation required for v1.0.0.
 
-**Architectural Note:** This version introduces `Lexichord.Security` module with permission frameworks, execution sandboxing, and audit capabilities. Security becomes a first-class concern with defense-in-depth strategies protecting users from unintended AI actions.
+**Architectural Note:** This version introduces `Lexichord.Security` module with permission frameworks, execution sandboxing, audit capabilities, and **AI-specific security controls**. Security becomes a first-class concern with defense-in-depth strategies protecting users from unintended AI actions, adversarial attacks, and system compromise.
 
-**Total Sub-Parts:** 42 distinct implementation steps across 5 versions.
-**Total Estimated Hours:** 312 hours (~7.8 person-months)
+**Total Sub-Parts:** 60 distinct implementation steps across 8 versions.
+**Total Estimated Hours:** 528 hours (~13.2 person-months)
 
 ---
 
@@ -18,6 +18,9 @@ In v0.17.x, we delivered **The Intelligent Editor** — a deeply AI-integrated w
 | v0.18.3-SEC | File System Security | Read/write/delete protections, path restrictions, sensitive file detection | 62 |
 | v0.18.4-SEC | Network & API Security | Outbound request controls, API key protection, data exfiltration prevention | 60 |
 | v0.18.5-SEC | Audit & Compliance | Comprehensive logging, security policies, compliance reporting | 68 |
+| v0.18.6-SEC | **AI Input/Output Security** | **Prompt injection detection, output validation, token budgets, adversarial defense** | **72** |
+| v0.18.7-SEC | **Workspace Isolation & Sandboxing** | **Working directory restrictions, privilege containment, resource isolation** | **68** |
+| v0.18.8-SEC | **Threat Detection & Incident Response** | **Attack pattern detection, automated response, threat intelligence** | **76** |
 
 ---
 
@@ -28,6 +31,30 @@ In v0.17.x, we delivered **The Intelligent Editor** — a deeply AI-integrated w
 │                        Security & Sandboxing System                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │              ★ Threat Detection & Incident Response (v0.18.8) ★        │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │ │
+│  │  │   Attack     │  │  Automated   │  │   Threat     │  │  Incident  │ │ │
+│  │  │  Detection   │  │  Response    │  │   Intel      │  │  Workflow  │ │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘  └────────────┘ │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                         │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │              ★ Workspace Isolation & Sandboxing (v0.18.7) ★            │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │ │
+│  │  │  Directory   │  │  Privilege   │  │  Resource    │  │  Process   │ │ │
+│  │  │  Isolation   │  │ Containment  │  │  Quotas      │  │  Sandbox   │ │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘  └────────────┘ │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                         │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │              ★ AI Input/Output Security (v0.18.6) ★                    │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │ │
+│  │  │   Prompt     │  │   Output     │  │   Token      │  │ Adversarial│ │ │
+│  │  │  Injection   │  │  Validation  │  │   Budgets    │  │  Detection │ │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘  └────────────┘ │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                         │
 │  ┌────────────────────────────────────────────────────────────────────────┐ │
 │  │                    Audit & Compliance Layer (v0.18.5)                  │ │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │ │
@@ -1713,6 +1740,565 @@ CREATE INDEX idx_alerts_created ON security.alerts(created_at DESC);
 
 ---
 
+## v0.18.6-SEC: AI Input/Output Security
+
+**Goal:** Implement comprehensive security controls for AI-specific threats including prompt injection, adversarial inputs, output validation, and resource abuse prevention.
+
+> **Critical Gap Addressed:** Traditional application security does not address AI-specific threats. This version establishes defense-in-depth for AI operations.
+
+### Sub-Parts
+
+| Sub-Part | Title | Est. Hours |
+|:---------|:------|:-----------|
+| v0.18.6a | Prompt Injection Detection & Mitigation | 14 |
+| v0.18.6b | AI Output Validation & Sanitization | 12 |
+| v0.18.6c | Token Budget Enforcement & Resource Protection | 10 |
+| v0.18.6d | Context Integrity & Retrieval Security | 12 |
+| v0.18.6e | Adversarial Input Detection & ML-Based Analysis | 14 |
+| v0.18.6f | Security Event Pipeline & Response | 10 |
+
+### Key Interfaces
+
+```csharp
+/// <summary>
+/// Detects prompt injection attempts in user inputs and retrieved context.
+/// </summary>
+public interface IPromptInjectionDetector
+{
+    /// <summary>
+    /// Analyze input for prompt injection attempts.
+    /// </summary>
+    Task<InjectionDetectionResult> DetectAsync(
+        string input,
+        ConversationContext? context = null,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Analyze retrieved context (RAG) for indirect injection.
+    /// </summary>
+    Task<IReadOnlyList<DocumentInjectionResult>> DetectInContextAsync(
+        IReadOnlyList<RetrievedDocument> retrievedDocuments,
+        string originalQuery,
+        CancellationToken ct = default);
+}
+
+public record InjectionDetectionResult
+{
+    public bool InjectionDetected { get; init; }
+    public float Confidence { get; init; }
+    public InjectionRiskLevel RiskLevel { get; init; }
+    public IReadOnlyList<DetectedPattern> Patterns { get; init; } = [];
+    public InjectionAction RecommendedAction { get; init; }
+    public string? SanitizedInput { get; init; }
+}
+
+public enum InjectionRiskLevel
+{
+    None, Low, Medium, High, Critical
+}
+
+public enum InjectionAction
+{
+    Allow, Sanitize, Warn, RequireConfirmation, Block, Quarantine
+}
+
+/// <summary>
+/// Validates AI outputs before execution or display.
+/// </summary>
+public interface IOutputValidator
+{
+    /// <summary>
+    /// Validate AI output for security issues.
+    /// </summary>
+    Task<OutputValidationResult> ValidateAsync(
+        string output,
+        OutputType outputType,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Validate AI-generated code before execution.
+    /// </summary>
+    Task<CodeValidationResult> ValidateCodeAsync(
+        string code,
+        string language,
+        CodeExecutionContext context,
+        CancellationToken ct = default);
+}
+
+/// <summary>
+/// Enforces token budgets and prevents resource abuse.
+/// </summary>
+public interface ITokenBudgetEnforcer
+{
+    /// <summary>
+    /// Check if operation would exceed budget.
+    /// </summary>
+    Task<BudgetCheckResult> CheckBudgetAsync(
+        BudgetCheckRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Record actual token consumption.
+    /// </summary>
+    Task RecordConsumptionAsync(
+        TokenConsumption consumption,
+        CancellationToken ct = default);
+}
+
+/// <summary>
+/// ML-based detection of adversarial inputs and novel attack patterns.
+/// </summary>
+public interface IAdversarialDetector
+{
+    /// <summary>
+    /// Analyze input using ML models for adversarial patterns.
+    /// </summary>
+    Task<AdversarialAnalysisResult> AnalyzeAsync(
+        string input,
+        AdversarialAnalysisContext context,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Detect semantic manipulation attempts.
+    /// </summary>
+    Task<SemanticManipulationResult> DetectSemanticManipulationAsync(
+        string input,
+        string? expectedIntent,
+        CancellationToken ct = default);
+}
+```
+
+### Threat Categories Addressed
+
+| Threat | Detection Method | Mitigation |
+|:-------|:-----------------|:-----------|
+| Prompt Injection | Pattern + ML analysis | Sanitization, blocking, hierarchy enforcement |
+| Jailbreaking | Semantic analysis | Block, alert, log |
+| Context Poisoning | Provenance verification | Source validation, trust scoring |
+| Token Exhaustion | Budget tracking | Rate limiting, quotas |
+| Output Exploitation | Code/content scanning | Sanitization, sandboxing |
+| Information Leakage | PII detection | Redaction, blocking |
+
+---
+
+## v0.18.7-SEC: Workspace Isolation & Sandboxing
+
+**Goal:** Implement strict workspace isolation ensuring AI operations are confined to authorized directories, cannot escalate privileges, and operate within defined resource boundaries.
+
+> **Critical Gap Addressed:** Without workspace isolation, a compromised AI agent could access sensitive files outside the project, modify system files, or consume unlimited resources.
+
+### Sub-Parts
+
+| Sub-Part | Title | Est. Hours |
+|:---------|:------|:-----------|
+| v0.18.7a | Working Directory Isolation | 12 |
+| v0.18.7b | Privilege Containment & Least Privilege | 14 |
+| v0.18.7c | Resource Quota Management | 10 |
+| v0.18.7d | Process Sandboxing & Isolation | 14 |
+| v0.18.7e | Cross-Tenant Security | 10 |
+| v0.18.7f | Isolation Verification & Testing | 8 |
+
+### Key Interfaces
+
+```csharp
+/// <summary>
+/// Manages workspace isolation for AI operations.
+/// </summary>
+public interface IWorkspaceIsolationManager
+{
+    /// <summary>
+    /// Create isolated workspace for a session.
+    /// </summary>
+    Task<IsolatedWorkspace> CreateIsolatedWorkspaceAsync(
+        WorkspaceIsolationRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Validate a path is within workspace boundaries.
+    /// </summary>
+    Task<PathValidationResult> ValidatePathAsync(
+        IsolatedWorkspace workspace,
+        string path,
+        PathOperation operation,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Check for escape attempts (symlinks, traversal, etc.).
+    /// </summary>
+    Task<EscapeAttemptResult> CheckEscapeAttemptAsync(
+        IsolatedWorkspace workspace,
+        string requestedPath,
+        CancellationToken ct = default);
+}
+
+public record IsolatedWorkspace
+{
+    public Guid WorkspaceId { get; init; }
+    public string RootPath { get; init; } = "";
+    public IReadOnlyList<string> AllowedPaths { get; init; } = [];
+    public IReadOnlyList<string> DeniedPaths { get; init; } = [];
+    public IReadOnlyList<string> ReadOnlyPaths { get; init; } = [];
+    public WorkspacePermissions Permissions { get; init; } = new();
+    public ResourceQuotas Quotas { get; init; } = new();
+}
+
+public record WorkspacePermissions
+{
+    public bool CanRead { get; init; } = true;
+    public bool CanWrite { get; init; } = false;
+    public bool CanDelete { get; init; } = false;
+    public bool CanExecute { get; init; } = false;
+    public bool CanCreateDirectory { get; init; } = false;
+    public bool CanAccessNetwork { get; init; } = false;
+    public bool CanSpawnProcesses { get; init; } = false;
+    public int MaxFileSize { get; init; } = 10 * 1024 * 1024; // 10MB
+}
+
+/// <summary>
+/// Enforces least privilege for AI operations.
+/// </summary>
+public interface IPrivilegeManager
+{
+    /// <summary>
+    /// Get minimum required privileges for an operation.
+    /// </summary>
+    Task<RequiredPrivileges> GetRequiredPrivilegesAsync(
+        OperationRequest operation,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Check if operation would escalate privileges.
+    /// </summary>
+    Task<EscalationCheckResult> CheckPrivilegeEscalationAsync(
+        OperationRequest operation,
+        CurrentPrivileges current,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Drop privileges after operation completes.
+    /// </summary>
+    Task DropPrivilegesAsync(
+        Guid operationId,
+        CancellationToken ct = default);
+}
+
+public record EscalationCheckResult
+{
+    public bool WouldEscalate { get; init; }
+    public EscalationType? EscalationType { get; init; }
+    public IReadOnlyList<string> EscalatedCapabilities { get; init; } = [];
+    public EscalationAction RecommendedAction { get; init; }
+}
+
+public enum EscalationType
+{
+    FileSystemElevation,   // Accessing files outside workspace
+    ProcessElevation,      // Spawning elevated processes
+    NetworkElevation,      // Accessing restricted network resources
+    SystemElevation,       // Accessing system resources
+    UserElevation,         // Acting as different user
+    AdminElevation         // Attempting admin operations
+}
+
+public enum EscalationAction
+{
+    Allow,
+    RequireExplicitApproval,
+    Block,
+    AlertAndBlock
+}
+
+/// <summary>
+/// Manages resource quotas for AI operations.
+/// </summary>
+public interface IResourceQuotaManager
+{
+    /// <summary>
+    /// Check if operation would exceed quotas.
+    /// </summary>
+    Task<QuotaCheckResult> CheckQuotaAsync(
+        ResourceRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Reserve resources for an operation.
+    /// </summary>
+    Task<ResourceReservation> ReserveAsync(
+        ResourceRequest request,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get current resource usage for a workspace.
+    /// </summary>
+    Task<ResourceUsage> GetUsageAsync(
+        Guid workspaceId,
+        CancellationToken ct = default);
+}
+
+public record ResourceQuotas
+{
+    public long MaxDiskUsageBytes { get; init; } = 1024 * 1024 * 1024; // 1GB
+    public long MaxMemoryBytes { get; init; } = 512 * 1024 * 1024; // 512MB
+    public int MaxCpuPercent { get; init; } = 50;
+    public int MaxOpenFiles { get; init; } = 100;
+    public int MaxProcesses { get; init; } = 10;
+    public int MaxNetworkConnections { get; init; } = 10;
+    public TimeSpan MaxOperationDuration { get; init; } = TimeSpan.FromMinutes(30);
+}
+```
+
+### Isolation Boundaries
+
+| Boundary | Enforcement | Detection |
+|:---------|:------------|:----------|
+| File System | Chroot/namespace isolation | Path validation, symlink resolution |
+| Process | Container/sandbox isolation | Process monitoring, capability checks |
+| Network | Firewall rules, proxy | Connection monitoring, destination validation |
+| Memory | cgroups limits | Usage tracking, OOM protection |
+| CPU | cgroups limits | Usage tracking, throttling |
+| User | Unprivileged execution | UID/GID verification |
+
+---
+
+## v0.18.8-SEC: Threat Detection & Incident Response
+
+**Goal:** Implement comprehensive threat detection, automated incident response, and integration with security operations for enterprise deployments.
+
+> **Critical Gap Addressed:** Reactive security monitoring is insufficient. This version enables proactive threat detection and automated response to security incidents.
+
+### Sub-Parts
+
+| Sub-Part | Title | Est. Hours |
+|:---------|:------|:-----------|
+| v0.18.8a | Attack Pattern Detection Engine | 14 |
+| v0.18.8b | Automated Incident Response | 12 |
+| v0.18.8c | Threat Intelligence Integration | 12 |
+| v0.18.8d | Security Operations Dashboard | 14 |
+| v0.18.8e | Incident Workflow Management | 12 |
+| v0.18.8f | Forensic Data Collection | 12 |
+
+### Key Interfaces
+
+```csharp
+/// <summary>
+/// Detects attack patterns across all security layers.
+/// </summary>
+public interface IAttackPatternDetector
+{
+    /// <summary>
+    /// Analyze activity for attack patterns.
+    /// </summary>
+    Task<AttackDetectionResult> DetectAsync(
+        SecurityActivity activity,
+        DetectionContext context,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Correlate events to identify coordinated attacks.
+    /// </summary>
+    Task<CorrelationResult> CorrelateEventsAsync(
+        IReadOnlyList<SecurityEvent> events,
+        TimeSpan window,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Run threat hunting queries.
+    /// </summary>
+    Task<HuntingResult> HuntAsync(
+        ThreatHuntingQuery query,
+        CancellationToken ct = default);
+}
+
+public record AttackDetectionResult
+{
+    public bool AttackDetected { get; init; }
+    public AttackType? DetectedType { get; init; }
+    public AttackSeverity Severity { get; init; }
+    public float Confidence { get; init; }
+    public IReadOnlyList<AttackIndicator> Indicators { get; init; } = [];
+    public IReadOnlyList<MitreAttackTechnique> MitreTechniques { get; init; } = [];
+    public ResponseRecommendation Recommendation { get; init; } = new();
+}
+
+public enum AttackType
+{
+    PromptInjectionCampaign,
+    CredentialTheft,
+    DataExfiltration,
+    PrivilegeEscalation,
+    LateralMovement,
+    PersistenceAttempt,
+    DenialOfService,
+    AccountTakeover,
+    SupplyChainAttack,
+    InsiderThreat
+}
+
+/// <summary>
+/// Automated incident response system.
+/// </summary>
+public interface IIncidentResponseManager
+{
+    /// <summary>
+    /// Create incident from detected attack.
+    /// </summary>
+    Task<SecurityIncident> CreateIncidentAsync(
+        AttackDetectionResult detection,
+        IncidentCreationOptions options,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Execute automated response playbook.
+    /// </summary>
+    Task<PlaybookExecutionResult> ExecutePlaybookAsync(
+        SecurityIncident incident,
+        ResponsePlaybook playbook,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Contain threat by isolating affected resources.
+    /// </summary>
+    Task<ContainmentResult> ContainThreatAsync(
+        SecurityIncident incident,
+        ContainmentStrategy strategy,
+        CancellationToken ct = default);
+}
+
+public record SecurityIncident
+{
+    public Guid IncidentId { get; init; }
+    public string Title { get; init; } = "";
+    public IncidentSeverity Severity { get; init; }
+    public IncidentStatus Status { get; init; }
+    public AttackType AttackType { get; init; }
+    public DateTimeOffset DetectedAt { get; init; }
+    public DateTimeOffset? ContainedAt { get; init; }
+    public DateTimeOffset? ResolvedAt { get; init; }
+    public IReadOnlyList<AffectedResource> AffectedResources { get; init; } = [];
+    public IReadOnlyList<ResponseAction> ActionsTaken { get; init; } = [];
+    public UserId? AssignedTo { get; init; }
+    public string? RootCause { get; init; }
+    public string? LessonsLearned { get; init; }
+}
+
+public enum ContainmentStrategy
+{
+    IsolateUser,           // Block user account
+    IsolateSession,        // Terminate session
+    IsolateAgent,          // Stop agent execution
+    IsolateWorkspace,      // Lock workspace
+    IsolateNetwork,        // Block network access
+    FullQuarantine         // Complete isolation
+}
+
+/// <summary>
+/// Integrates with external threat intelligence.
+/// </summary>
+public interface IThreatIntelligenceService
+{
+    /// <summary>
+    /// Check indicator against threat intelligence.
+    /// </summary>
+    Task<ThreatIntelResult> CheckIndicatorAsync(
+        ThreatIndicator indicator,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Get latest threat intelligence feed.
+    /// </summary>
+    Task<ThreatFeed> GetThreatFeedAsync(
+        ThreatFeedOptions options,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Submit new indicator to threat intelligence.
+    /// </summary>
+    Task SubmitIndicatorAsync(
+        ThreatIndicator indicator,
+        CancellationToken ct = default);
+}
+
+public record ThreatIndicator
+{
+    public IndicatorType Type { get; init; }
+    public string Value { get; init; } = "";
+    public ThreatType? AssociatedThreat { get; init; }
+    public float Confidence { get; init; }
+    public DateTimeOffset FirstSeen { get; init; }
+    public DateTimeOffset LastSeen { get; init; }
+    public IReadOnlyList<string> Tags { get; init; } = [];
+}
+
+public enum IndicatorType
+{
+    IpAddress,
+    Domain,
+    Url,
+    FileHash,
+    Email,
+    AttackPattern,
+    MaliciousPrompt,
+    MaliciousOutput,
+    BehavioralPattern
+}
+
+/// <summary>
+/// Collects forensic data for incident investigation.
+/// </summary>
+public interface IForensicCollector
+{
+    /// <summary>
+    /// Collect forensic data for an incident.
+    /// </summary>
+    Task<ForensicCollection> CollectAsync(
+        SecurityIncident incident,
+        CollectionScope scope,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Create timeline of events for incident.
+    /// </summary>
+    Task<IncidentTimeline> CreateTimelineAsync(
+        SecurityIncident incident,
+        TimelineOptions options,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Export forensic data for external analysis.
+    /// </summary>
+    Task<ForensicExport> ExportAsync(
+        ForensicCollection collection,
+        ExportFormat format,
+        CancellationToken ct = default);
+}
+
+public record ForensicCollection
+{
+    public Guid CollectionId { get; init; }
+    public Guid IncidentId { get; init; }
+    public DateTimeOffset CollectedAt { get; init; }
+    public IReadOnlyList<SecurityEvent> Events { get; init; } = [];
+    public IReadOnlyList<AuditLogEntry> AuditLogs { get; init; } = [];
+    public IReadOnlyList<AIInteraction> AIInteractions { get; init; } = [];
+    public IReadOnlyList<FileSystemSnapshot> FileSnapshots { get; init; } = [];
+    public IReadOnlyList<NetworkCapture> NetworkCaptures { get; init; } = [];
+    public string ChainOfCustody { get; init; } = "";
+}
+```
+
+### Attack Detection Coverage
+
+| Attack Category | Detection Methods | Response Actions |
+|:----------------|:------------------|:-----------------|
+| Prompt Injection Campaigns | Pattern correlation, ML clustering | Block patterns, alert, quarantine |
+| Data Exfiltration | Network analysis, content scanning | Block transfer, isolate, alert |
+| Privilege Escalation | Behavior analysis, capability monitoring | Revoke permissions, isolate |
+| Account Takeover | Authentication anomalies, session analysis | Force logout, lock account |
+| Insider Threats | Behavioral baselines, access patterns | Monitor, alert, investigate |
+| Supply Chain | Dependency scanning, integrity checks | Block updates, alert, rollback |
+
+---
+
 ## MediatR Events
 
 ```csharp
@@ -1805,6 +2391,20 @@ public record SecurityAlertCreatedEvent(
 | Security Dashboard | - | - | ✓ | ✓ |
 | Policy Templates | - | - | - | ✓ |
 | SIEM Integration | - | - | - | ✓ |
+| **AI Security (v0.18.6)** | | | | |
+| Prompt Injection Detection | Rule-based | + ML detection | + Custom rules | + Threat intel |
+| Output Validation | Basic | Full | + Custom validators | + ML models |
+| Token Budgets | 10K/day | 100K/day | 1M/day | Unlimited |
+| Adversarial Detection | - | Basic | Full | + Behavioral |
+| **Workspace Isolation (v0.18.7)** | | | | |
+| Directory Isolation | Basic | Full | + Custom boundaries | + Multi-tenant |
+| Resource Quotas | Fixed | Configurable | Per-project | Unlimited |
+| Process Sandboxing | - | Basic | Full | + Container |
+| **Threat Detection (v0.18.8)** | | | | |
+| Attack Detection | - | Basic patterns | Full correlation | + ML hunting |
+| Incident Response | Manual | Semi-auto | Full playbooks | Custom workflows |
+| Threat Intelligence | - | - | Basic feeds | Full integration |
+| Forensic Collection | - | - | Basic | Full chain-of-custody |
 | Custom Alert Rules | - | - | 10 | Unlimited |
 
 ---
