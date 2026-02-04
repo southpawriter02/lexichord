@@ -47,6 +47,8 @@ This release hardens the RAG retrieval system with quality metrics infrastructur
 
 - **Caching Strategy (v0.5.8c)** — Multi-layer in-memory caching for search and context operations. Features `IQueryResultCache` with LRU+TTL eviction (MaxEntries=100, TTL=5min), `IContextExpansionCache` with session-scoped isolation, `CacheInvalidationHandler` for automatic invalidation on DocumentIndexedEvent/DocumentRemovedFromIndexEvent, and `CacheKeyGenerator` for deterministic SHA256 keys. Both caches use thread-safe concurrent data structures. Includes 44+ unit tests.
 
+- **Error Resilience (v0.5.8d)** — Polly-based resilience patterns for graceful degradation. Features `IResilientSearchService` with circuit breaker, retry with exponential backoff + jitter, and automatic fallback hierarchy (Hybrid → BM25 → Cache → Unavailable). Added `SearchHealthStatus` for dependency monitoring, `ResilientSearchResult` wrapper with degradation metadata, and `ResilienceOptions` for policy configuration. Includes 27 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                    | Status      |
@@ -54,7 +56,7 @@ This release hardens the RAG retrieval system with quality metrics infrastructur
 | [v0.5.8a](v0.5.x/LCS-CL-v058a.md) | Retrieval Quality Tests  | ✅ Complete |
 | [v0.5.8b](v0.5.x/LCS-CL-v058b.md) | Search Performance Tests | ✅ Complete |
 | [v0.5.8c](v0.5.x/LCS-CL-v058c.md) | Caching Strategy         | ✅ Complete |
-| v0.5.8d                          | Error Resilience         | 🔜 Planned  |
+| [v0.5.8d](v0.5.x/LCS-CL-v058d.md) | Error Resilience         | ✅ Complete |
 
 ---
 

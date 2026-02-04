@@ -602,6 +602,24 @@ public sealed class RAGModule : IModule
             sp => sp.GetRequiredService<CacheInvalidationHandler>());
         services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentRemovedFromIndexEvent>>(
             sp => sp.GetRequiredService<CacheInvalidationHandler>());
+
+        // =============================================================================
+        // v0.5.8d: Error Resilience
+        // =============================================================================
+
+        // LOGIC: Configure ResilienceOptions with defaults using Options pattern (v0.5.8d).
+        // Provides configuration for Polly resilience policies:
+        // - Retry: 3 attempts with exponential backoff + jitter
+        // - Timeout: 5 seconds per operation
+        // - Circuit Breaker: Opens after 5 failures, 30s break duration
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new ResilienceOptions()));
+
+        // LOGIC: Register ResilientSearchService as scoped (v0.5.8d).
+        // Decorates IHybridSearchService with resilience policies.
+        // Provides automatic fallback to BM25 when embedding API is unavailable.
+        // Falls back to cached results when database is unavailable.
+        // Circuit breaker prevents cascading failures during outages.
+        services.AddScoped<IResilientSearchService, Resilience.ResilientSearchService>();
     }
 
     /// <inheritdoc/>
