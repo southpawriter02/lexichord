@@ -522,6 +522,21 @@ public sealed class RAGModule : IModule
         // Thread-safe and stateless. Platform-agnostic output enables unit testing
         // without UI dependencies and potential reuse across UI frameworks.
         services.AddSingleton<Rendering.IHighlightRenderer, Rendering.HighlightRenderer>();
+
+        // =============================================================================
+        // v0.5.7b: Result Grouping (Document-Grouped Results)
+        // =============================================================================
+
+        // LOGIC: Register ResultGroupingService as singleton (v0.5.7b).
+        // Thread-safe and stateless — pure transformation from SearchResult to
+        // GroupedSearchResults. Groups hits by document path, calculates metadata,
+        // limits hits per group, and sorts groups according to ResultSortMode.
+        services.AddSingleton<IResultGroupingService, ResultGroupingService>();
+
+        // LOGIC: Register GroupedResultsViewModel as transient (v0.5.7b).
+        // Each grouped results display gets its own ViewModel for independent
+        // expansion state and sort mode management.
+        services.AddTransient<GroupedResultsViewModel>();
     }
 
     /// <inheritdoc/>

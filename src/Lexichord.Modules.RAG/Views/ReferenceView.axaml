@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lexichord.Modules.RAG.ViewModels"
              xmlns:views="using:Lexichord.Modules.RAG.Views"
+             xmlns:data="using:Lexichord.Modules.RAG.Data"
              xmlns:contracts="using:Lexichord.Abstractions.Contracts.RAG"
              mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="600"
              x:Class="Lexichord.Modules.RAG.Views.ReferenceView"
@@ -87,6 +88,18 @@
         <!-- No Results Style -->
         <Style Selector="Border.no-results">
             <Setter Property="Padding" Value="20" />
+        </Style>
+
+        <!-- v0.5.7a: Filter Chip Style -->
+        <Style Selector="Border.filter-chip">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="0,0,4,4" />
+        </Style>
+
+        <Style Selector="Border.filter-chip:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight1}" />
         </Style>
     </UserControl.Styles>
 
@@ -187,6 +200,44 @@
                                  FontSize="12" />
                     </StackPanel>
                 </Border>
+
+                <!-- v0.5.7a: Active Filter Chips Area -->
+                <ItemsControl ItemsSource="{Binding ActiveFilterChips}"
+                             IsVisible="{Binding HasActiveFilters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="data:FilterChip">
+                            <Border Classes="filter-chip">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="{Binding Label}"
+                                              FontSize="11"
+                                              VerticalAlignment="Center" />
+                                    <Button Padding="2"
+                                           Background="Transparent"
+                                           Command="{Binding $parent[UserControl].((vm:ReferenceViewModel)DataContext).RemoveFilterChipCommand}"
+                                           CommandParameter="{Binding}"
+                                           ToolTip.Tip="Remove filter">
+                                        <PathIcon Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                                 Width="10" Height="10" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- v0.5.7a: Clear All Filters Button -->
+                <Button Content="Clear all filters"
+                       FontSize="11"
+                       Padding="8,4"
+                       IsVisible="{Binding HasActiveFilters}"
+                       Command="{Binding ClearAllFiltersCommand}"
+                       HorizontalAlignment="Left"
+                       Background="Transparent" />
 
             </StackPanel>
         </Border>
