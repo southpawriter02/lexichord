@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.3] - 2026-02 (In Progress)
+
+### The Templates (Prompt Engineering)
+
+This release delivers the prompt templating infrastructure that enables structured, reusable AI prompts with variable substitution, validation, and context assembly.
+
+#### What's New
+
+- **Template Abstractions (v0.6.3a)** — Core abstractions for the prompt templating system in `Lexichord.Abstractions`. Added `IPromptTemplate` interface defining reusable prompt templates with system/user prompts, required/optional variables, and kebab-case template IDs. Added `IPromptRenderer` interface with `Render` for string substitution, `RenderMessages` for ChatMessage[] production, and `ValidateVariables` for pre-flight validation. Added `IContextInjector` interface for async context assembly from style rules, RAG context, and document state. Created `PromptTemplate` immutable record implementing `IPromptTemplate` with `Create` factory method, `AllVariables`/`VariableCount`/`HasVariable` computed properties. Added `RenderedPrompt` record with `EstimatedTokens` (4 chars/token approximation), `TotalCharacters`, and `WasFastRender` (under 10ms) computed properties. Added `TemplateVariable` record with `Required`/`Optional` factory methods and `HasDefaultValue`/`HasDescription` computed properties. Added `ValidationResult` record with `Success`/`WithWarnings`/`Failure` factory methods, `ThrowIfInvalid(templateId)`, `ErrorMessage`, and `HasWarnings`/`HasMissingVariables` computed properties. Added `ContextRequest` record with `ForUserInput`/`Full`/`StyleOnly`/`RAGOnly` factory methods, `MaxRAGChunks` default of 3, and `HasContextSources`/`HasDocumentContext`/`HasSelectedText`/`HasCursorPosition` computed properties. Added `TemplateValidationException` with `TemplateId` and `MissingVariables` properties for validation failure reporting. No external NuGet dependencies. Includes 85+ unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                        | Status      |
+| -------------------------------- | ---------------------------- | ----------- |
+| [v0.6.3a](v0.6.x/LCS-CL-v063a.md) | Template Abstractions        | ✅ Complete |
+
+---
+
 ## [v0.6.2] - 2026-02 (In Progress)
 
 ### The Providers (LLM Integrations)

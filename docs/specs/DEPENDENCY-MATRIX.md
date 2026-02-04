@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-01-31 (v0.13.x added)                                             |
+| **Last Updated** | 2026-02-04 (v0.6.3a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1114,6 +1114,30 @@
 | Enum           | Defined In | Module      | Purpose                            |
 | :------------- | :--------- | :---------- | :--------------------------------- |
 | `CircuitState` | v0.6.2c    | Modules.LLM | Circuit breaker state enum         |
+
+### 1.25 v0.6.3 Template Abstractions
+
+| Interface            | Defined In | Module       | Purpose                            |
+| :------------------- | :--------- | :----------- | :--------------------------------- |
+| `IPromptTemplate`    | v0.6.3a    | Abstractions | Reusable prompt template contract  |
+| `IPromptRenderer`    | v0.6.3a    | Abstractions | Template rendering contract        |
+| `IContextInjector`   | v0.6.3a    | Abstractions | Context assembly contract          |
+
+**New Records (v0.6.3):**
+
+| Record                | Defined In | Module       | Purpose                            |
+| :-------------------- | :--------- | :----------- | :--------------------------------- |
+| `PromptTemplate`      | v0.6.3a    | Abstractions | IPromptTemplate implementation     |
+| `RenderedPrompt`      | v0.6.3a    | Abstractions | Render output with messages        |
+| `TemplateVariable`    | v0.6.3a    | Abstractions | Variable metadata for templates    |
+| `ValidationResult`    | v0.6.3a    | Abstractions | Validation outcome record          |
+| `ContextRequest`      | v0.6.3a    | Abstractions | Context assembly request           |
+
+**New Exceptions (v0.6.3):**
+
+| Exception                    | Defined In | Module       | Purpose                            |
+| :--------------------------- | :--------- | :----------- | :--------------------------------- |
+| `TemplateValidationException`| v0.6.3a    | Abstractions | Template validation failure        |
 
 ## 2. MediatR Events Registry
 

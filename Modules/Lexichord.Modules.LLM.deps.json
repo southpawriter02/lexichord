@@ -18,11 +18,15 @@
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
           "Microsoft.Extensions.DependencyInjection": "9.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "9.0.0",
           "Microsoft.Extensions.Http": "9.0.0",
           "Microsoft.Extensions.Http.Polly": "9.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "Microsoft.Extensions.Options": "9.0.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "9.0.0",
+          "Microsoft.ML.Tokenizers": "0.22.0",
+          "Microsoft.ML.Tokenizers.Data.Cl100kBase": "0.22.0",
+          "Microsoft.ML.Tokenizers.Data.O200kBase": "0.22.0",
           "System.Text.Json": "9.0.0"
         },
         "runtime": {
@@ -131,6 +135,14 @@
           "lib/net8.0/FluentValidation.dll": {
             "assemblyVersion": "11.0.0.0",
             "fileVersion": "11.9.2.0"
+          }
+        }
+      },
+      "Google.Protobuf/3.27.1": {
+        "runtime": {
+          "lib/net5.0/Google.Protobuf.dll": {
+            "assemblyVersion": "3.27.1.0",
+            "fileVersion": "3.27.1.0"
           }
         }
       },
@@ -254,6 +266,14 @@
           }
         }
       },
+      "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions/9.0.0": {
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52903"
+          }
+        }
+      },
       "Microsoft.Extensions.Http/9.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "9.0.0",
@@ -339,6 +359,40 @@
           "lib/net9.0/Microsoft.Extensions.Primitives.dll": {
             "assemblyVersion": "9.0.0.0",
             "fileVersion": "9.0.24.52809"
+          }
+        }
+      },
+      "Microsoft.ML.Tokenizers/0.22.0": {
+        "dependencies": {
+          "Google.Protobuf": "3.27.1",
+          "System.Text.Json": "9.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.ML.Tokenizers.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "0.2200.24.56302"
+          }
+        }
+      },
+      "Microsoft.ML.Tokenizers.Data.Cl100kBase/0.22.0": {
+        "dependencies": {
+          "Microsoft.ML.Tokenizers": "0.22.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.ML.Tokenizers.Data.Cl100kBase.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "0.2200.24.56302"
+          }
+        }
+      },
+      "Microsoft.ML.Tokenizers.Data.O200kBase/0.22.0": {
+        "dependencies": {
+          "Microsoft.ML.Tokenizers": "0.22.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.ML.Tokenizers.Data.O200kBase.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "0.2200.24.56302"
           }
         }
       },
@@ -463,6 +517,13 @@
       "path": "fluentvalidation/11.9.2",
       "hashPath": "fluentvalidation.11.9.2.nupkg.sha512"
     },
+    "Google.Protobuf/3.27.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7IVz9TzhYCZ8qY0rPhXUnyJSXYdshUqmmxmTI763XmDDSJJFnyfKH43FFcMJu/CZgBcE98xlFztrKwhzcRkiPg==",
+      "path": "google.protobuf/3.27.1",
+      "hashPath": "google.protobuf.3.27.1.nupkg.sha512"
+    },
     "MediatR.Contracts/2.0.1": {
       "type": "package",
       "serviceable": true,
@@ -540,6 +601,13 @@
       "path": "microsoft.extensions.diagnostics.abstractions/9.0.0",
       "hashPath": "microsoft.extensions.diagnostics.abstractions.9.0.0.nupkg.sha512"
     },
+    "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-H1IbHm/MnUgEV0N07WrkPBIIoX7isP6IPaqUdZ3CwbMcUVDGIu+okamW28kyDRfIiZqbTbyHuNIkr4ZSHPyvDw==",
+      "path": "microsoft.extensions.diagnostics.healthchecks.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.diagnostics.healthchecks.abstractions.9.0.0.nupkg.sha512"
+    },
     "Microsoft.Extensions.Http/9.0.0": {
       "type": "package",
       "serviceable": true,
@@ -588,6 +656,27 @@
       "sha512": "sha512-N3qEBzmLMYiASUlKxxFIISP4AiwuPTHF5uCh+2CWSwwzAJiIYx0kBJsS30cp1nvhSySFAVi30jecD307jV+8Kg==",
       "path": "microsoft.extensions.primitives/9.0.0",
       "hashPath": "microsoft.extensions.primitives.9.0.0.nupkg.sha512"
+    },
+    "Microsoft.ML.Tokenizers/0.22.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a7UXmTZwJt9ph2C0SyREWjIwIQ3srJ/uSXVa3pwV7rgO51geQ/ggwTFXML14GWD7ACAKExlA2sQ/Bmxj2a+OoA==",
+      "path": "microsoft.ml.tokenizers/0.22.0",
+      "hashPath": "microsoft.ml.tokenizers.0.22.0.nupkg.sha512"
+    },
+    "Microsoft.ML.Tokenizers.Data.Cl100kBase/0.22.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GdE2Bcov/CugQLhAdXx7wg2g3SyqNSCdNgc0dOVbAxyOaZpZbj/vjWbM+1SvrbjTk21CNFZ1DEllRE8k5rvpQQ==",
+      "path": "microsoft.ml.tokenizers.data.cl100kbase/0.22.0",
+      "hashPath": "microsoft.ml.tokenizers.data.cl100kbase.0.22.0.nupkg.sha512"
+    },
+    "Microsoft.ML.Tokenizers.Data.O200kBase/0.22.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1Z6FaESzupd3vnd1E3TVenCr2upwpt/wjOjUCscFdshAfbI1grmdqHzbYs/bmxlOuWTlZDXEDssRrFRpW/0YQw==",
+      "path": "microsoft.ml.tokenizers.data.o200kbase/0.22.0",
+      "hashPath": "microsoft.ml.tokenizers.data.o200kbase.0.22.0.nupkg.sha512"
     },
     "Npgsql/9.0.2": {
       "type": "package",

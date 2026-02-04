@@ -4,8 +4,10 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Commands;
+using Lexichord.Abstractions.Contracts.Security;
 using Lexichord.Host.Infrastructure;
 using Lexichord.Host.Services;
+using Lexichord.Host.Services.Security;
 using Lexichord.Host.ViewModels;
 using Lexichord.Host.ViewModels.CommandPalette;
 using Lexichord.Infrastructure;
@@ -130,6 +132,11 @@ public static class HostServices
         services.AddSingleton<IThemeManager, ThemeManager>();
         services.AddSingleton<IWindowStateService, WindowStateService>();
         services.AddSingleton<ICrashReportService, CrashReportService>();
+
+        // LOGIC (v0.0.6): Register secure vault for credential storage
+        // Factory pattern allows platform-specific implementations (Windows DPAPI, Unix AES-256)
+        services.AddSingleton<ISecureVaultFactory, SecureVaultFactory>();
+        services.AddSingleton<ISecureVault>(sp => sp.GetRequiredService<ISecureVaultFactory>().CreateVault());
 
         // LOGIC (v0.1.6c): Register license service as singleton
         // License state is application-wide; ILicenseService extends ILicenseContext
