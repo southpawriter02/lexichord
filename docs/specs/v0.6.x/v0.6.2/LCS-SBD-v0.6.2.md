@@ -287,17 +287,19 @@ See [LCS-DES-062d](LCS-DES-062d.md) for full specification.
 - [x] Create unit tests for each policy
 - [ ] Create chaos engineering tests
 
-### 4.4 v0.6.2d: Token Counting Service
+### 4.4 v0.6.2d: Token Counting Service ✅ Complete
 
-- [ ] Define `ITokenCounter` interface in Abstractions
-- [ ] Implement `TokenCounter` with ML.Tokenizers
-- [ ] Load cl100k_base tokenizer for GPT models
-- [ ] Implement approximation for Anthropic models
-- [ ] Add message overhead calculation (role tokens)
-- [ ] Implement `EstimateResponseTokens` for cost prediction
-- [ ] Add caching for tokenizer instances
-- [ ] Add DI registration
-- [ ] Create unit tests for accuracy validation
+- [x] Define `ILLMTokenCounter` interface in LLM module
+- [x] Implement `LLMTokenCounter` with TokenizerCache and TokenizerFactory
+- [x] Load o200k_base tokenizer for GPT-4o models
+- [x] Load cl100k_base tokenizer for GPT-4/3.5 models
+- [x] Implement approximation for Anthropic models (~4 chars/token)
+- [x] Add message overhead calculation (4 tokens per message)
+- [x] Implement `EstimateResponseTokens` for cost prediction (60% heuristic)
+- [x] Add thread-safe tokenizer caching with model family normalization
+- [x] Implement `ModelTokenLimits` with context windows and pricing
+- [x] Add `AddTokenCounting()` DI registration extension
+- [x] Create unit tests (104 tests) for all components
 - [ ] Benchmark tokenization performance
 
 ---

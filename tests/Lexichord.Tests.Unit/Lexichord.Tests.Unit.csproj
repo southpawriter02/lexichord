@@ -87,6 +87,10 @@
     <PackageReference Include="Pgvector" Version="0.3.0" />
     <!-- v0.4.8d: Microsoft.Data.Sqlite for embedding cache tests -->
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+    <!-- v0.6.2d: ML Tokenizers and data packages for token counting tests -->
+    <PackageReference Include="Microsoft.ML.Tokenizers" Version="0.22.0" />
+    <PackageReference Include="Microsoft.ML.Tokenizers.Data.Cl100kBase" Version="0.22.0" />
+    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="0.22.0" />
   </ItemGroup>
 
   <ItemGroup>

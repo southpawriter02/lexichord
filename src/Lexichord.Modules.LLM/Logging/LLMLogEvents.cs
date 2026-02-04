@@ -30,6 +30,7 @@ namespace Lexichord.Modules.LLM.Logging;
 ///   <item><description>1600-1699: OpenAI Provider Events (v0.6.2a)</description></item>
 ///   <item><description>1700-1799: Anthropic Provider Events (v0.6.2b)</description></item>
 ///   <item><description>1800-1899: Resilience Policy Events (v0.6.2c)</description></item>
+///   <item><description>1900-1999: Token Counting Service Events (v0.6.2d)</description></item>
 /// </list>
 /// </remarks>
 internal static partial class LLMLogEvents
@@ -1181,4 +1182,168 @@ internal static partial class LLMLogEvents
         Level = LogLevel.Debug,
         Message = "Delay capped at maximum: calculated={CalculatedDelayMs}ms, max={MaxDelayMs}ms")]
     public static partial void ResilienceDelayCapped(ILogger logger, double calculatedDelayMs, double maxDelayMs);
+
+    // =========================================================================
+    // Token Counting Service Events (1900-1909) - v0.6.2d
+    // =========================================================================
+
+    /// <summary>
+    /// Logs when tokens are counted for plain text.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier.</param>
+    /// <param name="textLength">The length of the input text in characters.</param>
+    /// <param name="tokenCount">The counted token count.</param>
+    [LoggerMessage(
+        EventId = 1900,
+        Level = LogLevel.Trace,
+        Message = "Tokens counted for text: Model={Model}, TextLength={TextLength} chars, TokenCount={TokenCount}")]
+    public static partial void TokenCounterTextCounted(ILogger logger, string model, int textLength, int tokenCount);
+
+    /// <summary>
+    /// Logs when tokens are counted for chat messages.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier.</param>
+    /// <param name="messageCount">The number of messages.</param>
+    /// <param name="tokenCount">The total token count including overhead.</param>
+    [LoggerMessage(
+        EventId = 1901,
+        Level = LogLevel.Debug,
+        Message = "Tokens counted for messages: Model={Model}, Messages={MessageCount}, TokenCount={TokenCount}")]
+    public static partial void TokenCounterMessagesCounted(ILogger logger, string model, int messageCount, int tokenCount);
+
+    /// <summary>
+    /// Logs response token estimation.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="promptTokens">The number of prompt tokens.</param>
+    /// <param name="maxTokens">The maximum tokens requested.</param>
+    /// <param name="estimatedTokens">The estimated response tokens.</param>
+    [LoggerMessage(
+        EventId = 1902,
+        Level = LogLevel.Debug,
+        Message = "Response tokens estimated: PromptTokens={PromptTokens}, MaxTokens={MaxTokens}, Estimated={EstimatedTokens}")]
+    public static partial void TokenCounterResponseEstimated(ILogger logger, int promptTokens, int maxTokens, int estimatedTokens);
+
+    /// <summary>
+    /// Logs cost calculation.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier.</param>
+    /// <param name="inputTokens">The number of input tokens.</param>
+    /// <param name="outputTokens">The number of output tokens.</param>
+    /// <param name="cost">The calculated cost in USD.</param>
+    [LoggerMessage(
+        EventId = 1903,
+        Level = LogLevel.Debug,
+        Message = "Cost calculated: Model={Model}, InputTokens={InputTokens}, OutputTokens={OutputTokens}, Cost=${Cost}")]
+    public static partial void TokenCounterCostCalculated(ILogger logger, string model, int inputTokens, int outputTokens, decimal cost);
+
+    /// <summary>
+    /// Logs when a tokenizer is created for a known model.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier.</param>
+    /// <param name="encoding">The tokenizer encoding (e.g., "o200k_base", "cl100k_base", "approximation").</param>
+    /// <param name="isExact">Whether the tokenizer provides exact counts.</param>
+    [LoggerMessage(
+        EventId = 1904,
+        Level = LogLevel.Debug,
+        Message = "Tokenizer created: Model={Model}, Encoding={Encoding}, IsExact={IsExact}")]
+    public static partial void TokenizerCreated(ILogger logger, string model, string encoding, bool isExact);
+
+    /// <summary>
+    /// Logs when a tokenizer is created for an unknown model (uses approximation).
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The unknown model identifier.</param>
+    [LoggerMessage(
+        EventId = 1905,
+        Level = LogLevel.Warning,
+        Message = "Tokenizer created for unknown model '{Model}' - using approximation")]
+    public static partial void TokenizerCreatedUnknownModel(ILogger logger, string model);
+
+    /// <summary>
+    /// Logs a tokenizer cache hit.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="cacheKey">The cache key that was hit.</param>
+    [LoggerMessage(
+        EventId = 1906,
+        Level = LogLevel.Trace,
+        Message = "Tokenizer cache hit: Key={CacheKey}")]
+    public static partial void TokenizerCacheHit(ILogger logger, string cacheKey);
+
+    /// <summary>
+    /// Logs when a tokenizer is being created and cached.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="cacheKey">The cache key for the new tokenizer.</param>
+    /// <param name="model">The original model identifier.</param>
+    [LoggerMessage(
+        EventId = 1907,
+        Level = LogLevel.Debug,
+        Message = "Tokenizer cache creating: Key={CacheKey}, Model={Model}")]
+    public static partial void TokenizerCacheCreating(ILogger logger, string cacheKey, string model);
+
+    /// <summary>
+    /// Logs when the tokenizer cache is cleared.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="entriesCleared">The number of entries that were cleared.</param>
+    [LoggerMessage(
+        EventId = 1908,
+        Level = LogLevel.Information,
+        Message = "Tokenizer cache cleared: {EntriesCleared} entries removed")]
+    public static partial void TokenizerCacheCleared(ILogger logger, int entriesCleared);
+
+    /// <summary>
+    /// Logs when pricing data is not found for a model.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier without pricing data.</param>
+    [LoggerMessage(
+        EventId = 1909,
+        Level = LogLevel.Debug,
+        Message = "Model pricing not found: Model={Model}")]
+    public static partial void TokenCounterPricingNotFound(ILogger logger, string model);
+
+    /// <summary>
+    /// Logs details about individual message token counting.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="messageIndex">The message index (1-based).</param>
+    /// <param name="role">The message role.</param>
+    /// <param name="contentTokens">The number of content tokens.</param>
+    /// <param name="overheadTokens">The overhead tokens added.</param>
+    [LoggerMessage(
+        EventId = 1910,
+        Level = LogLevel.Trace,
+        Message = "Message {MessageIndex} ({Role}): ContentTokens={ContentTokens}, Overhead={OverheadTokens}")]
+    public static partial void TokenCounterMessageDetail(ILogger logger, int messageIndex, string role, int contentTokens, int overheadTokens);
+
+    /// <summary>
+    /// Logs when a model limit is queried.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier.</param>
+    /// <param name="limit">The context window limit.</param>
+    [LoggerMessage(
+        EventId = 1911,
+        Level = LogLevel.Trace,
+        Message = "Model limit queried: Model={Model}, Limit={Limit}")]
+    public static partial void TokenCounterModelLimitQueried(ILogger logger, string model, int limit);
+
+    /// <summary>
+    /// Logs when max output tokens is queried.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="model">The model identifier.</param>
+    /// <param name="maxOutput">The maximum output tokens.</param>
+    [LoggerMessage(
+        EventId = 1912,
+        Level = LogLevel.Trace,
+        Message = "Max output tokens queried: Model={Model}, MaxOutput={MaxOutput}")]
+    public static partial void TokenCounterMaxOutputQueried(ILogger logger, string model, int maxOutput);
 }

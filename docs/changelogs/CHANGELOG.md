@@ -20,6 +20,8 @@ This release delivers production-ready LLM provider integrations, implementing t
 
 - **Retry Policy Implementation (v0.6.2c)** — Centralized Polly-based resilience infrastructure for LLM providers. Added `ResilienceOptions` configuration record with 8 tunable parameters (RetryCount, RetryBaseDelaySeconds, RetryMaxDelaySeconds, CircuitBreakerThreshold, CircuitBreakerDurationSeconds, TimeoutSeconds, BulkheadMaxConcurrency, BulkheadMaxQueue) and 3 static presets (Default, Aggressive, Minimal). Created `IResiliencePipeline` interface with `ExecuteAsync`, `CircuitState` property, and `OnPolicyEvent` for telemetry. Implemented `LLMResiliencePipeline` wrapping 4 policy layers: Bulkhead (concurrency limiting), Timeout (per-request limits), Circuit Breaker (fail-fast during outages), and Retry (transient error recovery with exponential backoff + jitter). Added `ResiliencePolicyBuilder` for constructing policies with logging callbacks. Created `ResilienceTelemetry` for metrics collection (success/failure counts, retry counts, circuit breaker opens/resets, latency percentiles P50/P90/P99). Added `LLMCircuitBreakerHealthCheck` implementing `IHealthCheck` (Healthy=Closed, Degraded=HalfOpen, Unhealthy=Open/Isolated). Refactored `OpenAIServiceCollectionExtensions` and `AnthropicServiceCollectionExtensions` to use centralized `AddLLMResiliencePolicies()` extension. Includes 19 new structured log events (1800-1819 range). Includes ~160 unit tests.
 
+- **Token Counting Service (v0.6.2d)** — Comprehensive token counting service with model-specific tokenization. Added `ILLMTokenCounter` interface for text/message token counting, response estimation (60% of max tokens heuristic), context window queries, cost estimation, and tokenizer accuracy check. Implemented `LLMTokenCounter` with internal abstraction layer: `ITokenizer` interface, `MlTokenizerWrapper` using Microsoft.ML.Tokenizers for exact GPT tokenization (o200k_base for GPT-4o, cl100k_base for GPT-4/3.5), and `ApproximateTokenizer` for Claude models (~4 chars/token). Added `TokenizerFactory` for model-specific tokenizer creation and `TokenizerCache` with thread-safe `ConcurrentDictionary<string, Lazy<ITokenizer>>` for efficient instance reuse. Created `ModelTokenLimits` static class with context windows and pricing data for 9 models (GPT-4o, GPT-4o-mini, GPT-4-turbo, GPT-4, GPT-3.5-turbo, Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Sonnet, Claude 3 Haiku). Added `AddTokenCounting()` DI extension. Includes 13 new structured log events (1900-1912 range). Includes ~104 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -27,7 +29,7 @@ This release delivers production-ready LLM provider integrations, implementing t
 | [v0.6.2a](v0.6.x/LCS-CL-v062a.md) | OpenAI Connector            | ✅ Complete |
 | [v0.6.2b](v0.6.x/LCS-CL-v062b.md) | Anthropic Connector          | ✅ Complete |
 | [v0.6.2c](v0.6.x/LCS-CL-v062c.md) | Retry Policy Implementation  | ✅ Complete |
-| v0.6.2d                          | Token Counting Service       | 🔜 Planned  |
+| [v0.6.2d](v0.6.x/LCS-CL-v062d.md) | Token Counting Service       | ✅ Complete |
 
 ---
 

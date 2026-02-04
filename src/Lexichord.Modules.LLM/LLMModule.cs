@@ -51,6 +51,7 @@ namespace Lexichord.Modules.LLM;
 ///   <item><description><see cref="ChatOptionsResolver"/>: Options resolution pipeline</description></item>
 ///   <item><description><see cref="ProviderAwareChatOptionsValidatorFactory"/>: Provider-specific validation</description></item>
 ///   <item><description><see cref="LLMProviderRegistry"/>: Provider registration and management (v0.6.1c)</description></item>
+///   <item><description><see cref="TokenCounting.ILLMTokenCounter"/>: Model-specific token counting and cost estimation (v0.6.2d)</description></item>
 /// </list>
 /// </remarks>
 public class LLMModule : IModule
@@ -61,7 +62,7 @@ public class LLMModule : IModule
         Name: "LLM Gateway",
         Version: new Version(0, 6, 2),
         Author: "Lexichord Team",
-        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, provider registry, OpenAI connector, Anthropic connector, and centralized resilience policies");
+        Description: "LLM provider abstraction layer with chat options configuration, validation, model discovery, provider registry, OpenAI connector, Anthropic connector, centralized resilience policies, and token counting service");
 
     /// <inheritdoc />
     public void RegisterServices(IServiceCollection services)
@@ -110,6 +111,11 @@ public class LLMModule : IModule
         // ISettingsPage implementations are discovered by the settings service
         // and should remain stable throughout the application lifecycle.
         services.AddSingleton<ISettingsPage, LLMSettingsPage>();
+
+        // LOGIC: Register token counting service (v0.6.2d).
+        // This adds ILLMTokenCounter with model-specific tokenization and cost estimation.
+        // TokenizerCache and TokenizerFactory are registered as singletons for efficiency.
+        services.AddTokenCounting();
 
         // LOGIC: Register centralized resilience services (v0.6.2c).
         // This adds ResilienceOptions, IResiliencePipeline, and ResilienceTelemetry
