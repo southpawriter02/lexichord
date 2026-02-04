@@ -1,0 +1,536 @@
+[
+    {
+        "queryId": "Q001",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440001",
+            "550e8400-e29b-41d4-a716-446655440002"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440001",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440001": 3,
+            "550e8400-e29b-41d4-a716-446655440002": 2
+        }
+    },
+    {
+        "queryId": "Q002",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440003",
+            "550e8400-e29b-41d4-a716-446655440004"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440003",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440003": 3,
+            "550e8400-e29b-41d4-a716-446655440004": 2
+        }
+    },
+    {
+        "queryId": "Q003",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440005",
+            "550e8400-e29b-41d4-a716-446655440006",
+            "550e8400-e29b-41d4-a716-446655440007"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440005",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440005": 3,
+            "550e8400-e29b-41d4-a716-446655440006": 2,
+            "550e8400-e29b-41d4-a716-446655440007": 2
+        }
+    },
+    {
+        "queryId": "Q004",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440008"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440008",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440008": 3
+        }
+    },
+    {
+        "queryId": "Q005",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440009"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440009",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440009": 3
+        }
+    },
+    {
+        "queryId": "Q006",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440010"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440010",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440010": 3
+        }
+    },
+    {
+        "queryId": "Q007",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440011",
+            "550e8400-e29b-41d4-a716-446655440012"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440011",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440011": 3,
+            "550e8400-e29b-41d4-a716-446655440012": 2
+        }
+    },
+    {
+        "queryId": "Q008",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440013"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440013",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440013": 3
+        }
+    },
+    {
+        "queryId": "Q009",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440014",
+            "550e8400-e29b-41d4-a716-446655440015"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440014",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440014": 3,
+            "550e8400-e29b-41d4-a716-446655440015": 1
+        }
+    },
+    {
+        "queryId": "Q010",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440016",
+            "550e8400-e29b-41d4-a716-446655440017"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440016",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440016": 3,
+            "550e8400-e29b-41d4-a716-446655440017": 2
+        }
+    },
+    {
+        "queryId": "Q011",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440018"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440018",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440018": 3
+        }
+    },
+    {
+        "queryId": "Q012",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440019"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440019",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440019": 3
+        }
+    },
+    {
+        "queryId": "Q013",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440020"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440020",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440020": 3
+        }
+    },
+    {
+        "queryId": "Q014",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440021"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440021",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440021": 3
+        }
+    },
+    {
+        "queryId": "Q015",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440022",
+            "550e8400-e29b-41d4-a716-446655440023"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440022",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440022": 3,
+            "550e8400-e29b-41d4-a716-446655440023": 2
+        }
+    },
+    {
+        "queryId": "Q016",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440024"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440024",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440024": 3
+        }
+    },
+    {
+        "queryId": "Q017",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440025"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440025",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440025": 3
+        }
+    },
+    {
+        "queryId": "Q018",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440026",
+            "550e8400-e29b-41d4-a716-446655440027"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440026",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440026": 3,
+            "550e8400-e29b-41d4-a716-446655440027": 1
+        }
+    },
+    {
+        "queryId": "Q019",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440028"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440028",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440028": 3
+        }
+    },
+    {
+        "queryId": "Q020",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440029"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440029",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440029": 3
+        }
+    },
+    {
+        "queryId": "Q021",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440030"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440030",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440030": 3
+        }
+    },
+    {
+        "queryId": "Q022",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440031",
+            "550e8400-e29b-41d4-a716-446655440032"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440031",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440031": 3,
+            "550e8400-e29b-41d4-a716-446655440032": 2
+        }
+    },
+    {
+        "queryId": "Q023",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440033"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440033",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440033": 3
+        }
+    },
+    {
+        "queryId": "Q024",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440034"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440034",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440034": 3
+        }
+    },
+    {
+        "queryId": "Q025",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440035"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440035",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440035": 3
+        }
+    },
+    {
+        "queryId": "Q026",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440036"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440036",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440036": 3
+        }
+    },
+    {
+        "queryId": "Q027",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440037",
+            "550e8400-e29b-41d4-a716-446655440038"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440037",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440037": 3,
+            "550e8400-e29b-41d4-a716-446655440038": 2
+        }
+    },
+    {
+        "queryId": "Q028",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440039"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440039",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440039": 3
+        }
+    },
+    {
+        "queryId": "Q029",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440040"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440040",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440040": 3
+        }
+    },
+    {
+        "queryId": "Q030",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440041"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440041",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440041": 3
+        }
+    },
+    {
+        "queryId": "Q031",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440042"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440042",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440042": 3
+        }
+    },
+    {
+        "queryId": "Q032",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440043",
+            "550e8400-e29b-41d4-a716-446655440044"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440043",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440043": 3,
+            "550e8400-e29b-41d4-a716-446655440044": 1
+        }
+    },
+    {
+        "queryId": "Q033",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440045"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440045",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440045": 3
+        }
+    },
+    {
+        "queryId": "Q034",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440046"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440046",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440046": 3
+        }
+    },
+    {
+        "queryId": "Q035",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440047"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440047",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440047": 3
+        }
+    },
+    {
+        "queryId": "Q036",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440048"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440048",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440048": 3
+        }
+    },
+    {
+        "queryId": "Q037",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440049",
+            "550e8400-e29b-41d4-a716-446655440050"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440049",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440049": 3,
+            "550e8400-e29b-41d4-a716-446655440050": 2
+        }
+    },
+    {
+        "queryId": "Q038",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440051"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440051",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440051": 3
+        }
+    },
+    {
+        "queryId": "Q039",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440052"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440052",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440052": 3
+        }
+    },
+    {
+        "queryId": "Q040",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440053"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440053",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440053": 3
+        }
+    },
+    {
+        "queryId": "Q041",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440054",
+            "550e8400-e29b-41d4-a716-446655440055"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440054",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440054": 3,
+            "550e8400-e29b-41d4-a716-446655440055": 2
+        }
+    },
+    {
+        "queryId": "Q042",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440056"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440056",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440056": 3
+        }
+    },
+    {
+        "queryId": "Q043",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440057"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440057",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440057": 3
+        }
+    },
+    {
+        "queryId": "Q044",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440058"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440058",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440058": 3
+        }
+    },
+    {
+        "queryId": "Q045",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440059",
+            "550e8400-e29b-41d4-a716-446655440060"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440059",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440059": 3,
+            "550e8400-e29b-41d4-a716-446655440060": 2
+        }
+    },
+    {
+        "queryId": "Q046",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440061"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440061",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440061": 3
+        }
+    },
+    {
+        "queryId": "Q047",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440062",
+            "550e8400-e29b-41d4-a716-446655440063"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440062",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440062": 3,
+            "550e8400-e29b-41d4-a716-446655440063": 2
+        }
+    },
+    {
+        "queryId": "Q048",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440064"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440064",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440064": 3
+        }
+    },
+    {
+        "queryId": "Q049",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440065"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440065",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440065": 3
+        }
+    },
+    {
+        "queryId": "Q050",
+        "relevantChunkIds": [
+            "550e8400-e29b-41d4-a716-446655440066",
+            "550e8400-e29b-41d4-a716-446655440067"
+        ],
+        "primaryRelevant": "550e8400-e29b-41d4-a716-446655440066",
+        "relevanceScores": {
+            "550e8400-e29b-41d4-a716-446655440066": 3,
+            "550e8400-e29b-41d4-a716-446655440067": 2
+        }
+    }
+]

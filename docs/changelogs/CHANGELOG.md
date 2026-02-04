@@ -33,6 +33,27 @@ This release introduces a keyboard-centric Reference Panel experience with dismi
 
 ---
 
+## [v0.5.8] - 2026-02 (In Progress)
+
+### The Hardening (Quality & Performance)
+
+This release hardens the RAG retrieval system with quality metrics infrastructure, performance profiling, and comprehensive testing.
+
+#### What's New
+
+- **Retrieval Quality Tests (v0.5.8a)** — Comprehensive test infrastructure for measuring retrieval accuracy. Includes curated test corpus (50 queries across 5 categories and 3 difficulty levels), `IRetrievalMetricsCalculator` interface with P@K, R@K, F1@K, MRR, NDCG@K metrics, `QualityReport` generation with category/difficulty stratification, and gold-standard relevance judgments. Includes 24 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                    | Status      |
+| -------------------------------- | ------------------------ | ----------- |
+| [v0.5.8a](v0.5.x/LCS-CL-v058a.md) | Retrieval Quality Tests  | ✅ Complete |
+| v0.5.8b                          | Integration Quality Tests| 🔜 Planned  |
+| v0.5.8c                          | Performance Benchmarks   | 🔜 Planned  |
+| v0.5.8d                          | Baseline Documentation   | 🔜 Planned  |
+
+---
+
 ## [v0.5.6] - 2026-02 (In Progress)
 
 ### The Answer Preview (Snippet Generation)

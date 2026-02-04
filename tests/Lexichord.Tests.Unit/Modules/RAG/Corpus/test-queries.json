@@ -1,0 +1,352 @@
+[
+    {
+        "id": "Q001",
+        "query": "What is dependency injection?",
+        "category": "conceptual",
+        "difficulty": "easy",
+        "description": "Basic DI concept explanation"
+    },
+    {
+        "id": "Q002",
+        "query": "How to configure database connection string",
+        "category": "procedural",
+        "difficulty": "easy",
+        "description": "Configuration setup for databases"
+    },
+    {
+        "id": "Q003",
+        "query": "JWT authentication vs OAuth2",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "Compare authentication approaches"
+    },
+    {
+        "id": "Q004",
+        "query": "API returns 500 error on POST",
+        "category": "troubleshoot",
+        "difficulty": "medium",
+        "description": "Debug HTTP 500 errors"
+    },
+    {
+        "id": "Q005",
+        "query": "What HTTP status code for resource not found",
+        "category": "factual",
+        "difficulty": "easy",
+        "description": "Basic HTTP status code"
+    },
+    {
+        "id": "Q006",
+        "query": "Difference between PUT and PATCH",
+        "category": "comparative",
+        "difficulty": "easy",
+        "description": "HTTP method semantics"
+    },
+    {
+        "id": "Q007",
+        "query": "How to implement caching with Redis",
+        "category": "procedural",
+        "difficulty": "medium",
+        "description": "Redis caching implementation"
+    },
+    {
+        "id": "Q008",
+        "query": "What is the singleton pattern",
+        "category": "conceptual",
+        "difficulty": "easy",
+        "description": "Design pattern explanation"
+    },
+    {
+        "id": "Q009",
+        "query": "Memory leak in async method",
+        "category": "troubleshoot",
+        "difficulty": "hard",
+        "description": "Debug async memory issues"
+    },
+    {
+        "id": "Q010",
+        "query": "REST vs GraphQL performance",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "API architecture comparison"
+    },
+    {
+        "id": "Q011",
+        "query": "Configure Entity Framework migrations",
+        "category": "procedural",
+        "difficulty": "medium",
+        "description": "EF Core migration setup"
+    },
+    {
+        "id": "Q012",
+        "query": "What is SOLID principles",
+        "category": "conceptual",
+        "difficulty": "easy",
+        "description": "OOP design principles"
+    },
+    {
+        "id": "Q013",
+        "query": "Connection timeout exceptions in PostgreSQL",
+        "category": "troubleshoot",
+        "difficulty": "medium",
+        "description": "Database connectivity issues"
+    },
+    {
+        "id": "Q014",
+        "query": "Default HTTP port number",
+        "category": "factual",
+        "difficulty": "easy",
+        "description": "Basic networking fact"
+    },
+    {
+        "id": "Q015",
+        "query": "SQL Server vs PostgreSQL feature comparison",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "Database system comparison"
+    },
+    {
+        "id": "Q016",
+        "query": "How to set up Docker container for .NET app",
+        "category": "procedural",
+        "difficulty": "medium",
+        "description": "Docker deployment setup"
+    },
+    {
+        "id": "Q017",
+        "query": "What is microservices architecture",
+        "category": "conceptual",
+        "difficulty": "medium",
+        "description": "Architecture pattern explanation"
+    },
+    {
+        "id": "Q018",
+        "query": "Race condition in concurrent code",
+        "category": "troubleshoot",
+        "difficulty": "hard",
+        "description": "Debug threading issues"
+    },
+    {
+        "id": "Q019",
+        "query": "Maximum HTTP header size",
+        "category": "factual",
+        "difficulty": "medium",
+        "description": "HTTP specification fact"
+    },
+    {
+        "id": "Q020",
+        "query": "IEnumerable vs IQueryable performance difference",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "LINQ query type comparison"
+    },
+    {
+        "id": "Q021",
+        "query": "How to implement rate limiting in ASP.NET",
+        "category": "procedural",
+        "difficulty": "medium",
+        "description": "API rate limiting setup"
+    },
+    {
+        "id": "Q022",
+        "query": "What is event sourcing",
+        "category": "conceptual",
+        "difficulty": "hard",
+        "description": "Advanced architecture pattern"
+    },
+    {
+        "id": "Q023",
+        "query": "Deadlock in database transactions",
+        "category": "troubleshoot",
+        "difficulty": "hard",
+        "description": "Debug database locking"
+    },
+    {
+        "id": "Q024",
+        "query": "What is CORS",
+        "category": "factual",
+        "difficulty": "easy",
+        "description": "Cross-origin resource sharing"
+    },
+    {
+        "id": "Q025",
+        "query": "Async await vs Task.Run comparison",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "Async patterns comparison"
+    },
+    {
+        "id": "Q026",
+        "query": "How to implement health checks in ASP.NET Core",
+        "category": "procedural",
+        "difficulty": "easy",
+        "description": "Health check endpoint setup"
+    },
+    {
+        "id": "Q027",
+        "query": "What is CQRS pattern",
+        "category": "conceptual",
+        "difficulty": "hard",
+        "description": "Command query separation"
+    },
+    {
+        "id": "Q028",
+        "query": "SSL certificate validation failure",
+        "category": "troubleshoot",
+        "difficulty": "medium",
+        "description": "HTTPS certificate issues"
+    },
+    {
+        "id": "Q029",
+        "query": "What is idempotency",
+        "category": "factual",
+        "difficulty": "medium",
+        "description": "API design concept"
+    },
+    {
+        "id": "Q030",
+        "query": "Scoped vs Transient vs Singleton lifetime",
+        "category": "comparative",
+        "difficulty": "easy",
+        "description": "DI lifetime comparison"
+    },
+    {
+        "id": "Q031",
+        "query": "How to configure Serilog structured logging",
+        "category": "procedural",
+        "difficulty": "medium",
+        "description": "Logging framework setup"
+    },
+    {
+        "id": "Q032",
+        "query": "What is eventual consistency",
+        "category": "conceptual",
+        "difficulty": "hard",
+        "description": "Distributed systems concept"
+    },
+    {
+        "id": "Q033",
+        "query": "High CPU usage in production",
+        "category": "troubleshoot",
+        "difficulty": "hard",
+        "description": "Performance troubleshooting"
+    },
+    {
+        "id": "Q034",
+        "query": "What is the CAP theorem",
+        "category": "factual",
+        "difficulty": "hard",
+        "description": "Distributed systems theorem"
+    },
+    {
+        "id": "Q035",
+        "query": "Repository pattern vs direct DbContext",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "Data access pattern comparison"
+    },
+    {
+        "id": "Q036",
+        "query": "How to implement background jobs with Hangfire",
+        "category": "procedural",
+        "difficulty": "medium",
+        "description": "Background job setup"
+    },
+    {
+        "id": "Q037",
+        "query": "What is domain-driven design",
+        "category": "conceptual",
+        "difficulty": "hard",
+        "description": "DDD methodology"
+    },
+    {
+        "id": "Q038",
+        "query": "Out of memory exception in large file processing",
+        "category": "troubleshoot",
+        "difficulty": "hard",
+        "description": "Memory management issues"
+    },
+    {
+        "id": "Q039",
+        "query": "What HTTP method is idempotent",
+        "category": "factual",
+        "difficulty": "easy",
+        "description": "HTTP idempotency"
+    },
+    {
+        "id": "Q040",
+        "query": "MediatR vs direct method calls",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "Mediator pattern comparison"
+    },
+    {
+        "id": "Q041",
+        "query": "How to set up CI/CD pipeline for .NET",
+        "category": "procedural",
+        "difficulty": "hard",
+        "description": "DevOps pipeline setup"
+    },
+    {
+        "id": "Q042",
+        "query": "What is the circuit breaker pattern",
+        "category": "conceptual",
+        "difficulty": "medium",
+        "description": "Resilience pattern"
+    },
+    {
+        "id": "Q043",
+        "query": "Intermittent test failures in parallel tests",
+        "category": "troubleshoot",
+        "difficulty": "hard",
+        "description": "Test flakiness debugging"
+    },
+    {
+        "id": "Q044",
+        "query": "Default ASP.NET Core Kestrel port",
+        "category": "factual",
+        "difficulty": "easy",
+        "description": "ASP.NET configuration"
+    },
+    {
+        "id": "Q045",
+        "query": "xUnit vs NUnit vs MSTest",
+        "category": "comparative",
+        "difficulty": "easy",
+        "description": "Test framework comparison"
+    },
+    {
+        "id": "Q046",
+        "query": "How to implement API versioning",
+        "category": "procedural",
+        "difficulty": "easy",
+        "description": "API versioning strategy"
+    },
+    {
+        "id": "Q047",
+        "query": "What is the outbox pattern",
+        "category": "conceptual",
+        "difficulty": "hard",
+        "description": "Messaging reliability pattern"
+    },
+    {
+        "id": "Q048",
+        "query": "NullReferenceException in async code",
+        "category": "troubleshoot",
+        "difficulty": "medium",
+        "description": "Common null reference issues"
+    },
+    {
+        "id": "Q049",
+        "query": "What is the strangler fig pattern",
+        "category": "factual",
+        "difficulty": "hard",
+        "description": "Migration pattern"
+    },
+    {
+        "id": "Q050",
+        "query": "Dapper vs Entity Framework performance",
+        "category": "comparative",
+        "difficulty": "medium",
+        "description": "ORM performance comparison"
+    }
+]
