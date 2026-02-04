@@ -662,6 +662,23 @@ public sealed class RAGModule : IModule
         // Provides atomic operations for canonical records, variant merging,
         // promotion, detachment, and provenance tracking.
         services.AddScoped<ICanonicalManager, Services.CanonicalManager>();
+
+        // =============================================================================
+        // v0.5.9d: Deduplication Service
+        // =============================================================================
+
+        // LOGIC: Configure DeduplicationOptions with defaults using Options pattern (v0.5.9d).
+        // Provides configuration for deduplication thresholds and behavior:
+        // - SimilarityThreshold: 0.85 (balanced for duplicate detection)
+        // - AutoMergeThreshold: 0.95 (conservative for automatic merging)
+        // - EnableManualReviewQueue: true (queue ambiguous cases for admin review)
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(DeduplicationOptions.Default));
+
+        // LOGIC: Register DeduplicationService as scoped (v0.5.9d).
+        // Scoped to align with ISimilarityDetector, IRelationshipClassifier,
+        // ICanonicalManager, and IChunkRepository lifetimes.
+        // Orchestrates the full deduplication pipeline during chunk ingestion.
+        services.AddScoped<IDeduplicationService, Services.DeduplicationService>();
     }
 
     /// <inheritdoc/>

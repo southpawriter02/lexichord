@@ -47,6 +47,8 @@ This release establishes the infrastructure for detecting and consolidating near
 
 - **Canonical Record Management (v0.5.9c)** — Data model and service layer for tracking authoritative chunks and merged duplicates. Added `ICanonicalManager` interface with CRUD operations for canonical records, variant merging, promotion, detachment, and provenance tracking. Features atomic database transactions, 4 MediatR events (`CanonicalRecordCreatedEvent`, `ChunkDeduplicatedEvent`, `VariantPromotedEvent`, `VariantDetachedEvent`), and license gating for Writer Pro. Includes `CanonicalRecord`, `ChunkVariant`, `ChunkProvenance` records and database migration for 3 new tables. Includes 24 unit tests.
 
+- **Deduplication Service (v0.5.9d)** — Central orchestrator for the full deduplication pipeline during chunk ingestion. Added `IDeduplicationService` interface with `ProcessChunkAsync` for automatic deduplication, `FindDuplicatesAsync` for preview/dry-run, `ProcessManualDecisionAsync` for review queue handling, and `GetPendingReviewsAsync` for admin access. Features license gating bypass for unlicensed users, configurable thresholds via `DeduplicationOptions`, routing logic for all relationship types (merge, link, flag, queue), and manual review queue. Includes 8 data contracts (`DeduplicationAction`, `DeduplicationResult`, `DeduplicationOptions`, `DuplicateCandidate`, `ManualMergeDecision`, `ManualDecisionType`, `PendingReview`, `IDeduplicationService`) and database migration for pending_reviews table. Includes 23 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                        | Status      |
@@ -54,7 +56,7 @@ This release establishes the infrastructure for detecting and consolidating near
 | [v0.5.9a](v0.5.x/LCS-CL-v059a.md) | Similarity Detection         | ✅ Complete |
 | [v0.5.9b](v0.5.x/LCS-CL-v059b.md) | Relationship Classification  | ✅ Complete |
 | [v0.5.9c](v0.5.x/LCS-CL-v059c.md) | Canonical Record Management  | ✅ Complete |
-| v0.5.9d                          | Deduplication Orchestrator   | 🔲 Planned  |
+| [v0.5.9d](v0.5.x/LCS-CL-v059d.md) | Deduplication Service        | ✅ Complete |
 
 ---
 

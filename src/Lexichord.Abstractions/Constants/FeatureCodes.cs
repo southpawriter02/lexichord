@@ -250,5 +250,17 @@ public static class FeatureCodes
     /// </remarks>
     public const string SemanticDeduplication = "Feature.SemanticDeduplication";
 
+    /// <summary>
+    /// The Deduplication Service feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the main deduplication orchestrator service.
+    /// When this feature is not enabled, ProcessChunkAsync bypasses deduplication
+    /// and returns StoredAsNew without performing any checks.
+    /// Introduced in v0.5.9d.
+    /// </remarks>
+    public const string DeduplicationService = "RAG.Dedup.Service";
+
     #endregion
 }
