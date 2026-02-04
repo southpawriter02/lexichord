@@ -562,6 +562,46 @@ public sealed class RAGModule : IModule
         // formatted output and IEditorService for document navigation.
         // License-gated: Export and CitationFormatted copy require Writer Pro.
         services.AddSingleton<ISearchActionsService, SearchActionsService>();
+
+        // =============================================================================
+        // v0.5.8c: Multi-Layer Caching System
+        // =============================================================================
+
+        // LOGIC: Configure QueryCacheOptions with defaults using Options pattern (v0.5.8c).
+        // Provides in-memory caching for search results with LRU+TTL eviction.
+        // MaxEntries=100, TTL=5 minutes by default.
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new QueryCacheOptions()));
+
+        // LOGIC: Configure ContextCacheOptions with defaults using Options pattern (v0.5.8c).
+        // Provides session-scoped caching for context expansion results.
+        // MaxEntriesPerSession=50 by default.
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new ContextCacheOptions()));
+
+        // LOGIC: Register CacheKeyGenerator as singleton (v0.5.8c).
+        // Generates deterministic SHA256 cache keys from query text, options, and filters.
+        // Thread-safe and stateless.
+        services.AddSingleton<CacheKeyGenerator>();
+
+        // LOGIC: Register QueryResultCache as singleton (v0.5.8c).
+        // In-memory cache for SearchResult objects with LRU+TTL eviction.
+        // Uses ReaderWriterLockSlim for thread-safe concurrent access.
+        // Document-aware invalidation removes stale entries on re-indexing.
+        services.AddSingleton<IQueryResultCache, QueryResultCache>();
+
+        // LOGIC: Register ContextExpansionCacheService as singleton (v0.5.8c).
+        // Session-isolated in-memory cache for ExpandedChunk objects.
+        // Uses nested ConcurrentDictionary for lock-free concurrent access.
+        // Sessions are isolated to prevent cross-user data leakage.
+        services.AddSingleton<IContextExpansionCache, ContextExpansionCacheService>();
+
+        // LOGIC: Register CacheInvalidationHandler as singleton (v0.5.8c).
+        // Subscribes to DocumentIndexedEvent and DocumentRemovedFromIndexEvent
+        // to automatically invalidate stale cache entries across both caches.
+        services.AddSingleton<CacheInvalidationHandler>();
+        services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentIndexedEvent>>(
+            sp => sp.GetRequiredService<CacheInvalidationHandler>());
+        services.AddSingleton<MediatR.INotificationHandler<Indexing.DocumentRemovedFromIndexEvent>>(
+            sp => sp.GetRequiredService<CacheInvalidationHandler>());
     }
 
     /// <inheritdoc/>

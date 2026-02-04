@@ -37,7 +37,7 @@ This release introduces a keyboard-centric Reference Panel experience with dismi
 
 ### The Hardening (Quality & Performance)
 
-This release hardens the RAG retrieval system with quality metrics infrastructure, performance profiling, and comprehensive testing.
+This release hardens the RAG retrieval system with quality metrics infrastructure, performance profiling, caching optimization, and comprehensive testing.
 
 #### What's New
 
@@ -45,13 +45,15 @@ This release hardens the RAG retrieval system with quality metrics infrastructur
 
 - **Search Performance Tests (v0.5.8b)** — BenchmarkDotNet performance benchmarks for all search operations. Features `SearchBenchmarks` class with 6 benchmark methods (HybridSearch, BM25Search, SemanticSearchOnly, FilteredSearch, QuerySuggestions, ContextExpansion) across 3 corpus sizes (1K, 10K, 50K chunks). Includes `BenchmarkDataSeeder` with Testcontainers PostgreSQL/pgvector, `BenchmarkConfig` with CI mode detection, P95/Max latency columns, and JSON/Markdown exporters. CI integration via GitHub Actions workflow with regression detection script (10% threshold).
 
+- **Caching Strategy (v0.5.8c)** — Multi-layer in-memory caching for search and context operations. Features `IQueryResultCache` with LRU+TTL eviction (MaxEntries=100, TTL=5min), `IContextExpansionCache` with session-scoped isolation, `CacheInvalidationHandler` for automatic invalidation on DocumentIndexedEvent/DocumentRemovedFromIndexEvent, and `CacheKeyGenerator` for deterministic SHA256 keys. Both caches use thread-safe concurrent data structures. Includes 44+ unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.8a](v0.5.x/LCS-CL-v058a.md) | Retrieval Quality Tests  | ✅ Complete |
 | [v0.5.8b](v0.5.x/LCS-CL-v058b.md) | Search Performance Tests | ✅ Complete |
-| v0.5.8c                          | Caching Strategy         | 🔜 Planned  |
+| [v0.5.8c](v0.5.x/LCS-CL-v058c.md) | Caching Strategy         | ✅ Complete |
 | v0.5.8d                          | Error Resilience         | 🔜 Planned  |
 
 ---
