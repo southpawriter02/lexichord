@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.5.7] - 2026-02 (In Progress)
+
+### The Panel Redesign (Reference Dock UX)
+
+This release introduces a keyboard-centric Reference Panel experience with dismissible filter chips and streamlined navigation.
+
+#### What's New
+
+- **Panel Redesign (v0.5.7a)** — Enhanced Reference Panel with keyboard navigation commands (`MoveSelectionUp/Down`, `OpenSelectedResult`), dismissible `FilterChip` record with factory methods (`ForPath`, `ForExtension`, `ForDateRange`, `ForTag`), and `ActiveFilterChips` collection management. Added filter chips UI area with "Clear all filters" button, enhanced code-behind keyboard handlers for arrow key navigation and Escape/Enter key actions. Includes 31 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                    | Status      |
+| -------------------------------- | ------------------------ | ----------- |
+| [v0.5.7a](v0.5.x/LCS-CL-v057a.md) | Panel Redesign           | ✅ Complete |
+
+---
+
 ## [v0.5.6] - 2026-02 (In Progress)
 
 ### The Answer Preview (Snippet Generation)

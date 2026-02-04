@@ -18,6 +18,8 @@
 //   7. Search history via ISearchHistoryService (autocomplete dropdown).
 //   8. Error handling for FeatureNotLicensedException, OperationCanceledException.
 //   9. SearchModeChangedEvent published on mode change for telemetry.
+//  10. Keyboard navigation commands for result selection (v0.5.7a).
+//  11. Filter chip management for active filters (v0.5.7a).
 // =============================================================================
 // DEPENDENCIES (referenced by version):
 //   - v0.4.5a: ISemanticSearchService, SearchResult, SearchHit, SearchOptions
@@ -27,6 +29,7 @@
 //   - v0.5.1c: IHybridSearchService
 //   - v0.5.1d: SearchMode, SearchModeChangedEvent, FeatureCodes.HybridSearch
 //   - v0.0.4c: FeatureNotLicensedException, ILicenseContext
+//   - v0.5.7a: FilterChip, SelectedResultIndex, navigation commands
 // =============================================================================
 
 using System.Collections.ObjectModel;
@@ -35,6 +38,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.RAG;
+using Lexichord.Modules.RAG.Data;
 using Lexichord.Modules.RAG.Search;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -225,6 +229,33 @@ public partial class ReferenceViewModel : ObservableObject
     public ObservableCollection<string> SearchHistory { get; } = new();
 
     // =========================================================================
+    // v0.5.7a: Keyboard Navigation & Filter Chips
+    // =========================================================================
+
+    /// <summary>
+    /// Gets or sets the index of the currently selected result for keyboard navigation.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Used by keyboard navigation commands to track which result is selected.
+    /// The index is clamped to [0, ResultCount-1] when navigating.
+    /// A value of -1 indicates no selection.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    [ObservableProperty]
+    private int _selectedResultIndex = -1;
+
+    /// <summary>
+    /// Gets the collection of active filter chips displayed below the search bar.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Filter chips represent active filter criteria. Users can dismiss
+    /// individual chips to remove filters. Managed by SearchFilterPanelViewModel
+    /// and synchronized via events.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    public ObservableCollection<FilterChip> ActiveFilterChips { get; } = new();
+
+    // =========================================================================
     // Computed Properties
     // =========================================================================
 
@@ -263,6 +294,33 @@ public partial class ReferenceViewModel : ObservableObject
     /// by <see cref="IsHybridLocked"/> rather than filtering the list.
     /// </remarks>
     public SearchMode[] AvailableSearchModes { get; } = Enum.GetValues<SearchMode>();
+
+    /// <summary>
+    /// Gets whether any filter chips are active.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Used to show/hide the filter chips area and "Clear All" button.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    public bool HasActiveFilters => ActiveFilterChips.Count > 0;
+
+    /// <summary>
+    /// Gets the number of active filter chips.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Displayed in the status bar when filters are active.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    public int ActiveFilterCount => ActiveFilterChips.Count;
+
+    /// <summary>
+    /// Gets whether navigation commands can execute (results available).
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Navigation commands require at least one result.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    public bool CanNavigate => Results.Count > 0;
 
     // =========================================================================
     // Property Change Handlers
@@ -458,6 +516,107 @@ public partial class ReferenceViewModel : ObservableObject
     }
 
     // =========================================================================
+    // v0.5.7a: Keyboard Navigation Commands
+    // =========================================================================
+
+    /// <summary>
+    /// Moves the result selection up by one position.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Decrements <see cref="SelectedResultIndex"/> if greater than 0.
+    /// Clamps at the first result (index 0) rather than wrapping.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanNavigate))]
+    private void MoveSelectionUp()
+    {
+        if (SelectedResultIndex > 0)
+        {
+            SelectedResultIndex--;
+            _logger.LogTrace("Selection moved up to index {Index}", SelectedResultIndex);
+        }
+    }
+
+    /// <summary>
+    /// Moves the result selection down by one position.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Increments <see cref="SelectedResultIndex"/> if less than ResultCount-1.
+    /// Clamps at the last result rather than wrapping.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanNavigate))]
+    private void MoveSelectionDown()
+    {
+        if (SelectedResultIndex < Results.Count - 1)
+        {
+            SelectedResultIndex++;
+            _logger.LogTrace("Selection moved down to index {Index}", SelectedResultIndex);
+        }
+    }
+
+    /// <summary>
+    /// Opens the currently selected result.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Invokes navigation for the result at <see cref="SelectedResultIndex"/>.
+    /// Triggered by Enter key when results list is focused.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanNavigate))]
+    private void OpenSelectedResult()
+    {
+        if (SelectedResultIndex >= 0 && SelectedResultIndex < Results.Count)
+        {
+            var selectedResult = Results[SelectedResultIndex];
+            _logger.LogDebug(
+                "Opening selected result at index {Index}: {Document}",
+                SelectedResultIndex,
+                selectedResult.Hit.Document.FilePath);
+            OnNavigateToResult(selectedResult.Hit);
+        }
+    }
+
+    // =========================================================================
+    // v0.5.7a: Filter Chip Commands
+    // =========================================================================
+
+    /// <summary>
+    /// Removes a specific filter chip from the active filters.
+    /// </summary>
+    /// <param name="chip">The filter chip to remove.</param>
+    /// <remarks>
+    /// LOGIC: Removes the chip from <see cref="ActiveFilterChips"/> and triggers
+    /// a search refresh if the filter panel is integrated.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    [RelayCommand]
+    private void RemoveFilterChip(FilterChip chip)
+    {
+        if (chip is null)
+            return;
+
+        _logger.LogDebug("Removing filter chip: {Type} = {Label}", chip.Type, chip.Label);
+        ActiveFilterChips.Remove(chip);
+        NotifyFilterChipsChanged();
+    }
+
+    /// <summary>
+    /// Clears all active filter chips.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Clears the <see cref="ActiveFilterChips"/> collection.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    [RelayCommand]
+    private void ClearAllFilters()
+    {
+        _logger.LogDebug("Clearing all filter chips ({Count} chips)", ActiveFilterChips.Count);
+        ActiveFilterChips.Clear();
+        NotifyFilterChipsChanged();
+    }
+
+    // =========================================================================
     // Initialization
     // =========================================================================
 
@@ -641,7 +800,25 @@ public partial class ReferenceViewModel : ObservableObject
         OnPropertyChanged(nameof(ResultCount));
         OnPropertyChanged(nameof(ShowNoResults));
         OnPropertyChanged(nameof(CanSearch));
+        OnPropertyChanged(nameof(CanNavigate));
         SearchCommand.NotifyCanExecuteChanged();
+        // v0.5.7a: Update navigation command availability
+        MoveSelectionUpCommand.NotifyCanExecuteChanged();
+        MoveSelectionDownCommand.NotifyCanExecuteChanged();
+        OpenSelectedResultCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Notifies the UI that filter chip collection has changed.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Updates HasActiveFilters and ActiveFilterCount properties.
+    /// Introduced in v0.5.7a.
+    /// </remarks>
+    private void NotifyFilterChipsChanged()
+    {
+        OnPropertyChanged(nameof(HasActiveFilters));
+        OnPropertyChanged(nameof(ActiveFilterCount));
     }
 
     /// <summary>
