@@ -37,14 +37,17 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 
 - **Claim Extractor** — Implemented `IClaimExtractionService` interface with `ClaimExtractionService` orchestrating claim extraction from parsed text. Features pattern-based extraction (regex/template patterns) via `PatternClaimExtractor`, dependency-based extraction via `DependencyClaimExtractor`, semantic deduplication via `ClaimDeduplicator`, and confidence scoring via `ConfidenceScorer`. Includes `ClaimExtractionContext` configuration, `ExtractedClaim` intermediate representation, and YAML-based pattern loading. Built-in patterns for common API documentation structures (ACCEPTS, RETURNS, REQUIRES, etc.). License-gated to WriterPro tier. Includes 22 unit tests.
 
+- **Claim Repository** — Implemented `IClaimRepository` interface with `ClaimRepository` providing PostgreSQL-backed claim persistence. Features full CRUD operations (GetAsync, CreateAsync, UpdateAsync, DeleteAsync), advanced search with `ClaimSearchCriteria` (filtering by project, document, entity, predicate, confidence range, date range), pagination via `ClaimQueryResult` (Page/PageSize or Skip/Take), bulk operations via `UpsertManyAsync` with `BulkUpsertResult`, and MediatR events (`ClaimCreatedEvent`, `ClaimUpdatedEvent`, `ClaimDeletedEvent`, `DocumentClaimsReplacedEvent`). Includes full-text search using PostgreSQL `tsvector/tsquery`, 5-minute memory caching, and comprehensive logging. License-gated to Teams tier. Includes 27 unit tests.
+
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.6e](v0.5.x/LCS-CL-056e.md) | Claim Data Model         | ✅ Complete |
 | [v0.5.6f](v0.5.x/LCS-CL-056f.md) | Sentence Parser          | ✅ Complete |
 | [v0.5.6g](v0.5.x/LCS-CL-056g.md) | Claim Extractor          | ✅ Complete |
-| v0.5.6h                          | Entity Linker            | 🔜 Planned  |
-| v0.5.6i                          | Axiom Validator          | 🔜 Planned  |
-| v0.5.6j                          | Claim Store              | 🔜 Planned  |
+| [v0.5.6h](v0.5.x/LCS-CL-056h.md) | Claim Repository         | ✅ Complete |
+| v0.5.6i                          | Entity Linker            | 🔜 Planned  |
+| v0.5.6j                          | Axiom Validator          | 🔜 Planned  |
+
 
 
 ---
