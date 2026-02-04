@@ -52,8 +52,9 @@
                 <Border Width="1" Height="16"
                         Background="{DynamicResource BorderSubtleBrush}" />
 
-                <!-- Version -->
-                <TextBlock Text="v0.0.2"
+                <!-- Version (set dynamically from assembly in code-behind) -->
+                <TextBlock x:Name="VersionText"
+                           Text="v0.0.0"
                            FontSize="{StaticResource FontSizeXS}"
                            Foreground="{DynamicResource TextTertiaryBrush}"
                            VerticalAlignment="Center" />

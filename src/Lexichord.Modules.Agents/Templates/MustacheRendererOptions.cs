@@ -54,11 +54,24 @@ namespace Lexichord.Modules.Agents.Templates;
 /// and can inform <see cref="Lexichord.Abstractions.Contracts.LLM.RenderedPrompt.WasFastRender"/>.
 /// Default: <c>10</c>.
 /// </param>
-public record MustacheRendererOptions(
-    bool IgnoreCaseOnKeyLookup = true,
-    bool ThrowOnMissingVariables = true,
-    int FastRenderThresholdMs = 10)
+public record MustacheRendererOptions
 {
+    /// <summary>
+    /// Gets or initializes a value indicating whether variable lookup should be case-insensitive.
+    /// </summary>
+    public bool IgnoreCaseOnKeyLookup { get; init; } = true;
+
+    /// <summary>
+    /// Gets or initializes a value indicating whether <see cref="MustachePromptRenderer.RenderMessages"/>
+    /// should throw when required variables are missing.
+    /// </summary>
+    public bool ThrowOnMissingVariables { get; init; } = true;
+
+    /// <summary>
+    /// Gets or initializes the threshold in milliseconds for "fast" rendering.
+    /// </summary>
+    public int FastRenderThresholdMs { get; init; } = 10;
+
     /// <summary>
     /// The configuration section name in appsettings.json.
     /// </summary>
@@ -97,10 +110,12 @@ public record MustacheRendererOptions(
     /// Use strict mode when variable names must match exactly and validation
     /// errors should be caught early.
     /// </remarks>
-    public static MustacheRendererOptions Strict { get; } = new(
-        IgnoreCaseOnKeyLookup: false,
-        ThrowOnMissingVariables: true,
-        FastRenderThresholdMs: 10);
+    public static MustacheRendererOptions Strict { get; } = new()
+    {
+        IgnoreCaseOnKeyLookup = false,
+        ThrowOnMissingVariables = true,
+        FastRenderThresholdMs = 10
+    };
 
     /// <summary>
     /// Gets options configured for lenient mode.
@@ -115,8 +130,10 @@ public record MustacheRendererOptions(
     /// Use lenient mode when missing variables should be silently skipped
     /// and validation is performed separately.
     /// </remarks>
-    public static MustacheRendererOptions Lenient { get; } = new(
-        IgnoreCaseOnKeyLookup: true,
-        ThrowOnMissingVariables: false,
-        FastRenderThresholdMs: 10);
+    public static MustacheRendererOptions Lenient { get; } = new()
+    {
+        IgnoreCaseOnKeyLookup = true,
+        ThrowOnMissingVariables = false,
+        FastRenderThresholdMs = 10
+    };
 }

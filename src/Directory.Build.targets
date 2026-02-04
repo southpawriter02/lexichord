@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    v0.6.3b: Ensure module dependencies are copied to the Modules directory.
+    This is needed because modules are loaded dynamically at runtime, and
+    the CLR needs to find their dependencies in the same location.
+  -->
+  <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('Lexichord.Modules.'))">
+    <!-- Copy all NuGet dependencies to output directory -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+</Project>

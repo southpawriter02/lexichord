@@ -127,8 +127,9 @@
        For Avalonia's built-in control theming
        ═══════════════════════════════════════════════════════════════════════════ -->
 
-  <SolidColorBrush x:Key="SystemAccentColor" Color="{StaticResource AccentPrimaryColor}" />
-  <SolidColorBrush x:Key="SystemAccentColorDark1" Color="{StaticResource AccentPressedColor}" />
-  <SolidColorBrush x:Key="SystemAccentColorLight1" Color="{StaticResource AccentHoverColor}" />
+  <!-- Fluent theme expects these as Color, not Brush -->
+  <Color x:Key="SystemAccentColor">#FFFF6B2C</Color>
+  <Color x:Key="SystemAccentColorDark1">#FFE55A1F</Color>
+  <Color x:Key="SystemAccentColorLight1">#FFFF8A57</Color>
 
 </ResourceDictionary>

@@ -123,9 +123,18 @@ public static class HostServices
         // This enables loose coupling between modules via commands, queries, and events
         services.AddMediatRServices();
 
-        // LOGIC: Register file-based recent files repository for development mode
-        // Uses local JSON file instead of database for portability
+        // LOGIC (v0.6.3b): Register database services for modules that need them
+        // Modules like Style (terminology), RAG, and Knowledge require IDbConnectionFactory
+        InfrastructureServices.AddDatabaseServices(services, configuration);
+
+        // LOGIC: Register file-based repositories for development mode
+        // Uses local JSON files instead of database for portability
+        // Note: These override the database-backed versions from Infrastructure
         services.AddSingleton<IRecentFilesRepository, FileBasedRecentFilesRepository>();
+
+        // LOGIC (v0.6.3b): Register file-based system settings repository
+        // Required by Workspace module for storing recent workspaces configuration
+        services.AddSingleton<ISystemSettingsRepository, FileBasedSystemSettingsRepository>();
 
         // LOGIC: Register core Host services as Singletons
         // These services maintain state across the application lifetime

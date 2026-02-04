@@ -100,7 +100,11 @@ public partial class App : Application
 
             // LOGIC (v0.0.4b): Initialize modules AFTER DI container is built
             // This allows modules to resolve services from the container
-            moduleLoader.InitializeModulesAsync(_serviceProvider).GetAwaiter().GetResult();
+            // NOTE: Task.Run prevents synchronization context deadlock when modules use await
+            // without ConfigureAwait(false). The Avalonia UI dispatcher isn't fully available
+            // during OnFrameworkInitializationCompleted, causing .GetAwaiter().GetResult()
+            // to deadlock on any awaited task that tries to continue on the captured context.
+            Task.Run(() => moduleLoader.InitializeModulesAsync(_serviceProvider)).GetAwaiter().GetResult();
 
             // LOGIC (v0.3.1d): Initialize license gate value converter for XAML bindings
             // This must happen after DI container is built so the converter can access ILicenseContext
@@ -122,12 +126,14 @@ public partial class App : Application
 
             Log.Information("Initializing layout from profile...");
             // LOGIC (v0.1.1c): Initialize layout from saved profile or use default
-            InitializeLayoutAsync().GetAwaiter().GetResult();
+            // NOTE: Task.Run prevents synchronization context deadlock
+            Task.Run(() => InitializeLayoutAsync()).GetAwaiter().GetResult();
             Log.Information("Layout initialized");
 
             Log.Information("Handling first run detection...");
             // LOGIC (v0.1.7c): Handle first run scenarios after layout is ready
-            HandleFirstRunAsync().GetAwaiter().GetResult();
+            // NOTE: Task.Run prevents synchronization context deadlock
+            Task.Run(() => HandleFirstRunAsync()).GetAwaiter().GetResult();
             Log.Information("First run handling complete");
 
             Log.Information("Registering exception handlers...");
@@ -279,7 +285,7 @@ public partial class App : Application
         // LOGIC (v0.1.5d): Resolve keybinding service for shortcut management
         var keyBindingService = _serviceProvider!.GetRequiredService<IKeyBindingService>();
 
-        return new MainWindow
+        var mainWindow = new MainWindow
         {
             ThemeManager = themeManager,
             WindowStateService = windowStateService,
@@ -291,6 +297,11 @@ public partial class App : Application
             KeyBindingService = keyBindingService,
             ServiceProvider = _serviceProvider
         };
+
+        // LOGIC: Initialize StatusBar with theme manager for theme toggle button
+        mainWindow.StatusBar.Initialize(themeManager);
+
+        return mainWindow;
     }
 
     private void ApplyPersistedSettings()

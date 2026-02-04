@@ -107,4 +107,27 @@
     </None>
   </ItemGroup>
 
+  <!-- v0.6.3b: Copy modules and their dependencies from solution-level Modules directory to output -->
+  <Target Name="CopyModulesToOutput" AfterTargets="Build">
+    <PropertyGroup>
+      <!-- Use path relative to project file since $(SolutionDir) may be undefined -->
+      <ModulesSourceDir>$(MSBuildProjectDirectory)/../../Modules/</ModulesSourceDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <!-- Include all DLLs and PDBs from Modules directory (modules + their dependencies) -->
+      <ModuleFiles Include="$(ModulesSourceDir)*.dll" />
+      <ModuleFiles Include="$(ModulesSourceDir)*.pdb" />
+      <!-- Include native runtime libraries (e.g., SQLite, SkiaSharp) with directory structure -->
+      <RuntimeFiles Include="$(ModulesSourceDir)runtimes\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(OutputPath)Modules" Condition="!Exists('$(OutputPath)Modules')" />
+    <Copy SourceFiles="@(ModuleFiles)" DestinationFolder="$(OutputPath)Modules" SkipUnchangedFiles="true" />
+    <!-- Copy runtimes to main output directory (required for native library resolution) -->
+    <Copy SourceFiles="@(RuntimeFiles)" DestinationFiles="@(RuntimeFiles->'$(OutputPath)runtimes\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <!-- Copy SQLite native library to generic osx/native as fallback for RID resolution -->
+    <MakeDir Directories="$(OutputPath)runtimes/osx/native" Condition="!Exists('$(OutputPath)runtimes/osx/native')" />
+    <Copy SourceFiles="$(ModulesSourceDir)runtimes/osx-x64/native/libe_sqlite3.dylib" DestinationFolder="$(OutputPath)runtimes/osx/native" SkipUnchangedFiles="true" Condition="Exists('$(ModulesSourceDir)runtimes/osx-x64/native/libe_sqlite3.dylib') And !Exists('$(OutputPath)runtimes/osx/native/libe_sqlite3.dylib')" />
+    <Message Importance="high" Text="Copied @(ModuleFiles->Count()) module files and @(RuntimeFiles->Count()) runtime files to $(OutputPath)" />
+  </Target>
+
 </Project>

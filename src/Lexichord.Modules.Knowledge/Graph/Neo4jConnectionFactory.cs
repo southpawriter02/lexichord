@@ -62,10 +62,13 @@ namespace Lexichord.Modules.Knowledge.Graph;
 /// </remarks>
 public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisposable
 {
-    private readonly IDriver _driver;
+    private IDriver? _driver;
     private readonly GraphConfiguration _config;
+    private readonly ISecureVault _vault;
     private readonly ILicenseContext _licenseContext;
     private readonly ILogger<Neo4jConnectionFactory> _logger;
+    private bool _initializationAttempted;
+    private string? _initializationError;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Neo4jConnectionFactory"/>.
@@ -74,15 +77,10 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
     /// <param name="vault">Secure vault for password retrieval.</param>
     /// <param name="licenseContext">License context for tier enforcement.</param>
     /// <param name="logger">Logger for diagnostic output.</param>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when the Neo4j password cannot be resolved from either the
-    /// secure vault or the configuration.
-    /// </exception>
     /// <remarks>
-    /// LOGIC: Constructor resolves the password and creates the Neo4j driver.
-    /// The driver initializes its connection pool but does not establish a
-    /// connection until the first session is created. Password resolution
-    /// order: vault → config → throw.
+    /// LOGIC (v0.6.3b): Constructor no longer throws if password is missing.
+    /// The driver is created lazily when the first session is requested.
+    /// This allows the module to load gracefully without Neo4j configured.
     /// </remarks>
     public Neo4jConnectionFactory(
         IOptions<GraphConfiguration> config,
@@ -91,18 +89,31 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
         ILogger<Neo4jConnectionFactory> logger)
     {
         _config = config?.Value ?? throw new ArgumentNullException(nameof(config));
+        _vault = vault ?? throw new ArgumentNullException(nameof(vault));
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        ArgumentNullException.ThrowIfNull(vault);
+        _logger.LogDebug(
+            "Neo4jConnectionFactory created (lazy initialization). URI: {Uri}, Database: {Database}",
+            _config.Uri, _config.Database);
+    }
+
+    /// <summary>
+    /// Ensures the Neo4j driver is initialized, creating it if necessary.
+    /// </summary>
+    /// <returns>True if the driver is available, false otherwise.</returns>
+    private bool EnsureDriverInitialized()
+    {
+        if (_driver is not null) return true;
+        if (_initializationAttempted) return false;
+
+        _initializationAttempted = true;
 
         // LOGIC: Resolve password from secure vault, falling back to configuration.
-        // The vault check is synchronous here because constructor cannot be async.
-        // In practice, the vault should be pre-populated during setup.
         string? password = null;
         try
         {
-            password = vault.GetSecretAsync("neo4j:password").GetAwaiter().GetResult();
+            password = _vault.GetSecretAsync("neo4j:password").GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
@@ -113,38 +124,50 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
 
         if (string.IsNullOrEmpty(password))
         {
-            throw new InvalidOperationException(
-                "Neo4j password not configured. Set it in ISecureVault under key 'neo4j:password' " +
-                "or provide it in the Knowledge:Graph:Password configuration setting.");
+            _initializationError = "Neo4j password not configured. Set it in ISecureVault under key 'neo4j:password' " +
+                "or provide it in the Knowledge:Graph:Password configuration setting.";
+            _logger.LogWarning(_initializationError + " Knowledge Graph features will be unavailable.");
+            return false;
         }
 
-        // LOGIC: Create the Neo4j driver with connection pooling and timeouts.
-        _driver = GraphDatabase.Driver(
-            _config.Uri,
-            AuthTokens.Basic(_config.Username, password),
-            builder =>
-            {
-                builder
-                    .WithMaxConnectionPoolSize(_config.MaxConnectionPoolSize)
-                    .WithConnectionTimeout(TimeSpan.FromSeconds(_config.ConnectionTimeoutSeconds))
-                    .WithDefaultReadBufferSize(64 * 1024);
-
-                // LOGIC: Encryption configuration.
-                // When using bolt+s:// URI scheme, encryption is implicit.
-                // This setting applies when using bolt:// scheme.
-                if (_config.Encrypted)
+        try
+        {
+            // LOGIC: Create the Neo4j driver with connection pooling and timeouts.
+            _driver = GraphDatabase.Driver(
+                _config.Uri,
+                AuthTokens.Basic(_config.Username, password),
+                builder =>
                 {
-                    builder.WithEncryptionLevel(EncryptionLevel.Encrypted);
-                }
-                else
-                {
-                    builder.WithEncryptionLevel(EncryptionLevel.None);
-                }
-            });
+                    builder
+                        .WithMaxConnectionPoolSize(_config.MaxConnectionPoolSize)
+                        .WithConnectionTimeout(TimeSpan.FromSeconds(_config.ConnectionTimeoutSeconds))
+                        .WithDefaultReadBufferSize(64 * 1024);
 
-        _logger.LogInformation(
-            "Neo4j driver created for {Uri}, database: {Database}, pool size: {PoolSize}",
-            _config.Uri, _config.Database, _config.MaxConnectionPoolSize);
+                    // LOGIC: Encryption configuration.
+                    // When using bolt+s:// URI scheme, encryption is implicit.
+                    // This setting applies when using bolt:// scheme.
+                    if (_config.Encrypted)
+                    {
+                        builder.WithEncryptionLevel(EncryptionLevel.Encrypted);
+                    }
+                    else
+                    {
+                        builder.WithEncryptionLevel(EncryptionLevel.None);
+                    }
+                });
+
+            _logger.LogInformation(
+                "Neo4j driver created for {Uri}, database: {Database}, pool size: {PoolSize}",
+                _config.Uri, _config.Database, _config.MaxConnectionPoolSize);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _initializationError = $"Failed to create Neo4j driver: {ex.Message}";
+            _logger.LogWarning(ex, "Failed to create Neo4j driver. Knowledge Graph features will be unavailable.");
+            return false;
+        }
     }
 
     /// <inheritdoc/>
@@ -155,8 +178,9 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
     /// LOGIC: License enforcement order:
     /// 1. If Write mode requested, check tier >= Teams.
     /// 2. For any mode, check tier >= WriterPro.
-    /// 3. Create Neo4j session with appropriate access mode.
-    /// 4. Wrap in Neo4jGraphSession with logging and timing.
+    /// 3. Ensure driver is initialized (lazy init on first use).
+    /// 4. Create Neo4j session with appropriate access mode.
+    /// 5. Wrap in Neo4jGraphSession with logging and timing.
     /// </remarks>
     public Task<IGraphSession> CreateSessionAsync(
         GraphAccessMode accessMode = GraphAccessMode.Write,
@@ -189,13 +213,20 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
                 LicenseTier.WriterPro);
         }
 
+        // LOGIC (v0.6.3b): Lazy initialization - create driver on first use.
+        if (!EnsureDriverInitialized())
+        {
+            throw new InvalidOperationException(
+                _initializationError ?? "Neo4j driver not available. Knowledge Graph features are unavailable.");
+        }
+
         // LOGIC: Map Lexichord access mode to Neo4j driver access mode.
         var neo4jAccessMode = accessMode == GraphAccessMode.Read
             ? AccessMode.Read
             : AccessMode.Write;
 
         // LOGIC: Create the underlying Neo4j session with database and access mode.
-        var session = _driver.AsyncSession(builder => builder
+        var session = _driver!.AsyncSession(builder => builder
             .WithDatabase(_config.Database)
             .WithDefaultAccessMode(neo4jAccessMode));
 
@@ -213,14 +244,23 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
     /// This does NOT enforce license checks — health monitoring should work
     /// regardless of license tier. Failures are caught and logged at Warning
     /// level rather than thrown, returning false instead.
+    ///
+    /// v0.6.3b: Returns false if driver initialization failed (no password configured).
     /// </remarks>
     public async Task<bool> TestConnectionAsync(CancellationToken ct = default)
     {
+        // LOGIC (v0.6.3b): Return false if driver not initialized.
+        if (!EnsureDriverInitialized())
+        {
+            _logger.LogDebug("Neo4j driver not initialized, connection test returning false");
+            return false;
+        }
+
         try
         {
             _logger.LogDebug("Testing Neo4j connection to {Uri}", _config.Uri);
 
-            await _driver.VerifyConnectivityAsync();
+            await _driver!.VerifyConnectivityAsync();
 
             _logger.LogDebug("Neo4j connection verified successfully");
             return true;
@@ -241,9 +281,17 @@ public sealed class Neo4jConnectionFactory : IGraphConnectionFactory, IAsyncDisp
     /// LOGIC: Called during application shutdown. Closes all active connections
     /// and releases the connection pool resources. After disposal, no new
     /// sessions can be created.
+    ///
+    /// v0.6.3b: Safely handles case where driver was never initialized.
     /// </remarks>
     public async ValueTask DisposeAsync()
     {
+        if (_driver is null)
+        {
+            _logger.LogDebug("Neo4j driver was never initialized, nothing to dispose");
+            return;
+        }
+
         _logger.LogDebug("Disposing Neo4j driver for {Uri}", _config.Uri);
 
         try

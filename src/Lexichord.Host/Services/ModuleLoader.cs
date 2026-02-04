@@ -55,6 +55,35 @@ public sealed class ModuleLoader : IModuleLoader
         _logger = logger;
         _licenseContext = licenseContext;
         _modulesPath = modulesPath ?? Path.Combine(AppContext.BaseDirectory, "Modules");
+
+        // LOGIC: Register assembly resolver to find module dependencies in Modules directory.
+        // v0.6.3b: When modules are loaded, the CLR needs to find their NuGet dependencies.
+        // Dependencies are copied to the Modules directory alongside the module DLLs.
+        AssemblyLoadContext.Default.Resolving += OnAssemblyResolving;
+    }
+
+    /// <summary>
+    /// Handles assembly resolution for module dependencies.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: When the CLR fails to find an assembly, this handler looks in the Modules
+    /// directory. This allows module dependencies (NuGet packages) to be loaded from
+    /// the same location as the modules themselves.
+    /// </remarks>
+    private Assembly? OnAssemblyResolving(AssemblyLoadContext context, AssemblyName assemblyName)
+    {
+        // LOGIC: Look for the assembly in the Modules directory.
+        var assemblyPath = Path.Combine(_modulesPath, $"{assemblyName.Name}.dll");
+
+        if (File.Exists(assemblyPath))
+        {
+            // NOTE: Do NOT log here - logging can trigger assembly resolution which
+            // causes re-entrancy and deadlocks.
+            return context.LoadFromAssemblyPath(assemblyPath);
+        }
+
+        // LOGIC: Assembly not found in Modules directory, let default resolution continue.
+        return null;
     }
 
     /// <inheritdoc/>
@@ -80,8 +109,11 @@ public sealed class ModuleLoader : IModuleLoader
             return Task.CompletedTask;
         }
 
-        var dllFiles = Directory.GetFiles(_modulesPath, "*.dll");
-        _logger.LogDebug("Found {Count} DLL files in modules directory", dllFiles.Length);
+        // LOGIC: Only load Lexichord.Modules.*.dll files, not dependency DLLs.
+        // v0.6.3b: Dependencies are copied to Modules/ for assembly resolution,
+        // but only actual module DLLs should be scanned for IModule implementations.
+        var dllFiles = Directory.GetFiles(_modulesPath, "Lexichord.Modules.*.dll");
+        _logger.LogDebug("Found {Count} module DLL files in modules directory", dllFiles.Length);
 
         if (dllFiles.Length == 0)
         {
@@ -280,15 +312,17 @@ public sealed class ModuleLoader : IModuleLoader
         _logger.LogInformation("Initializing {Count} loaded modules", _loadedModules.Count);
         var totalStopwatch = Stopwatch.StartNew();
 
-        foreach (var module in _loadedModules)
+        for (var i = 0; i < _loadedModules.Count; i++)
         {
+            var module = _loadedModules[i];
             cancellationToken.ThrowIfCancellationRequested();
 
             var moduleStopwatch = Stopwatch.StartNew();
 
             try
             {
-                _logger.LogDebug("Initializing module: {ModuleName}", module.Info.Name);
+                _logger.LogInformation("Initializing module {Index}/{Total}: {ModuleName}",
+                    i + 1, _loadedModules.Count, module.Info.Name);
                 await module.InitializeAsync(provider);
                 moduleStopwatch.Stop();
 

@@ -106,7 +106,7 @@ public sealed class SandboxModule : IModule
 
         // LOGIC: Simulate async initialization work
         // Real modules might load dictionaries, warm caches, etc.
-        await Task.Delay(10); // Minimal delay to prove async works
+        await Task.Delay(10);
 
         logger.LogInformation(
             "Sandbox module initialized successfully. " +

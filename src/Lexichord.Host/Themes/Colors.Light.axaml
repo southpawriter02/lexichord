@@ -77,8 +77,9 @@
   <SolidColorBrush x:Key="StatusErrorBrush" Color="{StaticResource StatusErrorColor}" />
   <SolidColorBrush x:Key="StatusInfoBrush" Color="{StaticResource StatusInfoColor}" />
 
-  <SolidColorBrush x:Key="SystemAccentColor" Color="{StaticResource AccentPrimaryColor}" />
-  <SolidColorBrush x:Key="SystemAccentColorDark1" Color="{StaticResource AccentPressedColor}" />
-  <SolidColorBrush x:Key="SystemAccentColorLight1" Color="{StaticResource AccentHoverColor}" />
+  <!-- Fluent theme expects these as Color, not Brush -->
+  <Color x:Key="SystemAccentColor">#FFEA580C</Color>
+  <Color x:Key="SystemAccentColorDark1">#FFC2410C</Color>
+  <Color x:Key="SystemAccentColorLight1">#FFF97316</Color>
 
 </ResourceDictionary>

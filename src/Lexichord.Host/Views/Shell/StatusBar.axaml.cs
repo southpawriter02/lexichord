@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Lexichord.Abstractions.Contracts;
+using System.Reflection;
 
 namespace Lexichord.Host.Views.Shell;
 
@@ -19,10 +20,28 @@ public partial class StatusBar : UserControl
 {
     private IThemeManager? _themeManager;
     private TextBlock? _themeIcon;
+    private TextBlock? _versionText;
 
     public StatusBar()
     {
         InitializeComponent();
+
+        // LOGIC: Set version display from assembly version
+        _versionText = this.FindControl<TextBlock>("VersionText");
+        if (_versionText is not null)
+        {
+            _versionText.Text = GetVersionString();
+        }
+    }
+
+    /// <summary>
+    /// Gets the application version string from the assembly.
+    /// </summary>
+    private static string GetVersionString()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var version = assembly.GetName().Version ?? new Version(0, 0, 0);
+        return $"v{version.Major}.{version.Minor}.{version.Build}";
     }
 
     /// <summary>

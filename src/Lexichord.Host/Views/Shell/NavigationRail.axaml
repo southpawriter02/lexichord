@@ -26,22 +26,22 @@
             <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="8,12">
 
                 <!-- Documents Section -->
-                <Button Classes="nav-icon" ToolTip.Tip="Documents">
+                <Button Classes="nav-icon" ToolTip.Tip="Documents" Click="OnSectionClick">
                     <TextBlock Text="📄" FontSize="20" />
                 </Button>
 
                 <!-- Style/Governance Section -->
-                <Button Classes="nav-icon" ToolTip.Tip="Style Guide">
+                <Button Classes="nav-icon" ToolTip.Tip="Style Guide" Click="OnSectionClick">
                     <TextBlock Text="🎵" FontSize="20" />
                 </Button>
 
                 <!-- Memory/RAG Section -->
-                <Button Classes="nav-icon" ToolTip.Tip="Memory">
+                <Button Classes="nav-icon" ToolTip.Tip="Memory" Click="OnSectionClick">
                     <TextBlock Text="🧠" FontSize="20" />
                 </Button>
 
                 <!-- Agents Section -->
-                <Button Classes="nav-icon" ToolTip.Tip="Agents">
+                <Button Classes="nav-icon" ToolTip.Tip="Agents" Click="OnSectionClick">
                     <TextBlock Text="🤖" FontSize="20" />
                 </Button>
 
@@ -51,7 +51,7 @@
             <StackPanel DockPanel.Dock="Bottom" Spacing="4" Margin="8,12">
 
                 <!-- Settings -->
-                <Button Classes="nav-icon" ToolTip.Tip="Settings">
+                <Button Classes="nav-icon" ToolTip.Tip="Settings" Click="OnSettingsClick">
                     <TextBlock Text="⚙️" FontSize="20" />
                 </Button>
 

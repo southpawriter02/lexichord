@@ -35,6 +35,15 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Module build outputs (copied by MSBuild post-build)
+Modules/
+**/Modules/*.dll
+**/Modules/*.so
+**/Modules/*.dylib
+**/Modules/*.a
+**/Modules/*.json
+**/Modules/runtimes/
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
