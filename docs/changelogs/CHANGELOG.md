@@ -39,14 +39,16 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 
 - **Claim Repository** — Implemented `IClaimRepository` interface with `ClaimRepository` providing PostgreSQL-backed claim persistence. Features full CRUD operations (GetAsync, CreateAsync, UpdateAsync, DeleteAsync), advanced search with `ClaimSearchCriteria` (filtering by project, document, entity, predicate, confidence range, date range), pagination via `ClaimQueryResult` (Page/PageSize or Skip/Take), bulk operations via `UpsertManyAsync` with `BulkUpsertResult`, and MediatR events (`ClaimCreatedEvent`, `ClaimUpdatedEvent`, `ClaimDeletedEvent`, `DocumentClaimsReplacedEvent`). Includes full-text search using PostgreSQL `tsvector/tsquery`, 5-minute memory caching, and comprehensive logging. License-gated to Teams tier. Includes 27 unit tests.
 
+- **Claim Diff Service** — Implemented `IClaimDiffService` interface with `ClaimDiffService` for comparing claims between document versions. Features ID-based and semantic matching (Jaro-Winkler similarity) via `SemanticMatcher`, field-level change detection (`ClaimModification`, `FieldChange`), impact assessment (`ChangeImpact` enum), and change grouping by entity. Includes baseline snapshots (`ClaimSnapshot`), history tracking (`ClaimHistoryEntry`), and cross-document contradiction detection (`ClaimContradiction`). Data contracts include `DiffOptions`, `ClaimDiffResult`, `DiffStats`, `ClaimChange`, and `ClaimChangeGroup`. License-gated to Teams tier. Includes 34 unit tests.
+
 | Version                          | Title                    | Status      |
 | -------------------------------- | ------------------------ | ----------- |
 | [v0.5.6e](v0.5.x/LCS-CL-056e.md) | Claim Data Model         | ✅ Complete |
 | [v0.5.6f](v0.5.x/LCS-CL-056f.md) | Sentence Parser          | ✅ Complete |
 | [v0.5.6g](v0.5.x/LCS-CL-056g.md) | Claim Extractor          | ✅ Complete |
 | [v0.5.6h](v0.5.x/LCS-CL-056h.md) | Claim Repository         | ✅ Complete |
-| v0.5.6i                          | Entity Linker            | 🔜 Planned  |
-| v0.5.6j                          | Axiom Validator          | 🔜 Planned  |
+| [v0.5.6i](v0.5.x/LCS-CL-056i.md) | Claim Diff Service       | ✅ Complete |
+| v0.5.6j                          | Entity Linker            | 🔜 Planned  |
 
 
 
