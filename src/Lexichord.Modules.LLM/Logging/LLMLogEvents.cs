@@ -26,6 +26,10 @@ namespace Lexichord.Modules.LLM.Logging;
 ///   <item><description>1200-1299: Token estimation</description></item>
 ///   <item><description>1300-1399: Provider operations</description></item>
 ///   <item><description>1400-1499: Provider registry management (v0.6.1c)</description></item>
+///   <item><description>1500-1599: LLM Settings Page (v0.6.1d)</description></item>
+///   <item><description>1600-1699: OpenAI Provider Events (v0.6.2a)</description></item>
+///   <item><description>1700-1799: Anthropic Provider Events (v0.6.2b)</description></item>
+///   <item><description>1800-1899: Resilience Policy Events (v0.6.2c)</description></item>
 /// </list>
 /// </remarks>
 internal static partial class LLMLogEvents
@@ -953,4 +957,228 @@ internal static partial class LLMLogEvents
         Level = LogLevel.Trace,
         Message = "Raw Anthropic response: {ResponseLength} bytes")]
     public static partial void AnthropicRawResponse(ILogger logger, int responseLength);
+
+    // =========================================================================
+    // Resilience Policy Events (1800-1899) - v0.6.2c
+    // =========================================================================
+
+    /// <summary>
+    /// Logs when a resilience pipeline is created.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1800,
+        Level = LogLevel.Debug,
+        Message = "Resilience pipeline created with policies: Bulkhead, Timeout, CircuitBreaker, Retry")]
+    public static partial void ResiliencePipelineCreated(ILogger logger);
+
+    /// <summary>
+    /// Logs when executing a request through the resilience pipeline.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1801,
+        Level = LogLevel.Debug,
+        Message = "Executing request through resilience pipeline")]
+    public static partial void ResiliencePipelineExecuting(ILogger logger);
+
+    /// <summary>
+    /// Logs when a retry attempt is triggered.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="attempt">The retry attempt number.</param>
+    /// <param name="maxRetries">The maximum number of retries configured.</param>
+    /// <param name="delayMs">The delay before the retry in milliseconds.</param>
+    /// <param name="reason">The reason for the retry.</param>
+    [LoggerMessage(
+        EventId = 1802,
+        Level = LogLevel.Warning,
+        Message = "Retry attempt {Attempt}/{MaxRetries} after {DelayMs}ms. Reason: {Reason}")]
+    public static partial void ResilienceRetryAttempt(ILogger logger, int attempt, int maxRetries, double delayMs, string reason);
+
+    /// <summary>
+    /// Logs when the circuit breaker opens (trips).
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="breakDurationSeconds">The duration the circuit will remain open.</param>
+    /// <param name="reason">The reason the circuit opened.</param>
+    [LoggerMessage(
+        EventId = 1803,
+        Level = LogLevel.Warning,
+        Message = "Circuit breaker opened for {BreakDurationSeconds}s. Reason: {Reason}")]
+    public static partial void ResilienceCircuitBreakerOpened(ILogger logger, double breakDurationSeconds, string reason);
+
+    /// <summary>
+    /// Logs when the circuit breaker resets to closed state.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1804,
+        Level = LogLevel.Information,
+        Message = "Circuit breaker reset - resuming normal operations")]
+    public static partial void ResilienceCircuitBreakerReset(ILogger logger);
+
+    /// <summary>
+    /// Logs when the circuit breaker transitions to half-open state.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1805,
+        Level = LogLevel.Information,
+        Message = "Circuit breaker half-open - testing with next request")]
+    public static partial void ResilienceCircuitBreakerHalfOpen(ILogger logger);
+
+    /// <summary>
+    /// Logs when a request times out.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="timeoutSeconds">The timeout duration that was exceeded.</param>
+    [LoggerMessage(
+        EventId = 1806,
+        Level = LogLevel.Warning,
+        Message = "Request timed out after {TimeoutSeconds}s")]
+    public static partial void ResilienceRequestTimeout(ILogger logger, double timeoutSeconds);
+
+    /// <summary>
+    /// Logs when the bulkhead rejects a request due to capacity.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    [LoggerMessage(
+        EventId = 1807,
+        Level = LogLevel.Warning,
+        Message = "Bulkhead rejected request - system at capacity")]
+    public static partial void ResilienceBulkheadRejected(ILogger logger);
+
+    /// <summary>
+    /// Logs when the policy wrap is constructed.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="retryCount">The configured retry count.</param>
+    /// <param name="circuitBreakerThreshold">The circuit breaker failure threshold.</param>
+    /// <param name="timeoutSeconds">The timeout in seconds.</param>
+    /// <param name="bulkheadConcurrency">The bulkhead max concurrency.</param>
+    [LoggerMessage(
+        EventId = 1808,
+        Level = LogLevel.Debug,
+        Message = "Policy wrap constructed: Retry={RetryCount}, CircuitBreaker={CircuitBreakerThreshold} failures, Timeout={TimeoutSeconds}s, Bulkhead={BulkheadConcurrency} concurrent")]
+    public static partial void ResiliencePolicyWrapConstructed(ILogger logger, int retryCount, int circuitBreakerThreshold, int timeoutSeconds, int bulkheadConcurrency);
+
+    /// <summary>
+    /// Logs when using the Retry-After header for delay calculation.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="retryAfterSeconds">The Retry-After header value in seconds.</param>
+    [LoggerMessage(
+        EventId = 1809,
+        Level = LogLevel.Debug,
+        Message = "Using Retry-After header: {RetryAfterSeconds}s")]
+    public static partial void ResilienceUsingRetryAfterHeader(ILogger logger, double retryAfterSeconds);
+
+    /// <summary>
+    /// Logs the calculated exponential backoff delay.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="attempt">The retry attempt number.</param>
+    /// <param name="baseDelayMs">The base delay in milliseconds.</param>
+    /// <param name="jitterMs">The jitter added in milliseconds.</param>
+    /// <param name="totalDelayMs">The total delay in milliseconds.</param>
+    [LoggerMessage(
+        EventId = 1810,
+        Level = LogLevel.Debug,
+        Message = "Exponential backoff: attempt={Attempt}, base={BaseDelayMs}ms, jitter={JitterMs}ms, total={TotalDelayMs}ms")]
+    public static partial void ResilienceExponentialBackoff(ILogger logger, int attempt, double baseDelayMs, double jitterMs, double totalDelayMs);
+
+    /// <summary>
+    /// Logs when a resilience event is raised.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="policyName">The policy that raised the event.</param>
+    /// <param name="eventType">The type of event.</param>
+    [LoggerMessage(
+        EventId = 1811,
+        Level = LogLevel.Trace,
+        Message = "Resilience event raised: Policy={PolicyName}, Type={EventType}")]
+    public static partial void ResilienceEventRaised(ILogger logger, string policyName, string eventType);
+
+    /// <summary>
+    /// Logs when resilience configuration is loaded.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="retryCount">The configured retry count.</param>
+    /// <param name="timeoutSeconds">The configured timeout in seconds.</param>
+    /// <param name="circuitBreakerThreshold">The circuit breaker threshold.</param>
+    /// <param name="bulkheadConcurrency">The bulkhead max concurrency.</param>
+    [LoggerMessage(
+        EventId = 1812,
+        Level = LogLevel.Information,
+        Message = "Resilience configuration loaded: Retry={RetryCount}, Timeout={TimeoutSeconds}s, CircuitBreaker={CircuitBreakerThreshold} failures, Bulkhead={BulkheadConcurrency} concurrent")]
+    public static partial void ResilienceConfigurationLoaded(ILogger logger, int retryCount, int timeoutSeconds, int circuitBreakerThreshold, int bulkheadConcurrency);
+
+    /// <summary>
+    /// Logs a warning when resilience options validation fails.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="errors">The validation error messages.</param>
+    [LoggerMessage(
+        EventId = 1813,
+        Level = LogLevel.Warning,
+        Message = "Resilience options validation warning: {Errors}")]
+    public static partial void ResilienceOptionsValidationWarning(ILogger logger, string errors);
+
+    /// <summary>
+    /// Logs when resilience pipeline execution fails after all retries.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="exception">The final exception.</param>
+    /// <param name="message">The error message.</param>
+    [LoggerMessage(
+        EventId = 1814,
+        Level = LogLevel.Error,
+        Message = "Resilience pipeline execution failed after all retries: {Message}")]
+    public static partial void ResiliencePipelineExecutionFailed(ILogger logger, Exception exception, string message);
+
+    /// <summary>
+    /// Logs when the circuit breaker health check is queried.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="circuitState">The current circuit state.</param>
+    [LoggerMessage(
+        EventId = 1815,
+        Level = LogLevel.Debug,
+        Message = "Circuit breaker health check queried: State={CircuitState}")]
+    public static partial void ResilienceHealthCheckQueried(ILogger logger, string circuitState);
+
+    /// <summary>
+    /// Logs when resilience pipeline execution completes successfully.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="durationMs">The total execution duration in milliseconds.</param>
+    [LoggerMessage(
+        EventId = 1816,
+        Level = LogLevel.Debug,
+        Message = "Resilience pipeline execution completed in {DurationMs}ms")]
+    public static partial void ResiliencePipelineExecutionCompleted(ILogger logger, long durationMs);
+
+    /// <summary>
+    /// Logs when a transient HTTP error is detected.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="statusCode">The HTTP status code.</param>
+    [LoggerMessage(
+        EventId = 1817,
+        Level = LogLevel.Debug,
+        Message = "Transient HTTP error detected: StatusCode={StatusCode}")]
+    public static partial void ResilienceTransientErrorDetected(ILogger logger, int statusCode);
+
+    /// <summary>
+    /// Logs when the delay is capped at maximum.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="calculatedDelayMs">The calculated delay before capping.</param>
+    /// <param name="maxDelayMs">The maximum delay cap.</param>
+    [LoggerMessage(
+        EventId = 1818,
+        Level = LogLevel.Debug,
+        Message = "Delay capped at maximum: calculated={CalculatedDelayMs}ms, max={MaxDelayMs}ms")]
+    public static partial void ResilienceDelayCapped(ILogger logger, double calculatedDelayMs, double maxDelayMs);
 }

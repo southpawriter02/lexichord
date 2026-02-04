@@ -1080,6 +1080,41 @@
 | `ContextWindowExceededException`| v0.6.1b    | Abstractions | Token limit exceeded             |
 | `ProviderNotFoundException`     | v0.6.1c    | Abstractions | Provider not registered          |
 
+### 1.24 v0.6.2 LLM Provider Interfaces
+
+| Interface            | Defined In | Module      | Purpose                            |
+| :------------------- | :--------- | :---------- | :--------------------------------- |
+| `IResiliencePipeline`| v0.6.2c    | Modules.LLM | Resilience policy execution        |
+
+**New Classes (v0.6.2):**
+
+| Class                          | Defined In | Module      | Purpose                            |
+| :----------------------------- | :--------- | :---------- | :--------------------------------- |
+| `OpenAIChatCompletionService`  | v0.6.2a    | Modules.LLM | OpenAI provider implementation     |
+| `OpenAIResponseParser`         | v0.6.2a    | Modules.LLM | OpenAI response parsing            |
+| `AnthropicChatCompletionService`| v0.6.2b   | Modules.LLM | Anthropic provider implementation  |
+| `AnthropicResponseParser`      | v0.6.2b    | Modules.LLM | Anthropic response parsing         |
+| `LLMResiliencePipeline`        | v0.6.2c    | Modules.LLM | Resilience policy pipeline impl    |
+| `ResiliencePolicyBuilder`      | v0.6.2c    | Modules.LLM | Polly policy factory               |
+| `ResilienceTelemetry`          | v0.6.2c    | Modules.LLM | Policy metrics collection          |
+| `LLMCircuitBreakerHealthCheck` | v0.6.2c    | Modules.LLM | IHealthCheck implementation        |
+
+**New Records (v0.6.2):**
+
+| Record                | Defined In | Module      | Purpose                            |
+| :-------------------- | :--------- | :---------- | :--------------------------------- |
+| `OpenAIOptions`       | v0.6.2a    | Modules.LLM | OpenAI provider configuration      |
+| `AnthropicOptions`    | v0.6.2b    | Modules.LLM | Anthropic provider configuration   |
+| `ResilienceOptions`   | v0.6.2c    | Modules.LLM | Resilience policy configuration    |
+| `ResilienceEvent`     | v0.6.2c    | Modules.LLM | Policy telemetry event             |
+| `TelemetrySnapshot`   | v0.6.2c    | Modules.LLM | Point-in-time telemetry data       |
+
+**New Enums (v0.6.2):**
+
+| Enum           | Defined In | Module      | Purpose                            |
+| :------------- | :--------- | :---------- | :--------------------------------- |
+| `CircuitState` | v0.6.2c    | Modules.LLM | Circuit breaker state enum         |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

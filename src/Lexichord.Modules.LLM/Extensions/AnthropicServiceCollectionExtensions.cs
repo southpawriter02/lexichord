@@ -6,10 +6,9 @@
 // -----------------------------------------------------------------------
 
 using Lexichord.Modules.LLM.Providers.Anthropic;
+using Lexichord.Modules.LLM.Resilience;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Polly;
-using Polly.Extensions.Http;
 
 namespace Lexichord.Modules.LLM.Extensions;
 
@@ -30,8 +29,8 @@ namespace Lexichord.Modules.LLM.Extensions;
 /// </para>
 /// <list type="bullet">
 ///   <item><description>Configurable timeout from <see cref="AnthropicOptions.TimeoutSeconds"/></description></item>
-///   <item><description>Retry policy with exponential backoff for transient errors</description></item>
-///   <item><description>Circuit breaker to prevent cascade failures</description></item>
+///   <item><description>Retry policy with exponential backoff for transient errors (via <see cref="ResilienceServiceCollectionExtensions"/>)</description></item>
+///   <item><description>Circuit breaker to prevent cascade failures (via <see cref="ResilienceServiceCollectionExtensions"/>)</description></item>
 /// </list>
 /// <para>
 /// <b>Anthropic API Requirements:</b>
@@ -80,13 +79,14 @@ public static class AnthropicServiceCollectionExtensions
     /// </para>
     /// <list type="bullet">
     ///   <item><description><see cref="AnthropicOptions"/> from configuration</description></item>
-    ///   <item><description>Named HTTP client "Anthropic" with resilience policies</description></item>
+    ///   <item><description>Named HTTP client "Anthropic" with centralized resilience policies</description></item>
     ///   <item><description><see cref="AnthropicChatCompletionService"/> as keyed singleton</description></item>
     ///   <item><description>Provider metadata with the provider registry</description></item>
     /// </list>
     /// <para>
     /// The retry policy uses exponential backoff with jitter, starting at 2 seconds
-    /// and doubling with each retry up to the configured <see cref="AnthropicOptions.MaxRetries"/>.
+    /// and doubling with each retry up to the configured <see cref="ResilienceOptions.RetryCount"/>.
+    /// Policy configuration is read from the centralized <c>LLM:Resilience</c> section.
     /// </para>
     /// </remarks>
     public static IServiceCollection AddAnthropicProvider(
@@ -104,17 +104,18 @@ public static class AnthropicServiceCollectionExtensions
         // Use default values if configuration is not present.
         var optionsSection = configuration.GetSection("LLM:Providers:Anthropic");
         var timeoutSeconds = optionsSection.GetValue("TimeoutSeconds", 30);
-        var maxRetries = optionsSection.GetValue("MaxRetries", 3);
 
-        // LOGIC: Register named HTTP client with resilience policies.
+        // LOGIC: Get resilience options from centralized configuration (v0.6.2c).
+        var resilienceOptions = ResilienceServiceCollectionExtensions.GetResilienceOptions(configuration);
+
+        // LOGIC: Register named HTTP client with centralized resilience policies.
         services.AddHttpClient(AnthropicOptions.HttpClientName)
             .ConfigureHttpClient(client =>
             {
                 // LOGIC: Set timeout from configuration.
                 client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
             })
-            .AddPolicyHandler(GetRetryPolicy(maxRetries))
-            .AddPolicyHandler(GetCircuitBreakerPolicy());
+            .AddLLMResiliencePolicies(resilienceOptions);
 
         // LOGIC: Register Anthropic provider using the existing extension method.
         services.AddChatCompletionProvider<AnthropicChatCompletionService>(
@@ -124,78 +125,5 @@ public static class AnthropicServiceCollectionExtensions
             supportsStreaming: true);
 
         return services;
-    }
-
-    /// <summary>
-    /// Creates a retry policy for transient HTTP errors.
-    /// </summary>
-    /// <param name="maxRetries">Maximum number of retry attempts.</param>
-    /// <returns>An async retry policy.</returns>
-    /// <remarks>
-    /// <para>
-    /// The policy handles:
-    /// </para>
-    /// <list type="bullet">
-    ///   <item><description>HTTP 5xx server errors</description></item>
-    ///   <item><description>HTTP 408 request timeout</description></item>
-    ///   <item><description>HTTP 429 rate limit</description></item>
-    ///   <item><description>HTTP 529 overloaded (Anthropic-specific)</description></item>
-    ///   <item><description>Network-level failures (HttpRequestException)</description></item>
-    /// </list>
-    /// <para>
-    /// Uses exponential backoff: 2^attempt seconds + random jitter (0-1000ms).
-    /// </para>
-    /// <para>
-    /// Note: Anthropic may return 529 (overloaded_error) which is handled as a transient error.
-    /// </para>
-    /// </remarks>
-    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int maxRetries)
-    {
-        return HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-            .OrResult(msg => (int)msg.StatusCode == 529) // Anthropic overloaded
-            .WaitAndRetryAsync(
-                retryCount: maxRetries,
-                sleepDurationProvider: (attempt, response, _) =>
-                {
-                    // LOGIC: Check for Retry-After header first.
-                    // Note: Anthropic doesn't consistently provide this header.
-                    var retryAfter = response?.Result?.Headers?.RetryAfter?.Delta;
-                    if (retryAfter.HasValue)
-                    {
-                        return retryAfter.Value;
-                    }
-
-                    // LOGIC: Fall back to exponential backoff with jitter.
-                    var exponentialDelay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
-                    var jitter = TimeSpan.FromMilliseconds(Random.Shared.Next(0, 1000));
-                    return exponentialDelay + jitter;
-                },
-                onRetryAsync: (_, _, _, _) => Task.CompletedTask);
-    }
-
-    /// <summary>
-    /// Creates a circuit breaker policy to prevent cascade failures.
-    /// </summary>
-    /// <returns>A circuit breaker policy.</returns>
-    /// <remarks>
-    /// <para>
-    /// The circuit breaker opens after 5 consecutive failures and remains open
-    /// for 30 seconds before attempting a test request.
-    /// </para>
-    /// <para>
-    /// This protects the application from continuously hitting a failing API,
-    /// allowing time for the service to recover. This is particularly important
-    /// for Anthropic's overloaded_error scenarios.
-    /// </para>
-    /// </remarks>
-    private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
-    {
-        return HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .CircuitBreakerAsync(
-                handledEventsAllowedBeforeBreaking: 5,
-                durationOfBreak: TimeSpan.FromSeconds(30));
     }
 }

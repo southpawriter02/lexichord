@@ -276,15 +276,15 @@ See [LCS-DES-062d](LCS-DES-062d.md) for full specification.
 
 ### 4.3 v0.6.2c: Retry Policy Implementation
 
-- [ ] Define `IResiliencePipeline` abstraction
-- [ ] Implement retry policy with exponential backoff
-- [ ] Implement circuit breaker policy
-- [ ] Implement timeout policy
-- [ ] Implement bulkhead policy
-- [ ] Create combined policy pipeline
-- [ ] Add DI registration for policy injection
-- [ ] Add telemetry for policy events
-- [ ] Create unit tests for each policy
+- [x] Define `IResiliencePipeline` abstraction
+- [x] Implement retry policy with exponential backoff
+- [x] Implement circuit breaker policy
+- [x] Implement timeout policy
+- [x] Implement bulkhead policy
+- [x] Create combined policy pipeline
+- [x] Add DI registration for policy injection
+- [x] Add telemetry for policy events
+- [x] Create unit tests for each policy
 - [ ] Create chaos engineering tests
 
 ### 4.4 v0.6.2d: Token Counting Service
