@@ -6,6 +6,27 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.4] - 2026-02 (In Progress)
+
+### The Dashboards (P1 UI Components)
+
+This release delivers two critical P1 UI components: the Knowledge Hub unified dashboard for RAG functionality, and the Issues by Category bar chart for style violation visualization.
+
+#### What's New
+
+- **Knowledge Hub Dashboard (v0.6.4a)** — Unified dashboard view for all RAG functionality in `Lexichord.Modules.RAG`. Added `IKnowledgeHubViewModel` interface with index statistics (`TotalDocuments`, `TotalChunks`, `IndexedDocuments`, `PendingDocuments`, `StorageSizeBytes`, `LastIndexedAt`), recent search history (limited to 10 entries), indexing progress tracking (0-100%), and re-index all command. Created `KnowledgeHubStatistics` record with computed properties (`FormattedStorageSize` for human-readable B/KB/MB/GB, `IndexingProgress` percentage, `HasIndexedContent` flag). Created `RecentSearch` record with `RelativeTime` property for display ("just now", "5 min ago", "3 hr ago"). Implemented `KnowledgeHubViewModel` with async initialization, MediatR `DocumentIndexedEvent` handling for real-time statistics updates, and license gating for WriterPro tier. Created `KnowledgeHubView.axaml` with two-column layout: statistics sidebar (280px) with cards, quick actions, and recent searches; main content area for embedded search interface. Features 15 structured log events (2000-2014 range). Includes ~24 unit tests.
+
+- **Issues by Category Bar Chart (v0.6.4b)** — Horizontal bar chart visualization of style violations grouped by category in `Lexichord.Modules.Style`. Added `IIssueCategoryChartViewModel` interface with category collection (`Categories`), total issue count, category selection event, and manual refresh. Created `IssueCategoryData` record with predefined category colors (Terminology=#F87171, Passive Voice=#FBBF24, Sentence Length=#60A5FA, Readability=#34D399, Grammar=#A78BFA, Style=#FB923C, Structure=#2DD4BF, Custom=#94A3B8). Implemented `IssueCategoryChartViewModel` with MediatR `LintingCompletedEvent` handling, category inference from rule IDs (pattern matching for term/passive/sentence/read/grammar/struct), sorted aggregation by count descending, and LiveCharts2 `RowSeries` for horizontal bars. Created `IssueCategoryChartView.axaml` with header (section title + total badge), loading indicator, empty state ("No issues found"), and LiveCharts2 `CartesianChart`. Features 8 structured log events (2100-2107 range). Includes ~20 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                          | Title                        | Status      |
+| -------------------------------- | ---------------------------- | ----------- |
+| [v0.6.4a](v0.6.x/LCS-CL-v064a.md) | Knowledge Hub Dashboard      | ✅ Complete |
+| [v0.6.4b](v0.6.x/LCS-CL-v064b.md) | Issues by Category Bar Chart | ✅ Complete |
+
+---
+
 ## [v0.6.3] - 2026-02 (In Progress)
 
 ### The Templates (Prompt Engineering)

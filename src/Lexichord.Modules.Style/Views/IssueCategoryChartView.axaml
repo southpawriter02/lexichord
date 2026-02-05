@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Style.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
+             x:Class="Lexichord.Modules.Style.Views.IssueCategoryChartView"
+             x:DataType="vm:IssueCategoryChartViewModel">
+
+    <!-- =============================================================================
+    File: IssueCategoryChartView.axaml
+    Project: Lexichord.Modules.Style
+    Description: Issues by Category horizontal bar chart visualization.
+    Version: v0.6.4b
+    ============================================================================= -->
+    <!-- LOGIC: Horizontal bar chart showing issue counts by category.
+         - Uses LiveCharts2 RowSeries for horizontal bars
+         - Categories sorted by count descending
+         - Click on category to filter Problems Panel
+         - Responsive height based on category count
+    -->
+
+    <UserControl.Styles>
+        <!-- Section Header Style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- Total Count Badge Style -->
+        <Style Selector="Border.total-badge">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorLight2}" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="8,2" />
+        </Style>
+
+        <!-- Empty State Style -->
+        <Style Selector="Border.empty-state">
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <!-- Loading Indicator Style -->
+        <Style Selector="Border.loading">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            CornerRadius="8"
+            Padding="16">
+        <Grid RowDefinitions="Auto,*">
+
+            <!-- ===================================================================
+            Row 0: Header with title and total count
+            =================================================================== -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+                <TextBlock Text="ISSUES BY CATEGORY" Classes="section-header" VerticalAlignment="Center" />
+
+                <!-- Total Count Badge -->
+                <Border Grid.Column="1"
+                        Classes="total-badge"
+                        IsVisible="{Binding HasData}">
+                    <TextBlock FontSize="11"
+                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} total">
+                                <Binding Path="TotalIssueCount" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Border>
+            </Grid>
+
+            <!-- ===================================================================
+            Row 1: Chart Content Area
+            =================================================================== -->
+            <Grid Grid.Row="1">
+
+                <!-- Loading Indicator -->
+                <Border Classes="loading"
+                        IsVisible="{Binding IsLoading}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Padding="24">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <Border Width="24" Height="24"
+                                CornerRadius="12"
+                                Background="{DynamicResource SystemAccentColor}"
+                                Opacity="0.6">
+                            <TextBlock Text="●"
+                                       FontSize="16"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Loading..."
+                                   FontSize="11"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Empty State (No Issues) -->
+                <Border Classes="empty-state"
+                        IsVisible="{Binding !HasData}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <PathIcon Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                                 Width="32" Height="32"
+                                 Foreground="{DynamicResource StatusSuccessBrush}" />
+                        <TextBlock Text="No issues found"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Your document is in harmony"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Bar Chart -->
+                <lvc:CartesianChart IsVisible="{Binding HasData}"
+                                    Series="{Binding Series}"
+                                    XAxes="{Binding XAxes}"
+                                    YAxes="{Binding YAxes}"
+                                    TooltipPosition="Hidden"
+                                    ZoomMode="None"
+                                    DrawMargin="{x:Null}">
+                    <lvc:CartesianChart.MinHeight>
+                        <MultiBinding Converter="{x:Static ObjectConverters.DoubleLessThan}">
+                            <Binding Path="Categories.Count" />
+                        </MultiBinding>
+                    </lvc:CartesianChart.MinHeight>
+                </lvc:CartesianChart>
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</UserControl>
