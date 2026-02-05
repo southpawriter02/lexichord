@@ -2,26 +2,65 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Lexichord.Host.Controls"
              mc:Ignorable="d"
-             d:DesignWidth="600" d:DesignHeight="400"
+             d:DesignWidth="900" d:DesignHeight="700"
              x:Class="Lexichord.Host.Views.Sections.AgentsSectionView">
 
     <!--
     ═══════════════════════════════════════════════════════════════════════════
-    AGENTS SECTION VIEW
+    AGENTS SECTION VIEW - "The Ensemble"
     Main content area for the Agents section.
+
+    Per SCREEN_WIREFRAMES.md Section 2.3 - The Ensemble
+
+    UPDATED: Now includes agent cards with descriptions and the chat panel
+    for active agent sessions.
 
     LOGIC: This is the central area shown when the Agents section is selected
     in the NavigationRail. It provides access to:
-    - AI agent configuration
-    - Prompt template management
-    - Agent interactions and chat
+    - AI agent cards (The Editor, The Simplifier, The Chronicler, The Scribe)
+    - Active session chat interface
+    - Prompt template preview
     - LLM settings and API configuration
-
-    The actual agent functionality comes from the AgentsModule and LLMModule.
-    This view provides overview and navigation to agent-related functionality.
     ═══════════════════════════════════════════════════════════════════════════
     -->
+
+    <UserControl.Styles>
+        <!-- Agent card style -->
+        <Style Selector="Border.agent-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Border.agent-card:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+        </Style>
+
+        <Style Selector="Button.start-button">
+            <Setter Property="Background" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.start-button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        </Style>
+
+        <Style Selector="Border.license-badge">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+    </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->
@@ -30,79 +69,193 @@
                 BorderBrush="{DynamicResource BorderSubtleBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="24,16">
-            <StackPanel Spacing="4">
-                <TextBlock Text="Agents"
-                           FontSize="20"
-                           FontWeight="SemiBold" />
-                <TextBlock Text="Configure and interact with AI writing assistants."
-                           FontSize="13"
-                           Opacity="0.7" />
-            </StackPanel>
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="🎹" FontSize="20" />
+                        <TextBlock Text="The Ensemble"
+                                   FontSize="20"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+                    <TextBlock Text="Your AI writing assistants, each specialized for different tasks."
+                               FontSize="13"
+                               Opacity="0.7" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Content="📄 Preview Templates"
+                            Padding="12,8"
+                            Click="OnPreviewTemplatesClick" />
+                    <Button Content="⚙️ LLM Settings"
+                            Padding="12,8"
+                            Name="LLMSettingsButton"
+                            Click="OnLLMSettingsClick" />
+                </StackPanel>
+            </Grid>
         </Border>
 
-        <!-- Content -->
-        <ScrollViewer Grid.Row="1" Padding="24">
-            <StackPanel Spacing="24">
-                <!-- AI Assistant Card -->
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderSubtleBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="Writing Assistant"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
-                        <TextBlock Text="Get AI-powered writing suggestions, improvements, and feedback on your documents."
-                                   TextWrapping="Wrap"
-                                   Opacity="0.8" />
-                        <TextBlock Text="Open a document to use the writing assistant."
-                                   FontStyle="Italic"
-                                   Opacity="0.6" />
-                    </StackPanel>
-                </Border>
+        <!-- Content: Split between agent cards and chat panel -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,400">
 
-                <!-- Prompt Templates Card -->
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderSubtleBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="Prompt Templates"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
-                        <TextBlock Text="Manage reusable prompt templates for common writing tasks like summarization, expansion, and tone adjustment."
-                                   TextWrapping="Wrap"
-                                   Opacity="0.8" />
-                        <TextBlock Text="Template management coming soon."
-                                   FontStyle="Italic"
-                                   Opacity="0.6" />
-                    </StackPanel>
-                </Border>
+            <!-- Left: Agent Cards -->
+            <ScrollViewer Grid.Column="0" Padding="24">
+                <StackPanel Spacing="16">
+                    <!-- Agent Cards Grid -->
+                    <TextBlock Text="AVAILABLE AGENTS"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Opacity="0.6"
+                               Margin="0,0,0,8" />
 
-                <!-- LLM Configuration Card -->
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderSubtleBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="LLM Configuration"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
-                        <TextBlock Text="Configure your API keys and model preferences for AI-powered features."
-                                   TextWrapping="Wrap"
-                                   Opacity="0.8" />
-                        <Button Content="Open LLM Settings"
-                                HorizontalAlignment="Left"
-                                Padding="16,8"
-                                Name="LLMSettingsButton"
-                                Click="OnLLMSettingsClick" />
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                        <!-- The Editor -->
+                        <Border Grid.Row="0" Grid.Column="0"
+                                Classes="agent-card"
+                                Margin="0,0,8,8"
+                                PointerPressed="OnEditorAgentClick">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="🎭" FontSize="24" />
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="The Editor"
+                                                   FontWeight="SemiBold" />
+                                        <Border Classes="license-badge" HorizontalAlignment="Left">
+                                            <TextBlock Text="Free"
+                                                       FontSize="10"
+                                                       Opacity="0.7" />
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="General-purpose writing assistant. Helps with editing, proofreading, and improving your text."
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Opacity="0.8" />
+                                <Button Classes="start-button"
+                                        Content="▶ Start Session"
+                                        HorizontalAlignment="Left" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- The Simplifier -->
+                        <Border Grid.Row="0" Grid.Column="1"
+                                Classes="agent-card"
+                                Margin="8,0,0,8"
+                                PointerPressed="OnSimplifierAgentClick">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="✨" FontSize="24" />
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="The Simplifier"
+                                                   FontWeight="SemiBold" />
+                                        <Border Classes="license-badge" HorizontalAlignment="Left">
+                                            <TextBlock Text="Free"
+                                                       FontSize="10"
+                                                       Opacity="0.7" />
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="Makes complex text clearer. Reduces jargon and improves readability for broader audiences."
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Opacity="0.8" />
+                                <Button Classes="start-button"
+                                        Content="▶ Start Session"
+                                        HorizontalAlignment="Left" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- The Chronicler -->
+                        <Border Grid.Row="1" Grid.Column="0"
+                                Classes="agent-card"
+                                Margin="0,8,8,0"
+                                PointerPressed="OnChroniclerAgentClick">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="📜" FontSize="24" />
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="The Chronicler"
+                                                   FontWeight="SemiBold" />
+                                        <Border Background="#1AF59E0B" CornerRadius="4" Padding="8,4" HorizontalAlignment="Left">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="🔒" FontSize="10" />
+                                                <TextBlock Text="Pro"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource StatusWarningBrush}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="Summarization expert. Creates concise summaries, abstracts, and key point extractions."
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Opacity="0.8" />
+                                <Button Content="🔒 Upgrade to Unlock"
+                                        HorizontalAlignment="Left"
+                                        Padding="12,8"
+                                        Opacity="0.7" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- The Scribe -->
+                        <Border Grid.Row="1" Grid.Column="1"
+                                Classes="agent-card"
+                                Margin="8,8,0,0"
+                                PointerPressed="OnScribeAgentClick">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="📖" FontSize="24" />
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="The Scribe"
+                                                   FontWeight="SemiBold" />
+                                        <Border Background="#1AF59E0B" CornerRadius="4" Padding="8,4" HorizontalAlignment="Left">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="🔒" FontSize="10" />
+                                                <TextBlock Text="Pro"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource StatusWarningBrush}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="Content expansion specialist. Elaborates on ideas and generates detailed content from outlines."
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Opacity="0.8" />
+                                <Button Content="🔒 Upgrade to Unlock"
+                                        HorizontalAlignment="Left"
+                                        Padding="12,8"
+                                        Opacity="0.7" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Quick Actions -->
+                    <TextBlock Text="QUICK ACTIONS"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Opacity="0.6"
+                               Margin="0,16,0,8" />
+
+                    <WrapPanel>
+                        <Button Content="✨ Improve Selection" Margin="0,0,8,8" Padding="12,8" />
+                        <Button Content="📝 Summarize" Margin="0,0,8,8" Padding="12,8" />
+                        <Button Content="🎨 Change Tone" Margin="0,0,8,8" Padding="12,8" />
+                        <Button Content="🔍 Expand Ideas" Margin="0,0,8,8" Padding="12,8" />
+                        <Button Content="✂️ Make Concise" Margin="0,0,8,8" Padding="12,8" />
+                    </WrapPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Right: Chat Panel -->
+            <Border Grid.Column="1"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="1,0,0,0"
+                    Margin="0">
+                <controls:AgentChatPanel x:Name="ChatPanel"
+                                         AgentName="The Editor"
+                                         AgentIcon="🎭" />
+            </Border>
+
+        </Grid>
     </Grid>
 
 </UserControl>

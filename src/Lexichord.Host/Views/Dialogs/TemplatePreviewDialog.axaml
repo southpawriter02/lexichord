@@ -1,0 +1,299 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="Lexichord.Host.Views.Dialogs.TemplatePreviewDialog"
+        Title="Template Preview"
+        Width="700"
+        Height="600"
+        MinWidth="500"
+        MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        SystemDecorations="BorderOnly"
+        Background="{DynamicResource SurfaceBaseBrush}">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════════
+    TEMPLATE PREVIEW DIALOG (v0.6.3d Specification - LCS-DES-063d)
+
+    Purpose: Preview prompt templates before using them with AI agents.
+    Shows the rendered template with context variables highlighted.
+
+    Features:
+    - Template selector dropdown
+    - System prompt preview with syntax highlighting
+    - Variable list display
+    - Validation status badge
+    - Token count indicator
+
+    This was specified in v0.6.3d but deferred to v0.6.4. Now implemented.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Window.Styles>
+        <!-- Preview text area styling -->
+        <Style Selector="TextBox.preview-area">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="FontFamily" Value="JetBrains Mono, Cascadia Code, monospace" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="IsReadOnly" Value="True" />
+        </Style>
+
+        <Style Selector="Border.status-badge">
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+
+        <Style Selector="Border.status-badge.valid">
+            <Setter Property="Background" Value="#1A22C55E" />
+        </Style>
+
+        <Style Selector="Border.status-badge.invalid">
+            <Setter Property="Background" Value="#1AEF4444" />
+        </Style>
+
+        <Style Selector="TextBlock.variable-name">
+            <Setter Property="FontFamily" Value="JetBrains Mono, monospace" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="20,16">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Template Preview"
+                               FontSize="18"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Preview and validate prompt templates before use."
+                               FontSize="13"
+                               Opacity="0.7" />
+                </StackPanel>
+
+                <!-- Validation Status Badge -->
+                <Border Grid.Column="1"
+                        Classes="status-badge"
+                        Classes.valid="{Binding IsValid}"
+                        Classes.invalid="{Binding !IsValid}"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{Binding ValidationIcon}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding ValidationStatus}"
+                                   FontSize="12"
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" Margin="20">
+            <!-- Template Selector -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                <ComboBox Grid.Column="0"
+                          x:Name="TemplateSelector"
+                          ItemsSource="{Binding AvailableTemplates}"
+                          SelectedItem="{Binding SelectedTemplate}"
+                          PlaceholderText="Select a template..."
+                          HorizontalAlignment="Stretch"
+                          Height="40">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding Icon}" />
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- Token Count -->
+                <Border Grid.Column="1"
+                        Background="{DynamicResource SurfaceElevatedBrush}"
+                        CornerRadius="4"
+                        Padding="12,8"
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="📊"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding TokenCount, StringFormat='{}{0:N0} tokens'}"
+                                   FontSize="12"
+                                   FontFamily="JetBrains Mono, monospace"
+                                   VerticalAlignment="Center"
+                                   Opacity="0.8" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Preview Area -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,280">
+                <!-- System Prompt Preview -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource SurfaceElevatedBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Margin="0,0,12,0">
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Background="{DynamicResource SurfaceBrush}"
+                                CornerRadius="8,8,0,0"
+                                Padding="12,8">
+                            <TextBlock Text="System Prompt Preview"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Opacity="0.8" />
+                        </Border>
+                        <TextBox Grid.Row="1"
+                                 Classes="preview-area"
+                                 Text="{Binding RenderedPrompt}"
+                                 CornerRadius="0,0,8,8" />
+                    </Grid>
+                </Border>
+
+                <!-- Variables Panel -->
+                <Border Grid.Column="1"
+                        Background="{DynamicResource SurfaceElevatedBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Background="{DynamicResource SurfaceBrush}"
+                                CornerRadius="8,8,0,0"
+                                Padding="12,8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Variables"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Opacity="0.8" />
+                                <Border Background="{DynamicResource AccentMutedBrush}"
+                                        CornerRadius="10"
+                                        Padding="8,2">
+                                    <TextBlock Text="{Binding Variables.Count}"
+                                               FontSize="11"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" Padding="12">
+                            <ItemsControl ItemsSource="{Binding Variables}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource SurfaceBrush}"
+                                                CornerRadius="4"
+                                                Padding="10,8"
+                                                Margin="0,0,0,8">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <StackPanel Grid.Column="0" Spacing="2">
+                                                    <TextBlock Classes="variable-name"
+                                                               Text="{Binding Name, StringFormat='{{{{0}}}}'}" />
+                                                    <TextBlock Text="{Binding Description}"
+                                                               FontSize="11"
+                                                               Opacity="0.6"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                                <Border Grid.Column="1"
+                                                        IsVisible="{Binding IsRequired}"
+                                                        Background="{DynamicResource StatusWarningBrush}"
+                                                        Opacity="0.2"
+                                                        CornerRadius="3"
+                                                        Padding="6,2"
+                                                        VerticalAlignment="Top"
+                                                        Margin="8,0,0,0">
+                                                    <TextBlock Text="Required"
+                                                               FontSize="10"
+                                                               FontWeight="Medium"
+                                                               Foreground="{DynamicResource StatusWarningBrush}" />
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Validation Messages -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,12,0,0"
+                    IsVisible="{Binding HasValidationMessages}">
+                <ItemsControl ItemsSource="{Binding ValidationMessages}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2">
+                                <TextBlock Text="{Binding Icon}"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Message}"
+                                           FontSize="12"
+                                           Foreground="{Binding Color}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Grid>
+
+        <!-- Footer -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="20,12">
+            <Grid ColumnDefinitions="*,Auto">
+                <!-- Left: Help link -->
+                <Button Grid.Column="0"
+                        Content="📖 Template Documentation"
+                        Background="Transparent"
+                        Foreground="{DynamicResource AccentPrimaryBrush}"
+                        Padding="0"
+                        HorizontalAlignment="Left"
+                        Cursor="Hand"
+                        Command="{Binding OpenDocumentationCommand}" />
+
+                <!-- Right: Action buttons -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                    <Button Content="Validate"
+                            Padding="16,8"
+                            Command="{Binding ValidateCommand}" />
+                    <Button Content="Copy to Clipboard"
+                            Padding="16,8"
+                            Command="{Binding CopyToClipboardCommand}" />
+                    <Button x:Name="CloseButton"
+                            Content="Close"
+                            Padding="16,8"
+                            Click="OnCloseClick" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>

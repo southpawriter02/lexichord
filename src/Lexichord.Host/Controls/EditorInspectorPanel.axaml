@@ -1,0 +1,466 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Lexichord.Host.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="320" d:DesignHeight="700"
+             x:Class="Lexichord.Host.Controls.EditorInspectorPanel"
+             x:DataType="controls:EditorInspectorPanel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════════
+    EDITOR INSPECTOR PANEL (P0 - Critical Missing Component)
+
+    Purpose: Right-side inspector panel for the manuscript editor showing:
+    - Style Score (circular gauge with status)
+    - Writing Suggestions with action buttons
+    - Document Metadata (word count, reading time, etc.)
+
+    Per SCREEN_WIREFRAMES.md Section 2.1:
+    "Inspector panel: collapsible right sidebar (320px default)"
+
+    This component was completely missing from the implementation.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Section header styling -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- Stat item styling -->
+        <Style Selector="Border.stat-item">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,10" />
+        </Style>
+
+        <!-- Suggestion card styling -->
+        <Style Selector="Border.suggestion-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,0,3" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <Style Selector="Button.action-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.action-button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceElevatedBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1,0,0,0"
+            Width="320">
+        <Grid RowDefinitions="Auto,*">
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="16,12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Inspector"
+                               FontSize="14"
+                               FontWeight="SemiBold" />
+                    <Button Grid.Column="1"
+                            Content="✕"
+                            Background="Transparent"
+                            Padding="8,4"
+                            FontSize="14"
+                            Opacity="0.6"
+                            Cursor="Hand"
+                            Click="OnCloseClick"
+                            ToolTip.Tip="Close Inspector" />
+                </Grid>
+            </Border>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" Padding="16">
+                <StackPanel Spacing="20">
+
+                    <!-- ═══════════════════════════════════════════════════════
+                         STYLE SCORE SECTION
+                         Circular gauge with status text
+                         ═══════════════════════════════════════════════════════ -->
+                    <StackPanel>
+                        <TextBlock Classes="section-header" Text="STYLE SCORE" />
+                        <Border Background="{DynamicResource SurfaceBrush}"
+                                CornerRadius="8"
+                                Padding="16">
+                            <StackPanel HorizontalAlignment="Center" Spacing="8">
+                                <!-- Style Gauge Control -->
+                                <controls:StyleGauge x:Name="StyleScoreGauge"
+                                                     Score="{Binding StyleScore}"
+                                                     Label="" />
+
+                                <!-- Status Text -->
+                                <Border x:Name="StatusBadge"
+                                        Background="{DynamicResource SurfaceElevatedBrush}"
+                                        CornerRadius="12"
+                                        Padding="12,4"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock x:Name="StatusText"
+                                               Text="{Binding StatusText}"
+                                               FontSize="12"
+                                               FontWeight="Medium"
+                                               Foreground="{Binding StatusColor}" />
+                                </Border>
+
+                                <!-- Issue counts -->
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Spacing="8"
+                                            Margin="0,8,0,0">
+                                    <Border Background="#1AEF4444" CornerRadius="4" Padding="8,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="🔴" FontSize="10" />
+                                            <TextBlock Text="{Binding ErrorCount}"
+                                                       FontSize="11"
+                                                       FontWeight="Medium"
+                                                       Foreground="#FFEF4444" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#1AF59E0B" CornerRadius="4" Padding="8,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="🟡" FontSize="10" />
+                                            <TextBlock Text="{Binding WarningCount}"
+                                                       FontSize="11"
+                                                       FontWeight="Medium"
+                                                       Foreground="#FFF59E0B" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#1A60A5FA" CornerRadius="4" Padding="8,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="💡" FontSize="10" />
+                                            <TextBlock Text="{Binding InfoCount}"
+                                                       FontSize="11"
+                                                       FontWeight="Medium"
+                                                       Foreground="#FF60A5FA" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ═══════════════════════════════════════════════════════
+                         SUGGESTIONS SECTION
+                         Style issues with action buttons
+                         ═══════════════════════════════════════════════════════ -->
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                            <TextBlock Grid.Column="0"
+                                       Classes="section-header"
+                                       Text="SUGGESTIONS"
+                                       Margin="0" />
+                            <Button Grid.Column="1"
+                                    Content="Fix All"
+                                    Classes="action-button"
+                                    IsEnabled="{Binding HasSuggestions}"
+                                    Command="{Binding FixAllCommand}" />
+                        </Grid>
+
+                        <!-- Suggestions List -->
+                        <ItemsControl ItemsSource="{Binding Suggestions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="suggestion-card"
+                                            BorderBrush="{Binding SeverityColor}">
+                                        <StackPanel Spacing="8">
+                                            <!-- Header: Icon + Line number -->
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{Binding Icon}"
+                                                           FontSize="12" />
+                                                <TextBlock Text="{Binding Location}"
+                                                           FontSize="11"
+                                                           FontFamily="JetBrains Mono, monospace"
+                                                           Opacity="0.6" />
+                                            </StackPanel>
+
+                                            <!-- Issue description -->
+                                            <TextBlock Text="{Binding Description}"
+                                                       FontSize="13"
+                                                       TextWrapping="Wrap" />
+
+                                            <!-- Before → After -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="4"
+                                                        IsVisible="{Binding HasReplacement}">
+                                                <TextBlock Text="{Binding Original}"
+                                                           FontSize="12"
+                                                           TextDecorations="Strikethrough"
+                                                           Foreground="{DynamicResource StatusErrorBrush}" />
+                                                <TextBlock Text="→"
+                                                           FontSize="12"
+                                                           Opacity="0.5" />
+                                                <TextBlock Text="{Binding Replacement}"
+                                                           FontSize="12"
+                                                           Foreground="{DynamicResource StatusSuccessBrush}" />
+                                            </StackPanel>
+
+                                            <!-- Action buttons -->
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <Button Classes="action-button"
+                                                        Content="Apply Fix"
+                                                        Command="{Binding ApplyCommand}" />
+                                                <Button Classes="action-button"
+                                                        Content="Ignore"
+                                                        Command="{Binding IgnoreCommand}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Empty state -->
+                        <Border Background="{DynamicResource SurfaceBrush}"
+                                CornerRadius="6"
+                                Padding="16"
+                                IsVisible="{Binding !HasSuggestions}">
+                            <StackPanel HorizontalAlignment="Center" Spacing="8">
+                                <TextBlock Text="✨"
+                                           FontSize="24"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="No suggestions"
+                                           FontSize="13"
+                                           HorizontalAlignment="Center"
+                                           Opacity="0.7" />
+                                <TextBlock Text="Your writing looks great!"
+                                           FontSize="12"
+                                           HorizontalAlignment="Center"
+                                           Opacity="0.5" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ═══════════════════════════════════════════════════════
+                         DOCUMENT METADATA SECTION
+                         Word count, reading time, etc.
+                         ═══════════════════════════════════════════════════════ -->
+                    <StackPanel>
+                        <TextBlock Classes="section-header" Text="DOCUMENT INFO" />
+                        <StackPanel Spacing="8">
+                            <!-- Word Count -->
+                            <Border Classes="stat-item">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="📊"
+                                               FontSize="14"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Word Count"
+                                               FontSize="13"
+                                               Margin="8,0"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding WordCount, StringFormat='{}{0:N0}'}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Character Count -->
+                            <Border Classes="stat-item">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="📝"
+                                               FontSize="14"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Characters"
+                                               FontSize="13"
+                                               Margin="8,0"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding CharacterCount, StringFormat='{}{0:N0}'}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Reading Time -->
+                            <Border Classes="stat-item">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="⏱️"
+                                               FontSize="14"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Reading Time"
+                                               FontSize="13"
+                                               Margin="8,0"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding ReadingTime}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Paragraph Count -->
+                            <Border Classes="stat-item">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="📄"
+                                               FontSize="14"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Paragraphs"
+                                               FontSize="13"
+                                               Margin="8,0"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding ParagraphCount}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <!-- Sentence Count -->
+                            <Border Classes="stat-item">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="💬"
+                                               FontSize="14"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Sentences"
+                                               FontSize="13"
+                                               Margin="8,0"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding SentenceCount}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- ═══════════════════════════════════════════════════════
+                         VOICE PROFILE SECTION
+                         Directness, Formality, Complexity sliders
+                         ═══════════════════════════════════════════════════════ -->
+                    <StackPanel>
+                        <TextBlock Classes="section-header" Text="VOICE PROFILE" />
+                        <Border Background="{DynamicResource SurfaceBrush}"
+                                CornerRadius="6"
+                                Padding="12">
+                            <StackPanel Spacing="16">
+                                <!-- Directness -->
+                                <StackPanel Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Directness"
+                                                   FontSize="12"
+                                                   Opacity="0.8" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding DirectnessLabel}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                    </Grid>
+                                    <Slider Minimum="0" Maximum="100"
+                                            Value="{Binding Directness}"
+                                            Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Soft"
+                                                   FontSize="10"
+                                                   Opacity="0.5" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Assertive"
+                                                   FontSize="10"
+                                                   Opacity="0.5"
+                                                   HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- Formality -->
+                                <StackPanel Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Formality"
+                                                   FontSize="12"
+                                                   Opacity="0.8" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding FormalityLabel}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                    </Grid>
+                                    <Slider Minimum="0" Maximum="100"
+                                            Value="{Binding Formality}"
+                                            Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Casual"
+                                                   FontSize="10"
+                                                   Opacity="0.5" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Formal"
+                                                   FontSize="10"
+                                                   Opacity="0.5"
+                                                   HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- Complexity -->
+                                <StackPanel Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Complexity"
+                                                   FontSize="12"
+                                                   Opacity="0.8" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding ComplexityLabel}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                    </Grid>
+                                    <Slider Minimum="0" Maximum="100"
+                                            Value="{Binding Complexity}"
+                                            Foreground="{DynamicResource AccentPrimaryBrush}" />
+                                    <Grid ColumnDefinitions="*,*">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Simple"
+                                                   FontSize="10"
+                                                   Opacity="0.5" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Technical"
+                                                   FontSize="10"
+                                                   Opacity="0.5"
+                                                   HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+
+</UserControl>

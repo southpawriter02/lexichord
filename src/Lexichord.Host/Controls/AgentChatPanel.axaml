@@ -1,0 +1,307 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Lexichord.Host.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="Lexichord.Host.Controls.AgentChatPanel"
+             x:DataType="controls:AgentChatPanel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════════
+    AGENT CHAT PANEL (Critical Missing Component)
+
+    Purpose: Chat interface for interacting with AI writing agents.
+    Per SCREEN_WIREFRAMES.md Section 2.3 - The Ensemble (Active Session Panel)
+
+    Features:
+    - Message history display with agent/user distinction
+    - Action buttons (Apply Changes, Show Diff, Regenerate)
+    - Message input with send button
+    - Agent typing indicator
+    - Session controls (Stop, Clear, Export)
+
+    This component was identified as missing during the GUI audit.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Chat message base style -->
+        <Style Selector="Border.chat-message">
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="MaxWidth" Value="400" />
+        </Style>
+
+        <!-- User message style -->
+        <Style Selector="Border.user-message">
+            <Setter Property="Background" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <!-- Agent message style -->
+        <Style Selector="Border.agent-message">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+
+        <!-- Input box style -->
+        <Style Selector="TextBox.chat-input">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="AcceptsReturn" Value="False" />
+        </Style>
+
+        <!-- Action button style -->
+        <Style Selector="Button.action-chip">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.action-chip:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.send-button">
+            <Setter Property="Background" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.send-button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        </Style>
+
+        <Style Selector="Button.send-button:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBaseBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="16,12"
+                    CornerRadius="8,8,0,0">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- Agent Icon & Name -->
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="10">
+                        <Border Background="{DynamicResource AccentMutedBrush}"
+                                CornerRadius="20"
+                                Width="36" Height="36">
+                            <TextBlock Text="{Binding AgentIcon}"
+                                       FontSize="18"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="{Binding AgentName}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding AgentStatus}"
+                                       FontSize="11"
+                                       Opacity="0.6" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Status indicator -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="6"
+                                IsVisible="{Binding IsTyping}">
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{DynamicResource AccentPrimaryBrush}"
+                                 Classes="typing-dot" />
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{DynamicResource AccentPrimaryBrush}"
+                                 Classes="typing-dot" />
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{DynamicResource AccentPrimaryBrush}"
+                                 Classes="typing-dot" />
+                    </StackPanel>
+
+                    <!-- Session controls -->
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                        <Button Content="⏹️"
+                                Background="Transparent"
+                                Padding="8"
+                                ToolTip.Tip="Stop Generation"
+                                IsEnabled="{Binding IsTyping}"
+                                Command="{Binding StopCommand}" />
+                        <Button Content="🗑️"
+                                Background="Transparent"
+                                Padding="8"
+                                ToolTip.Tip="Clear Chat"
+                                Command="{Binding ClearCommand}" />
+                        <Button Content="📥"
+                                Background="Transparent"
+                                Padding="8"
+                                ToolTip.Tip="Export Chat"
+                                Command="{Binding ExportCommand}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Messages Area -->
+            <ScrollViewer Grid.Row="1"
+                          x:Name="MessagesScroll"
+                          Padding="16">
+                <ItemsControl ItemsSource="{Binding Messages}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="chat-message"
+                                    Classes.user-message="{Binding IsUser}"
+                                    Classes.agent-message="{Binding !IsUser}">
+                                <StackPanel Spacing="8">
+                                    <!-- Sender label for agent messages -->
+                                    <TextBlock Text="{Binding SenderName}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Opacity="0.7"
+                                               IsVisible="{Binding !IsUser}" />
+
+                                    <!-- Message content -->
+                                    <TextBlock Text="{Binding Content}"
+                                               TextWrapping="Wrap"
+                                               FontSize="14"
+                                               Foreground="{Binding TextColor}" />
+
+                                    <!-- Code block (if present) -->
+                                    <Border Background="{DynamicResource SurfaceBaseBrush}"
+                                            CornerRadius="6"
+                                            Padding="12"
+                                            IsVisible="{Binding HasCodeBlock}">
+                                        <TextBlock Text="{Binding CodeBlock}"
+                                                   FontFamily="JetBrains Mono, monospace"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap" />
+                                    </Border>
+
+                                    <!-- Action buttons (for agent messages with actions) -->
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="8"
+                                                Margin="0,4,0,0"
+                                                IsVisible="{Binding HasActions}">
+                                        <Button Classes="action-chip"
+                                                Content="✅ Apply Changes"
+                                                Command="{Binding ApplyCommand}"
+                                                IsVisible="{Binding CanApply}" />
+                                        <Button Classes="action-chip"
+                                                Content="📋 Show Diff"
+                                                Command="{Binding ShowDiffCommand}"
+                                                IsVisible="{Binding HasDiff}" />
+                                        <Button Classes="action-chip"
+                                                Content="🔄 Regenerate"
+                                                Command="{Binding RegenerateCommand}" />
+                                    </StackPanel>
+
+                                    <!-- Timestamp -->
+                                    <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
+                                               FontSize="10"
+                                               Opacity="0.5"
+                                               HorizontalAlignment="{Binding TimestampAlignment}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Quick Actions -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    Padding="12,8"
+                    IsVisible="{Binding ShowQuickActions}">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Classes="action-chip"
+                                Content="✨ Improve Writing"
+                                Command="{Binding QuickActionCommand}"
+                                CommandParameter="improve" />
+                        <Button Classes="action-chip"
+                                Content="📝 Summarize"
+                                Command="{Binding QuickActionCommand}"
+                                CommandParameter="summarize" />
+                        <Button Classes="action-chip"
+                                Content="🎨 Change Tone"
+                                Command="{Binding QuickActionCommand}"
+                                CommandParameter="tone" />
+                        <Button Classes="action-chip"
+                                Content="🔍 Expand"
+                                Command="{Binding QuickActionCommand}"
+                                CommandParameter="expand" />
+                        <Button Classes="action-chip"
+                                Content="✂️ Make Concise"
+                                Command="{Binding QuickActionCommand}"
+                                CommandParameter="concise" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Input Area -->
+            <Border Grid.Row="3"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="12"
+                    CornerRadius="0,0,8,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- Input TextBox -->
+                    <TextBox Grid.Column="0"
+                             Classes="chat-input"
+                             x:Name="MessageInput"
+                             Text="{Binding InputText, Mode=TwoWay}"
+                             Watermark="Type a message or select text in your document..."
+                             KeyDown="OnInputKeyDown" />
+
+                    <!-- Send Button -->
+                    <Button Grid.Column="1"
+                            Classes="send-button"
+                            Margin="8,0,0,0"
+                            Command="{Binding SendCommand}"
+                            IsEnabled="{Binding CanSend}"
+                            ToolTip.Tip="Send Message (Enter)">
+                        <TextBlock Text="➤"
+                                   FontSize="18"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Button>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Border>
+
+</UserControl>

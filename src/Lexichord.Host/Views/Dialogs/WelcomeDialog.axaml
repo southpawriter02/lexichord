@@ -1,0 +1,413 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="Lexichord.Host.Views.Dialogs.WelcomeDialog"
+        Title="Welcome to Lexichord"
+        Width="600"
+        Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SystemDecorations="BorderOnly"
+        Background="{DynamicResource SurfaceBaseBrush}">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════════
+    WELCOME / ONBOARDING DIALOG (P0 - Critical Missing Component)
+
+    Purpose: Multi-step onboarding wizard for first-time users.
+    Per SCREEN_WIREFRAMES.md Section 3.1 - Welcome/Onboarding Dialog
+
+    Features:
+    - Step 1: Welcome message with product overview
+    - Step 2: Style guide selection (Google, Microsoft, Custom)
+    - Step 3: LLM configuration (optional)
+    - Progress indicators and navigation
+
+    This component was completely missing from the implementation.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+
+    <Window.Styles>
+        <!-- Step indicator dot -->
+        <Style Selector="Ellipse.step-dot">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Height" Value="10" />
+            <Setter Property="Fill" Value="{DynamicResource BorderSubtleBrush}" />
+        </Style>
+
+        <Style Selector="Ellipse.step-dot.active">
+            <Setter Property="Fill" Value="{DynamicResource AccentPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="Ellipse.step-dot.completed">
+            <Setter Property="Fill" Value="{DynamicResource StatusSuccessBrush}" />
+        </Style>
+
+        <!-- Option card -->
+        <Style Selector="Border.option-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Border.option-card:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+
+        <Style Selector="Border.option-card.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}" />
+        </Style>
+
+        <!-- Primary button -->
+        <Style Selector="Button.primary-button">
+            <Setter Property="Background" Value="{DynamicResource AccentPrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="24,10" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.primary-button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        </Style>
+
+        <Style Selector="Button.secondary-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.secondary-button:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- Content Area -->
+        <Carousel Grid.Row="0"
+                  x:Name="StepsCarousel"
+                  SelectedIndex="{Binding CurrentStep}">
+
+            <!-- ═══════════════════════════════════════════════════════
+                 STEP 1: Welcome
+                 ═══════════════════════════════════════════════════════ -->
+            <CarouselItem>
+                <Grid RowDefinitions="*,Auto" Margin="40">
+                    <StackPanel Grid.Row="0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Spacing="24">
+                        <!-- Logo -->
+                        <Border Background="{DynamicResource AccentMutedBrush}"
+                                CornerRadius="20"
+                                Width="80" Height="80"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="🎹"
+                                       FontSize="40"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- Welcome text -->
+                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                            <TextBlock Text="Welcome to Lexichord"
+                                       FontSize="28"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="The Orchestrator for Your Writing"
+                                       FontSize="16"
+                                       Foreground="{DynamicResource AccentPrimaryBrush}"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Description -->
+                        <TextBlock Text="Lexichord helps you write better by providing intelligent style checking, AI-powered suggestions, and a knowledge base to keep your writing consistent."
+                                   FontSize="14"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Opacity="0.8"
+                                   MaxWidth="400" />
+
+                        <!-- Features grid -->
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                              HorizontalAlignment="Center"
+                              Margin="0,16,0,0">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4" Margin="16">
+                                <TextBlock Text="✨ Style Checking"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="Catch inconsistencies as you write"
+                                           FontSize="12"
+                                           Opacity="0.7" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="4" Margin="16">
+                                <TextBlock Text="🤖 AI Assistants"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="Intelligent writing help on demand"
+                                           FontSize="12"
+                                           Opacity="0.7" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="16">
+                                <TextBlock Text="📚 Knowledge Base"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="Reference your own documents"
+                                           FontSize="12"
+                                           Opacity="0.7" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4" Margin="16">
+                                <TextBlock Text="📊 Analytics"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="Track your writing improvements"
+                                           FontSize="12"
+                                           Opacity="0.7" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </CarouselItem>
+
+            <!-- ═══════════════════════════════════════════════════════
+                 STEP 2: Style Guide Selection
+                 ═══════════════════════════════════════════════════════ -->
+            <CarouselItem>
+                <Grid RowDefinitions="Auto,*" Margin="40">
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+                        <TextBlock Text="Choose Your Style Guide"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Select a style guide to customize your writing rules."
+                                   FontSize="14"
+                                   Opacity="0.7"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Options -->
+                    <StackPanel Grid.Row="1" Spacing="12">
+                        <!-- Google Developer Style -->
+                        <Border Classes="option-card"
+                                Classes.selected="{Binding IsGoogleSelected}"
+                                PointerPressed="OnGoogleSelected">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="📗"
+                                           FontSize="24"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,12,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="Google Developer Style Guide"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="Clear, concise technical writing optimized for developer documentation."
+                                               FontSize="12"
+                                               Opacity="0.7"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2"
+                                           Text="✓"
+                                           FontSize="20"
+                                           Foreground="{DynamicResource AccentPrimaryBrush}"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding IsGoogleSelected}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Microsoft Writing Style -->
+                        <Border Classes="option-card"
+                                Classes.selected="{Binding IsMicrosoftSelected}"
+                                PointerPressed="OnMicrosoftSelected">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="📘"
+                                           FontSize="24"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,12,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="Microsoft Writing Style Guide"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="Professional, accessible writing for enterprise and consumer content."
+                                               FontSize="12"
+                                               Opacity="0.7"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2"
+                                           Text="✓"
+                                           FontSize="20"
+                                           Foreground="{DynamicResource AccentPrimaryBrush}"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding IsMicrosoftSelected}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Custom YAML -->
+                        <Border Classes="option-card"
+                                Classes.selected="{Binding IsCustomSelected}"
+                                PointerPressed="OnCustomSelected">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="⚙️"
+                                           FontSize="24"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,12,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="Custom Style Rules"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="Start with a blank slate and define your own style rules using YAML."
+                                               FontSize="12"
+                                               Opacity="0.7"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2"
+                                           Text="✓"
+                                           FontSize="20"
+                                           Foreground="{DynamicResource AccentPrimaryBrush}"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding IsCustomSelected}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Skip option -->
+                        <TextBlock Text="You can change this later in Settings."
+                                   FontSize="12"
+                                   Opacity="0.5"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,8,0,0" />
+                    </StackPanel>
+                </Grid>
+            </CarouselItem>
+
+            <!-- ═══════════════════════════════════════════════════════
+                 STEP 3: Ready to Go
+                 ═══════════════════════════════════════════════════════ -->
+            <CarouselItem>
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="24"
+                            Margin="40">
+                    <!-- Success icon -->
+                    <Border Background="{DynamicResource StatusSuccessBrush}"
+                            Opacity="0.2"
+                            CornerRadius="40"
+                            Width="80" Height="80"
+                            HorizontalAlignment="Center">
+                        <TextBlock Text="✓"
+                                   FontSize="40"
+                                   Foreground="{DynamicResource StatusSuccessBrush}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Text -->
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="You're All Set!"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Lexichord is ready to help you write better."
+                                   FontSize="16"
+                                   Opacity="0.8"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Quick tips -->
+                    <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                            CornerRadius="8"
+                            Padding="20"
+                            MaxWidth="400">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Quick Tips"
+                                       FontWeight="SemiBold"
+                                       FontSize="14" />
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⌘K"
+                                               FontFamily="JetBrains Mono, monospace"
+                                               FontSize="11"
+                                               Background="{DynamicResource SurfaceBrush}"
+                                               Padding="6,2" />
+                                    <TextBlock Text="Open Command Palette"
+                                               FontSize="13"
+                                               Opacity="0.8" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⌘S"
+                                               FontFamily="JetBrains Mono, monospace"
+                                               FontSize="11"
+                                               Background="{DynamicResource SurfaceBrush}"
+                                               Padding="6,2" />
+                                    <TextBlock Text="Save Document"
+                                               FontSize="13"
+                                               Opacity="0.8" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⌘⇧A"
+                                               FontFamily="JetBrains Mono, monospace"
+                                               FontSize="11"
+                                               Background="{DynamicResource SurfaceBrush}"
+                                               Padding="6,2" />
+                                    <TextBlock Text="Open AI Assistant"
+                                               FontSize="13"
+                                               Opacity="0.8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Optional AI Setup -->
+                    <Button Content="Configure AI Provider (Optional)"
+                            Classes="secondary-button"
+                            HorizontalAlignment="Center"
+                            Command="{Binding ConfigureAICommand}" />
+                </StackPanel>
+            </CarouselItem>
+
+        </Carousel>
+
+        <!-- Footer with Navigation -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Back button -->
+                <Button Grid.Column="0"
+                        Content="← Back"
+                        Classes="secondary-button"
+                        IsVisible="{Binding CanGoBack}"
+                        Command="{Binding BackCommand}" />
+
+                <!-- Step indicators -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="8">
+                    <Ellipse Classes="step-dot"
+                             Classes.active="{Binding IsStep1}"
+                             Classes.completed="{Binding Step1Completed}" />
+                    <Ellipse Classes="step-dot"
+                             Classes.active="{Binding IsStep2}"
+                             Classes.completed="{Binding Step2Completed}" />
+                    <Ellipse Classes="step-dot"
+                             Classes.active="{Binding IsStep3}" />
+                </StackPanel>
+
+                <!-- Next/Finish button -->
+                <Button Grid.Column="2"
+                        Content="{Binding NextButtonText}"
+                        Classes="primary-button"
+                        Command="{Binding NextCommand}" />
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>
