@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dock="using:Dock.Avalonia.Themes.Fluent"
              x:Class="Lexichord.Host.App"
              RequestedThemeVariant="Dark">
 
@@ -20,6 +21,9 @@
     <Application.Styles>
         <!-- Base Fluent theme for unstyled controls -->
         <FluentTheme />
+
+        <!-- v0.6.4: Dock.Avalonia Fluent theme (required for dock content display) -->
+        <dock:DockFluentTheme />
 
         <!-- Lexichord global styles (overrides for controls) -->
         <StyleInclude Source="avares://Lexichord.Host/Themes/LexichordStyles.axaml" />

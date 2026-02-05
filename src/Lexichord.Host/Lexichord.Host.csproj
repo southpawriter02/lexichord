@@ -56,6 +56,7 @@
 
     <!-- v0.1.1a: Dock.Avalonia Docking System -->
     <PackageReference Include="Dock.Avalonia" Version="$(DockAvaloniaVersion)" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="$(DockAvaloniaVersion)" />
     <PackageReference Include="Dock.Model.Avalonia" Version="$(DockAvaloniaVersion)" />
     <PackageReference Include="Dock.Model.Mvvm" Version="$(DockAvaloniaVersion)" />
 

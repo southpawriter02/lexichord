@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Commands;
+using Lexichord.Abstractions.Contracts.Navigation;
 using Lexichord.Host.Extensions;
 using Lexichord.Host.Services;
 using Lexichord.Host.Views;
@@ -129,6 +130,12 @@ public partial class App : Application
             // NOTE: Task.Run prevents synchronization context deadlock
             Task.Run(() => InitializeLayoutAsync()).GetAwaiter().GetResult();
             Log.Information("Layout initialized");
+
+            Log.Information("Navigating to default section...");
+            // LOGIC (v0.6.4): Navigate to Documents section on startup
+            // NOTE: Task.Run prevents synchronization context deadlock
+            Task.Run(() => NavigateToDefaultSectionAsync()).GetAwaiter().GetResult();
+            Log.Information("Default section navigation complete");
 
             Log.Information("Handling first run detection...");
             // LOGIC (v0.1.7c): Handle first run scenarios after layout is ready
@@ -354,6 +361,40 @@ public partial class App : Application
         else
         {
             Log.Debug("No saved layout found, using default layout");
+        }
+    }
+
+    /// <summary>
+    /// Navigates to the default section (Documents) on startup.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC (v0.6.4): Shows the Documents section in the dock area when the application starts.
+    /// This ensures users see content instead of an empty dock area.
+    /// </remarks>
+    private async Task NavigateToDefaultSectionAsync()
+    {
+        var navigationService = _serviceProvider!.GetService<ISectionNavigationService>();
+        if (navigationService is null)
+        {
+            Log.Warning("ISectionNavigationService not available, skipping default section navigation");
+            return;
+        }
+
+        try
+        {
+            var result = await navigationService.NavigateToSectionAsync(NavigationSection.Documents);
+            if (result)
+            {
+                Log.Debug("Successfully navigated to Documents section");
+            }
+            else
+            {
+                Log.Warning("Failed to navigate to Documents section");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error navigating to default section");
         }
     }
 

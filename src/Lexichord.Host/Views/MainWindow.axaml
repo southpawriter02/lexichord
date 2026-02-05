@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="using:Lexichord.Host.Views.Shell"
         xmlns:dock="using:Dock.Avalonia.Controls"
+        xmlns:dockModel="using:Dock.Model.Core"
+        xmlns:layout="using:Lexichord.Host.Layout"
         xmlns:vm="using:Lexichord.Host.ViewModels"
         xmlns:local="using:Lexichord.Host.Views"
         x:Class="Lexichord.Host.Views.MainWindow"
@@ -19,6 +21,18 @@
     The main shell uses a Panel to layer the palette overlay on top of content.
     ═══════════════════════════════════════════════════════════════════════════
     -->
+
+    <!-- v0.6.4: DataTemplates for dock content display -->
+    <Window.DataTemplates>
+        <!-- Template for LexichordDocument - displays the Context (UserControl) directly -->
+        <DataTemplate DataType="layout:LexichordDocument">
+            <ContentControl Content="{Binding Context}" />
+        </DataTemplate>
+        <!-- Template for LexichordTool - displays the Context (UserControl) directly -->
+        <DataTemplate DataType="layout:LexichordTool">
+            <ContentControl Content="{Binding Context}" />
+        </DataTemplate>
+    </Window.DataTemplates>
 
     <Panel>
         <!-- Main content grid -->
