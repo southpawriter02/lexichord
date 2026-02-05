@@ -32,8 +32,9 @@ public interface ITool : IDockable
     /// <remarks>
     /// LOGIC: The tool cannot be resized smaller than this width.
     /// Default should be 150px for reasonable content display.
+    /// Note: Uses 'new' to explicitly hide IDockable.MinWidth.
     /// </remarks>
-    double MinWidth { get; }
+    new double MinWidth { get; }
 
     /// <summary>
     /// Gets the minimum height for the tool pane.
@@ -41,8 +42,9 @@ public interface ITool : IDockable
     /// <remarks>
     /// LOGIC: The tool cannot be resized smaller than this height.
     /// Default should be 100px for reasonable content display.
+    /// Note: Uses 'new' to explicitly hide IDockable.MinHeight.
     /// </remarks>
-    double MinHeight { get; }
+    new double MinHeight { get; }
 
     /// <summary>
     /// Gets a value indicating whether the tool can be closed by the user.

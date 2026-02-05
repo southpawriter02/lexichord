@@ -7,6 +7,8 @@
 
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Templates;
+using Lexichord.Modules.Agents.Templates.Formatters;
+using Lexichord.Modules.Agents.Templates.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -281,6 +283,153 @@ public static class AgentsServiceCollectionExtensions
 
         // LOGIC: Register repository as singleton.
         services.TryAddSingleton<IPromptTemplateRepository, PromptTemplateRepository>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the context injection services to the service collection with default options.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="ContextInjectorOptions"/> - Configuration options (via <see cref="Microsoft.Extensions.Options.IOptions{TOptions}"/>)
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IContextFormatter"/> - Singleton formatter for context output
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IContextProvider"/> implementations - Singleton providers (Document, StyleRules, RAG)
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IContextInjector"/> - Scoped orchestrator for context assembly
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Provider Registration:</strong>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="DocumentContextProvider"/> - Priority 50 (foundational)</description></item>
+    ///   <item><description><see cref="StyleRulesContextProvider"/> - Priority 100 (enhancing)</description></item>
+    ///   <item><description><see cref="RAGContextProvider"/> - Priority 200 (overriding, requires license)</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> - For feature gating</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.IStyleEngine"/> - For StyleRulesContextProvider</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ISemanticSearchService"/> - For RAGContextProvider</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.6.3d as part of the Context Injection Service.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Basic registration with default options
+    /// services.AddContextInjection();
+    ///
+    /// // Later, resolve via DI
+    /// var injector = serviceProvider.GetRequiredService&lt;IContextInjector&gt;();
+    /// var context = await injector.AssembleContextAsync(request);
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddContextInjection(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register default options via Options pattern.
+        services.AddOptions<ContextInjectorOptions>();
+
+        // LOGIC: Register formatter as singleton.
+        // TryAdd to avoid duplicate registrations if called multiple times.
+        services.TryAddSingleton<IContextFormatter, DefaultContextFormatter>();
+
+        // LOGIC: Register context providers as singletons.
+        // All providers are stateless and thread-safe.
+        services.AddSingleton<IContextProvider, DocumentContextProvider>();
+        services.AddSingleton<IContextProvider, StyleRulesContextProvider>();
+        services.AddSingleton<IContextProvider, RAGContextProvider>();
+
+        // LOGIC: Register the context injector as scoped.
+        // Scoped allows per-request isolation while sharing provider instances.
+        services.AddScoped<IContextInjector, ContextInjector>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the context injection services to the service collection with custom options.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <param name="configureOptions">An action to configure the injector options.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="services"/> or <paramref name="configureOptions"/> is null.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This overload allows customization of the injector behavior via
+    /// <see cref="ContextInjectorOptions"/>.
+    /// </para>
+    /// <para>
+    /// Available options:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ContextInjectorOptions.RAGTimeoutMs"/> - Timeout for RAG provider</description></item>
+    ///   <item><description><see cref="ContextInjectorOptions.ProviderTimeoutMs"/> - Timeout for other providers</description></item>
+    ///   <item><description><see cref="ContextInjectorOptions.MaxStyleRules"/> - Maximum style rules to include</description></item>
+    ///   <item><description><see cref="ContextInjectorOptions.MaxChunkLength"/> - Maximum RAG chunk length</description></item>
+    ///   <item><description><see cref="ContextInjectorOptions.MinRAGRelevanceScore"/> - Minimum RAG relevance score</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.6.3d as part of the Context Injection Service.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Register with fast timeouts for responsive UI
+    /// services.AddContextInjection(options =>
+    /// {
+    ///     options.RAGTimeoutMs = 2000;
+    ///     options.ProviderTimeoutMs = 1000;
+    /// });
+    ///
+    /// // Register with higher relevance threshold
+    /// services.AddContextInjection(options =>
+    /// {
+    ///     options.MinRAGRelevanceScore = 0.7f;
+    /// });
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddContextInjection(
+        this IServiceCollection services,
+        Action<ContextInjectorOptions> configureOptions)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configureOptions);
+
+        // LOGIC: Register options with configuration action.
+        // Note: ContextInjectorOptions is a record, so we use Configure<T>.
+        services.Configure(configureOptions);
+
+        // LOGIC: Register formatter as singleton.
+        services.TryAddSingleton<IContextFormatter, DefaultContextFormatter>();
+
+        // LOGIC: Register context providers as singletons.
+        services.AddSingleton<IContextProvider, DocumentContextProvider>();
+        services.AddSingleton<IContextProvider, StyleRulesContextProvider>();
+        services.AddSingleton<IContextProvider, RAGContextProvider>();
+
+        // LOGIC: Register the context injector as scoped.
+        services.AddScoped<IContextInjector, ContextInjector>();
 
         return services;
     }

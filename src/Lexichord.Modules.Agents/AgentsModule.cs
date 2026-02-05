@@ -25,7 +25,7 @@ namespace Lexichord.Modules.Agents;
 /// <list type="bullet">
 ///   <item><description><strong>v0.6.3b:</strong> Mustache-based prompt template rendering via <see cref="MustachePromptRenderer"/></description></item>
 ///   <item><description><strong>v0.6.3c:</strong> Template repository for built-in and custom prompts via <see cref="PromptTemplateRepository"/></description></item>
-///   <item><description><strong>v0.6.3d:</strong> Context injection from style rules and RAG (future)</description></item>
+///   <item><description><strong>v0.6.3d:</strong> Context injection from style rules and RAG via <see cref="ContextInjector"/></description></item>
 /// </list>
 /// <para>
 /// The module is part of the v0.6.x "Conductors" release series, which transforms
@@ -94,6 +94,12 @@ public class AgentsModule : IModule
     ///   <item><description>
     ///     <see cref="PromptTemplateOptions"/> via IOptions pattern - v0.6.3c
     ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IContextInjector"/> → <see cref="ContextInjector"/> (Scoped) - v0.6.3d
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="ContextInjectorOptions"/> via IOptions pattern - v0.6.3d
+    ///   </description></item>
     /// </list>
     /// </remarks>
     public void RegisterServices(IServiceCollection services)
@@ -105,6 +111,10 @@ public class AgentsModule : IModule
         // LOGIC: Register template repository services (v0.6.3c).
         // The repository manages built-in and custom templates with hot-reload support.
         services.AddTemplateRepository();
+
+        // LOGIC: Register context injection services (v0.6.3d).
+        // The injector orchestrates context assembly from multiple providers.
+        services.AddContextInjection();
     }
 
     /// <inheritdoc />
@@ -161,6 +171,23 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Template repository is not registered. Template management will not be available.");
+        }
+
+        // LOGIC: Verify context injector is available (v0.6.3d).
+        // Note: IContextInjector is scoped, so we create a scope to verify registration.
+        using (var scope = provider.CreateScope())
+        {
+            var injector = scope.ServiceProvider.GetService<IContextInjector>();
+            if (injector is not null)
+            {
+                logger.LogDebug(
+                    "Context injector registered successfully: {InjectorType}",
+                    injector.GetType().Name);
+            }
+            else
+            {
+                logger.LogWarning("Context injector is not registered. Context injection will not be available.");
+            }
         }
 
         logger.LogInformation(

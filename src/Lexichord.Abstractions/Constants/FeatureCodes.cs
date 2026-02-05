@@ -289,4 +289,21 @@ public static class FeatureCodes
     public const string DeduplicationMetrics = "RAG.Dedup.Metrics";
 
     #endregion
+
+    #region Context Injection Features (v0.6.3)
+
+    /// <summary>
+    /// The RAG Context feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to RAG (Retrieval-Augmented Generation) context injection
+    /// in prompt templates. When this feature is not enabled, the RAGContextProvider
+    /// is skipped during context assembly, and only document and style context
+    /// are available for prompt injection.
+    /// Introduced in v0.6.3d.
+    /// </remarks>
+    public const string RAGContext = "Feature.RAGContext";
+
+    #endregion
 }

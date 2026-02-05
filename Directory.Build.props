@@ -26,8 +26,9 @@
   </PropertyGroup>
 
   <!-- v0.1.1a: Dock.Avalonia Version (centralized) -->
+  <!-- Updated to 11.3.2 for NuGet availability and Avalonia 11.3.2 compatibility -->
   <PropertyGroup>
-    <DockAvaloniaVersion>11.1.0.1</DockAvaloniaVersion>
+    <DockAvaloniaVersion>11.3.2</DockAvaloniaVersion>
   </PropertyGroup>
 
   <!-- v0.1.7a: Velopack Version (centralized) -->
