@@ -16,11 +16,14 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Streaming Token Model (v0.6.5a)** — Core data contracts for streaming LLM responses in `Lexichord.Modules.Agents`. Added `StreamingChatToken` immutable record with `Text`, `Index`, `IsComplete`, and `FinishReason` properties, plus `Content(text, index)` and `Complete(index, finishReason)` factory methods and `HasContent` computed property. Added `StreamingState` enum with 6 lifecycle states (`Idle`, `Connecting`, `Streaming`, `Completed`, `Cancelled`, `Error`) and `StreamingStateExtensions` with 5 methods (`IsActive`, `IsTerminal`, `CanCancel`, `ShowTypingIndicator`, `InputEnabled`) for UI binding. Added `IStreamingChatHandler` interface defining the streaming callback contract with `OnTokenReceived(StreamingChatToken)`, `OnStreamComplete(ChatResponse)`, and `OnStreamError(Exception)`. Includes 9 unit tests.
 
+- **SSE Parser (v0.6.5b)** — Server-Sent Events parser for extracting streaming tokens from LLM provider HTTP response streams in `Lexichord.Modules.Agents`. Added `ISSEParser` interface with `ParseSSEStreamAsync(Stream, string, CancellationToken)` returning `IAsyncEnumerable<StreamingChatToken>`. Implemented `SSEParser` sealed class as stateless, thread-safe singleton with provider-dispatched JSON parsing: OpenAI format (`choices[0].delta.content` with `[DONE]` termination) and Anthropic format (`content_block_delta` events with `message_stop` termination). Features malformed JSON resilience (logged at Warning, skipped), case-insensitive provider matching, `ReadOnlySpan` prefix slicing, `Stopwatch`-based completion metrics, and comprehensive guard clauses (`ArgumentNullException` for null stream, `NotSupportedException` for unknown providers). Registered as `ISSEParser` → `SSEParser` singleton in `AgentsModule`. Includes 16 unit tests (36 with Theory expansion).
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
 | ----------------------------------- | --------------------- | ----------- |
 | [v0.6.5a](v0.6.x/LCS-CL-v065a.md) | Streaming Token Model | ✅ Complete |
+| [v0.6.5b](v0.6.x/LCS-CL-v065b.md) | SSE Parser            | ✅ Complete |
 
 ---
 

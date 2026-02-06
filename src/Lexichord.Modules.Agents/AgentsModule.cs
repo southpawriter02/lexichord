@@ -7,6 +7,8 @@
 
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.LLM;
+using Lexichord.Modules.Agents.Chat.Abstractions;
+using Lexichord.Modules.Agents.Chat.Services;
 using Lexichord.Modules.Agents.Extensions;
 using Lexichord.Modules.Agents.Templates;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,16 +67,16 @@ public class AgentsModule : IModule
     /// <list type="bullet">
     ///   <item><description><strong>Id:</strong> "agents"</description></item>
     ///   <item><description><strong>Name:</strong> "Agents"</description></item>
-    ///   <item><description><strong>Version:</strong> 0.6.3 (The Template Engine)</description></item>
+    ///   <item><description><strong>Version:</strong> 0.6.5 (The Stream)</description></item>
     ///   <item><description><strong>Author:</strong> Lexichord Team</description></item>
     /// </list>
     /// </remarks>
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 6, 3),
+        Version: new Version(0, 6, 5),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with Mustache-based prompt templating");
+        Description: "AI agent orchestration with streaming, prompt templating, and conversation management");
 
     /// <inheritdoc />
     /// <remarks>
@@ -100,6 +102,9 @@ public class AgentsModule : IModule
     ///   <item><description>
     ///     <see cref="ContextInjectorOptions"/> via IOptions pattern - v0.6.3d
     ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="ISSEParser"/> → <see cref="SSEParser"/> (Singleton) - v0.6.5b
+    ///   </description></item>
     /// </list>
     /// </remarks>
     public void RegisterServices(IServiceCollection services)
@@ -123,6 +128,10 @@ public class AgentsModule : IModule
         // LOGIC: Register context panel services (v0.6.4d).
         // The context panel ViewModel manages UI state for context source display.
         services.AddContextPanel();
+
+        // LOGIC: Register SSE parser service (v0.6.5b).
+        // The parser is stateless and thread-safe, suitable for singleton registration.
+        services.AddSingleton<ISSEParser, SSEParser>();
     }
 
     /// <inheritdoc />
@@ -196,6 +205,19 @@ public class AgentsModule : IModule
             {
                 logger.LogWarning("Context injector is not registered. Context injection will not be available.");
             }
+        }
+
+        // LOGIC: Verify SSE parser is available (v0.6.5b).
+        var sseParser = provider.GetService<ISSEParser>();
+        if (sseParser is not null)
+        {
+            logger.LogDebug(
+                "SSE parser registered successfully: {ParserType}",
+                sseParser.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("SSE parser is not registered. Streaming response parsing will not be available.");
         }
 
         logger.LogInformation(
