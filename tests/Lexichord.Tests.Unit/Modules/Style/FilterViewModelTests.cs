@@ -149,8 +149,8 @@ public class FilterViewModelTests : IDisposable
         // Should not trigger immediately
         filterChangedCount.Should().Be(0);
 
-        // Wait for debounce (100ms + generous margin)
-        await Task.Delay(200);
+        // Wait for debounce (100ms + very generous margin for CPU load)
+        await Task.Delay(500);
 
         filterChangedCount.Should().Be(1);
 

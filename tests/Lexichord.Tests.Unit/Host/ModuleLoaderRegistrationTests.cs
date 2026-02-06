@@ -71,7 +71,7 @@ public class ModuleLoaderRegistrationTests : IDisposable
     public async Task DiscoverAndLoadAsync_LogsCurrentLicenseTier()
     {
         // Arrange - need at least one DLL to get past early return
-        File.WriteAllText(Path.Combine(_tempDir, "dummy.dll"), "not a real dll");
+        File.WriteAllText(Path.Combine(_tempDir, "Lexichord.Modules.Dummy.dll"), "not a real dll");
         var loader = new ModuleLoader(_loggerMock.Object, _licenseContextMock.Object, _tempDir);
         var services = new ServiceCollection();
 

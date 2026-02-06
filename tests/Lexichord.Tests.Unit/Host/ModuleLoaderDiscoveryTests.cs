@@ -94,7 +94,7 @@ public class ModuleLoaderDiscoveryTests : IDisposable
     public async Task DiscoverAndLoadAsync_WithCancellation_ThrowsOperationCanceledException()
     {
         // We need to create at least one file to get past the early return
-        File.WriteAllText(Path.Combine(_tempDir, "test.dll"), "not a real dll");
+        File.WriteAllText(Path.Combine(_tempDir, "Lexichord.Modules.Test.dll"), "not a real dll");
 
         var loader = new ModuleLoader(_loggerMock.Object, _licenseContextMock.Object, _tempDir);
         var services = new ServiceCollection();

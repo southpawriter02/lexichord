@@ -436,7 +436,14 @@ public class ConversationManager : IConversationManager
         if (!_currentConversation.HasMessages)
             return;
 
-        _recentConversations.Insert(0, _currentConversation);
+        // LOGIC (v0.6.4c): Create a snapshot of the conversation with a copy of messages.
+        // This prevents the archived conversation from being affected when _messages is cleared.
+        var snapshotConversation = _currentConversation with
+        {
+            Messages = _messages.ToList().AsReadOnly(),
+        };
+
+        _recentConversations.Insert(0, snapshotConversation);
 
         // Keep maximum of 10 recent conversations
         if (_recentConversations.Count > 10)

@@ -119,9 +119,9 @@ public sealed class Neo4jConnectionFactoryTests : IAsyncDisposable
     }
 
     [Fact]
-    public void Constructor_NoPasswordAnywhere_ThrowsInvalidOperationException()
+    public async Task CreateSessionAsync_NoPasswordAnywhere_ThrowsInvalidOperationException()
     {
-        // Arrange
+        // Arrange - v0.6.3b: Lazy initialization defers password check to CreateSessionAsync
         _vaultMock.Setup(v => v.GetSecretAsync("neo4j:password", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("No secret"));
 
@@ -129,13 +129,16 @@ public sealed class Neo4jConnectionFactoryTests : IAsyncDisposable
         {
             Password = null // No fallback password
         });
+        _licenseMock.Setup(l => l.GetCurrentTier()).Returns(LicenseTier.Teams);
 
-        // Act
-        var act = () => new Neo4jConnectionFactory(
+        var factory = new Neo4jConnectionFactory(
             config, _vaultMock.Object, _licenseMock.Object, _logger);
 
+        // Act - Exception now thrown on first use, not construction
+        var act = () => factory.CreateSessionAsync(GraphAccessMode.Read);
+
         // Assert
-        act.Should().Throw<InvalidOperationException>()
+        await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*Neo4j password not configured*");
     }
 
@@ -293,15 +296,15 @@ public sealed class Neo4jConnectionFactoryTests : IAsyncDisposable
     #region Logging Tests
 
     [Fact]
-    public void Constructor_LogsDriverCreation()
+    public void Constructor_LogsLazyInitialization()
     {
-        // Arrange & Act
+        // Arrange & Act - v0.6.3b: Constructor now logs lazy initialization setup
         var factory = CreateFactory();
 
         // Assert
         _logger.Logs.Should().Contain(log =>
-            log.Level == LogLevel.Information &&
-            log.Message.Contains("Neo4j driver created"));
+            log.Level == LogLevel.Debug &&
+            log.Message.Contains("Neo4jConnectionFactory created (lazy initialization)"));
     }
 
     [Fact]

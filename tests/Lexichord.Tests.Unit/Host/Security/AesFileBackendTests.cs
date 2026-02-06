@@ -29,9 +29,28 @@ public class AesFileBackendTests : IDisposable
     public void Dispose()
     {
         _backend.Dispose();
-        if (Directory.Exists(_testVaultPath))
+        
+        // Retry cleanup to handle race condition where file handles may not be fully released
+        for (int i = 0; i < 3; i++)
         {
-            Directory.Delete(_testVaultPath, recursive: true);
+            try
+            {
+                if (Directory.Exists(_testVaultPath))
+                {
+                    Directory.Delete(_testVaultPath, recursive: true);
+                }
+                break;
+            }
+            catch (IOException) when (i < 2)
+            {
+                // Wait for file handles to be released
+                Thread.Sleep(100);
+            }
+            catch
+            {
+                // Silently ignore cleanup failures on final attempt
+                break;
+            }
         }
     }
 

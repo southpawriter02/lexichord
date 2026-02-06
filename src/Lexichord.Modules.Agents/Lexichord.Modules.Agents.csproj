@@ -21,7 +21,7 @@
     <PackageReference Include="Stubble.Core" Version="1.10.8" />
 
     <!-- v0.6.3c: YAML template parsing -->
-    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    <PackageReference Include="YamlDotNet" Version="15.1.6" />
 
     <!-- DI Abstractions -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
