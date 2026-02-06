@@ -28,6 +28,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+
+    <!-- v0.6.4d: Avalonia UI for ContextPanelView -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+
+    <!-- v0.6.4d: CommunityToolkit.Mvvm for MVVM pattern (ObservableObject, RelayCommand) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <!-- v0.6.3c: Embed built-in prompt templates as resources -->

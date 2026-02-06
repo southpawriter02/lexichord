@@ -433,4 +433,63 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Adds the Context Panel ViewModel and related services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="Chat.ViewModels.ContextPanelViewModel"/> - Transient for UI isolation
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// The ViewModel is registered as transient because:
+    /// </para>
+    /// <list type="number">
+    ///   <item><description>Each Context Panel instance needs its own ViewModel</description></item>
+    ///   <item><description>ViewModels contain per-view state (toggle states, expansion)</description></item>
+    ///   <item><description>Disposable pattern requires individual instance management</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="IContextInjector"/> - For context assembly</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.IStyleEngine"/> - For style rules</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ISemanticSearchService"/> - For RAG chunks</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.6.4d as part of the Context Panel feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddContextPanel();
+    /// }
+    ///
+    /// // Later, resolve via DI
+    /// var viewModel = serviceProvider.GetRequiredService&lt;ContextPanelViewModel&gt;();
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddContextPanel(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register ViewModel as transient for per-instance isolation.
+        // Each Context Panel view needs its own ViewModel with independent state.
+        services.AddTransient<Chat.ViewModels.ContextPanelViewModel>();
+
+        return services;
+    }
 }
+

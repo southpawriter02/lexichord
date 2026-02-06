@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-06 (v0.6.4c added)                                             |
+| **Last Updated** | 2026-02-06 (v0.6.4d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1160,6 +1160,35 @@
 | Enum                     | Defined In | Module         | Purpose                              |
 | :----------------------- | :--------- | :------------- | :----------------------------------- |
 | `ConversationChangeType` | v0.6.4c    | Modules.Agents | Conversation change types (8 values) |
+
+### 1.27 v0.6.4d Context Panel
+
+**New Records (v0.6.4d):**
+
+| Record                 | Defined In | Module         | Purpose                          |
+| :--------------------- | :--------- | :------------- | :------------------------------- |
+| `StyleRuleContextItem` | v0.6.4d    | Modules.Agents | Style rule context for prompts   |
+| `RagChunkContextItem`  | v0.6.4d    | Modules.Agents | RAG chunk context for prompts    |
+| `ContextSnapshot`      | v0.6.4d    | Modules.Agents | Immutable context state snapshot |
+
+**New Enums (v0.6.4d):**
+
+| Enum            | Defined In | Module         | Purpose                   |
+| :-------------- | :--------- | :------------- | :------------------------ |
+| `RelevanceTier` | v0.6.4d    | Modules.Agents | High/Medium/Low relevance |
+
+**New ViewModels (v0.6.4d):**
+
+| ViewModel               | Defined In | Module         | Purpose             |
+| :---------------------- | :--------- | :------------- | :------------------ |
+| `ContextPanelViewModel` | v0.6.4d    | Modules.Agents | Context panel state |
+
+**New Converters (v0.6.4d):**
+
+| Converter                     | Defined In | Module         | Purpose                      |
+| :---------------------------- | :--------- | :------------- | :--------------------------- |
+| `TokenBudgetToColorConverter` | v0.6.4d    | Modules.Agents | Token usage color (G→Y→R)    |
+| `RelevanceToColorConverter`   | v0.6.4d    | Modules.Agents | Relevance tier color (G→Y→R) |
 
 ## 2. MediatR Events Registry
 

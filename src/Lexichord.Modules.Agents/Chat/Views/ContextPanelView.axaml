@@ -1,0 +1,395 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Chat.ViewModels"
+             xmlns:conv="using:Lexichord.Modules.Agents.Chat.Converters"
+             mc:Ignorable="d"
+             d:DesignWidth="320" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Agents.Chat.Views.ContextPanelView"
+             x:DataType="vm:ContextPanelViewModel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    CONTEXT PANEL VIEW - v0.6.4d
+    Collapsible panel showing active context sources for AI prompts.
+
+    Per LCS-DES-v0.6.4d:
+    - Displays style rules, RAG chunks, document context, custom instructions
+    - Token budget visualization with color-coded progress bar
+    - Toggle switches for each context source
+    - Keyboard shortcuts: Ctrl+R (refresh), Space (toggle), Ctrl+Shift+D (disable all)
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Resources>
+        <conv:TokenBudgetToColorConverter x:Key="TokenBudgetToColorConverter" />
+        <conv:RelevanceToColorConverter x:Key="RelevanceToColorConverter" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- Section header style -->
+        <Style Selector="Border.section-header">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Border.section-header:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+
+        <!-- Context item style -->
+        <Style Selector="Border.context-item">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="12,8" />
+        </Style>
+
+        <Style Selector="Border.context-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+
+        <!-- Toggle switch style -->
+        <Style Selector="ToggleSwitch.context-toggle">
+            <Setter Property="OffContent" Value="" />
+            <Setter Property="OnContent" Value="" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <!-- Remove button style -->
+        <Style Selector="Button.remove-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="Button.remove-button:pointerover">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource StatusErrorBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+
+        <Grid RowDefinitions="Auto,*">
+            <!-- Header: Always visible -->
+            <Border Grid.Row="0"
+                    Classes="section-header"
+                    CornerRadius="8,8,0,0"
+                    PointerPressed="OnHeaderPressed">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                    <!-- Expand/Collapse Icon -->
+                    <TextBlock Grid.Column="0"
+                               Text="▼"
+                               FontSize="10"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               IsVisible="{Binding IsExpanded}" />
+                    <TextBlock Grid.Column="0"
+                               Text="▶"
+                               FontSize="10"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               IsVisible="{Binding !IsExpanded}" />
+
+                    <!-- Title and Summary -->
+                    <StackPanel Grid.Column="1" Spacing="2">
+                        <TextBlock Text="Context"
+                                   FontWeight="SemiBold"
+                                   FontSize="13" />
+                        <TextBlock Text="{Binding ContextSummary}"
+                                   FontSize="11"
+                                   Opacity="0.7"
+                                   IsVisible="{Binding !IsExpanded}" />
+                    </StackPanel>
+
+                    <!-- Token Budget Badge -->
+                    <Border Grid.Column="2"
+                            Background="{Binding TokenBudgetPercentage, Converter={StaticResource TokenBudgetToColorConverter}}"
+                            CornerRadius="4"
+                            Padding="6,2"
+                            Margin="8,0"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding EstimatedContextTokens, StringFormat='{}{0} tk'}"
+                                   FontSize="11"
+                                   Foreground="White"
+                                   FontWeight="SemiBold" />
+                    </Border>
+
+                    <!-- Refresh Button -->
+                    <Button Grid.Column="3"
+                            Content="🔄"
+                            Command="{Binding RefreshContextCommand}"
+                            ToolTip.Tip="Refresh context (Ctrl+R)"
+                            Background="Transparent"
+                            Padding="4"
+                            IsEnabled="{Binding !IsLoading}" />
+                </Grid>
+            </Border>
+
+            <!-- Expandable Content -->
+            <ScrollViewer Grid.Row="1"
+                          IsVisible="{Binding IsExpanded}"
+                          VerticalScrollBarVisibility="Auto"
+                          MaxHeight="400">
+                <StackPanel>
+                    <!-- Token Budget Progress Bar -->
+                    <Border Padding="12,8"
+                            Background="{DynamicResource SurfaceElevatedBrush}">
+                        <StackPanel Spacing="4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="Token Budget"
+                                           FontSize="11"
+                                           Opacity="0.7" />
+                                <TextBlock Grid.Column="1"
+                                           FontSize="11"
+                                           Opacity="0.7">
+                                    <Run Text="{Binding EstimatedContextTokens}" />
+                                    <Run Text=" / " />
+                                    <Run Text="{Binding MaxContextTokens}" />
+                                </TextBlock>
+                            </Grid>
+                            <ProgressBar Value="{Binding TokenBudgetPercentage}"
+                                         Maximum="100"
+                                         Height="6"
+                                         Foreground="{Binding TokenBudgetPercentage, Converter={StaticResource TokenBudgetToColorConverter}}" />
+                            <TextBlock Text="⚠️ Over budget!"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource StatusErrorBrush}"
+                                       IsVisible="{Binding IsOverBudget}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Style Rules Section -->
+                    <Border Classes="section-header"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,1,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="📋"
+                                       FontSize="14"
+                                       Margin="0,0,8,0" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Style Rules"
+                                           FontSize="12"
+                                           FontWeight="SemiBold" />
+                                <TextBlock FontSize="10" Opacity="0.6">
+                                    <Run Text="{Binding StyleRuleCount}" />
+                                    <Run Text=" rules • " />
+                                    <Run Text="{Binding StyleRulesTokens}" />
+                                    <Run Text=" tokens" />
+                                </TextBlock>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="2"
+                                          Classes="context-toggle"
+                                          IsChecked="{Binding StyleRulesEnabled}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Style Rules List -->
+                    <ItemsControl ItemsSource="{Binding ActiveStyleRules}"
+                                  IsVisible="{Binding StyleRulesEnabled}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:StyleRuleContextItem">
+                                <Border Classes="context-item">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding SeverityIcon}"
+                                                   FontSize="12"
+                                                   Margin="0,0,8,0"
+                                                   ToolTip.Tip="{Binding Severity}" />
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding ShortName}"
+                                                       FontSize="11"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       ToolTip.Tip="{Binding TooltipText}" />
+                                            <TextBlock Text="{Binding Category}"
+                                                       FontSize="9"
+                                                       Opacity="0.5" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding EstimatedTokens, StringFormat='{}{0} tk'}"
+                                                   FontSize="10"
+                                                   Opacity="0.6"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- RAG Chunks Section -->
+                    <Border Classes="section-header"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,1,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="🧠"
+                                       FontSize="14"
+                                       Margin="0,0,8,0" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Knowledge Context"
+                                           FontSize="12"
+                                           FontWeight="SemiBold" />
+                                <TextBlock FontSize="10" Opacity="0.6">
+                                    <Run Text="{Binding RagChunkCount}" />
+                                    <Run Text=" chunks • " />
+                                    <Run Text="{Binding RagContextTokens}" />
+                                    <Run Text=" tokens" />
+                                </TextBlock>
+                            </StackPanel>
+                            <Button Grid.Column="2"
+                                    Content="🗑️"
+                                    Command="{Binding ClearRagChunksCommand}"
+                                    ToolTip.Tip="Clear all chunks"
+                                    Background="Transparent"
+                                    Padding="4"
+                                    Opacity="0.5"
+                                    IsVisible="{Binding RagContextEnabled}" />
+                            <ToggleSwitch Grid.Column="3"
+                                          Classes="context-toggle"
+                                          IsChecked="{Binding RagContextEnabled}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- RAG Chunks List -->
+                    <ItemsControl ItemsSource="{Binding RagChunks}"
+                                  IsVisible="{Binding RagContextEnabled}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RagChunkContextItem">
+                                <Border Classes="context-item">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                        <Border Grid.Column="0"
+                                                Width="4"
+                                                CornerRadius="2"
+                                                Margin="0,0,8,0"
+                                                Background="{Binding Relevance, Converter={StaticResource RelevanceToColorConverter}}" />
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding TruncatedSummary}"
+                                                       FontSize="11"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       ToolTip.Tip="{Binding TooltipText}" />
+                                            <TextBlock Text="{Binding SourceDocument}"
+                                                       FontSize="9"
+                                                       Opacity="0.5" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding RelevancePercentage, StringFormat='{}{0}%'}"
+                                                   FontSize="10"
+                                                   Opacity="0.6"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0" />
+                                        <Button Grid.Column="3"
+                                                Classes="remove-button"
+                                                Content="✕"
+                                                Command="{Binding $parent[ItemsControl].((vm:ContextPanelViewModel)DataContext).RemoveRagChunkCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="Remove chunk" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Document Context Section -->
+                    <Border Classes="section-header"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,1,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="📄"
+                                       FontSize="14"
+                                       Margin="0,0,8,0" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Document Context"
+                                           FontSize="12"
+                                           FontWeight="SemiBold" />
+                                <TextBlock FontSize="10" Opacity="0.6">
+                                    <Run Text="{Binding DocumentFileName, TargetNullValue='No document'}" />
+                                    <Run Text=" • " />
+                                    <Run Text="{Binding DocumentContextTokens}" />
+                                    <Run Text=" tokens" />
+                                </TextBlock>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="2"
+                                          Classes="context-toggle"
+                                          IsChecked="{Binding DocumentContextEnabled}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Selection Info (shown when document context enabled) -->
+                    <Border Classes="context-item"
+                            IsVisible="{Binding DocumentContextEnabled}">
+                        <StackPanel Spacing="4">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  IsVisible="{Binding HasSelection}">
+                                <TextBlock Grid.Column="0"
+                                           Text="Selected text"
+                                           FontSize="11"
+                                           Opacity="0.7" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding SelectionCharCount, StringFormat='{}{0} chars'}"
+                                           FontSize="10"
+                                           Opacity="0.5" />
+                            </Grid>
+                            <TextBlock Text="No selection"
+                                       FontSize="11"
+                                       Opacity="0.5"
+                                       IsVisible="{Binding !HasSelection}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Custom Instructions Section -->
+                    <Border Classes="section-header"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,1,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="✏️"
+                                       FontSize="14"
+                                       Margin="0,0,8,0" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Custom Instructions"
+                                           FontSize="12"
+                                           FontWeight="SemiBold" />
+                                <TextBlock FontSize="10" Opacity="0.6">
+                                    <Run Text="{Binding CustomInstructionsTokens}" />
+                                    <Run Text=" tokens" />
+                                </TextBlock>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="2"
+                                          Classes="context-toggle"
+                                          IsChecked="{Binding CustomInstructionsEnabled}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Footer Actions -->
+                    <Border Padding="12,8"
+                            Background="{DynamicResource SurfaceElevatedBrush}"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,1,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button Content="Disable All"
+                                    Command="{Binding DisableAllSourcesCommand}"
+                                    Padding="8,4"
+                                    FontSize="11" />
+                            <Button Content="Enable All"
+                                    Command="{Binding EnableAllSourcesCommand}"
+                                    Padding="8,4"
+                                    FontSize="11" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+
+</UserControl>

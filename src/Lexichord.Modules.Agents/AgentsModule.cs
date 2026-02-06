@@ -119,6 +119,10 @@ public class AgentsModule : IModule
         // LOGIC: Register conversation management services (v0.6.4c).
         // The conversation manager handles chat history and lifecycle.
         services.AddConversationManagement();
+
+        // LOGIC: Register context panel services (v0.6.4d).
+        // The context panel ViewModel manages UI state for context source display.
+        services.AddContextPanel();
     }
 
     /// <inheritdoc />
