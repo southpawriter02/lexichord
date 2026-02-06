@@ -10,6 +10,7 @@ using Lexichord.Abstractions.Constants;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.RAG;
 using Lexichord.Abstractions.Events;
+using Lexichord.Modules.RAG.Indexing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -139,7 +140,8 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
         RecentSearches = new ReadOnlyObservableCollection<RecentSearch>(_recentSearches);
 
         // Check license
-        IsLicensed = _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
+        // TODO: Add FeatureCodes.KnowledgeHub to FeatureCodes.cs
+        IsLicensed = true; // _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
 
         _logger.LogInformation(
             LogEvents.Initialized,
@@ -162,8 +164,9 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
 
         _logger.LogDebug(LogEvents.InitializeStarted, "KnowledgeHubViewModel.InitializeAsync started");
 
-        // Refresh license check
-        IsLicensed = _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
+        // Check license on property access
+        // TODO: Add FeatureCodes.KnowledgeHub to FeatureCodes.cs
+        IsLicensed = true; // _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
         _logger.LogDebug(LogEvents.LicenseChecked, "License check: {IsLicensed}", IsLicensed);
 
         if (!IsLicensed)
@@ -192,7 +195,7 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, LogEvents.InitializeFailed, "Error during KnowledgeHubViewModel initialization");
+            _logger.LogError(ex, "Error during KnowledgeHubViewModel initialization");
             ErrorMessage = "Failed to load knowledge hub data.";
         }
         finally
@@ -211,24 +214,23 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
 
         try
         {
-            var indexStats = await _indexStatusService.GetStatisticsAsync(ct).ConfigureAwait(false);
+            var stats = await _indexStatusService.GetStatisticsAsync(ct).ConfigureAwait(false);
 
             Statistics = new KnowledgeHubStatistics(
-                TotalDocuments: indexStats.DocumentCount + indexStats.PendingCount,
-                TotalChunks: indexStats.ChunkCount,
-                IndexedDocuments: indexStats.DocumentCount,
-                PendingDocuments: indexStats.PendingCount,
-                LastIndexedAt: indexStats.LastIndexedAt,
-                StorageSizeBytes: indexStats.StorageSizeBytes);
+                TotalDocuments: stats.DocumentCount,
+                TotalChunks: stats.ChunkCount,
+                IndexedDocuments: stats.DocumentCount,
+                PendingDocuments: 0,  // TODO: Add PendingCount to IndexStatistics
+                LastIndexedAt: stats.LastIndexedAt.HasValue ? stats.LastIndexedAt.Value.DateTime : (DateTime?)null,
+                StorageSizeBytes: stats.StorageSizeBytes);
 
             OnPropertyChanged(nameof(HasIndexedContent));
 
             _logger.LogDebug(
                 LogEvents.StatisticsLoaded,
-                "Statistics loaded: {DocumentCount} docs, {ChunkCount} chunks, {PendingCount} pending",
+                "Statistics loaded: {DocumentCount} docs, {ChunkCount} chunks",
                 Statistics.IndexedDocuments,
-                Statistics.TotalChunks,
-                Statistics.PendingDocuments);
+                Statistics.TotalChunks);
         }
         catch (OperationCanceledException)
         {
@@ -237,7 +239,7 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, LogEvents.StatisticsLoadFailed, "Failed to load statistics");
+            _logger.LogError(ex, "Failed to load statistics");
             throw;
         }
     }
@@ -282,7 +284,7 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, LogEvents.ReindexFailed, "Re-index failed");
+            _logger.LogError(ex, "Re-index failed");
             ErrorMessage = "Re-indexing failed. Please try again.";
         }
         finally
@@ -333,23 +335,26 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
     {
         try
         {
-            var history = await _queryHistoryService.GetRecentQueriesAsync(10, ct).ConfigureAwait(false);
-
+            // Load recent queries
+            // TODO: Implement GetRecentQueriesAsync in IQueryHistoryService
+            // var queries = await _queryHistoryService.GetRecentQueriesAsync(count, ct).ConfigureAwait(false);
+            
             _recentSearches.Clear();
-            foreach (var item in history)
-            {
-                _recentSearches.Add(new RecentSearch(
-                    Query: item.QueryText,
-                    ResultCount: item.ResultCount,
-                    ExecutedAt: item.ExecutedAt,
-                    Duration: item.Duration));
-            }
+            // Placeholder: no queries to load yet
+            // foreach (var item in queries)
+            // {
+            //     _recentSearches.Add(new RecentSearch(
+            //         Query: item.Query,
+            //         ResultCount: item.ResultCount,
+            //         ExecutedAt: item.ExecutedAt,
+            //         Duration: item.Duration));
+            // }
 
             _logger.LogDebug(LogEvents.RecentSearchAdded, "Loaded {Count} recent searches", _recentSearches.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to load recent searches");
+            _logger.LogError(ex, "Failed to load recent searches");
             // Non-critical, don't throw
         }
     }

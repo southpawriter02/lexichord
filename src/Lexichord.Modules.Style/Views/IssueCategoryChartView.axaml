@@ -131,11 +131,7 @@
                                     TooltipPosition="Hidden"
                                     ZoomMode="None"
                                     DrawMargin="{x:Null}">
-                    <lvc:CartesianChart.MinHeight>
-                        <MultiBinding Converter="{x:Static ObjectConverters.DoubleLessThan}">
-                            <Binding Path="Categories.Count" />
-                        </MultiBinding>
-                    </lvc:CartesianChart.MinHeight>
+                    <lvc:CartesianChart.MinHeight>150</lvc:CartesianChart.MinHeight>
                 </lvc:CartesianChart>
 
             </Grid>

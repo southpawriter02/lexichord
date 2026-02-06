@@ -356,9 +356,10 @@ public partial class IssueCategoryChartViewModel : ObservableObject,
             return "structure";
 
         // Infer from category property if available
-        if (!string.IsNullOrEmpty(violation.Category))
+        var categoryString = violation.Category.ToString();
+        if (!string.IsNullOrEmpty(categoryString))
         {
-            var cat = violation.Category.ToLowerInvariant();
+            var cat = categoryString.ToLowerInvariant();
             if (CategoryDisplayNames.ContainsKey(cat))
                 return cat;
         }

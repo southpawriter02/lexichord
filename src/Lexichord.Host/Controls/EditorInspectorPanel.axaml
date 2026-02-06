@@ -117,8 +117,7 @@
                                         CornerRadius="12"
                                         Padding="12,4"
                                         HorizontalAlignment="Center">
-                                    <TextBlock x:Name="StatusText"
-                                               Text="{Binding StatusText}"
+                                    <TextBlock Text="{Binding StatusText}"
                                                FontSize="12"
                                                FontWeight="Medium"
                                                Foreground="{Binding StatusColor}" />

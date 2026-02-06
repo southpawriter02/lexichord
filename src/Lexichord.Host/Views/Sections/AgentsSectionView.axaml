@@ -174,7 +174,7 @@
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="The Chronicler"
                                                    FontWeight="SemiBold" />
-                                        <Border Background="#1AF59E0B" CornerRadius="4" Padding="8,4" HorizontalAlignment="Left">
+                                        <Border Background="#F59E0B" CornerRadius="4" Padding="8,4" HorizontalAlignment="Left">
                                             <StackPanel Orientation="Horizontal" Spacing="4">
                                                 <TextBlock Text="🔒" FontSize="10" />
                                                 <TextBlock Text="Pro"
@@ -206,7 +206,7 @@
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="The Scribe"
                                                    FontWeight="SemiBold" />
-                                        <Border Background="#1AF59E0B" CornerRadius="4" Padding="8,4" HorizontalAlignment="Left">
+                                        <Border Background="#F59E0B" CornerRadius="4" Padding="8,4" HorizontalAlignment="Left">
                                             <StackPanel Orientation="Horizontal" Spacing="4">
                                                 <TextBlock Text="🔒" FontSize="10" />
                                                 <TextBlock Text="Pro"

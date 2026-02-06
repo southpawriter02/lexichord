@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-04 (v0.6.3a added)                                             |
+| **Last Updated** | 2026-02-06 (v0.6.4c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -819,8 +819,8 @@
 
 **New Classes (v0.5.5):**
 
-| Class                        | Defined In | Module      | Purpose                    |
-| :--------------------------- | :--------- | :---------- | :------------------------- |
+| Class                        | Defined In | Module       | Purpose                        |
+| :--------------------------- | :--------- | :----------- | :----------------------------- |
 | `FilterValidator`            | v0.5.5a    | Abstractions | Security and format validation |
 | `FilterQueryBuilder`         | v0.5.5c    | Modules.RAG  | SQL WHERE clause builder       |
 | `FilterPresetService`        | v0.5.5d    | Modules.RAG  | Preset persistence service     |
@@ -829,13 +829,13 @@
 
 **New Records (v0.5.5):**
 
-| Record                    | Defined In | Module       | Purpose                       |
-| :------------------------ | :--------- | :----------- | :---------------------------- |
-| `SearchFilter`            | v0.5.5a    | Abstractions | Filter criteria container     |
-| `DateRange`               | v0.5.5a    | Abstractions | Temporal filter bounds        |
-| `FilterPreset`            | v0.5.5a    | Abstractions | Saved configuration           |
-| `FilterValidationError`   | v0.5.5a    | Abstractions | Validation error with code    |
-| `FilterQueryResult`       | v0.5.5c    | Abstractions | SQL clauses + parameters      |
+| Record                  | Defined In | Module       | Purpose                    |
+| :---------------------- | :--------- | :----------- | :------------------------- |
+| `SearchFilter`          | v0.5.5a    | Abstractions | Filter criteria container  |
+| `DateRange`             | v0.5.5a    | Abstractions | Temporal filter bounds     |
+| `FilterPreset`          | v0.5.5a    | Abstractions | Saved configuration        |
+| `FilterValidationError` | v0.5.5a    | Abstractions | Validation error with code |
+| `FilterQueryResult`     | v0.5.5c    | Abstractions | SQL clauses + parameters   |
 
 **New Enums (v0.5.5):**
 
@@ -886,22 +886,22 @@
 
 ### 1.19b v0.5.6-KG Claim Extraction Data Model (CKVS Phase 2b)
 
-| Record                  | Defined In | Module       | Purpose                                      |
-| :---------------------- | :--------- | :----------- | :------------------------------------------- |
-| `Claim`                 | v0.5.6e    | Abstractions | Subject-predicate-object assertion           |
-| `ClaimEntity`           | v0.5.6e    | Abstractions | Entity reference (resolved/unresolved)       |
-| `ClaimObject`           | v0.5.6e    | Abstractions | Claim object (entity or literal)             |
-| `ClaimEvidence`         | v0.5.6e    | Abstractions | Source text provenance                       |
-| `ClaimRelation`         | v0.5.6e    | Abstractions | Relationship between claims                  |
-| `ClaimValidationMessage`| v0.5.6e    | Abstractions | Validation feedback message                  |
-| `ClaimExtractionResult` | v0.5.6e    | Abstractions | Extraction operation result container        |
-| `ClaimExtractionStats`  | v0.5.6e    | Abstractions | Extraction aggregate metrics                 |
+| Record                   | Defined In | Module       | Purpose                                |
+| :----------------------- | :--------- | :----------- | :------------------------------------- |
+| `Claim`                  | v0.5.6e    | Abstractions | Subject-predicate-object assertion     |
+| `ClaimEntity`            | v0.5.6e    | Abstractions | Entity reference (resolved/unresolved) |
+| `ClaimObject`            | v0.5.6e    | Abstractions | Claim object (entity or literal)       |
+| `ClaimEvidence`          | v0.5.6e    | Abstractions | Source text provenance                 |
+| `ClaimRelation`          | v0.5.6e    | Abstractions | Relationship between claims            |
+| `ClaimValidationMessage` | v0.5.6e    | Abstractions | Validation feedback message            |
+| `ClaimExtractionResult`  | v0.5.6e    | Abstractions | Extraction operation result container  |
+| `ClaimExtractionStats`   | v0.5.6e    | Abstractions | Extraction aggregate metrics           |
 
 **New Static Classes (v0.5.6-KG):**
 
-| Static Class      | Defined In | Module       | Purpose                           |
-| :---------------- | :--------- | :----------- | :-------------------------------- |
-| `ClaimPredicate`  | v0.5.6e    | Abstractions | 26 standard predicates + inverse  |
+| Static Class     | Defined In | Module       | Purpose                          |
+| :--------------- | :--------- | :----------- | :------------------------------- |
+| `ClaimPredicate` | v0.5.6e    | Abstractions | 26 standard predicates + inverse |
 
 **New Enums (v0.5.6-KG):**
 
@@ -915,32 +915,32 @@
 
 ### 1.19c v0.5.6f Sentence Parser (CKVS Phase 2c)
 
-| Interface/Record      | Defined In | Module           | Purpose                                   |
-| :-------------------- | :--------- | :--------------- | :---------------------------------------- |
-| `ISentenceParser`     | v0.5.6f    | Abstractions     | Sentence parsing service contract         |
-| `ParseOptions`        | v0.5.6f    | Abstractions     | Parsing configuration options             |
-| `ParseResult`         | v0.5.6f    | Abstractions     | Parse operation result container          |
-| `ParseStats`          | v0.5.6f    | Abstractions     | Parse operation statistics                |
-| `ParsedSentence`      | v0.5.6f    | Abstractions     | Sentence with linguistic annotations      |
-| `Token`               | v0.5.6f    | Abstractions     | Word with POS, lemma, offsets             |
-| `DependencyNode`      | v0.5.6f    | Abstractions     | Node in dependency tree                   |
-| `DependencyRelation`  | v0.5.6f    | Abstractions     | Head-dependent grammatical relation       |
-| `SemanticFrame`       | v0.5.6f    | Abstractions     | Predicate-argument structure              |
-| `SemanticArgument`    | v0.5.6f    | Abstractions     | Argument in semantic frame                |
-| `NamedEntity`         | v0.5.6f    | Abstractions     | NER result (text, label, offsets)         |
-| `SpacySentenceParser` | v0.5.6f    | Modules.Knowledge| SpaCy-based parser implementation         |
+| Interface/Record      | Defined In | Module            | Purpose                              |
+| :-------------------- | :--------- | :---------------- | :----------------------------------- |
+| `ISentenceParser`     | v0.5.6f    | Abstractions      | Sentence parsing service contract    |
+| `ParseOptions`        | v0.5.6f    | Abstractions      | Parsing configuration options        |
+| `ParseResult`         | v0.5.6f    | Abstractions      | Parse operation result container     |
+| `ParseStats`          | v0.5.6f    | Abstractions      | Parse operation statistics           |
+| `ParsedSentence`      | v0.5.6f    | Abstractions      | Sentence with linguistic annotations |
+| `Token`               | v0.5.6f    | Abstractions      | Word with POS, lemma, offsets        |
+| `DependencyNode`      | v0.5.6f    | Abstractions      | Node in dependency tree              |
+| `DependencyRelation`  | v0.5.6f    | Abstractions      | Head-dependent grammatical relation  |
+| `SemanticFrame`       | v0.5.6f    | Abstractions      | Predicate-argument structure         |
+| `SemanticArgument`    | v0.5.6f    | Abstractions      | Argument in semantic frame           |
+| `NamedEntity`         | v0.5.6f    | Abstractions      | NER result (text, label, offsets)    |
+| `SpacySentenceParser` | v0.5.6f    | Modules.Knowledge | SpaCy-based parser implementation    |
 
 **New Static Classes (v0.5.6f):**
 
-| Static Class           | Defined In | Module       | Purpose                              |
-| :--------------------- | :--------- | :----------- | :----------------------------------- |
-| `DependencyRelations`  | v0.5.6f    | Abstractions | Constants for dependency types       |
+| Static Class          | Defined In | Module       | Purpose                        |
+| :-------------------- | :--------- | :----------- | :----------------------------- |
+| `DependencyRelations` | v0.5.6f    | Abstractions | Constants for dependency types |
 
 **New Enums (v0.5.6f):**
 
-| Enum           | Defined In | Module       | Purpose                                     |
-| :------------- | :--------- | :----------- | :------------------------------------------ |
-| `SemanticRole` | v0.5.6f    | Abstractions | ARG0/ARG1/ARGM-* PropBank-style roles       |
+| Enum           | Defined In | Module       | Purpose                                |
+| :------------- | :--------- | :----------- | :------------------------------------- |
+| `SemanticRole` | v0.5.6f    | Abstractions | ARG0/ARG1/ARGM-\* PropBank-style roles |
 
 ### 1.20 v0.5.7 Reference Dock Interfaces
 
@@ -1018,30 +1018,30 @@
 
 ### 1.22 v0.5.9 Deduplication Interfaces
 
-| Interface            | Defined In | Module      | Purpose                          |
-| :------------------- | :--------- | :---------- | :------------------------------- |
-| `ISimilarityDetector`| v0.5.9a    | Modules.RAG | Semantic similarity detection    |
+| Interface             | Defined In | Module      | Purpose                       |
+| :-------------------- | :--------- | :---------- | :---------------------------- |
+| `ISimilarityDetector` | v0.5.9a    | Modules.RAG | Semantic similarity detection |
 
 **New Classes (v0.5.9):**
 
-| Class                | Defined In | Module      | Purpose                          |
-| :------------------- | :--------- | :---------- | :------------------------------- |
-| `SimilarityDetector` | v0.5.9a    | Modules.RAG | Similarity detection service     |
+| Class                | Defined In | Module      | Purpose                      |
+| :------------------- | :--------- | :---------- | :--------------------------- |
+| `SimilarityDetector` | v0.5.9a    | Modules.RAG | Similarity detection service |
 
 **New Records (v0.5.9):**
 
-| Record                       | Defined In | Module      | Purpose                          |
-| :--------------------------- | :--------- | :---------- | :------------------------------- |
-| `SimilarChunkResult`         | v0.5.9a    | Abstractions| Match result with score          |
-| `SimilarityDetectorOptions`  | v0.5.9a    | Abstractions| Detection configuration          |
+| Record                      | Defined In | Module       | Purpose                 |
+| :-------------------------- | :--------- | :----------- | :---------------------- |
+| `SimilarChunkResult`        | v0.5.9a    | Abstractions | Match result with score |
+| `SimilarityDetectorOptions` | v0.5.9a    | Abstractions | Detection configuration |
 
 ### 1.23 v0.6.1 LLM Gateway Interfaces
 
-| Interface                | Defined In | Module       | Purpose                         |
-| :----------------------- | :--------- | :----------- | :------------------------------ |
-| `IChatCompletionService` | v0.6.1a    | Abstractions | Provider-agnostic chat interface|
-| `IModelProvider`         | v0.6.1b    | Abstractions | Model discovery interface       |
-| `ILLMProviderRegistry`   | v0.6.1c    | Abstractions | Provider management interface   |
+| Interface                | Defined In | Module       | Purpose                          |
+| :----------------------- | :--------- | :----------- | :------------------------------- |
+| `IChatCompletionService` | v0.6.1a    | Abstractions | Provider-agnostic chat interface |
+| `IModelProvider`         | v0.6.1b    | Abstractions | Model discovery interface        |
+| `ILLMProviderRegistry`   | v0.6.1c    | Abstractions | Provider management interface    |
 
 **New Classes (v0.6.1):**
 
@@ -1056,88 +1056,110 @@
 
 **New Records (v0.6.1):**
 
-| Record                 | Defined In | Module       | Purpose                          |
-| :--------------------- | :--------- | :----------- | :------------------------------- |
-| `ChatRole`             | v0.6.1a    | Abstractions | System/User/Assistant/Tool enum  |
-| `ChatMessage`          | v0.6.1a    | Abstractions | Message with role and content    |
-| `ChatOptions`          | v0.6.1a    | Abstractions | LLM parameter configuration      |
-| `ChatRequest`          | v0.6.1a    | Abstractions | Request with messages/options    |
-| `ChatResponse`         | v0.6.1a    | Abstractions | Response with content/tokens     |
-| `StreamingChatToken`   | v0.6.1a    | Abstractions | Individual streaming token       |
-| `ModelInfo`            | v0.6.1b    | Abstractions | Model metadata                   |
-| `TokenEstimate`        | v0.6.1b    | Abstractions | Token count estimation           |
-| `LLMProviderInfo`      | v0.6.1c    | Abstractions | Provider metadata                |
+| Record               | Defined In | Module       | Purpose                         |
+| :------------------- | :--------- | :----------- | :------------------------------ |
+| `ChatRole`           | v0.6.1a    | Abstractions | System/User/Assistant/Tool enum |
+| `ChatMessage`        | v0.6.1a    | Abstractions | Message with role and content   |
+| `ChatOptions`        | v0.6.1a    | Abstractions | LLM parameter configuration     |
+| `ChatRequest`        | v0.6.1a    | Abstractions | Request with messages/options   |
+| `ChatResponse`       | v0.6.1a    | Abstractions | Response with content/tokens    |
+| `StreamingChatToken` | v0.6.1a    | Abstractions | Individual streaming token      |
+| `ModelInfo`          | v0.6.1b    | Abstractions | Model metadata                  |
+| `TokenEstimate`      | v0.6.1b    | Abstractions | Token count estimation          |
+| `LLMProviderInfo`    | v0.6.1c    | Abstractions | Provider metadata               |
 
 **New Exceptions (v0.6.1):**
 
-| Exception                       | Defined In | Module       | Purpose                          |
-| :------------------------------ | :--------- | :----------- | :------------------------------- |
-| `ChatCompletionException`       | v0.6.1a    | Abstractions | Base LLM error                   |
-| `AuthenticationException`       | v0.6.1a    | Abstractions | API auth failure                 |
-| `RateLimitException`            | v0.6.1a    | Abstractions | Rate limit exceeded              |
-| `ProviderNotConfiguredException`| v0.6.1a    | Abstractions | Missing API key                  |
-| `ChatOptionsValidationException`| v0.6.1b    | Abstractions | Invalid chat options             |
-| `ContextWindowExceededException`| v0.6.1b    | Abstractions | Token limit exceeded             |
-| `ProviderNotFoundException`     | v0.6.1c    | Abstractions | Provider not registered          |
+| Exception                        | Defined In | Module       | Purpose                 |
+| :------------------------------- | :--------- | :----------- | :---------------------- |
+| `ChatCompletionException`        | v0.6.1a    | Abstractions | Base LLM error          |
+| `AuthenticationException`        | v0.6.1a    | Abstractions | API auth failure        |
+| `RateLimitException`             | v0.6.1a    | Abstractions | Rate limit exceeded     |
+| `ProviderNotConfiguredException` | v0.6.1a    | Abstractions | Missing API key         |
+| `ChatOptionsValidationException` | v0.6.1b    | Abstractions | Invalid chat options    |
+| `ContextWindowExceededException` | v0.6.1b    | Abstractions | Token limit exceeded    |
+| `ProviderNotFoundException`      | v0.6.1c    | Abstractions | Provider not registered |
 
 ### 1.24 v0.6.2 LLM Provider Interfaces
 
-| Interface            | Defined In | Module      | Purpose                            |
-| :------------------- | :--------- | :---------- | :--------------------------------- |
-| `IResiliencePipeline`| v0.6.2c    | Modules.LLM | Resilience policy execution        |
+| Interface             | Defined In | Module      | Purpose                     |
+| :-------------------- | :--------- | :---------- | :-------------------------- |
+| `IResiliencePipeline` | v0.6.2c    | Modules.LLM | Resilience policy execution |
 
 **New Classes (v0.6.2):**
 
-| Class                          | Defined In | Module      | Purpose                            |
-| :----------------------------- | :--------- | :---------- | :--------------------------------- |
-| `OpenAIChatCompletionService`  | v0.6.2a    | Modules.LLM | OpenAI provider implementation     |
-| `OpenAIResponseParser`         | v0.6.2a    | Modules.LLM | OpenAI response parsing            |
-| `AnthropicChatCompletionService`| v0.6.2b   | Modules.LLM | Anthropic provider implementation  |
-| `AnthropicResponseParser`      | v0.6.2b    | Modules.LLM | Anthropic response parsing         |
-| `LLMResiliencePipeline`        | v0.6.2c    | Modules.LLM | Resilience policy pipeline impl    |
-| `ResiliencePolicyBuilder`      | v0.6.2c    | Modules.LLM | Polly policy factory               |
-| `ResilienceTelemetry`          | v0.6.2c    | Modules.LLM | Policy metrics collection          |
-| `LLMCircuitBreakerHealthCheck` | v0.6.2c    | Modules.LLM | IHealthCheck implementation        |
+| Class                            | Defined In | Module      | Purpose                           |
+| :------------------------------- | :--------- | :---------- | :-------------------------------- |
+| `OpenAIChatCompletionService`    | v0.6.2a    | Modules.LLM | OpenAI provider implementation    |
+| `OpenAIResponseParser`           | v0.6.2a    | Modules.LLM | OpenAI response parsing           |
+| `AnthropicChatCompletionService` | v0.6.2b    | Modules.LLM | Anthropic provider implementation |
+| `AnthropicResponseParser`        | v0.6.2b    | Modules.LLM | Anthropic response parsing        |
+| `LLMResiliencePipeline`          | v0.6.2c    | Modules.LLM | Resilience policy pipeline impl   |
+| `ResiliencePolicyBuilder`        | v0.6.2c    | Modules.LLM | Polly policy factory              |
+| `ResilienceTelemetry`            | v0.6.2c    | Modules.LLM | Policy metrics collection         |
+| `LLMCircuitBreakerHealthCheck`   | v0.6.2c    | Modules.LLM | IHealthCheck implementation       |
 
 **New Records (v0.6.2):**
 
-| Record                | Defined In | Module      | Purpose                            |
-| :-------------------- | :--------- | :---------- | :--------------------------------- |
-| `OpenAIOptions`       | v0.6.2a    | Modules.LLM | OpenAI provider configuration      |
-| `AnthropicOptions`    | v0.6.2b    | Modules.LLM | Anthropic provider configuration   |
-| `ResilienceOptions`   | v0.6.2c    | Modules.LLM | Resilience policy configuration    |
-| `ResilienceEvent`     | v0.6.2c    | Modules.LLM | Policy telemetry event             |
-| `TelemetrySnapshot`   | v0.6.2c    | Modules.LLM | Point-in-time telemetry data       |
+| Record              | Defined In | Module      | Purpose                          |
+| :------------------ | :--------- | :---------- | :------------------------------- |
+| `OpenAIOptions`     | v0.6.2a    | Modules.LLM | OpenAI provider configuration    |
+| `AnthropicOptions`  | v0.6.2b    | Modules.LLM | Anthropic provider configuration |
+| `ResilienceOptions` | v0.6.2c    | Modules.LLM | Resilience policy configuration  |
+| `ResilienceEvent`   | v0.6.2c    | Modules.LLM | Policy telemetry event           |
+| `TelemetrySnapshot` | v0.6.2c    | Modules.LLM | Point-in-time telemetry data     |
 
 **New Enums (v0.6.2):**
 
-| Enum           | Defined In | Module      | Purpose                            |
-| :------------- | :--------- | :---------- | :--------------------------------- |
-| `CircuitState` | v0.6.2c    | Modules.LLM | Circuit breaker state enum         |
+| Enum           | Defined In | Module      | Purpose                    |
+| :------------- | :--------- | :---------- | :------------------------- |
+| `CircuitState` | v0.6.2c    | Modules.LLM | Circuit breaker state enum |
 
 ### 1.25 v0.6.3 Template Abstractions
 
-| Interface            | Defined In | Module       | Purpose                            |
-| :------------------- | :--------- | :----------- | :--------------------------------- |
-| `IPromptTemplate`    | v0.6.3a    | Abstractions | Reusable prompt template contract  |
-| `IPromptRenderer`    | v0.6.3a    | Abstractions | Template rendering contract        |
-| `IContextInjector`   | v0.6.3a    | Abstractions | Context assembly contract          |
+| Interface          | Defined In | Module       | Purpose                           |
+| :----------------- | :--------- | :----------- | :-------------------------------- |
+| `IPromptTemplate`  | v0.6.3a    | Abstractions | Reusable prompt template contract |
+| `IPromptRenderer`  | v0.6.3a    | Abstractions | Template rendering contract       |
+| `IContextInjector` | v0.6.3a    | Abstractions | Context assembly contract         |
 
 **New Records (v0.6.3):**
 
-| Record                | Defined In | Module       | Purpose                            |
-| :-------------------- | :--------- | :----------- | :--------------------------------- |
-| `PromptTemplate`      | v0.6.3a    | Abstractions | IPromptTemplate implementation     |
-| `RenderedPrompt`      | v0.6.3a    | Abstractions | Render output with messages        |
-| `TemplateVariable`    | v0.6.3a    | Abstractions | Variable metadata for templates    |
-| `ValidationResult`    | v0.6.3a    | Abstractions | Validation outcome record          |
-| `ContextRequest`      | v0.6.3a    | Abstractions | Context assembly request           |
+| Record             | Defined In | Module       | Purpose                         |
+| :----------------- | :--------- | :----------- | :------------------------------ |
+| `PromptTemplate`   | v0.6.3a    | Abstractions | IPromptTemplate implementation  |
+| `RenderedPrompt`   | v0.6.3a    | Abstractions | Render output with messages     |
+| `TemplateVariable` | v0.6.3a    | Abstractions | Variable metadata for templates |
+| `ValidationResult` | v0.6.3a    | Abstractions | Validation outcome record       |
+| `ContextRequest`   | v0.6.3a    | Abstractions | Context assembly request        |
 
 **New Exceptions (v0.6.3):**
 
-| Exception                    | Defined In | Module       | Purpose                            |
-| :--------------------------- | :--------- | :----------- | :--------------------------------- |
-| `TemplateValidationException`| v0.6.3a    | Abstractions | Template validation failure        |
+| Exception                     | Defined In | Module       | Purpose                     |
+| :---------------------------- | :--------- | :----------- | :-------------------------- |
+| `TemplateValidationException` | v0.6.3a    | Abstractions | Template validation failure |
+
+### 1.26 v0.6.4c Conversation Management
+
+| Interface              | Defined In | Module         | Purpose                           |
+| :--------------------- | :--------- | :------------- | :-------------------------------- |
+| `IConversationManager` | v0.6.4c    | Modules.Agents | Conversation lifecycle management |
+
+**New Records (v0.6.4c):**
+
+| Record                         | Defined In | Module         | Purpose                          |
+| :----------------------------- | :--------- | :------------- | :------------------------------- |
+| `Conversation`                 | v0.6.4c    | Modules.Agents | Immutable conversation record    |
+| `ConversationMetadata`         | v0.6.4c    | Modules.Agents | Conversation context tracking    |
+| `ConversationChangedEventArgs` | v0.6.4c    | Modules.Agents | Conversation change notification |
+| `ConversationSearchResult`     | v0.6.4c    | Modules.Agents | Search result with snippets      |
+| `ConversationExportOptions`    | v0.6.4c    | Modules.Agents | Export configuration presets     |
+
+**New Enums (v0.6.4c):**
+
+| Enum                     | Defined In | Module         | Purpose                              |
+| :----------------------- | :--------- | :------------- | :----------------------------------- |
+| `ConversationChangeType` | v0.6.4c    | Modules.Agents | Conversation change types (8 values) |
 
 ## 2. MediatR Events Registry
 

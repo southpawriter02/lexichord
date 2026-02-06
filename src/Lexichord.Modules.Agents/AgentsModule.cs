@@ -115,6 +115,10 @@ public class AgentsModule : IModule
         // LOGIC: Register context injection services (v0.6.3d).
         // The injector orchestrates context assembly from multiple providers.
         services.AddContextInjection();
+
+        // LOGIC: Register conversation management services (v0.6.4c).
+        // The conversation manager handles chat history and lifecycle.
+        services.AddConversationManagement();
     }
 
     /// <inheritdoc />

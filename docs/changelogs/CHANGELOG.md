@@ -18,12 +18,15 @@ This release delivers two critical P1 UI components: the Knowledge Hub unified d
 
 - **Issues by Category Bar Chart (v0.6.4b)** — Horizontal bar chart visualization of style violations grouped by category in `Lexichord.Modules.Style`. Added `IIssueCategoryChartViewModel` interface with category collection (`Categories`), total issue count, category selection event, and manual refresh. Created `IssueCategoryData` record with predefined category colors (Terminology=#F87171, Passive Voice=#FBBF24, Sentence Length=#60A5FA, Readability=#34D399, Grammar=#A78BFA, Style=#FB923C, Structure=#2DD4BF, Custom=#94A3B8). Implemented `IssueCategoryChartViewModel` with MediatR `LintingCompletedEvent` handling, category inference from rule IDs (pattern matching for term/passive/sentence/read/grammar/struct), sorted aggregation by count descending, and LiveCharts2 `RowSeries` for horizontal bars. Created `IssueCategoryChartView.axaml` with header (section title + total badge), loading indicator, empty state ("No issues found"), and LiveCharts2 `CartesianChart`. Features 8 structured log events (2100-2107 range). Includes ~20 unit tests.
 
+- **Conversation Management (v0.6.4c)** — Core conversation lifecycle management service in `Lexichord.Modules.Agents`. Added `IConversationManager` interface with 15 methods for conversation creation, message management, history tracking, search, and Markdown export. Created `Conversation` immutable record with factory methods (`Empty`, `WithMetadata`) and 8 computed properties (`MessageCount`, `HasMessages`, `UserMessageCount`, `AssistantMessageCount`, `TotalCharacterCount`, `FirstMessage`, `LastMessage`, `MatchesSearch`). Created `ConversationMetadata` record with factory methods (`Default`, `ForDocument`, `ForModel`) and helper methods (`WithTokens`, `AddTokens`) for tracking document path, selected model, and token count. Added `ConversationChangedEventArgs` with 8 event types (Created, MessageAdded, MessagesAdded, Cleared, TitleChanged, Truncated, Switched, Deleted). Created `ConversationSearchResult` record for search results with highlighted snippets. Created `ConversationExportOptions` record with 3 presets (Default, Minimal, Full). Implemented `ConversationManager` with automatic title generation from first user message (truncated at 50 chars), history truncation at 50 messages (removes oldest), recent conversation tracking (up to 10, ordered by recency), full-text search across current and recent conversations with context snippets, and Markdown export with emoji role indicators (👤 User, 🤖 Assistant, ⚙️ System). Registered `IConversationManager` as scoped service via `AddConversationManagement()` extension. Includes 60+ unit tests across 3 test classes.
+
 #### Sub-Part Changelogs
 
-| Version                          | Title                        | Status      |
-| -------------------------------- | ---------------------------- | ----------- |
+| Version                           | Title                        | Status      |
+| --------------------------------- | ---------------------------- | ----------- |
 | [v0.6.4a](v0.6.x/LCS-CL-v064a.md) | Knowledge Hub Dashboard      | ✅ Complete |
 | [v0.6.4b](v0.6.x/LCS-CL-v064b.md) | Issues by Category Bar Chart | ✅ Complete |
+| [v0.6.4c](v0.6.x/LCS-CL-v064c.md) | Conversation Management      | ✅ Complete |
 
 ---
 
@@ -45,12 +48,12 @@ This release delivers the prompt templating infrastructure that enables structur
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                        | Status      |
-| -------------------------------- | ---------------------------- | ----------- |
-| [v0.6.3a](v0.6.x/LCS-CL-v063a.md) | Template Abstractions        | ✅ Complete |
-| [v0.6.3b](v0.6.x/LCS-CL-v063b.md) | Mustache Renderer            | ✅ Complete |
-| [v0.6.3c](v0.6.x/LCS-CL-v063c.md) | Template Repository          | ✅ Complete |
-| [v0.6.3d](v0.6.x/LCS-CL-v063d.md) | Context Injection Service    | ✅ Complete |
+| Version                           | Title                     | Status      |
+| --------------------------------- | ------------------------- | ----------- |
+| [v0.6.3a](v0.6.x/LCS-CL-v063a.md) | Template Abstractions     | ✅ Complete |
+| [v0.6.3b](v0.6.x/LCS-CL-v063b.md) | Mustache Renderer         | ✅ Complete |
+| [v0.6.3c](v0.6.x/LCS-CL-v063c.md) | Template Repository       | ✅ Complete |
+| [v0.6.3d](v0.6.x/LCS-CL-v063d.md) | Context Injection Service | ✅ Complete |
 
 ---
 
@@ -72,12 +75,12 @@ This release delivers production-ready LLM provider integrations, implementing t
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                        | Status      |
-| -------------------------------- | ---------------------------- | ----------- |
+| Version                           | Title                       | Status      |
+| --------------------------------- | --------------------------- | ----------- |
 | [v0.6.2a](v0.6.x/LCS-CL-v062a.md) | OpenAI Connector            | ✅ Complete |
-| [v0.6.2b](v0.6.x/LCS-CL-v062b.md) | Anthropic Connector          | ✅ Complete |
-| [v0.6.2c](v0.6.x/LCS-CL-v062c.md) | Retry Policy Implementation  | ✅ Complete |
-| [v0.6.2d](v0.6.x/LCS-CL-v062d.md) | Token Counting Service       | ✅ Complete |
+| [v0.6.2b](v0.6.x/LCS-CL-v062b.md) | Anthropic Connector         | ✅ Complete |
+| [v0.6.2c](v0.6.x/LCS-CL-v062c.md) | Retry Policy Implementation | ✅ Complete |
+| [v0.6.2d](v0.6.x/LCS-CL-v062d.md) | Token Counting Service      | ✅ Complete |
 
 ---
 
@@ -99,8 +102,8 @@ This release establishes the foundational abstraction layer for Large Language M
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                        | Status      |
-| -------------------------------- | ---------------------------- | ----------- |
+| Version                           | Title                        | Status      |
+| --------------------------------- | ---------------------------- | ----------- |
 | [v0.6.1a](v0.6.x/LCS-CL-v061a.md) | Chat Completion Abstractions | ✅ Complete |
 | [v0.6.1b](v0.6.x/LCS-CL-v061b.md) | Chat Options Model           | ✅ Complete |
 | [v0.6.1c](v0.6.x/LCS-CL-v061c.md) | Provider Registry            | ✅ Complete |
@@ -126,12 +129,12 @@ This release introduces a keyboard-centric Reference Panel experience with dismi
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                    | Status      |
-| -------------------------------- | ------------------------ | ----------- |
-| [v0.5.7a](v0.5.x/LCS-CL-v057a.md) | Panel Redesign           | ✅ Complete |
-| [v0.5.7b](v0.5.x/LCS-CL-v057b.md) | Result Grouping          | ✅ Complete |
-| [v0.5.7c](v0.5.x/LCS-CL-v057c.md) | Preview Pane             | ✅ Complete |
-| [v0.5.7d](v0.5.x/LCS-CL-v057d.md) | Search Result Actions    | ✅ Complete |
+| Version                           | Title                 | Status      |
+| --------------------------------- | --------------------- | ----------- |
+| [v0.5.7a](v0.5.x/LCS-CL-v057a.md) | Panel Redesign        | ✅ Complete |
+| [v0.5.7b](v0.5.x/LCS-CL-v057b.md) | Result Grouping       | ✅ Complete |
+| [v0.5.7c](v0.5.x/LCS-CL-v057c.md) | Preview Pane          | ✅ Complete |
+| [v0.5.7d](v0.5.x/LCS-CL-v057d.md) | Search Result Actions | ✅ Complete |
 
 ---
 
@@ -161,16 +164,16 @@ This release establishes the infrastructure for detecting and consolidating near
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                        | Status      |
-| -------------------------------- | ---------------------------- | ----------- |
-| [v0.5.9a](v0.5.x/LCS-CL-v059a.md) | Similarity Detection         | ✅ Complete |
-| [v0.5.9b](v0.5.x/LCS-CL-v059b.md) | Relationship Classification  | ✅ Complete |
-| [v0.5.9c](v0.5.x/LCS-CL-v059c.md) | Canonical Record Management  | ✅ Complete |
-| [v0.5.9d](v0.5.x/LCS-CL-v059d.md) | Deduplication Service        | ✅ Complete |
-| [v0.5.9e](v0.5.x/LCS-CL-v059e.md) | Contradiction Detection      | ✅ Complete |
-| [v0.5.9f](v0.5.x/LCS-CL-v059f.md) | Retrieval Integration        | ✅ Complete |
-| [v0.5.9g](v0.5.x/LCS-CL-v059g.md) | Batch Deduplication          | ✅ Complete |
-| [v0.5.9h](v0.5.x/LCS-CL-v059h.md) | Hardening & Metrics          | ✅ Complete |
+| Version                           | Title                       | Status      |
+| --------------------------------- | --------------------------- | ----------- |
+| [v0.5.9a](v0.5.x/LCS-CL-v059a.md) | Similarity Detection        | ✅ Complete |
+| [v0.5.9b](v0.5.x/LCS-CL-v059b.md) | Relationship Classification | ✅ Complete |
+| [v0.5.9c](v0.5.x/LCS-CL-v059c.md) | Canonical Record Management | ✅ Complete |
+| [v0.5.9d](v0.5.x/LCS-CL-v059d.md) | Deduplication Service       | ✅ Complete |
+| [v0.5.9e](v0.5.x/LCS-CL-v059e.md) | Contradiction Detection     | ✅ Complete |
+| [v0.5.9f](v0.5.x/LCS-CL-v059f.md) | Retrieval Integration       | ✅ Complete |
+| [v0.5.9g](v0.5.x/LCS-CL-v059g.md) | Batch Deduplication         | ✅ Complete |
+| [v0.5.9h](v0.5.x/LCS-CL-v059h.md) | Hardening & Metrics         | ✅ Complete |
 
 ---
 
@@ -192,8 +195,8 @@ This release hardens the RAG retrieval system with quality metrics infrastructur
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                    | Status      |
-| -------------------------------- | ------------------------ | ----------- |
+| Version                           | Title                    | Status      |
+| --------------------------------- | ------------------------ | ----------- |
 | [v0.5.8a](v0.5.x/LCS-CL-v058a.md) | Retrieval Quality Tests  | ✅ Complete |
 | [v0.5.8b](v0.5.x/LCS-CL-v058b.md) | Search Performance Tests | ✅ Complete |
 | [v0.5.8c](v0.5.x/LCS-CL-v058c.md) | Caching Strategy         | ✅ Complete |
@@ -217,12 +220,12 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                    | Status      |
-| -------------------------------- | ------------------------ | ----------- |
-| [v0.5.6a](v0.5.x/LCS-CL-056a.md) | Snippet Extraction       | ✅ Complete |
-| [v0.5.6b](v0.5.x/LCS-CL-056b.md) | Query Term Highlighting  | ✅ Complete |
-| [v0.5.6c](v0.5.x/LCS-CL-056c.md) | Smart Truncation         | ✅ Complete |
-| [v0.5.6d](v0.5.x/LCS-CL-056d.md) | Multi-Snippet Results    | ✅ Complete |
+| Version                          | Title                   | Status      |
+| -------------------------------- | ----------------------- | ----------- |
+| [v0.5.6a](v0.5.x/LCS-CL-056a.md) | Snippet Extraction      | ✅ Complete |
+| [v0.5.6b](v0.5.x/LCS-CL-056b.md) | Query Term Highlighting | ✅ Complete |
+| [v0.5.6c](v0.5.x/LCS-CL-056c.md) | Smart Truncation        | ✅ Complete |
+| [v0.5.6d](v0.5.x/LCS-CL-056d.md) | Multi-Snippet Results   | ✅ Complete |
 
 #### Knowledge Graph Sub-Parts (v0.5.6-KG)
 
@@ -236,16 +239,14 @@ This release introduces the Answer Preview — contextual snippet extraction fro
 
 - **Claim Diff Service** — Implemented `IClaimDiffService` interface with `ClaimDiffService` for comparing claims between document versions. Features ID-based and semantic matching (Jaro-Winkler similarity) via `SemanticMatcher`, field-level change detection (`ClaimModification`, `FieldChange`), impact assessment (`ChangeImpact` enum), and change grouping by entity. Includes baseline snapshots (`ClaimSnapshot`), history tracking (`ClaimHistoryEntry`), and cross-document contradiction detection (`ClaimContradiction`). Data contracts include `DiffOptions`, `ClaimDiffResult`, `DiffStats`, `ClaimChange`, and `ClaimChangeGroup`. License-gated to Teams tier. Includes 34 unit tests.
 
-| Version                          | Title                    | Status      |
-| -------------------------------- | ------------------------ | ----------- |
-| [v0.5.6e](v0.5.x/LCS-CL-056e.md) | Claim Data Model         | ✅ Complete |
-| [v0.5.6f](v0.5.x/LCS-CL-056f.md) | Sentence Parser          | ✅ Complete |
-| [v0.5.6g](v0.5.x/LCS-CL-056g.md) | Claim Extractor          | ✅ Complete |
-| [v0.5.6h](v0.5.x/LCS-CL-056h.md) | Claim Repository         | ✅ Complete |
-| [v0.5.6i](v0.5.x/LCS-CL-056i.md) | Claim Diff Service       | ✅ Complete |
-| v0.5.6j                          | Entity Linker            | 🔜 Planned  |
-
-
+| Version                          | Title              | Status      |
+| -------------------------------- | ------------------ | ----------- |
+| [v0.5.6e](v0.5.x/LCS-CL-056e.md) | Claim Data Model   | ✅ Complete |
+| [v0.5.6f](v0.5.x/LCS-CL-056f.md) | Sentence Parser    | ✅ Complete |
+| [v0.5.6g](v0.5.x/LCS-CL-056g.md) | Claim Extractor    | ✅ Complete |
+| [v0.5.6h](v0.5.x/LCS-CL-056h.md) | Claim Repository   | ✅ Complete |
+| [v0.5.6i](v0.5.x/LCS-CL-056i.md) | Claim Diff Service | ✅ Complete |
+| v0.5.6j                          | Entity Linker      | 🔜 Planned  |
 
 ---
 
@@ -267,12 +268,12 @@ This release introduces the Filter System — scoped search that allows users to
 
 #### Sub-Part Changelogs
 
-| Version                              | Title                    | Status       |
-| ------------------------------------ | ------------------------ | ------------ |
-| [v0.5.5a](v0.5.x/LCS-CL-055a.md)     | Filter Model             | ✅ Complete  |
-| [v0.5.5b](v0.5.x/LCS-CL-055b.md)     | Filter UI Component      | ✅ Complete  |
+| Version                              | Title                                    | Status      |
+| ------------------------------------ | ---------------------------------------- | ----------- |
+| [v0.5.5a](v0.5.x/LCS-CL-055a.md)     | Filter Model                             | ✅ Complete |
+| [v0.5.5b](v0.5.x/LCS-CL-055b.md)     | Filter UI Component                      | ✅ Complete |
 | [v0.5.5c-i](v0.5.x/LCS-CL-055c-i.md) | Filter Query Builder + Linking Review UI | ✅ Complete |
-| v0.5.5d                              | Saved Filters            | 🔜 Planned   |
+| v0.5.5d                              | Saved Filters                            | 🔜 Planned  |
 
 ---
 
@@ -294,12 +295,12 @@ This release introduces the Relevance Tuner — intelligent query analysis and e
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                    | Status      |
-| -------------------------------- | ------------------------ | ----------- |
-| [v0.5.4a](v0.5.x/LCS-CL-054a.md) | Query Analyzer           | ✅ Complete |
-| [v0.5.4b](v0.5.x/LCS-CL-054b.md) | Query Expansion          | ✅ Complete |
-| [v0.5.4c](v0.5.x/LCS-CL-054c.md) | Query Suggestions        | ✅ Complete |
-| [v0.5.4d](v0.5.x/LCS-CL-054d.md) | Query History & Analytics| ✅ Complete |
+| Version                          | Title                     | Status      |
+| -------------------------------- | ------------------------- | ----------- |
+| [v0.5.4a](v0.5.x/LCS-CL-054a.md) | Query Analyzer            | ✅ Complete |
+| [v0.5.4b](v0.5.x/LCS-CL-054b.md) | Query Expansion           | ✅ Complete |
+| [v0.5.4c](v0.5.x/LCS-CL-054c.md) | Query Suggestions         | ✅ Complete |
+| [v0.5.4d](v0.5.x/LCS-CL-054d.md) | Query History & Analytics | ✅ Complete |
 
 ---
 
@@ -323,12 +324,12 @@ This release introduces the Context Window — intelligent context expansion for
 
 #### Sub-Part Changelogs
 
-| Version                          | Title                     | Status         |
-| -------------------------------- | ------------------------- | -------------- |
-| [v0.5.3a](v0.5.x/LCS-CL-053a.md) | Context Expansion Service | ✅ Complete    |
-| [v0.5.3b](v0.5.x/LCS-CL-053b.md) | Sibling Chunk Retrieval   | ✅ Complete    |
-| [v0.5.3c](v0.5.x/LCS-CL-053c.md) | Heading Hierarchy Service | ✅ Complete    |
-| [v0.5.3d](v0.5.x/LCS-CL-053d.md) | Context Preview UI        | ✅ Complete    |
+| Version                          | Title                     | Status      |
+| -------------------------------- | ------------------------- | ----------- |
+| [v0.5.3a](v0.5.x/LCS-CL-053a.md) | Context Expansion Service | ✅ Complete |
+| [v0.5.3b](v0.5.x/LCS-CL-053b.md) | Sibling Chunk Retrieval   | ✅ Complete |
+| [v0.5.3c](v0.5.x/LCS-CL-053c.md) | Heading Hierarchy Service | ✅ Complete |
+| [v0.5.3d](v0.5.x/LCS-CL-053d.md) | Context Preview UI        | ✅ Complete |
 
 ---
 
