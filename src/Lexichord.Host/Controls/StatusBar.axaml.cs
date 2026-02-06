@@ -143,8 +143,8 @@ public partial class StatusBar : UserControl
     public static readonly DirectProperty<StatusBar, int> ReadingTimeMinutesProperty =
         AvaloniaProperty.RegisterDirect<StatusBar, int>(nameof(ReadingTimeMinutes), o => o.ReadingTimeMinutes);
 
-    public static readonly DirectProperty<StatusBar, string> SyncStatusTextProperty =
-        AvaloniaProperty.RegisterDirect<StatusBar, string>(nameof(SyncStatusText), o => o.SyncStatusText);
+    public static readonly DirectProperty<StatusBar, string?> SyncStatusTextProperty =
+        AvaloniaProperty.RegisterDirect<StatusBar, string?>(nameof(SyncStatusText), o => o.SyncStatusText);
 
     public static readonly DirectProperty<StatusBar, bool> IsSyncedProperty =
         AvaloniaProperty.RegisterDirect<StatusBar, bool>(nameof(IsSynced), o => o.IsSynced);

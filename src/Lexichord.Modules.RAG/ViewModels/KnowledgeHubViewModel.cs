@@ -140,8 +140,7 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
         RecentSearches = new ReadOnlyObservableCollection<RecentSearch>(_recentSearches);
 
         // Check license
-        // TODO: Add FeatureCodes.KnowledgeHub to FeatureCodes.cs
-        IsLicensed = true; // _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
+        IsLicensed = _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
 
         _logger.LogInformation(
             LogEvents.Initialized,
@@ -165,8 +164,7 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
         _logger.LogDebug(LogEvents.InitializeStarted, "KnowledgeHubViewModel.InitializeAsync started");
 
         // Check license on property access
-        // TODO: Add FeatureCodes.KnowledgeHub to FeatureCodes.cs
-        IsLicensed = true; // _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
+        IsLicensed = _licenseService.IsFeatureEnabled(FeatureCodes.KnowledgeHub);
         _logger.LogDebug(LogEvents.LicenseChecked, "License check: {IsLicensed}", IsLicensed);
 
         if (!IsLicensed)
@@ -335,20 +333,19 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
     {
         try
         {
-            // Load recent queries
-            // TODO: Implement GetRecentQueriesAsync in IQueryHistoryService
-            // var queries = await _queryHistoryService.GetRecentQueriesAsync(count, ct).ConfigureAwait(false);
+            // LOGIC: Load recent queries from QueryHistoryService
+            const int count = 10;
+            var queries = await _queryHistoryService.GetRecentAsync(count, ct).ConfigureAwait(false);
             
             _recentSearches.Clear();
-            // Placeholder: no queries to load yet
-            // foreach (var item in queries)
-            // {
-            //     _recentSearches.Add(new RecentSearch(
-            //         Query: item.Query,
-            //         ResultCount: item.ResultCount,
-            //         ExecutedAt: item.ExecutedAt,
-            //         Duration: item.Duration));
-            // }
+            foreach (var item in queries)
+            {
+                _recentSearches.Add(new RecentSearch(
+                    Query: item.Query,
+                    ResultCount: item.ResultCount,
+                    ExecutedAt: item.ExecutedAt,
+                    Duration: TimeSpan.FromMilliseconds(item.DurationMs)));
+            }
 
             _logger.LogDebug(LogEvents.RecentSearchAdded, "Loaded {Count} recent searches", _recentSearches.Count);
         }

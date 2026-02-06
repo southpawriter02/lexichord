@@ -467,8 +467,8 @@ public sealed class RAGModule : IModule
         // Scoped to align with IDbConnectionFactory lifetime for database queries.
         // Tracks executed queries for recent queries panel and zero-result analysis.
         // Publishes QueryAnalyticsEvent via MediatR for opt-in telemetry.
-        // License-gated via FeatureFlags.RAG.RelevanceTuner (WriterPro+).
-        services.AddScoped<IQueryHistoryService, Search.QueryHistoryService>();
+        // License-gated via FeatureCodes.KnowledgeHub (WriterPro+).
+        services.AddScoped<IQueryHistoryService, Services.QueryHistoryService>();
 
         // =============================================================================
         // v0.5.5a: Filter System (Filter Model)

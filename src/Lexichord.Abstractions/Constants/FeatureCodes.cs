@@ -206,6 +206,22 @@ public static class FeatureCodes
 
     #endregion
 
+    #region Relevance Tuner Features (v0.5.4)
+
+    /// <summary>
+    /// The Knowledge Hub feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Knowledge Hub dashboard including statistics,
+    /// recent queries, and query history tracking. When this feature is not
+    /// enabled, query history is not recorded and hub features are unavailable.
+    /// Introduced in v0.5.4d.
+    /// </remarks>
+    public const string KnowledgeHub = "Feature.KnowledgeHub";
+
+    #endregion
+
     #region Filter System Features (v0.5.5)
 
     /// <summary>

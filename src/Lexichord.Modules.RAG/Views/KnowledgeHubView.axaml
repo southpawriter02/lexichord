@@ -174,7 +174,7 @@
 
                         <!-- Pending Documents -->
                         <Border Classes="stat-card"
-                                IsVisible="{Binding Statistics.PendingDocuments, Converter={x:Static BoolConverters.IsNotNull}}">
+                                IsVisible="{Binding Statistics.PendingDocuments}">
                             <StackPanel>
                                 <Grid ColumnDefinitions="*,Auto">
                                     <StackPanel>

@@ -2,7 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lexichord.Host.Views.Dialogs"
         mc:Ignorable="d"
+        x:DataType="local:WelcomeDialog"
         x:Class="Lexichord.Host.Views.Dialogs.WelcomeDialog"
         Title="Welcome to Lexichord"
         Width="600"
@@ -101,7 +103,7 @@
             <!-- ═══════════════════════════════════════════════════════
                  STEP 1: Welcome
                  ═══════════════════════════════════════════════════════ -->
-            <CarouselItem>
+            <Grid>
                 <Grid RowDefinitions="*,Auto" Margin="40">
                     <StackPanel Grid.Row="0"
                                 VerticalAlignment="Center"
@@ -173,12 +175,12 @@
                         </Grid>
                     </StackPanel>
                 </Grid>
-            </CarouselItem>
+            </Grid>
 
             <!-- ═══════════════════════════════════════════════════════
                  STEP 2: Style Guide Selection
                  ═══════════════════════════════════════════════════════ -->
-            <CarouselItem>
+            <Grid>
                 <Grid RowDefinitions="Auto,*" Margin="40">
                     <!-- Header -->
                     <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
@@ -283,12 +285,12 @@
                                    Margin="0,8,0,0" />
                     </StackPanel>
                 </Grid>
-            </CarouselItem>
+            </Grid>
 
             <!-- ═══════════════════════════════════════════════════════
                  STEP 3: Ready to Go
                  ═══════════════════════════════════════════════════════ -->
-            <CarouselItem>
+            <Grid>
                 <StackPanel VerticalAlignment="Center"
                             HorizontalAlignment="Center"
                             Spacing="24"
@@ -368,7 +370,7 @@
                             HorizontalAlignment="Center"
                             Command="{Binding ConfigureAICommand}" />
                 </StackPanel>
-            </CarouselItem>
+            </Grid>
 
         </Carousel>
 

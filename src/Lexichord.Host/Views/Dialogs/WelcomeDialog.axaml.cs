@@ -103,8 +103,8 @@ public partial class WelcomeDialog : Window
     public static readonly DirectProperty<WelcomeDialog, bool> Step2CompletedProperty =
         AvaloniaProperty.RegisterDirect<WelcomeDialog, bool>(nameof(Step2Completed), o => o.Step2Completed);
 
-    public static readonly DirectProperty<WelcomeDialog, string> NextButtonTextProperty =
-        AvaloniaProperty.RegisterDirect<WelcomeDialog, string>(nameof(NextButtonText), o => o.NextButtonText);
+    public static readonly DirectProperty<WelcomeDialog, string?> NextButtonTextProperty =
+        AvaloniaProperty.RegisterDirect<WelcomeDialog, string?>(nameof(NextButtonText), o => o.NextButtonText);
 
     /// <summary>
     /// The selected style guide preset.

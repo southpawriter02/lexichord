@@ -114,8 +114,8 @@ public partial class StyleGauge : UserControl
     /// <summary>
     /// Direct property for GaugeColor binding.
     /// </summary>
-    public static readonly DirectProperty<StyleGauge, IBrush> GaugeColorProperty =
-        AvaloniaProperty.RegisterDirect<StyleGauge, IBrush>(
+    public static readonly DirectProperty<StyleGauge, IBrush?> GaugeColorProperty =
+        AvaloniaProperty.RegisterDirect<StyleGauge, IBrush?>(
             nameof(GaugeColor),
             o => o.GaugeColor);
 }

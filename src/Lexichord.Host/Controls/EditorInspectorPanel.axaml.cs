@@ -238,28 +238,28 @@ public partial class EditorInspectorPanel : UserControl
     // Direct Properties for Binding
     // ─────────────────────────────────────────────────────────────────────────
 
-    public static readonly DirectProperty<EditorInspectorPanel, string> StatusTextProperty =
-        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string>(
+    public static readonly DirectProperty<EditorInspectorPanel, string?> StatusTextProperty =
+        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string?>(
             nameof(StatusText), o => o.StatusText);
 
-    public static readonly DirectProperty<EditorInspectorPanel, IBrush> StatusColorProperty =
-        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, IBrush>(
+    public static readonly DirectProperty<EditorInspectorPanel, IBrush?> StatusColorProperty =
+        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, IBrush?>(
             nameof(StatusColor), o => o.StatusColor);
 
-    public static readonly DirectProperty<EditorInspectorPanel, string> ReadingTimeProperty =
-        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string>(
+    public static readonly DirectProperty<EditorInspectorPanel, string?> ReadingTimeProperty =
+        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string?>(
             nameof(ReadingTime), o => o.ReadingTime);
 
-    public static readonly DirectProperty<EditorInspectorPanel, string> DirectnessLabelProperty =
-        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string>(
+    public static readonly DirectProperty<EditorInspectorPanel, string?> DirectnessLabelProperty =
+        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string?>(
             nameof(DirectnessLabel), o => o.DirectnessLabel);
 
-    public static readonly DirectProperty<EditorInspectorPanel, string> FormalityLabelProperty =
-        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string>(
+    public static readonly DirectProperty<EditorInspectorPanel, string?> FormalityLabelProperty =
+        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string?>(
             nameof(FormalityLabel), o => o.FormalityLabel);
 
-    public static readonly DirectProperty<EditorInspectorPanel, string> ComplexityLabelProperty =
-        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string>(
+    public static readonly DirectProperty<EditorInspectorPanel, string?> ComplexityLabelProperty =
+        AvaloniaProperty.RegisterDirect<EditorInspectorPanel, string?>(
             nameof(ComplexityLabel), o => o.ComplexityLabel);
 
     public static readonly DirectProperty<EditorInspectorPanel, bool> HasSuggestionsProperty =
