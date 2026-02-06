@@ -18,12 +18,15 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **SSE Parser (v0.6.5b)** — Server-Sent Events parser for extracting streaming tokens from LLM provider HTTP response streams in `Lexichord.Modules.Agents`. Added `ISSEParser` interface with `ParseSSEStreamAsync(Stream, string, CancellationToken)` returning `IAsyncEnumerable<StreamingChatToken>`. Implemented `SSEParser` sealed class as stateless, thread-safe singleton with provider-dispatched JSON parsing: OpenAI format (`choices[0].delta.content` with `[DONE]` termination) and Anthropic format (`content_block_delta` events with `message_stop` termination). Features malformed JSON resilience (logged at Warning, skipped), case-insensitive provider matching, `ReadOnlySpan` prefix slicing, `Stopwatch`-based completion metrics, and comprehensive guard clauses (`ArgumentNullException` for null stream, `NotSupportedException` for unknown providers). Registered as `ISSEParser` → `SSEParser` singleton in `AgentsModule`. Includes 16 unit tests (36 with Theory expansion).
 
+- **Streaming UI Handler (v0.6.5c)** — Progressive display handler for LLM-generated tokens in the Co-Pilot chat panel in `Lexichord.Modules.Agents`. Added `StreamingChatHandler` sealed class implementing `IStreamingChatHandler` and `IDisposable` with `StringBuilder`-based token buffering, 50ms throttled `System.Threading.Timer` (~20 UI updates/sec), `MaxBufferTokens=20` forced-flush threshold, and injectable `DispatchAction` for Avalonia UI thread dispatch (overridable for testing). Manages full stream lifecycle: `StartStreamingAsync()` creates placeholder message and sets `Connecting` state, `OnTokenReceived()` buffers tokens and transitions to `Streaming` on first token, `OnStreamComplete()` finalizes message with completion metadata, `OnStreamError()` preserves partial content and marks error state. Added minimal `CoPilotViewModel` and `ChatMessageViewModel` stubs as v0.6.4 forward declarations with streaming properties. Added `CoPilotView.axaml` with animated typing indicator (3 staggered-opacity ellipses) and cancel button, plus `CoPilotView.axaml.cs` code-behind wiring `ScrollToBottomRequested` to `ScrollViewer.ScrollToEnd()`. Includes 11 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
 | ----------------------------------- | --------------------- | ----------- |
 | [v0.6.5a](v0.6.x/LCS-CL-v065a.md) | Streaming Token Model | ✅ Complete |
 | [v0.6.5b](v0.6.x/LCS-CL-v065b.md) | SSE Parser            | ✅ Complete |
+| [v0.6.5c](v0.6.x/LCS-CL-v065c.md) | Streaming UI Handler  | ✅ Complete |
 
 ---
 
