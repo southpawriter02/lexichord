@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.5] - 2026-02 (In Progress)
+
+### The Stream (Real-Time Streaming)
+
+This release delivers real-time streaming LLM responses, enabling token-by-token display with progressive UI updates, cancellation, and error recovery.
+
+#### What's New
+
+- **Streaming Token Model (v0.6.5a)** — Core data contracts for streaming LLM responses in `Lexichord.Modules.Agents`. Added `StreamingChatToken` immutable record with `Text`, `Index`, `IsComplete`, and `FinishReason` properties, plus `Content(text, index)` and `Complete(index, finishReason)` factory methods and `HasContent` computed property. Added `StreamingState` enum with 6 lifecycle states (`Idle`, `Connecting`, `Streaming`, `Completed`, `Cancelled`, `Error`) and `StreamingStateExtensions` with 5 methods (`IsActive`, `IsTerminal`, `CanCancel`, `ShowTypingIndicator`, `InputEnabled`) for UI binding. Added `IStreamingChatHandler` interface defining the streaming callback contract with `OnTokenReceived(StreamingChatToken)`, `OnStreamComplete(ChatResponse)`, and `OnStreamError(Exception)`. Includes 9 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                 | Status      |
+| ----------------------------------- | --------------------- | ----------- |
+| [v0.6.5a](v0.6.x/LCS-CL-v065a.md) | Streaming Token Model | ✅ Complete |
+
+---
+
 ## [v0.6.4] - 2026-02 (In Progress)
 
 ### The Dashboards (P1 UI Components)
