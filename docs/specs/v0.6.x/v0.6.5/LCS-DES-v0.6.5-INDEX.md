@@ -55,7 +55,7 @@ Lexichord.Modules.Agents/
 | v0.6.5a | Streaming Token Model | [LCS-DES-065a](LCS-DES-065a.md) | Draft  |
 | v0.6.5b | SSE Parser            | [LCS-DES-065b](LCS-DES-065b.md) | ✅ Complete |
 | v0.6.5c | Streaming UI Handler  | [LCS-DES-065c](LCS-DES-065c.md) | Draft  |
-| v0.6.5d | License Gating        | [LCS-DES-065d](LCS-DES-065d.md) | Draft  |
+| v0.6.5d | License Gating        | [LCS-DES-065d](LCS-DES-065d.md) | ✅ Complete |
 
 ---
 

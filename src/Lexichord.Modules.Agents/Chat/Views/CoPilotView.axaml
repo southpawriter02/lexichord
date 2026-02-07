@@ -66,30 +66,70 @@
                 </Animation>
             </Style.Animations>
         </Style>
+
+        <!-- Upgrade Hint Styles (v0.6.5d) -->
+        <Style Selector="Border.upgrade-hint">
+            <Setter Property="Background" Value="{DynamicResource HintBackgroundBrush}"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Opacity" Value="0.9"/>
+        </Style>
+
+        <Style Selector="TextBlock.upgrade-hint-text">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </UserControl.Styles>
+
+
 
     <DockPanel>
         <!-- Status bar at the bottom -->
-        <DockPanel DockPanel.Dock="Bottom" Margin="8,4">
-            <!-- Cancel button, visible during streaming -->
-            <Button Command="{Binding CancelStreamingCommand}"
-                    IsVisible="{Binding CanCancel}"
-                    Classes="cancel-button danger"
-                    DockPanel.Dock="Left"
-                    ToolTip.Tip="Stop generation">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="⏹" FontSize="12"/>
-                    <TextBlock Text="Cancel"/>
-                </StackPanel>
-            </Button>
+        <StackPanel DockPanel.Dock="Bottom" Margin="8,4">
+            
+            <!-- Upgrade Hint (v0.6.5d) -->
+            <Border Classes="upgrade-hint"
+                    IsVisible="{Binding !IsStreamingAvailable}"
+                    Margin="0,0,0,4">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <PathIcon Grid.Column="0"
+                              Data="{StaticResource InfoIcon}"
+                              Width="14" Height="14"
+                              Foreground="{DynamicResource AccentColorBrush}"/>
 
-            <!-- Status message -->
-            <TextBlock Text="{Binding StatusMessage}"
-                       DockPanel.Dock="Right"
-                       VerticalAlignment="Center"
-                       Opacity="0.7"
-                       FontSize="12"/>
-        </DockPanel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding StreamingUnavailableMessage}"
+                               Classes="upgrade-hint-text"
+                               Margin="8,0"/>
+
+                    <Button Grid.Column="2"
+                            Content="Learn More"
+                            Classes="link-button"/>
+                </Grid>
+            </Border>
+
+            <DockPanel>
+                <!-- Cancel button, visible during streaming -->
+                <Button Command="{Binding CancelStreamingCommand}"
+                        IsVisible="{Binding CanCancel}"
+                        Classes="cancel-button danger"
+                        DockPanel.Dock="Left"
+                        ToolTip.Tip="Stop generation">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="⏹" FontSize="12"/>
+                        <TextBlock Text="Cancel"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Status message -->
+                <TextBlock Text="{Binding StatusMessage}"
+                           DockPanel.Dock="Right"
+                           VerticalAlignment="Center"
+                           Opacity="0.7"
+                           FontSize="12"/>
+            </DockPanel>
+        </StackPanel>
 
         <!-- Message area -->
         <Grid>
