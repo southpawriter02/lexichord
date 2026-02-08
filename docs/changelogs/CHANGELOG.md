@@ -20,6 +20,10 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Streaming UI Handler (v0.6.5c)** — Progressive display handler for LLM-generated tokens in the Co-Pilot chat panel in `Lexichord.Modules.Agents`. Added `StreamingChatHandler` sealed class implementing `IStreamingChatHandler` and `IDisposable` with `StringBuilder`-based token buffering, 50ms throttled `System.Threading.Timer` (~20 UI updates/sec), `MaxBufferTokens=20` forced-flush threshold, and injectable `DispatchAction` for Avalonia UI thread dispatch (overridable for testing). Manages full stream lifecycle: `StartStreamingAsync()` creates placeholder message and sets `Connecting` state, `OnTokenReceived()` buffers tokens and transitions to `Streaming` on first token, `OnStreamComplete()` finalizes message with completion metadata, `OnStreamError()` preserves partial content and marks error state. Added minimal `CoPilotViewModel` and `ChatMessageViewModel` stubs as v0.6.4 forward declarations with streaming properties. Added `CoPilotView.axaml` with animated typing indicator (3 staggered-opacity ellipses) and cancel button, plus `CoPilotView.axaml.cs` code-behind wiring `ScrollToBottomRequested` to `ScrollViewer.ScrollToEnd()`. Includes 11 unit tests.
 
+- **License Gating (v0.6.5d)** — License-based feature gating for the streaming chat interface. Routes requests based on `ILicenseContext` tier: Teams/Enterprise authorized for real-time streaming, WriterPro falls back to batch completion. Added `ShouldUseStreaming()` routing, `SendBatchAsync` fallback, UI upgrade hint, and parameterless backward-compatible constructor. Includes 9 license gating tests.
+
+- **Validation Orchestrator (v0.6.5e)** — Pluggable, parallel document validation engine for the Knowledge Graph module (CKVS Phase 3a). Added `ValidationMode` flags enum, `ValidationSeverity` enum, `ValidationFinding` record with factory methods, `ValidationResult` aggregated result record (follows `AxiomValidationResult` pattern), `ValidationOptions` config record, `ValidationContext` document context record, `IValidator` pluggable interface, and `IValidationEngine` public orchestrator interface. Implemented `ValidatorRegistry` (thread-safe `ConcurrentDictionary`, mode filtering, license-tier gating, priority ordering), `ValidationPipeline` (parallel execution via `Task.WhenAll`, per-validator timeout, exception isolation), and `ValidationEngine` orchestrator. Registered as singletons in `KnowledgeModule`. Includes 42 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
@@ -27,6 +31,8 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 | [v0.6.5a](v0.6.x/LCS-CL-v065a.md) | Streaming Token Model | ✅ Complete |
 | [v0.6.5b](v0.6.x/LCS-CL-v065b.md) | SSE Parser            | ✅ Complete |
 | [v0.6.5c](v0.6.x/LCS-CL-v065c.md) | Streaming UI Handler  | ✅ Complete |
+| [v0.6.5d](v0.6.x/LCS-CL-v065d.md) | License Gating        | ✅ Complete |
+| [v0.6.5e](v0.6.x/LCS-CL-v065e.md) | Validation Orchestrator | ✅ Complete |
 
 ---
 

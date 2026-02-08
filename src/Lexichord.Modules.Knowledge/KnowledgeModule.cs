@@ -246,6 +246,28 @@ public sealed class KnowledgeModule : IModule
         // Manages pending link queue, review decisions, and statistics.
         // License-gated: WriterPro (view-only), Teams+ (full review).
         services.AddTransient<UI.ViewModels.LinkingReview.LinkingReviewViewModel>();
+
+        // =============================================================================
+        // v0.6.5e: Validation Orchestrator (CKVS Phase 3a)
+        // =============================================================================
+
+        // LOGIC: Register ValidatorRegistry as singleton.
+        // The registry holds all registered IValidator instances and their metadata.
+        // Singleton ensures consistent validator registration state across the application.
+        // Thread-safe via ConcurrentDictionary.
+        services.AddSingleton<Validation.ValidatorRegistry>();
+
+        // LOGIC: Register ValidationPipeline as singleton.
+        // The pipeline is stateless — it executes validators on demand with provided context.
+        // Singleton is appropriate as it only depends on ILogger.
+        services.AddSingleton<Validation.ValidationPipeline>();
+
+        // LOGIC: Register ValidationEngine as singleton.
+        // The engine orchestrates registry + pipeline and is the public entry point.
+        // Also registered as IValidationEngine for consumer injection.
+        services.AddSingleton<Validation.ValidationEngine>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IValidationEngine>(sp =>
+            sp.GetRequiredService<Validation.ValidationEngine>());
     }
 
     /// <inheritdoc/>

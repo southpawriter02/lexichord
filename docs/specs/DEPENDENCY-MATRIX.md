@@ -2775,3 +2775,36 @@ v0.13.5-ORC (Patterns & Templates)
 - [ ] Workflow persistence (v0.13.5d)
 - [ ] Conductor dashboard (v0.13.5e)
 - [ ] Ensemble marketplace (v0.13.5f)
+
+---
+
+### 1.24a v0.6.5e Validation Orchestrator Interfaces
+
+| Interface            | Defined In | Module       | Purpose                                        |
+| :------------------- | :--------- | :----------- | :--------------------------------------------- |
+| `IValidator`         | v0.6.5e    | Abstractions | Pluggable document validator interface          |
+| `IValidationEngine`  | v0.6.5e    | Abstractions | Validation orchestrator entry point             |
+
+**New Enums (v0.6.5e):**
+
+| Enum                 | Defined In | Module       | Purpose                                        |
+| :------------------- | :--------- | :----------- | :--------------------------------------------- |
+| `ValidationMode`     | v0.6.5e    | Abstractions | Flags enum: RealTime, OnSave, OnDemand, PrePublish |
+| `ValidationSeverity` | v0.6.5e    | Abstractions | Finding severity: Info, Warning, Error          |
+
+**New Records (v0.6.5e):**
+
+| Record               | Defined In | Module       | Purpose                                        |
+| :------------------- | :--------- | :----------- | :--------------------------------------------- |
+| `ValidationFinding`  | v0.6.5e    | Abstractions | Single finding from a validator                 |
+| `ValidationResult`   | v0.6.5e    | Abstractions | Aggregated validation result with computed props|
+| `ValidationOptions`  | v0.6.5e    | Abstractions | Validation pass configuration                   |
+| `ValidationContext`  | v0.6.5e    | Abstractions | Document + options bundle for validators        |
+
+**New Classes (v0.6.5e):**
+
+| Class                 | Defined In | Module            | Purpose                                    |
+| :-------------------- | :--------- | :---------------- | :----------------------------------------- |
+| `ValidatorRegistry`   | v0.6.5e    | Modules.Knowledge | Thread-safe validator registration/lookup  |
+| `ValidationPipeline`  | v0.6.5e    | Modules.Knowledge | Parallel execution with timeout isolation  |
+| `ValidationEngine`    | v0.6.5e    | Modules.Knowledge | IValidationEngine orchestrator impl        |
