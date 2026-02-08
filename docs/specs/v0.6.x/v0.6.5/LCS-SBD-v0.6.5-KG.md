@@ -62,8 +62,8 @@ The existing v0.6.5 spec covers **Streaming** for LLM responses. Validation Engi
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.6.5e | Validation Orchestrator | Coordinates all validators | 6 |
-| v0.6.5f | Schema Validator | Validates entities against schemas | 5 |
+| v0.6.5e | Validation Orchestrator | Coordinates all validators | 6 | ✅ Complete |
+| v0.6.5f | Schema Validator | Validates entities against schemas | 5 | ✅ Complete |
 | v0.6.5g | Axiom Validator | Validates claims against axioms | 8 |
 | v0.6.5h | Consistency Checker | Detects contradictions | 8 |
 | v0.6.5i | Validation Result Aggregator | Combines results, suggests fixes | 4 |

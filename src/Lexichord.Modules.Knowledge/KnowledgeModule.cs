@@ -268,6 +268,26 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Validation.ValidationEngine>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IValidationEngine>(sp =>
             sp.GetRequiredService<Validation.ValidationEngine>());
+
+        // =====================================================================
+        // v0.6.5f: Schema Validator (CKVS Phase 3a)
+        // =====================================================================
+
+        // LOGIC: Register PropertyTypeChecker as singleton.
+        // Stateless type-checking logic — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IPropertyTypeChecker,
+            Validation.Validators.Schema.PropertyTypeChecker>();
+
+        // LOGIC: Register ConstraintEvaluator as singleton.
+        // Stateless constraint evaluation — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IConstraintEvaluator,
+            Validation.Validators.Schema.ConstraintEvaluator>();
+
+        // LOGIC: Register SchemaValidatorService as singleton.
+        // Also registered as ISchemaValidatorService for direct entity validation.
+        services.AddSingleton<Validation.Validators.Schema.SchemaValidatorService>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.ISchemaValidatorService>(sp =>
+            sp.GetRequiredService<Validation.Validators.Schema.SchemaValidatorService>());
     }
 
     /// <inheritdoc/>

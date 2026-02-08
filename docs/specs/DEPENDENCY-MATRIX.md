@@ -2808,3 +2808,34 @@ v0.13.5-ORC (Patterns & Templates)
 | `ValidatorRegistry`   | v0.6.5e    | Modules.Knowledge | Thread-safe validator registration/lookup  |
 | `ValidationPipeline`  | v0.6.5e    | Modules.Knowledge | Parallel execution with timeout isolation  |
 | `ValidationEngine`    | v0.6.5e    | Modules.Knowledge | IValidationEngine orchestrator impl        |
+
+### 1.24b v0.6.5f Schema Validator Interfaces
+
+**New Interfaces (v0.6.5f):**
+
+| Interface                    | Defined In | Module       | Purpose                                         |
+| :--------------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `IPropertyTypeChecker`       | v0.6.5f    | Abstractions | Maps PropertyType → valid CLR types             |
+| `IConstraintEvaluator`       | v0.6.5f    | Abstractions | Evaluates property constraints against values   |
+| `ISchemaValidatorService`    | v0.6.5f    | Abstractions | Extends IValidator for entity schema validation |
+
+**New Static Classes (v0.6.5f):**
+
+| Class                 | Defined In | Module       | Purpose                                         |
+| :-------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `SchemaFindingCodes`  | v0.6.5f    | Abstractions | 11 SCHEMA_* finding code constants              |
+| `PredefinedSchemas`   | v0.6.5f    | Modules.Knowledge | Built-in Endpoint/Parameter EntityTypeSchemas |
+
+**New Records (v0.6.5f):**
+
+| Record               | Defined In | Module       | Purpose                                         |
+| :------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `TypeCheckResult`    | v0.6.5f    | Abstractions | Type check result with IsValid/ActualType/Msg   |
+
+**New Classes (v0.6.5f):**
+
+| Class                       | Defined In | Module            | Purpose                                    |
+| :-------------------------- | :--------- | :---------------- | :----------------------------------------- |
+| `PropertyTypeChecker`       | v0.6.5f    | Modules.Knowledge | IPropertyTypeChecker implementation        |
+| `ConstraintEvaluator`       | v0.6.5f    | Modules.Knowledge | IConstraintEvaluator implementation        |
+| `SchemaValidatorService`    | v0.6.5f    | Modules.Knowledge | ISchemaValidatorService + IValidator impl  |

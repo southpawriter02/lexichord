@@ -24,6 +24,8 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Validation Orchestrator (v0.6.5e)** — Pluggable, parallel document validation engine for the Knowledge Graph module (CKVS Phase 3a). Added `ValidationMode` flags enum, `ValidationSeverity` enum, `ValidationFinding` record with factory methods, `ValidationResult` aggregated result record (follows `AxiomValidationResult` pattern), `ValidationOptions` config record, `ValidationContext` document context record, `IValidator` pluggable interface, and `IValidationEngine` public orchestrator interface. Implemented `ValidatorRegistry` (thread-safe `ConcurrentDictionary`, mode filtering, license-tier gating, priority ordering), `ValidationPipeline` (parallel execution via `Task.WhenAll`, per-validator timeout, exception isolation), and `ValidationEngine` orchestrator. Registered as singletons in `KnowledgeModule`. Includes 42 unit tests.
 
+- **Schema Validator (v0.6.5f)** — Schema-based entity validation bridging the v0.6.5e validation pipeline with v0.4.5f schema logic (CKVS Phase 3a). Added `SchemaFindingCodes` static constants (11 `SCHEMA_*` codes), `IPropertyTypeChecker` interface with `TypeCheckResult` record, `IConstraintEvaluator` interface, and `ISchemaValidatorService` extending `IValidator`. Implemented `PropertyTypeChecker` (CLR type mapping for String/Number/Boolean/DateTime/Enum/Reference/Array), `ConstraintEvaluator` (numeric range, string length, regex pattern checks), `SchemaValidatorService` (entity extraction from context metadata, required property validation, type/enum/constraint checking, Levenshtein-based enum fix suggestions), and `PredefinedSchemas` (built-in Endpoint and Parameter schemas). Registered in `KnowledgeModule` DI. Includes ~74 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
@@ -33,6 +35,7 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 | [v0.6.5c](v0.6.x/LCS-CL-v065c.md) | Streaming UI Handler  | ✅ Complete |
 | [v0.6.5d](v0.6.x/LCS-CL-v065d.md) | License Gating        | ✅ Complete |
 | [v0.6.5e](v0.6.x/LCS-CL-v065e.md) | Validation Orchestrator | ✅ Complete |
+| [v0.6.5f](v0.6.x/LCS-CL-v065f.md) | Schema Validator        | ✅ Complete |
 
 ---
 
