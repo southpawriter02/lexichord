@@ -323,6 +323,27 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Validation.Validators.Consistency.ConsistencyChecker>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IConsistencyChecker>(sp =>
             sp.GetRequiredService<Validation.Validators.Consistency.ConsistencyChecker>());
+
+        // =====================================================================
+        // v0.6.5i: Validation Result Aggregator (CKVS Phase 3a)
+        // =====================================================================
+
+        // LOGIC: Register FindingDeduplicator as singleton.
+        // Stateless deduplication logic — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Aggregation.IFindingDeduplicator,
+            Validation.Aggregation.FindingDeduplicator>();
+
+        // LOGIC: Register FixConsolidator as singleton.
+        // Stateless fix consolidation logic — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Aggregation.IFixConsolidator,
+            Validation.Aggregation.FixConsolidator>();
+
+        // LOGIC: Register ResultAggregator as singleton.
+        // Orchestrates deduplication, sorting, limiting, and result construction.
+        // Also registered as IResultAggregator for interface-based injection.
+        services.AddSingleton<Validation.Aggregation.ResultAggregator>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Aggregation.IResultAggregator>(sp =>
+            sp.GetRequiredService<Validation.Aggregation.ResultAggregator>());
     }
 
     /// <inheritdoc/>

@@ -30,6 +30,8 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Consistency Checker (v0.6.5h)** — Claim consistency validation detecting contradictions between new claims and existing knowledge (CKVS Phase 3a). Added `ConsistencyFindingCodes` static constants (7 `CONSISTENCY_*` codes), `IConflictDetector` interface with `ConflictResult` record and `ConflictType` enum (7 values: `ValueContradiction`, `PropertyConflict`, `RelationshipContradiction`, `TemporalConflict`, `SemanticConflict`, `TypeMismatch`, `Unknown`), `IContradictionResolver` interface with `ConflictResolution` record and `ResolutionStrategy` enum (6 values: `AcceptNew`, `KeepExisting`, `MergeValues`, `DeferToUser`, `AcceptHigherConfidence`, `ManualReview`), and `IConsistencyChecker` extending `IValidator` with `CheckClaimConsistencyAsync`, `CheckClaimsConsistencyAsync`, and `GetPotentialConflictsAsync` methods. Added `ConsistencyFinding` record extending `ValidationFinding` with conflict metadata (`ExistingClaim`, `ConflictType`, `ConflictConfidence`, `Resolution`). Implemented `ConflictDetector` (subject/predicate/object structural comparison with numeric equality tolerance), `ContradictionResolver` (strategy routing by conflict type with temporal, version, and source-based resolution), and `ConsistencyChecker` (claim extraction from `ValidationContext.Metadata`, `IClaimRepository` querying, internal batch consistency, severity mapping by confidence threshold >0.8=Error/≤0.8=Warning). Registered in `KnowledgeModule` DI. Includes 39 unit tests.
 
+- **Validation Result Aggregator (v0.6.5i)** — Final aggregation stage for the CKVS validation pipeline (CKVS Phase 3a). Added `FindingFilter` record (MinSeverity, ValidatorIds, Codes, FixableOnly criteria), `FindingGroupBy` enum (Validator, Severity, Code), `ConsolidatedFix` record with `TextEdit` for span-based edits, `FixAllAction` batch fix record with warnings, `ValidationSummary` statistics record, `IResultAggregator` interface (Aggregate, FilterFindings, GroupFindings), `IFindingDeduplicator` interface (Deduplicate, AreDuplicates), and `IFixConsolidator` interface (ConsolidateFixes, CreateFixAllAction). Implemented `ResultAggregator` (dedup → severity sort → MaxFindings limit → ValidationResult.WithFindings), `FindingDeduplicator` (O(n²) comparison by Code+ValidatorId+PropertyPath/Message similarity), `FixConsolidator` (grouping by identical SuggestedFix text), and `ValidationSummaryGenerator` static class. Registered in `KnowledgeModule` DI. Includes 38 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
@@ -42,6 +44,7 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 | [v0.6.5f](v0.6.x/LCS-CL-v065f.md) | Schema Validator        | ✅ Complete |
 | [v0.6.5g](v0.6.x/LCS-CL-v065g.md) | Axiom Validator         | ✅ Complete |
 | [v0.6.5h](v0.6.x/LCS-CL-v065h.md) | Consistency Checker     | ✅ Complete |
+| [v0.6.5i](v0.6.x/LCS-CL-v065i.md) | Validation Result Aggregator | ✅ Complete |
 
 ---
 
