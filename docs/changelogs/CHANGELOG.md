@@ -26,6 +26,8 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Schema Validator (v0.6.5f)** — Schema-based entity validation bridging the v0.6.5e validation pipeline with v0.4.5f schema logic (CKVS Phase 3a). Added `SchemaFindingCodes` static constants (11 `SCHEMA_*` codes), `IPropertyTypeChecker` interface with `TypeCheckResult` record, `IConstraintEvaluator` interface, and `ISchemaValidatorService` extending `IValidator`. Implemented `PropertyTypeChecker` (CLR type mapping for String/Number/Boolean/DateTime/Enum/Reference/Array), `ConstraintEvaluator` (numeric range, string length, regex pattern checks), `SchemaValidatorService` (entity extraction from context metadata, required property validation, type/enum/constraint checking, Levenshtein-based enum fix suggestions), and `PredefinedSchemas` (built-in Endpoint and Parameter schemas). Registered in `KnowledgeModule` DI. Includes ~74 unit tests.
 
+- **Axiom Validator (v0.6.5g)** — Axiom-based entity validation bridging the v0.6.5e validation pipeline with v0.4.6h axiom evaluation (CKVS Phase 3a). Added `AxiomFindingCodes` static constants (12 `AXIOM_*` codes) and `IAxiomValidatorService` extending `IValidator` with entity-level validation and axiom query methods. Implemented `AxiomMatcher` (static helper filtering axioms by `IsEnabled`, `TargetKind`, and `TargetType`, ordered by severity) and `AxiomValidatorService` (entity extraction from context metadata, axiom matching, `IAxiomEvaluator` delegation, `AxiomViolation` → `ValidationFinding` conversion with severity and constraint-to-code mapping). Registered in `KnowledgeModule` DI. Includes 21 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
@@ -36,6 +38,7 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 | [v0.6.5d](v0.6.x/LCS-CL-v065d.md) | License Gating        | ✅ Complete |
 | [v0.6.5e](v0.6.x/LCS-CL-v065e.md) | Validation Orchestrator | ✅ Complete |
 | [v0.6.5f](v0.6.x/LCS-CL-v065f.md) | Schema Validator        | ✅ Complete |
+| [v0.6.5g](v0.6.x/LCS-CL-v065g.md) | Axiom Validator         | ✅ Complete |
 
 ---
 

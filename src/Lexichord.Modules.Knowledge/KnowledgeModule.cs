@@ -288,6 +288,19 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Validation.Validators.Schema.SchemaValidatorService>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.ISchemaValidatorService>(sp =>
             sp.GetRequiredService<Validation.Validators.Schema.SchemaValidatorService>());
+
+        // =====================================================================
+        // v0.6.5g: Axiom Validator (CKVS Phase 3a)
+        // =====================================================================
+
+        // LOGIC: Register AxiomValidatorService as singleton.
+        // The service bridges IValidator (v0.6.5e) with IAxiomEvaluator (v0.4.6h),
+        // converting AxiomViolation instances to ValidationFinding for pipeline compatibility.
+        // Also registered as IAxiomValidatorService for direct entity validation.
+        // Requires LicenseTier.Teams for axiom evaluation features.
+        services.AddSingleton<Validation.Validators.Axiom.AxiomValidatorService>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IAxiomValidatorService>(sp =>
+            sp.GetRequiredService<Validation.Validators.Axiom.AxiomValidatorService>());
     }
 
     /// <inheritdoc/>
