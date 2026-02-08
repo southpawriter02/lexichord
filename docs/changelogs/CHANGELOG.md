@@ -28,6 +28,8 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Axiom Validator (v0.6.5g)** — Axiom-based entity validation bridging the v0.6.5e validation pipeline with v0.4.6h axiom evaluation (CKVS Phase 3a). Added `AxiomFindingCodes` static constants (12 `AXIOM_*` codes) and `IAxiomValidatorService` extending `IValidator` with entity-level validation and axiom query methods. Implemented `AxiomMatcher` (static helper filtering axioms by `IsEnabled`, `TargetKind`, and `TargetType`, ordered by severity) and `AxiomValidatorService` (entity extraction from context metadata, axiom matching, `IAxiomEvaluator` delegation, `AxiomViolation` → `ValidationFinding` conversion with severity and constraint-to-code mapping). Registered in `KnowledgeModule` DI. Includes 21 unit tests.
 
+- **Consistency Checker (v0.6.5h)** — Claim consistency validation detecting contradictions between new claims and existing knowledge (CKVS Phase 3a). Added `ConsistencyFindingCodes` static constants (7 `CONSISTENCY_*` codes), `IConflictDetector` interface with `ConflictResult` record and `ConflictType` enum (7 values: `ValueContradiction`, `PropertyConflict`, `RelationshipContradiction`, `TemporalConflict`, `SemanticConflict`, `TypeMismatch`, `Unknown`), `IContradictionResolver` interface with `ConflictResolution` record and `ResolutionStrategy` enum (6 values: `AcceptNew`, `KeepExisting`, `MergeValues`, `DeferToUser`, `AcceptHigherConfidence`, `ManualReview`), and `IConsistencyChecker` extending `IValidator` with `CheckClaimConsistencyAsync`, `CheckClaimsConsistencyAsync`, and `GetPotentialConflictsAsync` methods. Added `ConsistencyFinding` record extending `ValidationFinding` with conflict metadata (`ExistingClaim`, `ConflictType`, `ConflictConfidence`, `Resolution`). Implemented `ConflictDetector` (subject/predicate/object structural comparison with numeric equality tolerance), `ContradictionResolver` (strategy routing by conflict type with temporal, version, and source-based resolution), and `ConsistencyChecker` (claim extraction from `ValidationContext.Metadata`, `IClaimRepository` querying, internal batch consistency, severity mapping by confidence threshold >0.8=Error/≤0.8=Warning). Registered in `KnowledgeModule` DI. Includes 39 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
@@ -39,6 +41,7 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 | [v0.6.5e](v0.6.x/LCS-CL-v065e.md) | Validation Orchestrator | ✅ Complete |
 | [v0.6.5f](v0.6.x/LCS-CL-v065f.md) | Schema Validator        | ✅ Complete |
 | [v0.6.5g](v0.6.x/LCS-CL-v065g.md) | Axiom Validator         | ✅ Complete |
+| [v0.6.5h](v0.6.x/LCS-CL-v065h.md) | Consistency Checker     | ✅ Complete |
 
 ---
 

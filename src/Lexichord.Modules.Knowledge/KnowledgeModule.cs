@@ -301,6 +301,28 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Validation.Validators.Axiom.AxiomValidatorService>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IAxiomValidatorService>(sp =>
             sp.GetRequiredService<Validation.Validators.Axiom.AxiomValidatorService>());
+
+        // =====================================================================
+        // v0.6.5h: Consistency Checker (CKVS Phase 3a)
+        // =====================================================================
+
+        // LOGIC: Register ConflictDetector as singleton.
+        // Stateless claim comparison logic — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IConflictDetector,
+            Validation.Validators.Consistency.ConflictDetector>();
+
+        // LOGIC: Register ContradictionResolver as singleton.
+        // Stateless resolution suggestion logic — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IContradictionResolver,
+            Validation.Validators.Consistency.ContradictionResolver>();
+
+        // LOGIC: Register ConsistencyChecker as singleton.
+        // Orchestrates conflict detection and resolution via IClaimRepository.
+        // Also registered as IConsistencyChecker for direct claim consistency checks.
+        // Requires LicenseTier.Teams for full consistency checking.
+        services.AddSingleton<Validation.Validators.Consistency.ConsistencyChecker>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.IConsistencyChecker>(sp =>
+            sp.GetRequiredService<Validation.Validators.Consistency.ConsistencyChecker>());
     }
 
     /// <inheritdoc/>
