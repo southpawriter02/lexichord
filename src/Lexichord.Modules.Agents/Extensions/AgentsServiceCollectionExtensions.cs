@@ -491,5 +491,32 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers the Co-pilot Agent services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Agents.IAgent"/> → <see cref="Chat.Agents.CoPilotAgent"/> (Scoped)</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.6.6b as the first concrete agent implementation.
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddCoPilotAgent(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register CoPilotAgent as scoped so each request scope
+        // gets its own agent instance with independent state.
+        services.AddScoped<Lexichord.Abstractions.Agents.IAgent, Chat.Agents.CoPilotAgent>();
+
+        return services;
+    }
 }
 

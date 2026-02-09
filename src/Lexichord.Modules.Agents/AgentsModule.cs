@@ -132,6 +132,10 @@ public class AgentsModule : IModule
         // LOGIC: Register SSE parser service (v0.6.5b).
         // The parser is stateless and thread-safe, suitable for singleton registration.
         services.AddSingleton<ISSEParser, SSEParser>();
+
+        // LOGIC: Register CoPilot Agent (v0.6.6b).
+        // Scoped lifetime ensures per-request isolation for agent state.
+        services.AddCoPilotAgent();
     }
 
     /// <inheritdoc />
