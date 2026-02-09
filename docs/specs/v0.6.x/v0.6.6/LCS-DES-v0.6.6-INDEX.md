@@ -60,7 +60,7 @@ Lexichord.Modules.Agents/
 
 | Part    | Title                   | Document                        | Status |
 | :------ | :---------------------- | :------------------------------ | :----: |
-| v0.6.6a | Agent Abstractions      | [LCS-DES-066a](LCS-DES-066a.md) | Draft  |
+| v0.6.6a | Agent Abstractions      | [LCS-DES-066a](LCS-DES-066a.md) | Implemented |
 | v0.6.6b | Co-pilot Implementation | [LCS-DES-066b](LCS-DES-066b.md) | Draft  |
 | v0.6.6c | Agent Registry          | [LCS-DES-066c](LCS-DES-066c.md) | Draft  |
 | v0.6.6d | Usage Tracking          | [LCS-DES-066d](LCS-DES-066d.md) | Draft  |

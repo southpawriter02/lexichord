@@ -6,6 +6,18 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.6] - 2026-02 (In Progress)
+
+### The Co-pilot Agent (Conversational Assistant)
+
+This release introduces the Co-pilot Agent — a conversational AI writing assistant that integrates chat, document context, RAG, and style enforcement into a unified agent framework.
+
+#### What's New
+
+- **Agent Abstractions (v0.6.6a)** — Core agent abstraction layer in `Lexichord.Abstractions.Agents`. Added `IAgent` interface defining the contract for all AI-powered assistants with `AgentId`, `Name`, `Description`, `Template` (IPromptTemplate), `Capabilities` (AgentCapabilities), and `InvokeAsync(AgentRequest, CancellationToken)`. Added `AgentCapabilities` `[Flags]` enum with `Chat` (1), `DocumentContext` (2), `RAGContext` (4), `StyleEnforcement` (8), `Streaming` (16), `None` (0), and `All` (31), plus `AgentCapabilitiesExtensions` with `HasCapability()`, `SupportsContext()`, and `GetCapabilityNames()`. Added `AgentRequest` immutable record with `UserMessage`, `History`, `DocumentPath`, `Selection`, `Validate()` guard, and helper properties (`HasDocumentContext`, `HasSelection`, `HasHistory`, `HistoryCount`). Added `AgentResponse` immutable record with `Content`, `Citations`, `Usage`, `Empty` and `Error()` factories, and computed properties (`HasCitations`, `CitationCount`, `TotalTokens`). Added `UsageMetrics` immutable record with `PromptTokens`, `CompletionTokens`, `EstimatedCost`, `TotalTokens`, `Zero` sentinel, `Add()`, `ToDisplayString()`, and `Calculate()` factory. Includes 47 unit tests.
+
+---
+
 ## [v0.6.5] - 2026-02 (In Progress)
 
 ### The Stream (Real-Time Streaming)

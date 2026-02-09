@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-06 (v0.6.4d added)                                             |
+| **Last Updated** | 2026-02-08 (v0.6.6a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1189,6 +1189,32 @@
 | :---------------------------- | :--------- | :------------- | :--------------------------- |
 | `TokenBudgetToColorConverter` | v0.6.4d    | Modules.Agents | Token usage color (G→Y→R)    |
 | `RelevanceToColorConverter`   | v0.6.4d    | Modules.Agents | Relevance tier color (G→Y→R) |
+
+### 1.28 v0.6.6 Agent Abstractions
+
+| Interface | Defined In | Module       | Purpose                        |
+| :-------- | :--------- | :----------- | :----------------------------- |
+| `IAgent`  | v0.6.6a    | Abstractions | Core agent contract            |
+
+**New Records (v0.6.6a):**
+
+| Record          | Defined In | Module       | Purpose                          |
+| :-------------- | :--------- | :----------- | :------------------------------- |
+| `AgentRequest`  | v0.6.6a    | Abstractions | Agent invocation parameters      |
+| `AgentResponse` | v0.6.6a    | Abstractions | Agent invocation result          |
+| `UsageMetrics`  | v0.6.6a    | Abstractions | Token consumption and cost data  |
+
+**New Enums (v0.6.6a):**
+
+| Enum                | Defined In | Module       | Purpose                    |
+| :------------------ | :--------- | :----------- | :------------------------- |
+| `AgentCapabilities` | v0.6.6a    | Abstractions | Agent feature flags enum   |
+
+**New Extension Classes (v0.6.6a):**
+
+| Class                         | Defined In | Module       | Purpose                         |
+| :---------------------------- | :--------- | :----------- | :------------------------------ |
+| `AgentCapabilitiesExtensions`  | v0.6.6a    | Abstractions | Capability query helper methods |
 
 ## 2. MediatR Events Registry
 
