@@ -32,6 +32,8 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 - **Validation Result Aggregator (v0.6.5i)** — Final aggregation stage for the CKVS validation pipeline (CKVS Phase 3a). Added `FindingFilter` record (MinSeverity, ValidatorIds, Codes, FixableOnly criteria), `FindingGroupBy` enum (Validator, Severity, Code), `ConsolidatedFix` record with `TextEdit` for span-based edits, `FixAllAction` batch fix record with warnings, `ValidationSummary` statistics record, `IResultAggregator` interface (Aggregate, FilterFindings, GroupFindings), `IFindingDeduplicator` interface (Deduplicate, AreDuplicates), and `IFixConsolidator` interface (ConsolidateFixes, CreateFixAllAction). Implemented `ResultAggregator` (dedup → severity sort → MaxFindings limit → ValidationResult.WithFindings), `FindingDeduplicator` (O(n²) comparison by Code+ValidatorId+PropertyPath/Message similarity), `FixConsolidator` (grouping by identical SuggestedFix text), and `ValidationSummaryGenerator` static class. Registered in `KnowledgeModule` DI. Includes 38 unit tests.
 
+- **Linter Integration (v0.6.5j)** — Bridges the CKVS Validation Engine (v0.6.5e) with Lexichord's style linter (v0.3.x), providing a unified findings view (CKVS Phase 3a). Added `FindingSource`, `UnifiedSeverity`, `FindingCategory`, `UnifiedStatus` enums, `UnifiedFinding` record (bridging `ValidationFinding`/`StyleViolation`), `UnifiedFix` record, `UnifiedFindingResult` (with `ByCategory`/`BySeverity` summaries), `UnifiedFindingOptions`, `FixConflict`/`FixConflictResult`, `FixApplicationResult` records, and `ILinterIntegration`, `IUnifiedFindingAdapter`, `ICombinedFixWorkflow` interfaces (13 abstraction files). Implemented `UnifiedFindingAdapter` (severity normalization, ValidatorId→Category mapping, fix creation with source-specific confidence), `CombinedFixWorkflow` (FindingId conflict detection, deterministic ordering), and `LinterIntegration` (parallel `Task.WhenAll` orchestration, severity/category filtering, sorting, maxFindings cap, error-resilient partial results). Registered as singletons in `KnowledgeModule`. Includes 38 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title                 | Status      |
@@ -45,6 +47,7 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 | [v0.6.5g](v0.6.x/LCS-CL-v065g.md) | Axiom Validator         | ✅ Complete |
 | [v0.6.5h](v0.6.x/LCS-CL-v065h.md) | Consistency Checker     | ✅ Complete |
 | [v0.6.5i](v0.6.x/LCS-CL-v065i.md) | Validation Result Aggregator | ✅ Complete |
+| [v0.6.5j](v0.6.x/LCS-CL-v065j.md) | Linter Integration           | ✅ Complete |
 
 ---
 

@@ -344,6 +344,27 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Validation.Aggregation.ResultAggregator>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Aggregation.IResultAggregator>(sp =>
             sp.GetRequiredService<Validation.Aggregation.ResultAggregator>());
+
+        // =====================================================================
+        // v0.6.5j: Linter Integration (CKVS Phase 3a)
+        // =====================================================================
+
+        // LOGIC: Register UnifiedFindingAdapter as singleton.
+        // Stateless adapter — maps ValidationFinding and StyleViolation to UnifiedFinding.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Integration.IUnifiedFindingAdapter,
+            Validation.Integration.UnifiedFindingAdapter>();
+
+        // LOGIC: Register CombinedFixWorkflow as singleton.
+        // Stateless conflict detection and fix ordering — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Integration.ICombinedFixWorkflow,
+            Validation.Integration.CombinedFixWorkflow>();
+
+        // LOGIC: Register LinterIntegration as singleton.
+        // Orchestrates IValidationEngine + IStyleEngine and provides unified results.
+        // Also registered as ILinterIntegration for interface-based injection.
+        services.AddSingleton<Validation.Integration.LinterIntegration>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Integration.ILinterIntegration>(sp =>
+            sp.GetRequiredService<Validation.Integration.LinterIntegration>());
     }
 
     /// <inheritdoc/>
