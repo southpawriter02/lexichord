@@ -51,6 +51,30 @@ public interface ILicenseContext
     LicenseTier GetCurrentTier();
 
     /// <summary>
+    /// Gets the current license tier as a property.
+    /// </summary>
+    /// <value>
+    /// Convenience property that delegates to <see cref="GetCurrentTier"/>.
+    /// </value>
+    /// <remarks>
+    /// LOGIC: Provides a property-style access pattern for the license tier,
+    /// enabling cleaner comparisons (e.g., <c>context.Tier &gt;= LicenseTier.Teams</c>)
+    /// without requiring a method call.
+    /// <para><b>Introduced in:</b> v0.6.6c for Agent Registry support.</para>
+    /// </remarks>
+    LicenseTier Tier => GetCurrentTier();
+
+    /// <summary>
+    /// Raised when the license state changes (activation, deactivation, expiration).
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Enables services such as <c>AgentRegistry</c> to react to license
+    /// tier changes by refreshing their filtered agent lists.
+    /// <para><b>Introduced in:</b> v0.6.6c for Agent Registry support.</para>
+    /// </remarks>
+    event EventHandler<LicenseChangedEventArgs>? LicenseChanged;
+
+    /// <summary>
     /// Checks if a specific feature is enabled.
     /// </summary>
     /// <param name="featureCode">The feature code (e.g., "RAG-01", "AGT-05").</param>

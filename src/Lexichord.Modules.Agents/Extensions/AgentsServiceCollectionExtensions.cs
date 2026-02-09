@@ -518,5 +518,36 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers the Agent Registry services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Agents.IAgentRegistry"/> → <see cref="Chat.Registry.AgentRegistry"/> (Singleton)</description></item>
+    /// </list>
+    /// <para>
+    /// The registry is registered as a singleton to maintain shared caching
+    /// and event subscriptions across the application lifetime.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.6.6c as part of the Agent Registry feature.
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddAgentRegistry(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register AgentRegistry as singleton for shared caching
+        // and license event subscription across the application lifetime.
+        services.AddSingleton<Lexichord.Abstractions.Agents.IAgentRegistry, Chat.Registry.AgentRegistry>();
+
+        return services;
+    }
 }
 

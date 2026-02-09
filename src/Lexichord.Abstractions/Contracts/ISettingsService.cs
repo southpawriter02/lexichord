@@ -63,4 +63,24 @@ public interface ISettingsService
     /// and keeps configuration optional rather than required.
     /// </remarks>
     T Get<T>(string key, T defaultValue);
+
+    /// <summary>
+    /// Sets a setting value by key.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The value type. Supported types include primitives
+    /// (int, float, double, bool, string, decimal) and complex types
+    /// that can be serialized to the configuration store.
+    /// </typeparam>
+    /// <param name="key">
+    /// The settings key using colon-delimited sections (e.g., "Agent:CustomAgents").
+    /// Keys are case-insensitive.
+    /// </param>
+    /// <param name="value">The value to store.</param>
+    /// <remarks>
+    /// LOGIC: Implementations should persist the value to the underlying
+    /// configuration store (user settings file, database, etc.).
+    /// <para><b>Introduced in:</b> v0.6.6c for custom agent persistence.</para>
+    /// </remarks>
+    void Set<T>(string key, T value);
 }

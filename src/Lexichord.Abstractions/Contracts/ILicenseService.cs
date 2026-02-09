@@ -74,5 +74,5 @@ public interface ILicenseService : ILicenseContext
     /// <summary>
     /// Raised when the license state changes (activation, deactivation, expiration).
     /// </summary>
-    event EventHandler<LicenseChangedEventArgs>? LicenseChanged;
+    new event EventHandler<LicenseChangedEventArgs>? LicenseChanged;
 }

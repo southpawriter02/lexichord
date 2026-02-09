@@ -80,4 +80,13 @@ public sealed class HardcodedLicenseContext : ILicenseContext
     /// LOGIC: Returns development indicator for UI display.
     /// </remarks>
     public string? GetLicenseeName() => "Development License";
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Stub never fires this event since the hardcoded license tier
+    /// never changes. Required by the ILicenseContext interface (v0.6.6c).
+    /// </remarks>
+#pragma warning disable CS0067 // Event is never used (stub implementation)
+    public event EventHandler<LicenseChangedEventArgs>? LicenseChanged;
+#pragma warning restore CS0067
 }

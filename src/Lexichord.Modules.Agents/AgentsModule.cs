@@ -5,6 +5,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Chat.Abstractions;
@@ -74,9 +75,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 6, 5),
+        Version: new Version(0, 6, 6),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, and conversation management");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, and agent registry");
 
     /// <inheritdoc />
     /// <remarks>
@@ -136,6 +137,10 @@ public class AgentsModule : IModule
         // LOGIC: Register CoPilot Agent (v0.6.6b).
         // Scoped lifetime ensures per-request isolation for agent state.
         services.AddCoPilotAgent();
+
+        // LOGIC: Register Agent Registry (v0.6.6c).
+        // Singleton lifetime ensures shared caching and event handling.
+        services.AddAgentRegistry();
     }
 
     /// <inheritdoc />
@@ -227,5 +232,18 @@ public class AgentsModule : IModule
         logger.LogInformation(
             "{ModuleName} module initialized successfully",
             Info.Name);
+
+        // LOGIC: Verify agent registry is available (v0.6.6c).
+        var registry = provider.GetService<IAgentRegistry>();
+        if (registry is not null)
+        {
+            logger.LogDebug(
+                "Agent registry available with {AgentCount} agents",
+                registry.AvailableAgents.Count);
+        }
+        else
+        {
+            logger.LogWarning("Agent registry is not registered. Agent discovery will not be available.");
+        }
     }
 }

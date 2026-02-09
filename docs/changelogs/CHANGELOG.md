@@ -16,6 +16,18 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 
 - **Agent Abstractions (v0.6.6a)** — Core agent abstraction layer in `Lexichord.Abstractions.Agents`. Added `IAgent` interface defining the contract for all AI-powered assistants with `AgentId`, `Name`, `Description`, `Template` (IPromptTemplate), `Capabilities` (AgentCapabilities), and `InvokeAsync(AgentRequest, CancellationToken)`. Added `AgentCapabilities` `[Flags]` enum with `Chat` (1), `DocumentContext` (2), `RAGContext` (4), `StyleEnforcement` (8), `Streaming` (16), `None` (0), and `All` (31), plus `AgentCapabilitiesExtensions` with `HasCapability()`, `SupportsContext()`, and `GetCapabilityNames()`. Added `AgentRequest` immutable record with `UserMessage`, `History`, `DocumentPath`, `Selection`, `Validate()` guard, and helper properties (`HasDocumentContext`, `HasSelection`, `HasHistory`, `HistoryCount`). Added `AgentResponse` immutable record with `Content`, `Citations`, `Usage`, `Empty` and `Error()` factories, and computed properties (`HasCitations`, `CitationCount`, `TotalTokens`). Added `UsageMetrics` immutable record with `PromptTokens`, `CompletionTokens`, `EstimatedCost`, `TotalTokens`, `Zero` sentinel, `Add()`, `ToDisplayString()`, and `Calculate()` factory. Includes 47 unit tests.
 
+- **Co-Pilot Agent (v0.6.6b)** — First concrete agent implementation built on v0.6.6a abstractions. Added `CoPilotAgent` with 9 injected dependencies, 5 capability flags, license-based batch/streaming routing (WriterPro=batch, Teams+=streaming), graceful degradation on context failure, citation extraction from RAG results, and cost-based usage metrics. Added `AgentInvocationException` for wrapping agent failures and `ISettingsService` minimal settings interface. Registered as scoped `IAgent` via `AddCoPilotAgent()`. Includes 11 unit tests.
+
+- **Agent Registry (v0.6.6c)** — Singleton agent discovery and management service. Added `IAgentRegistry` interface with `AvailableAgents`, `GetAgent`, `TryGetAgent`, `GetDefaultAgent`, `RegisterCustomAgent`, `UnregisterCustomAgent`, `Refresh`, and `AgentsChanged` event. Added `AgentListChangedEventArgs`, `AgentListChangeReason` enum, and 4 custom exceptions (`AgentNotFoundException`, `NoAgentAvailableException`, `AgentAlreadyRegisteredException`, `LicenseTierException`). Implemented `AgentRegistry` with DI-based agent discovery, `RequiresLicenseAttribute` reflection, `ConcurrentDictionary` thread safety, license-based filtering via `GetCurrentTier()`, default agent fallback chain (settings → co-pilot → first available), Teams-only custom agent registration with `ISettingsService` persistence, and automatic refresh on `LicenseChanged` events. Includes 11 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version                             | Title               | Status      |
+| ----------------------------------- | ------------------- | ----------- |
+| [v0.6.6a](v0.6.x/LCS-CL-v066a.md) | Agent Abstractions  | ✅ Complete |
+| [v0.6.6b](v0.6.x/LCS-CL-v066b.md) | Co-Pilot Agent      | ✅ Complete |
+| [v0.6.6c](v0.6.x/LCS-CL-v066c.md) | Agent Registry      | ✅ Complete |
+
 ---
 
 ## [v0.6.5] - 2026-02 (In Progress)
