@@ -90,5 +90,45 @@ public interface IEditorService
     Task<bool> ActivateDocumentAsync(IManuscriptViewModel document);
 
     #endregion
-}
 
+    #region v0.6.7a Selection Context
+
+    /// <summary>
+    /// Gets the currently selected text in the active document.
+    /// </summary>
+    /// <returns>The selected text, or null if no text is selected.</returns>
+    /// <remarks>
+    /// LOGIC: Returns the text currently highlighted by the user in the
+    /// active editor tab. Used by <c>SelectionContextService</c> to
+    /// retrieve selection for Co-pilot context.
+    ///
+    /// Version: v0.6.7a
+    /// </remarks>
+    string? GetSelectedText();
+
+    /// <summary>
+    /// Event raised when the text selection changes in the active document.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Fired whenever the user changes their text selection
+    /// (including clearing the selection). Used by <c>SelectionContextService</c>
+    /// to detect stale selection context.
+    ///
+    /// Version: v0.6.7a
+    /// </remarks>
+    event EventHandler<SelectionChangedEventArgs>? SelectionChanged;
+
+    /// <summary>
+    /// Registers a context menu item in the editor's right-click menu.
+    /// </summary>
+    /// <param name="item">The context menu item to register.</param>
+    /// <remarks>
+    /// LOGIC: Menu items are grouped by <see cref="ContextMenuItem.Group"/>
+    /// and ordered by <see cref="ContextMenuItem.Order"/> within each group.
+    ///
+    /// Version: v0.6.7a
+    /// </remarks>
+    void RegisterContextMenuItem(ContextMenuItem item);
+
+    #endregion
+}

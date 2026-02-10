@@ -627,4 +627,128 @@ public partial class CoPilotViewModel : ObservableObject
     }
 
     #endregion
+
+    #region Selection Context (v0.6.7a)
+
+    /// <summary>
+    /// Backing field for selection context text.
+    /// </summary>
+    private string? _selectionContext;
+
+    /// <summary>
+    /// Gets whether the chat panel has active selection context.
+    /// </summary>
+    /// <remarks>
+    /// Drives the visibility of the <c>SelectionContextIndicator</c>
+    /// in the chat panel UI.
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public bool HasSelectionContext => _selectionContext is not null;
+
+    /// <summary>
+    /// Gets a summary string for the selection context indicator.
+    /// </summary>
+    /// <remarks>
+    /// Displays the character count, e.g., "Selection context (245 chars)".
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public string? SelectionSummary => _selectionContext is not null
+        ? $"Selection context ({_selectionContext.Length} chars)"
+        : null;
+
+    /// <summary>
+    /// Gets a preview of the selection context for display in the indicator.
+    /// </summary>
+    /// <remarks>
+    /// Returns the first 80 characters of the selection with ellipsis
+    /// if truncated. Used in the <c>SelectionContextIndicator</c> UI.
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public string? SelectionPreview => _selectionContext is not null
+        ? _selectionContext.Length > 80
+            ? $"\"{_selectionContext[..80]}...\""
+            : $"\"{_selectionContext}\""
+        : null;
+
+    /// <summary>
+    /// Event raised when the chat input should receive keyboard focus.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="Views.CoPilotView"/> subscribes to this event to
+    /// programmatically focus the text input field after selection context
+    /// is set.
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public event EventHandler? FocusChatInputRequested;
+
+    /// <summary>
+    /// Sets the selection context for the Co-pilot chat panel.
+    /// </summary>
+    /// <param name="selection">The selected text from the editor.</param>
+    /// <remarks>
+    /// LOGIC: Stores the selection text and raises property change
+    /// notifications for all selection context properties to update
+    /// the UI (indicator, summary, preview).
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public virtual void SetSelectionContext(string selection)
+    {
+        _selectionContext = selection;
+        OnPropertyChanged(nameof(HasSelectionContext));
+        OnPropertyChanged(nameof(SelectionSummary));
+        OnPropertyChanged(nameof(SelectionPreview));
+
+        _logger?.LogDebug(
+            "Selection context set in ViewModel: {CharCount} chars",
+            selection.Length);
+    }
+
+    /// <summary>
+    /// Clears the selection context from the Co-pilot chat panel.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Removes stored selection and notifies the UI to hide
+    /// the selection context indicator.
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public virtual void ClearSelectionContext()
+    {
+        _selectionContext = null;
+        OnPropertyChanged(nameof(HasSelectionContext));
+        OnPropertyChanged(nameof(SelectionSummary));
+        OnPropertyChanged(nameof(SelectionPreview));
+
+        _logger?.LogDebug("Selection context cleared from ViewModel");
+    }
+
+    /// <summary>
+    /// Requests that the chat input field receives keyboard focus.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Raises the <see cref="FocusChatInputRequested"/> event
+    /// which the view subscribes to for programmatic focus transfer.
+    ///
+    /// <b>Introduced in:</b> v0.6.7a
+    /// </remarks>
+    public virtual void FocusChatInput()
+    {
+        FocusChatInputRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Command to clear the selection context (bound to the indicator's clear button).
+    /// </summary>
+    [RelayCommand]
+    private void ClearSelectionContextCommand()
+    {
+        ClearSelectionContext();
+    }
+
+    #endregion
 }

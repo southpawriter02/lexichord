@@ -10,7 +10,10 @@ using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Chat.Abstractions;
 using Lexichord.Modules.Agents.Chat.Services;
+using Lexichord.Modules.Agents.Commands;
+using Lexichord.Modules.Agents.Configuration;
 using Lexichord.Modules.Agents.Extensions;
+using Lexichord.Modules.Agents.Services;
 using Lexichord.Modules.Agents.Templates;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -75,9 +78,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 6, 6),
+        Version: new Version(0, 6, 7),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, and agent registry");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, and selection context");
 
     /// <inheritdoc />
     /// <remarks>
@@ -145,6 +148,12 @@ public class AgentsModule : IModule
         // LOGIC: Register Usage Tracking (v0.6.6d).
         // Tracks per-conversation and session-level agent usage metrics.
         services.AddUsageTracking();
+
+        // LOGIC: Register Selection Context services (v0.6.7a).
+        // Coordinates sending editor selection to Co-pilot chat.
+        services.AddSingleton<ISelectionContextService, SelectionContextService>();
+        services.AddTransient<SelectionContextCommand>();
+        services.AddSingleton<IKeyBindingConfiguration, SelectionContextKeyBindings>();
     }
 
     /// <inheritdoc />

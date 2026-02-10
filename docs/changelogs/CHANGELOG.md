@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.7] - 2026-02 (In Progress)
+
+### Selection Context (Editor → Co-pilot Bridge)
+
+This release enables sending selected editor text to the Co-pilot chat panel, with smart default prompt generation based on selection characteristics.
+
+#### What's New
+
+- **Selection Context (v0.6.7a)** — Editor-to-Co-pilot text selection bridge in `Lexichord.Modules.Agents`. Added `ISelectionContextService` interface with `SendSelectionToCoPilotAsync`, `GenerateDefaultPrompt`, `HasActiveSelection`, `CurrentSelection`, and `ClearSelectionContext`. Implemented `SelectionContextService` with license gating (WriterPro+ via `GetCurrentTier()`), stale context detection via `IEditorService.SelectionChanged`, and ViewModel coordination. Added `DefaultPromptGenerator` with selection-aware prompt logic: code patterns → "Review this code:" (checked first for short code snippets), short <50 chars → "Explain this:", long >500 chars → "Summarize this:", default → "Improve this:". Added `SelectionContextCommand` (`ICommand`) for `Ctrl+Shift+A` shortcut and context menu binding, publishing `SelectionContextSetEvent` MediatR notification on success. Added `EditorContextMenuExtensions` registering "Ask Co-pilot about selection" menu item (license-gated, selection-enabled). Added `SelectionContextKeyBindings` (`IKeyBindingConfiguration`) for `Ctrl+Shift+A` → `copilot.sendSelection` with `EditorHasSelection` context condition. Added `SelectionContextIndicator.axaml` Avalonia UserControl displaying context summary, preview, and clear button. Extended `CoPilotViewModel` with `SetSelectionContext`, `ClearSelectionContext`, `FocusChatInput`, `HasSelectionContext`, `SelectionSummary`, `SelectionPreview`, and `FocusChatInputRequested` event. Extended `IEditorService` with `GetSelectedText()`, `SelectionChanged` event, and `RegisterContextMenuItem()`. Added `SelectionChangedEventArgs`, `ContextMenuItem`, and `IKeyBindingConfiguration` abstractions. Adapted spec's `LicenseRequiredException` to existing `LicenseTierException` and `HasFeature(LicenseFeature)` to `GetCurrentTier()` tier comparison. Registered in `AgentsModule` DI. Includes 13 unit tests.
+
+#### Sub-Part Changelogs
+
+| Version | Title             | Status      |
+| ------- | ----------------- | ----------- |
+| v0.6.7a | Selection Context | ✅ Complete |
+
+---
+
 ## [v0.6.6] - 2026-02 (In Progress)
 
 ### The Co-pilot Agent (Conversational Assistant)

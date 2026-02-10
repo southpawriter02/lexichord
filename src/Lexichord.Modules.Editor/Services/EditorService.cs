@@ -251,5 +251,37 @@ public class EditorService : IEditorService
 
         return Encoding.UTF8;
     }
+
+    #region v0.6.7a Selection Context Stubs
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Returns null. Full implementation will query the active
+    /// text editor control's selection when the editor UI is wired up.
+    ///
+    /// Version: v0.6.7a
+    /// </remarks>
+    public string? GetSelectedText() => null;
+
+    /// <inheritdoc/>
+#pragma warning disable CS0067 // Event is never used — stub for v0.6.7a, will be wired in editor UI
+    public event EventHandler<SelectionChangedEventArgs>? SelectionChanged;
+#pragma warning restore CS0067
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Stores context menu items for later registration with the
+    /// editor view. Full implementation pending view integration.
+    ///
+    /// Version: v0.6.7a
+    /// </remarks>
+    public void RegisterContextMenuItem(ContextMenuItem item)
+    {
+        _logger.LogDebug(
+            "Context menu item registered: {Header} (stub)",
+            item.Header);
+    }
+
+    #endregion
 }
 
