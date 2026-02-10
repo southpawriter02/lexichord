@@ -20,6 +20,8 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 
 - **Agent Registry (v0.6.6c)** — Singleton agent discovery and management service. Added `IAgentRegistry` interface with `AvailableAgents`, `GetAgent`, `TryGetAgent`, `GetDefaultAgent`, `RegisterCustomAgent`, `UnregisterCustomAgent`, `Refresh`, and `AgentsChanged` event. Added `AgentListChangedEventArgs`, `AgentListChangeReason` enum, and 4 custom exceptions (`AgentNotFoundException`, `NoAgentAvailableException`, `AgentAlreadyRegisteredException`, `LicenseTierException`). Implemented `AgentRegistry` with DI-based agent discovery, `RequiresLicenseAttribute` reflection, `ConcurrentDictionary` thread safety, license-based filtering via `GetCurrentTier()`, default agent fallback chain (settings → co-pilot → first available), Teams-only custom agent registration with `ISettingsService` persistence, and automatic refresh on `LicenseChanged` events. Includes 11 unit tests.
 
+- **Usage Tracking (v0.6.6d)** — Per-conversation and session-level usage tracking. Added `AgentInvocationEvent` MediatR notification, `UsageTracker` scoped service with conversation/session accumulation and event publishing, `SessionUsageCoordinator` singleton for cross-conversation session totals, `UsageRepository` with in-memory storage and CSV/JSON export, `UsageDisplayViewModel` with throttled 500ms UI updates and threshold-based states (Normal/Warning/Critical), and `AgentInvocationHandler` forwarding telemetry breadcrumbs via `ITelemetryService`. License-gated monthly summary and export (Teams only). Includes 15 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title               | Status      |
@@ -27,6 +29,7 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 | [v0.6.6a](v0.6.x/LCS-CL-v066a.md) | Agent Abstractions  | ✅ Complete |
 | [v0.6.6b](v0.6.x/LCS-CL-v066b.md) | Co-Pilot Agent      | ✅ Complete |
 | [v0.6.6c](v0.6.x/LCS-CL-v066c.md) | Agent Registry      | ✅ Complete |
+| [v0.6.6d](v0.6.x/LCS-CL-v066d.md) | Usage Tracking      | ✅ Complete |
 
 ---
 

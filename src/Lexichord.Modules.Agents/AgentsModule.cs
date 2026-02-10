@@ -141,6 +141,10 @@ public class AgentsModule : IModule
         // LOGIC: Register Agent Registry (v0.6.6c).
         // Singleton lifetime ensures shared caching and event handling.
         services.AddAgentRegistry();
+
+        // LOGIC: Register Usage Tracking (v0.6.6d).
+        // Tracks per-conversation and session-level agent usage metrics.
+        services.AddUsageTracking();
     }
 
     /// <inheritdoc />

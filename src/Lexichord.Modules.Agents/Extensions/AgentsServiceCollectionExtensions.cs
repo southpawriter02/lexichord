@@ -549,5 +549,47 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers the Usage Tracking services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Chat.Services.SessionUsageCoordinator"/> (Singleton)</description></item>
+    ///   <item><description><see cref="Chat.Services.UsageTracker"/> (Scoped)</description></item>
+    ///   <item><description><see cref="Chat.Persistence.UsageRepository"/> (Scoped)</description></item>
+    ///   <item><description><see cref="Chat.ViewModels.UsageDisplayViewModel"/> (Transient)</description></item>
+    ///   <item><description><see cref="Chat.Events.Handlers.AgentInvocationHandler"/> (Transient)</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.6.6d as part of the Usage Tracking feature.
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddUsageTracking(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Singleton — shared session state across all conversations.
+        services.AddSingleton<Chat.Services.SessionUsageCoordinator>();
+
+        // LOGIC: Scoped — per-conversation usage accumulation.
+        services.AddScoped<Chat.Services.UsageTracker>();
+
+        // LOGIC: Scoped — DbContext-aligned lifetime.
+        services.AddScoped<Chat.Persistence.UsageRepository>();
+
+        // LOGIC: Transient — fresh instance per UI binding.
+        services.AddTransient<Chat.ViewModels.UsageDisplayViewModel>();
+
+        // LOGIC: Transient — stateless event handler.
+        services.AddTransient<MediatR.INotificationHandler<Lexichord.Abstractions.Agents.Events.AgentInvocationEvent>, Chat.Events.Handlers.AgentInvocationHandler>();
+
+        return services;
+    }
 }
 

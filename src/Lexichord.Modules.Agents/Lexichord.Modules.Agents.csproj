@@ -34,6 +34,9 @@
 
     <!-- v0.6.4d: CommunityToolkit.Mvvm for MVVM pattern (ObservableObject, RelayCommand) -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
+    <!-- v0.6.6d: MediatR for usage tracking event publishing -->
+    <PackageReference Include="MediatR" Version="12.4.0" />
   </ItemGroup>
 
   <!-- v0.6.3c: Embed built-in prompt templates as resources -->
