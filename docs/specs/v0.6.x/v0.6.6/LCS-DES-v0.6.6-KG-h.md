@@ -9,8 +9,8 @@
 | **Version** | v0.6.6 |
 | **Codename** | Entity Citation Renderer (CKVS Phase 3b) |
 | **Estimated Hours** | 3 |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-31 |
+| **Status** | Complete |
+| **Last Updated** | 2026-02-10 |
 
 ---
 

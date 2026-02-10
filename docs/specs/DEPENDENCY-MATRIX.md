@@ -1266,6 +1266,29 @@
 | `PostValidationStatus`     | v0.6.6g    | Abstractions | Status (Valid/ValidWithWarnings/Invalid/Inconclusive) |
 | `HallucinationType`        | v0.6.6g    | Abstractions | Hallucination category enum            |
 
+**New Interfaces (v0.6.6h):**
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IEntityCitationRenderer`        | v0.6.6h    | Abstractions | Entity citation rendering for Co-pilot |
+
+**New Records (v0.6.6h):**
+
+| Record                           | Defined In | Module       | Purpose                                 |
+| :------------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `ValidatedGenerationResult`      | v0.6.6h    | Abstractions | Aggregated validated LLM output         |
+| `CitationMarkup`                 | v0.6.6h    | Abstractions | Citation rendering output               |
+| `EntityCitation`                 | v0.6.6h    | Abstractions | Single entity citation record           |
+| `CitationOptions`                | v0.6.6h    | Abstractions | Citation rendering options              |
+| `EntityCitationDetail`           | v0.6.6h    | Abstractions | Detailed citation information           |
+
+**New Enums (v0.6.6h):**
+
+| Enum                       | Defined In | Module       | Purpose                                |
+| :------------------------- | :--------- | :----------- | :------------------------------------- |
+| `ValidationIcon`           | v0.6.6h    | Abstractions | Citation validation icon (CheckMark/Warning/Error/Question) |
+| `CitationFormat`           | v0.6.6h    | Abstractions | Citation display format (Compact/Detailed/TreeView/Inline)  |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

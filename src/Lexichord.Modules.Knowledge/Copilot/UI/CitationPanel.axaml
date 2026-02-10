@@ -1,0 +1,57 @@
+<!-- ============================================================================
+     File: CitationPanel.axaml
+     Project: Lexichord.Modules.Knowledge
+     Description: Avalonia UserControl displaying entity citations for Co-pilot.
+     ============================================================================
+     LOGIC: Displays a bordered panel with:
+       1. Header row with 📚 icon and "Based on:" label.
+       2. ItemsControl listing each citation with type icon, display label,
+          and verification mark (coloured ✓ or ?).
+       3. Footer row with validation icon and status text.
+     
+     v0.6.6h: Entity Citation Renderer (CKVS Phase 3b)
+     Dependencies: CitationViewModel (v0.6.6h)
+     ============================================================================ -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Lexichord.Modules.Knowledge.Copilot.UI"
+             x:Class="Lexichord.Modules.Knowledge.Copilot.UI.CitationPanel"
+             x:DataType="ui:CitationViewModel">
+
+    <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="8">
+        <StackPanel>
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <TextBlock Text="📚" FontSize="14" Margin="0,0,4,0"/>
+                <TextBlock Text="Based on:" FontWeight="SemiBold"/>
+            </StackPanel>
+
+            <!-- Citations List -->
+            <ItemsControl ItemsSource="{Binding Citations}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="ui:CitationItemViewModel">
+                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                            <TextBlock Text="├── " Foreground="Gray"/>
+                            <TextBlock Text="{Binding TypeIcon}" Margin="0,0,4,0"/>
+                            <TextBlock Text="{Binding DisplayLabel}"/>
+                            <TextBlock Text="{Binding VerifiedMark}"
+                                       Foreground="{Binding VerifiedColor}"
+                                       Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Validation Status -->
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <TextBlock Text="{Binding ValidationIconText}"
+                           Foreground="{Binding ValidationColor}"/>
+                <TextBlock Text="{Binding ValidationStatus}"
+                           Margin="4,0,0,0"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>
