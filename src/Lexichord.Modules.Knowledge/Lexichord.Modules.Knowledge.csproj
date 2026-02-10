@@ -40,7 +40,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
 
     <!-- v0.4.7e: Avalonia UI for Entity List View -->
-    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
 
     <!-- v0.4.7e: CommunityToolkit.Mvvm for MVVM pattern (ObservableObject, RelayCommand) -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />

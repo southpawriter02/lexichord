@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <!-- Avalonia UI -->
-    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
 
     <!-- MVVM Support -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />

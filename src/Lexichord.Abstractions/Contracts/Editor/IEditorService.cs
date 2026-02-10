@@ -229,4 +229,71 @@ public interface IEditorService
     void ClearSelection();
 
     #endregion
+
+    #region v0.6.7c Document-Aware Prompting
+
+    /// <summary>
+    /// Gets the file path of the currently active document.
+    /// </summary>
+    /// <returns>The file path, or null if no document is active or the document is untitled.</returns>
+    /// <remarks>
+    /// LOGIC: Returns the file path of the currently focused editor tab.
+    /// Used by <c>DocumentContextAnalyzer</c> to locate the document for
+    /// AST parsing and by <c>EditorContext.FromEditorService</c> to capture
+    /// the current editor state.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    string? CurrentDocumentPath { get; }
+
+    /// <summary>
+    /// Gets the full text content of the currently active document.
+    /// </summary>
+    /// <returns>The document text, or null if no document is active.</returns>
+    /// <remarks>
+    /// LOGIC: Returns the in-memory content of the active editor tab,
+    /// which may include unsaved changes. Used by <c>DocumentContextAnalyzer</c>
+    /// for local context extraction around the cursor position.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    string? GetDocumentText();
+
+    /// <summary>
+    /// Gets the 1-based line number at the current caret position.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Returns the line number (1-based) of the caret in the active
+    /// document. Used by <c>EditorContext.FromEditorService</c> to capture
+    /// cursor location metadata.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    int CurrentLine { get; }
+
+    /// <summary>
+    /// Gets the 1-based column number at the current caret position.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Returns the column number (1-based) of the caret in the active
+    /// document. Used by <c>EditorContext.FromEditorService</c> to capture
+    /// cursor location metadata.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    int CurrentColumn { get; }
+
+    /// <summary>
+    /// Event raised when the active document's content changes.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Fired when the document content is modified (text edits, saves,
+    /// or file reloads). Used by <c>DocumentContextAnalyzer</c> to invalidate
+    /// cached AST representations when the document structure changes.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    event EventHandler<DocumentChangedEventArgs>? DocumentChanged;
+
+    #endregion
 }

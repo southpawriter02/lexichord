@@ -163,6 +163,15 @@ public class AgentsModule : IModule
         services.AddTransient<InsertAtCursorCommand>();
         services.AddTransient<ReplaceSelectionCommand>();
         services.AddTransient<ViewModels.PreviewOverlayViewModel>();
+
+        // LOGIC: Register Document-Aware Prompting services (v0.6.7c).
+        // ASTCacheProvider is singleton to maintain a shared Markdown AST cache across
+        // the application, avoiding redundant re-parsing of unchanged documents.
+        // DocumentContextAnalyzer is singleton to maintain its DocumentChanged subscription.
+        // ContextAwarePromptSelector is singleton as it is stateless and thread-safe.
+        services.AddSingleton<ASTCacheProvider>();
+        services.AddSingleton<IDocumentContextAnalyzer, DocumentContextAnalyzer>();
+        services.AddSingleton<ContextAwarePromptSelector>();
     }
 
     /// <inheritdoc />

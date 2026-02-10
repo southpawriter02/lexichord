@@ -1310,6 +1310,66 @@
 | :------------------------- | :--------- | :----------- | :------------------------------------- |
 | `GroundingLevel`           | v0.6.6i    | Abstractions | Knowledge grounding strictness (Strict/Moderate/Flexible) |
 
+### 1.32 v0.6.7a Selection Context
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `ISelectionContextService`       | v0.6.7a    | Agents       | Selection-to-chat coordination       |
+
+**New Event Args (v0.6.7a):**
+
+| Class                            | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `SelectionChangedEventArgs`      | v0.6.7a    | Abstractions | Editor selection change notification |
+| `ContextMenuItem`                | v0.6.7a    | Abstractions | Editor context menu item definition  |
+
+### 1.33 v0.6.7b Inline Suggestions
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IEditorInsertionService`        | v0.6.7b    | Abstractions | Editor text insertion and preview    |
+
+**New Records (v0.6.7b):**
+
+| Record                           | Defined In | Module       | Purpose                                 |
+| :------------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `TextSpan`                       | v0.6.7b    | Abstractions | Text range with Contains/OverlapsWith   |
+| `PreviewStateChangedEventArgs`   | v0.6.7b    | Abstractions | Preview state change notification       |
+
+### 1.34 v0.6.7c Document-Aware Prompting
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IDocumentContextAnalyzer`       | v0.6.7c    | Agents       | Document structure analysis at cursor |
+
+**New Records (v0.6.7c):**
+
+| Record                           | Defined In | Module       | Purpose                                 |
+| :------------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `DocumentContext`                | v0.6.7c    | Agents       | Structural metadata at cursor position  |
+| `EditorContext`                  | v0.6.7c    | Agents       | Editor state snapshot with factory      |
+| `PromptSuggestion`              | v0.6.7c    | Agents       | Context-specific prompt suggestion      |
+
+**New Enums (v0.6.7c):**
+
+| Enum                       | Defined In | Module       | Purpose                                |
+| :------------------------- | :--------- | :----------- | :------------------------------------- |
+| `ContentBlockType`         | v0.6.7c    | Agents       | Content block type (Prose/CodeBlock/Table/List/Heading/Blockquote/FrontMatter/InlineCode/Link) |
+
+**New Event Args (v0.6.7c):**
+
+| Class                            | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `DocumentChangedEventArgs`       | v0.6.7c    | Abstractions | Document content change notification |
+
+**New Internal Classes (v0.6.7c):**
+
+| Class                            | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `ASTCacheProvider`               | v0.6.7c    | Agents       | Cached Markdown AST per document     |
+| `DocumentContextAnalyzer`        | v0.6.7c    | Agents       | IDocumentContextAnalyzer implementation |
+| `ContextAwarePromptSelector`     | v0.6.7c    | Agents       | Content-type-aware prompt selection  |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

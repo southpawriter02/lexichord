@@ -31,6 +31,12 @@
     <DockAvaloniaVersion>11.3.2</DockAvaloniaVersion>
   </PropertyGroup>
 
+  <!-- Avalonia Version (centralized) -->
+  <PropertyGroup>
+    <AvaloniaVersion>11.3.2</AvaloniaVersion>
+    <AvaloniaEditVersion>11.3.0</AvaloniaEditVersion>
+  </PropertyGroup>
+
   <!-- v0.1.7a: Velopack Version (centralized) -->
   <PropertyGroup>
     <VelopackVersion>0.0.1251</VelopackVersion>

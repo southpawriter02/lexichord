@@ -19,8 +19,8 @@
 
   <ItemGroup>
     <!-- v0.2.5a: Avalonia UI for LexiconView -->
-    <PackageReference Include="Avalonia" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaVersion)" />
 
     <!-- v0.2.5a: MVVM Support -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />

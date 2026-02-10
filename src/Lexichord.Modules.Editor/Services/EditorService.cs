@@ -405,5 +405,75 @@ public class EditorService : IEditorService
     }
 
     #endregion
+
+    #region v0.6.7c Document-Aware Prompting Stubs
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Delegates to the active document's FilePath.
+    /// Returns null if no document is active or the document is untitled.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    public string? CurrentDocumentPath
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc?.FilePath;
+        }
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Delegates to the active document's Content property.
+    /// Returns the full in-memory text content including unsaved changes.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    public string? GetDocumentText()
+    {
+        var activeDoc = GetActiveDocument();
+        return activeDoc?.Content;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Delegates to the active document's CaretPosition.Line.
+    /// Returns 1 if no document is active.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    public int CurrentLine
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc?.CaretPosition.Line ?? 1;
+        }
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Delegates to the active document's CaretPosition.Column.
+    /// Returns 1 if no document is active.
+    ///
+    /// Version: v0.6.7c
+    /// </remarks>
+    public int CurrentColumn
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc?.CaretPosition.Column ?? 1;
+        }
+    }
+
+    /// <inheritdoc/>
+#pragma warning disable CS0067 // Event is never used — stub for v0.6.7c, will be wired in editor UI
+    public event EventHandler<DocumentChangedEventArgs>? DocumentChanged;
+#pragma warning restore CS0067
+
+    #endregion
 }
 

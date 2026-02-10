@@ -358,12 +358,12 @@ public record QuickActionExecutedEvent(
 |   2   | Add "Replace Selection" button              |     1      |   ☐    |
 |   2   | Implement transaction-based undo            |     2      |   ☐    |
 |   2   | Unit tests for inline suggestions           |    2.5     |   ☐    |
-|   3   | Define `IDocumentContextAnalyzer` interface |    0.5     |   ☐    |
-|   3   | Implement Markdig AST parsing               |     3      |   ☐    |
-|   3   | Implement local context extraction          |     2      |   ☐    |
-|   3   | Implement content type detection            |     2      |   ☐    |
-|   3   | Implement context-aware prompt selector     |     2      |   ☐    |
-|   3   | Unit tests for document analysis            |    2.5     |   ☐    |
+|   3   | Define `IDocumentContextAnalyzer` interface |    0.5     |   ☑    |
+|   3   | Implement Markdig AST parsing               |     3      |   ☑    |
+|   3   | Implement local context extraction          |     2      |   ☑    |
+|   3   | Implement content type detection            |     2      |   ☑    |
+|   3   | Implement context-aware prompt selector     |     2      |   ☑    |
+|   3   | Unit tests for document analysis            |    2.5     |   ☑    |
 |   4   | Define `IQuickActionsService` interface     |    0.5     |   ☐    |
 |   4   | Implement `QuickActionsService`             |     3      |   ☐    |
 |   4   | Create `QuickActionsPanel.axaml`            |     3      |   ☐    |
@@ -993,10 +993,10 @@ dotnet test --filter "Category=QuickActions"
 | 8   | `PreviewOverlayControl.axaml` preview UI            | [ ]    |
 | 9   | Insert/Replace buttons in chat responses            | [ ]    |
 | 10  | Transaction-based undo support                      | [ ]    |
-| 11  | `IDocumentContextAnalyzer.cs` interface             | [ ]    |
-| 12  | `DocumentContextAnalyzer.cs` Markdig implementation | [ ]    |
-| 13  | `ContentBlockType` enum                             | [ ]    |
-| 14  | `DocumentContext` record                            | [ ]    |
+| 11  | `IDocumentContextAnalyzer.cs` interface             | [x]   |
+| 12  | `DocumentContextAnalyzer.cs` Markdig implementation | [x]   |
+| 13  | `ContentBlockType` enum                             | [x]   |
+| 14  | `DocumentContext` record                            | [x]   |
 | 15  | `IQuickActionsService.cs` interface                 | [ ]    |
 | 16  | `QuickActionsService.cs` implementation             | [ ]    |
 | 17  | `QuickActionsPanel.axaml` floating toolbar          | [ ]    |
