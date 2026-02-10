@@ -1216,6 +1216,34 @@
 | :---------------------------- | :--------- | :----------- | :------------------------------ |
 | `AgentCapabilitiesExtensions`  | v0.6.6a    | Abstractions | Capability query helper methods |
 
+### 1.29 v0.6.6f Pre-Generation Validator
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IPreGenerationValidator`        | v0.6.6f    | Abstractions | Pre-generation context validation    |
+| `IContextConsistencyChecker`     | v0.6.6f    | Abstractions | Context structural consistency       |
+
+**New Records (v0.6.6f):**
+
+| Record                 | Defined In | Module       | Purpose                                 |
+| :--------------------- | :--------- | :----------- | :-------------------------------------- |
+| `PreValidationResult`  | v0.6.6f    | Abstractions | Aggregated validation result            |
+| `ContextIssue`         | v0.6.6f    | Abstractions | Individual validation issue             |
+| `ContextModification`  | v0.6.6f    | Abstractions | Advisory context modification           |
+
+**New Enums (v0.6.6f):**
+
+| Enum                       | Defined In | Module       | Purpose                          |
+| :------------------------- | :--------- | :----------- | :------------------------------- |
+| `ContextIssueSeverity`     | v0.6.6f    | Abstractions | Issue severity (Error/Warning/Info) |
+| `ContextModificationType`  | v0.6.6f    | Abstractions | Modification type enum           |
+
+**New Static Classes (v0.6.6f):**
+
+| Class              | Defined In | Module       | Purpose                              |
+| :----------------- | :--------- | :----------- | :----------------------------------- |
+| `ContextIssueCodes` | v0.6.6f   | Abstractions | Well-known PREVAL_ issue code constants |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

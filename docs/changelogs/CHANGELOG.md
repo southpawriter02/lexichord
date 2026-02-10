@@ -24,6 +24,8 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 
 - **Graph Context Provider (v0.6.6e)** — Knowledge graph context retrieval pipeline for Co-pilot prompt injection (CKVS Phase 3b). Added `IKnowledgeContextProvider` orchestrator with `GetContextAsync(query)` and `GetContextForEntitiesAsync(ids)`, `IEntityRelevanceRanker` with term-based scoring (name 3×, type 2×, properties 1×) and greedy token-budget selection, `IKnowledgeContextFormatter` with Markdown/YAML/JSON/Plain output and character-based token estimation (~4 chars/token). Added `EntitySearchQuery`, `KnowledgeContext`, `KnowledgeContextOptions` (with `ContextFormat` enum), and `RankedEntity` data records. Extended `IGraphRepository` with `SearchEntitiesAsync` (in-memory filtering; future Cypher full-text index). Pipeline: search → rank → select → enrich (relationships, axioms, claims) → format. Claims bounded to 5 entities × 3 claims for performance. Renamed spec's `IContextFormatter` to `IKnowledgeContextFormatter` to avoid collision with `Lexichord.Modules.Agents`. Registered Ranker/Formatter as singletons, Provider as scoped in `KnowledgeModule`. Includes 16 unit tests.
 
+- **Pre-Generation Validator (v0.6.6f)** — Pre-generation validation of knowledge context and user requests before LLM generation (CKVS Phase 3b). Added `IPreGenerationValidator` with `ValidateAsync(AgentRequest, KnowledgeContext)` and `CanProceedAsync`, `IContextConsistencyChecker` with `CheckConsistency(KnowledgeContext)` and `CheckRequestConsistency(AgentRequest, KnowledgeContext)`. Added `PreValidationResult` record with `CanProceed`, `Issues`, computed `BlockingIssues`/`Warnings`, `SuggestedModifications`, `UserMessage`, and `Pass()`/`Block()` factories. Added `ContextIssue` record with `Code`, `Message`, `Severity`, optional `RelatedEntity`/`RelatedAxiom`/`Resolution`. Added `ContextIssueSeverity` enum (Error/Warning/Info), `ContextIssueCodes` with 8 `PREVAL_*` constants, `ContextModification` record, and `ContextModificationType` enum (AddEntity/RemoveEntity/UpdateEntity/RefreshContext). Implemented `PreGenerationValidator` orchestrating empty-context check → consistency → request alignment → axiom compliance → aggregation with graceful degradation on service failure. Implemented `ContextConsistencyChecker` with duplicate entity detection (case-insensitive), boolean property conflict detection, relationship endpoint validation, and request ambiguity checking. Adapted spec's `CopilotRequest` to `AgentRequest` (v0.6.6a) and `AxiomSeverity.Must` to `AxiomSeverity.Error`. Includes 22 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title               | Status      |
@@ -33,6 +35,7 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 | [v0.6.6c](v0.6.x/LCS-CL-v066c.md) | Agent Registry      | ✅ Complete |
 | [v0.6.6d](v0.6.x/LCS-CL-v066d.md) | Usage Tracking      | ✅ Complete |
 | [v0.6.6e](v0.6.x/LCS-CL-v066e.md) | Graph Context Provider | ✅ Complete |
+| [v0.6.6f](v0.6.x/LCS-CL-v066f.md) | Pre-Generation Validator | ✅ Complete |
 
 ---
 
