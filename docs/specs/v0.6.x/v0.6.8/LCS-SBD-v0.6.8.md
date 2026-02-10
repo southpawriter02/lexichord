@@ -250,12 +250,12 @@ public interface ITokenBudgetManager
 
 | Phase | Task                                         | Est. Hours | Status |
 | :---: | :------------------------------------------- | :--------: | :----: |
-|   1   | Create test project structure                |     1      |   ☐    |
-|   1   | Implement `ChatCompletionServiceTests`       |     4      |   ☐    |
-|   1   | Implement `PromptRendererTests`              |     3      |   ☐    |
-|   1   | Implement `AgentTests`                       |     4      |   ☐    |
-|   1   | Implement `StreamingParserTests`             |     3      |   ☐    |
-|   1   | Create test fixtures and mocks               |     1      |   ☐    |
+|   1   | Create test project structure                |     1      |   ☑    |
+|   1   | Implement `ChatCompletionServiceTests`       |     4      |   ☑    |
+|   1   | Implement `PromptRendererTests`              |     3      |   ☑    |
+|   1   | Implement `AgentTests`                       |     4      |   ☑    |
+|   1   | Implement `StreamingParserTests`             |     3      |   ☑    |
+|   1   | Create test fixtures and mocks               |     1      |   ☑    |
 |   2   | Implement `AgentWorkflowTests`               |     4      |   ☐    |
 |   2   | Implement `StreamingIntegrationTests`        |     3      |   ☐    |
 |   2   | Implement `ContextInjectionIntegrationTests` |     3      |   ☐    |

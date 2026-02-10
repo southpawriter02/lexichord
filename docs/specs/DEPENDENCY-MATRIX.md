@@ -1401,6 +1401,30 @@
 | `QuickActionItemViewModel`       | v0.6.7d    | Agents       | Individual action button ViewModel   |
 | `QuickActionsPanel`              | v0.6.7d    | Agents       | Avalonia floating toolbar control    |
 
+### 1.36 v0.6.8a Unit Test Suite
+
+**New Test Fixtures (v0.6.8a):**
+
+| Class                            | Defined In | Module       | Purpose                                     |
+| :------------------------------- | :--------- | :----------- | :------------------------------------------ |
+| `MockHttpMessageHandler`         | v0.6.8a    | Tests.Unit   | Reusable HTTP handler for mocking responses |
+| `TestChatResponses`              | v0.6.8a    | Tests.Unit   | Factory for ChatResponse/AgentRequest data  |
+| `TestPromptTemplates`            | v0.6.8a    | Tests.Unit   | Factory for IPromptTemplate test doubles    |
+| `TestStreamingTokens`            | v0.6.8a    | Tests.Unit   | SSE stream builders for OpenAI/Anthropic    |
+
+**New Test Classes (v0.6.8a):**
+
+| Class                            | Defined In | Module       | Purpose                                     |
+| :------------------------------- | :--------- | :----------- | :------------------------------------------ |
+| `OpenAISSEParserTests`           | v0.6.8a    | Tests.Unit   | SSEParser tests for OpenAI format (10)      |
+| `AnthropicSSEParserTests`        | v0.6.8a    | Tests.Unit   | SSEParser tests for Anthropic format (8)    |
+| `StreamingHandlerTests`          | v0.6.8a    | Tests.Unit   | StreamingChatHandler state machine (12)     |
+| `CoPilotAgentTests`              | v0.6.8a    | Tests.Unit   | CoPilotAgent invocation lifecycle (17)      |
+| `AgentRegistryTests`             | v0.6.8a    | Tests.Unit   | AgentRegistry discovery and gating (14)     |
+| `UsageTrackingTests`             | v0.6.8a    | Tests.Unit   | UsageTracker accumulation and events (12)   |
+| `ContextInjectorTests`           | v0.6.8a    | Tests.Unit   | ContextInjector provider orchestration (12) |
+| `MustacheRendererTests`          | v0.6.8a    | Tests.Unit   | MustachePromptRenderer edge cases (12)      |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

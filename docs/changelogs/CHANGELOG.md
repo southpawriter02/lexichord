@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.6.8] - 2026-02 (In Progress)
+
+### The Hardening (Reliability & Performance)
+
+This release focuses on production-readiness with comprehensive testing, error handling, and optimization for the Agents module.
+
+#### What's New
+
+- **Unit Test Suite (v0.6.8a)** — 96 unit tests for all Agents module core services in `Lexichord.Tests.Unit`. Added 4 shared test fixtures (`MockHttpMessageHandler`, `TestChatResponses`, `TestPromptTemplates`, `TestStreamingTokens`) and 8 test classes covering `SSEParser` (OpenAI + Anthropic formats), `CoPilotAgent` lifecycle, `AgentRegistry` discovery and license gating, `StreamingChatHandler` state management, `ContextInjector` provider orchestration, `UsageTracker` accumulation and event publishing, and `MustachePromptRenderer` edge cases. All tests pass with deterministic mocks (Moq) and assertions (FluentAssertions). Includes SSE malformed JSON resilience, provider timeout handling, parallel execution verification, and graceful degradation testing.
+
+#### Sub-Part Changelogs
+
+| Version                        | Title           | Status      |
+| ------------------------------ | --------------- | ----------- |
+| [v0.6.8a](v0.6.x/v0.6.8a.md) | Unit Test Suite | ✅ Complete |
+
+---
+
 ## [v0.6.7] - 2026-02 (In Progress)
 
 ### Selection Context (Editor → Co-pilot Bridge)
