@@ -1244,6 +1244,28 @@
 | :----------------- | :--------- | :----------- | :----------------------------------- |
 | `ContextIssueCodes` | v0.6.6f   | Abstractions | Well-known PREVAL_ issue code constants |
 
+### 1.30 v0.6.6g Post-Generation Validator
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IPostGenerationValidator`       | v0.6.6g    | Abstractions | Post-generation content validation   |
+| `IHallucinationDetector`         | v0.6.6g    | Abstractions | Hallucination detection in content   |
+
+**New Records (v0.6.6g):**
+
+| Record                  | Defined In | Module       | Purpose                                 |
+| :---------------------- | :--------- | :----------- | :-------------------------------------- |
+| `PostValidationResult`  | v0.6.6g    | Abstractions | Aggregated post-validation result       |
+| `HallucinationFinding`  | v0.6.6g    | Abstractions | Individual hallucination detection      |
+| `ValidationFix`         | v0.6.6g    | Abstractions | Suggested content correction            |
+
+**New Enums (v0.6.6g):**
+
+| Enum                       | Defined In | Module       | Purpose                                |
+| :------------------------- | :--------- | :----------- | :------------------------------------- |
+| `PostValidationStatus`     | v0.6.6g    | Abstractions | Status (Valid/ValidWithWarnings/Invalid/Inconclusive) |
+| `HallucinationType`        | v0.6.6g    | Abstractions | Hallucination category enum            |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
