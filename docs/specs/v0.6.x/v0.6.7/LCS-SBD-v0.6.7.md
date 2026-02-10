@@ -364,14 +364,14 @@ public record QuickActionExecutedEvent(
 |   3   | Implement content type detection            |     2      |   ☑    |
 |   3   | Implement context-aware prompt selector     |     2      |   ☑    |
 |   3   | Unit tests for document analysis            |    2.5     |   ☑    |
-|   4   | Define `IQuickActionsService` interface     |    0.5     |   ☐    |
-|   4   | Implement `QuickActionsService`             |     3      |   ☐    |
-|   4   | Create `QuickActionsPanel.axaml`            |     3      |   ☐    |
-|   4   | Create `QuickActionsPanelViewModel`         |     2      |   ☐    |
-|   4   | Create built-in prompt templates            |     2      |   ☐    |
-|   4   | Implement selection-triggered display       |     2      |   ☐    |
-|   4   | Add dismiss behavior                        |     1      |   ☐    |
-|   4   | Unit tests for quick actions                |    2.5     |   ☐    |
+|   4   | Define `IQuickActionsService` interface     |    0.5     |   ☑    |
+|   4   | Implement `QuickActionsService`             |     3      |   ☑    |
+|   4   | Create `QuickActionsPanel.axaml`            |     3      |   ☑    |
+|   4   | Create `QuickActionsPanelViewModel`         |     2      |   ☑    |
+|   4   | Create built-in prompt templates            |     2      |   ☑    |
+|   4   | Implement selection-triggered display       |     2      |   ☑    |
+|   4   | Add dismiss behavior                        |     1      |   ☑    |
+|   4   | Unit tests for quick actions                |    2.5     |   ☑    |
 |       | **Total**                                   |   **50**   |        |
 
 ---
@@ -997,14 +997,14 @@ dotnet test --filter "Category=QuickActions"
 | 12  | `DocumentContextAnalyzer.cs` Markdig implementation | [x]   |
 | 13  | `ContentBlockType` enum                             | [x]   |
 | 14  | `DocumentContext` record                            | [x]   |
-| 15  | `IQuickActionsService.cs` interface                 | [ ]    |
-| 16  | `QuickActionsService.cs` implementation             | [ ]    |
-| 17  | `QuickActionsPanel.axaml` floating toolbar          | [ ]    |
-| 18  | `QuickActionsPanelViewModel.cs` state management    | [ ]    |
-| 19  | Built-in quick action prompt templates              | [ ]    |
-| 20  | `QuickActionExecutedEvent` telemetry                | [ ]    |
-| 21  | Unit tests (52 tests)                               | [ ]    |
-| 22  | DI registration in AgentsModule.cs                  | [ ]    |
+| 15  | `IQuickActionsService.cs` interface                 | [x]   |
+| 16  | `QuickActionsService.cs` implementation             | [x]   |
+| 17  | `QuickActionsPanel.axaml` floating toolbar          | [x]   |
+| 18  | `QuickActionsPanelViewModel.cs` state management    | [x]   |
+| 19  | Built-in quick action prompt templates              | [x]   |
+| 20  | `QuickActionExecutedEvent` telemetry                | [x]   |
+| 21  | Unit tests (52 tests)                               | [x]   |
+| 22  | DI registration in AgentsModule.cs                  | [x]   |
 
 ---
 

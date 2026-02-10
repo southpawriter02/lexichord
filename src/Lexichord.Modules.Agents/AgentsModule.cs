@@ -172,6 +172,13 @@ public class AgentsModule : IModule
         services.AddSingleton<ASTCacheProvider>();
         services.AddSingleton<IDocumentContextAnalyzer, DocumentContextAnalyzer>();
         services.AddSingleton<ContextAwarePromptSelector>();
+
+        // LOGIC: Register Quick Actions services (v0.6.7d).
+        // QuickActionsService is singleton to maintain the action registry across
+        // the application lifetime. Built-in actions are loaded at construction.
+        // ViewModel is transient as it is created per-usage by the panel host.
+        services.AddSingleton<IQuickActionsService, QuickActionsService>();
+        services.AddTransient<ViewModels.QuickActionsPanelViewModel>();
     }
 
     /// <inheritdoc />

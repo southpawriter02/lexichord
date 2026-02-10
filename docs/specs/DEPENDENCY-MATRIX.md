@@ -1370,6 +1370,37 @@
 | `DocumentContextAnalyzer`        | v0.6.7c    | Agents       | IDocumentContextAnalyzer implementation |
 | `ContextAwarePromptSelector`     | v0.6.7c    | Agents       | Content-type-aware prompt selection  |
 
+### 1.35 v0.6.7d Quick Actions Panel
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IQuickActionsService`           | v0.6.7d    | Agents       | Quick action registry and execution  |
+
+**New Records (v0.6.7d):**
+
+| Record                           | Defined In | Module       | Purpose                                 |
+| :------------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `QuickAction`                    | v0.6.7d    | Agents       | Action definition with content type filtering |
+| `QuickActionResult`              | v0.6.7d    | Agents       | Execution result with success/error state |
+| `PromptTemplateDefinition`       | v0.6.7d    | Agents       | Lightweight built-in prompt template    |
+| `QuickActionExecutedEvent`       | v0.6.7d    | Agents       | MediatR INotification for telemetry     |
+
+**New Event Args (v0.6.7d):**
+
+| Class                            | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `QuickActionExecutedEventArgs`   | v0.6.7d    | Agents       | CLR event args for action completion |
+
+**New Classes (v0.6.7d):**
+
+| Class                            | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `QuickActionsService`            | v0.6.7d    | Agents       | IQuickActionsService implementation  |
+| `BuiltInQuickActions`            | v0.6.7d    | Agents       | Static registry of built-in actions  |
+| `QuickActionsPanelViewModel`     | v0.6.7d    | Agents       | Floating panel ViewModel with debounce |
+| `QuickActionItemViewModel`       | v0.6.7d    | Agents       | Individual action button ViewModel   |
+| `QuickActionsPanel`              | v0.6.7d    | Agents       | Avalonia floating toolbar control    |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1417,6 +1448,8 @@
 | `QueryAnalyticsEvent`           | v0.5.4d    | Query execution telemetry         |
 | `FilterAppliedEvent`            | v0.5.5d    | Search filter configuration set   |
 | `SearchResultsExportedEvent`    | v0.5.7d    | Search results exported to file   |
+| `SelectionContextSetEvent`     | v0.6.7a    | Selection sent to Co-pilot chat   |
+| `QuickActionExecutedEvent`     | v0.6.7d    | Quick action executed (telemetry) |
 
 ---
 

@@ -1,0 +1,72 @@
+<UserControl x:Class="Lexichord.Modules.Agents.Controls.QuickActionsPanel"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lexichord.Modules.Agents.ViewModels"
+             x:DataType="vm:QuickActionsPanelViewModel">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Quick Actions Floating Panel
+         ═══════════════════════════════════════════════════════════════════
+         LOGIC: Floating toolbar that appears near selected text with
+         one-click AI operations. Positioned via Canvas.Top/Canvas.Left
+         bindings. Hidden when no selection is active.
+
+         Introduced in: v0.6.7d
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <Border Classes="quickActionsPanel"
+            IsVisible="{Binding IsVisible}"
+            Background="{DynamicResource Brush.Surface.Floating}"
+            BorderBrush="{DynamicResource Brush.Border.Subtle}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="4">
+
+        <!-- LOGIC: Horizontal list of action buttons. Each button displays
+             the action name, icon, and optional keyboard shortcut. The
+             ItemsControl uses a horizontal StackPanel as its items panel
+             to lay out buttons side by side. -->
+        <ItemsControl ItemsSource="{Binding Actions}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="2"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:QuickActionItemViewModel">
+                    <Button Command="{Binding ExecuteCommand}"
+                            IsEnabled="{Binding !IsExecuting}"
+                            Classes="ghost compact"
+                            ToolTip.Tip="{Binding Action.Description}"
+                            Padding="8,6">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <!-- LOGIC: Action name is always shown. Keyboard
+                                 shortcut hint is shown as a dimmed suffix
+                                 when the action has one configured. -->
+                            <TextBlock Text="{Binding Action.Name}"
+                                       FontSize="12"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Action.KeyboardShortcut}"
+                                       FontSize="10"
+                                       Opacity="0.5"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding Action.KeyboardShortcut,
+                                           Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Border>
+
+    <UserControl.Styles>
+        <!-- LOGIC: Drop shadow for floating appearance. Matches the
+             PreviewOverlayControl shadow style for visual consistency. -->
+        <Style Selector="Border.quickActionsPanel">
+            <Setter Property="Effect">
+                <DropShadowEffect BlurRadius="12" Opacity="0.2"/>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+</UserControl>
