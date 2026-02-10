@@ -269,5 +269,33 @@ public interface IGraphRepository
     Task RecordChangeAsync(Knowledge.EntityChangeRecord record, CancellationToken ct = default);
 
     #endregion
+
+    #region v0.6.6e: Graph Context Provider
+
+    /// <summary>
+    /// Searches for entities matching a query.
+    /// </summary>
+    /// <param name="query">The search query specifying text, limits, and optional type filters.</param>
+    /// <param name="ct">Cancellation token for the operation.</param>
+    /// <returns>
+    /// A read-only list of <see cref="KnowledgeEntity"/> instances matching the query.
+    /// Returns an empty list if no entities match.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: Searches entity names, types, and property values against the query terms.
+    /// Results are limited to <see cref="Knowledge.Copilot.EntitySearchQuery.MaxResults"/>.
+    /// If <see cref="Knowledge.Copilot.EntitySearchQuery.EntityTypes"/> is specified,
+    /// only entities of those types are returned.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.6.6e as part of the Graph Context Provider.
+    /// </para>
+    /// </remarks>
+    Task<IReadOnlyList<KnowledgeEntity>> SearchEntitiesAsync(
+        Knowledge.Copilot.EntitySearchQuery query,
+        CancellationToken ct = default);
+
+    #endregion
 }
 

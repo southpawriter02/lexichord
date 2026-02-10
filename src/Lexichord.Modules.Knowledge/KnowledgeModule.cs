@@ -365,6 +365,26 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Validation.Integration.LinterIntegration>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Validation.Integration.ILinterIntegration>(sp =>
             sp.GetRequiredService<Validation.Integration.LinterIntegration>());
+
+        // =====================================================================
+        // v0.6.6e: Graph Context Provider (CKVS Phase 3b)
+        // =====================================================================
+
+        // LOGIC: Register EntityRelevanceRanker as singleton.
+        // Stateless term-based scoring — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IEntityRelevanceRanker,
+            Copilot.Context.EntityRelevanceRanker>();
+
+        // LOGIC: Register KnowledgeContextFormatter as singleton.
+        // Stateless multi-format formatter — safe to share across threads.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IKnowledgeContextFormatter,
+            Copilot.Context.KnowledgeContextFormatter>();
+
+        // LOGIC: Register KnowledgeContextProvider as scoped.
+        // Depends on IAxiomStore (scoped) and IClaimRepository (scoped),
+        // so must be scoped to match the shortest dependency lifetime.
+        services.AddScoped<Abstractions.Contracts.Knowledge.Copilot.IKnowledgeContextProvider,
+            Copilot.Context.KnowledgeContextProvider>();
     }
 
     /// <inheritdoc/>

@@ -382,5 +382,55 @@ internal sealed class GraphRepository : IGraphRepository
     }
 
     #endregion
+
+    #region v0.6.6e: Graph Context Provider
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<KnowledgeEntity>> SearchEntitiesAsync(
+        Abstractions.Contracts.Knowledge.Copilot.EntitySearchQuery query,
+        CancellationToken ct = default)
+    {
+        _logger.LogDebug(
+            "Searching entities with query: {Query}, MaxResults={MaxResults}",
+            query.Query, query.MaxResults);
+
+        // LOGIC: For v0.6.6e, use in-memory filtering over all entities.
+        // A future optimization will use Cypher full-text indexing for
+        // better performance on large graphs.
+        var allEntities = await GetAllEntitiesAsync(ct);
+
+        var terms = query.Query.ToLowerInvariant()
+            .Split([' ', ',', '.', '/', '-', '_'], StringSplitOptions.RemoveEmptyEntries)
+            .Where(t => t.Length > 2)
+            .ToHashSet();
+
+        var results = allEntities
+            .Where(e =>
+            {
+                // Apply type filter if specified
+                if (query.EntityTypes != null && !query.EntityTypes.Contains(e.Type))
+                    return false;
+
+                // Match against name, type, or property values
+                var nameLower = e.Name.ToLowerInvariant();
+                var typeLower = e.Type.ToLowerInvariant();
+
+                return terms.Any(t =>
+                    nameLower.Contains(t) ||
+                    typeLower.Contains(t) ||
+                    e.Properties.Any(p =>
+                        p.Value?.ToString()?.Contains(t, StringComparison.OrdinalIgnoreCase) == true));
+            })
+            .Take(query.MaxResults)
+            .ToList();
+
+        _logger.LogDebug(
+            "Search returned {Count} entities for query: {Query}",
+            results.Count, query.Query);
+
+        return results;
+    }
+
+    #endregion
 }
 

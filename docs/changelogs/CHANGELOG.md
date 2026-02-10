@@ -22,6 +22,8 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 
 - **Usage Tracking (v0.6.6d)** — Per-conversation and session-level usage tracking. Added `AgentInvocationEvent` MediatR notification, `UsageTracker` scoped service with conversation/session accumulation and event publishing, `SessionUsageCoordinator` singleton for cross-conversation session totals, `UsageRepository` with in-memory storage and CSV/JSON export, `UsageDisplayViewModel` with throttled 500ms UI updates and threshold-based states (Normal/Warning/Critical), and `AgentInvocationHandler` forwarding telemetry breadcrumbs via `ITelemetryService`. License-gated monthly summary and export (Teams only). Includes 15 unit tests.
 
+- **Graph Context Provider (v0.6.6e)** — Knowledge graph context retrieval pipeline for Co-pilot prompt injection (CKVS Phase 3b). Added `IKnowledgeContextProvider` orchestrator with `GetContextAsync(query)` and `GetContextForEntitiesAsync(ids)`, `IEntityRelevanceRanker` with term-based scoring (name 3×, type 2×, properties 1×) and greedy token-budget selection, `IKnowledgeContextFormatter` with Markdown/YAML/JSON/Plain output and character-based token estimation (~4 chars/token). Added `EntitySearchQuery`, `KnowledgeContext`, `KnowledgeContextOptions` (with `ContextFormat` enum), and `RankedEntity` data records. Extended `IGraphRepository` with `SearchEntitiesAsync` (in-memory filtering; future Cypher full-text index). Pipeline: search → rank → select → enrich (relationships, axioms, claims) → format. Claims bounded to 5 entities × 3 claims for performance. Renamed spec's `IContextFormatter` to `IKnowledgeContextFormatter` to avoid collision with `Lexichord.Modules.Agents`. Registered Ranker/Formatter as singletons, Provider as scoped in `KnowledgeModule`. Includes 16 unit tests.
+
 #### Sub-Part Changelogs
 
 | Version                             | Title               | Status      |
@@ -30,6 +32,7 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 | [v0.6.6b](v0.6.x/LCS-CL-v066b.md) | Co-Pilot Agent      | ✅ Complete |
 | [v0.6.6c](v0.6.x/LCS-CL-v066c.md) | Agent Registry      | ✅ Complete |
 | [v0.6.6d](v0.6.x/LCS-CL-v066d.md) | Usage Tracking      | ✅ Complete |
+| [v0.6.6e](v0.6.x/LCS-CL-v066e.md) | Graph Context Provider | ✅ Complete |
 
 ---
 
