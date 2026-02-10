@@ -385,6 +385,13 @@ public sealed class KnowledgeModule : IModule
         // so must be scoped to match the shortest dependency lifetime.
         services.AddScoped<Abstractions.Contracts.Knowledge.Copilot.IKnowledgeContextProvider,
             Copilot.Context.KnowledgeContextProvider>();
+
+        // LOGIC: Register KnowledgePromptBuilder as singleton.
+        // Maintains an in-memory template registry loaded at construction.
+        // Depends on IKnowledgeContextFormatter (singleton) and IPromptRenderer (singleton).
+        // v0.6.6i: Knowledge-Aware Prompts
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IKnowledgePromptBuilder,
+            Copilot.Prompts.KnowledgePromptBuilder>();
     }
 
     /// <inheritdoc/>

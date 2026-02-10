@@ -1289,6 +1289,27 @@
 | `ValidationIcon`           | v0.6.6h    | Abstractions | Citation validation icon (CheckMark/Warning/Error/Question) |
 | `CitationFormat`           | v0.6.6h    | Abstractions | Citation display format (Compact/Detailed/TreeView/Inline)  |
 
+**New Interfaces (v0.6.6i):**
+
+| Interface                        | Defined In | Module       | Purpose                              |
+| :------------------------------- | :--------- | :----------- | :----------------------------------- |
+| `IKnowledgePromptBuilder`        | v0.6.6i    | Abstractions | Knowledge-aware prompt construction  |
+
+**New Records (v0.6.6i):**
+
+| Record                           | Defined In | Module       | Purpose                                 |
+| :------------------------------- | :--------- | :----------- | :-------------------------------------- |
+| `KnowledgePrompt`                | v0.6.6i    | Abstractions | Rendered prompt with context metadata   |
+| `KnowledgePromptTemplate`        | v0.6.6i    | Abstractions | Prompt template definition              |
+| `PromptRequirements`             | v0.6.6i    | Abstractions | Template context requirements           |
+| `PromptOptions`                  | v0.6.6i    | Abstractions | Prompt building configuration           |
+
+**New Enums (v0.6.6i):**
+
+| Enum                       | Defined In | Module       | Purpose                                |
+| :------------------------- | :--------- | :----------- | :------------------------------------- |
+| `GroundingLevel`           | v0.6.6i    | Abstractions | Knowledge grounding strictness (Strict/Moderate/Flexible) |
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
