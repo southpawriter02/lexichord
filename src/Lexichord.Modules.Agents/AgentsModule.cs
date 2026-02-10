@@ -7,6 +7,7 @@
 
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Chat.Abstractions;
 using Lexichord.Modules.Agents.Chat.Services;
@@ -154,6 +155,14 @@ public class AgentsModule : IModule
         services.AddSingleton<ISelectionContextService, SelectionContextService>();
         services.AddTransient<SelectionContextCommand>();
         services.AddSingleton<IKeyBindingConfiguration, SelectionContextKeyBindings>();
+
+        // LOGIC: Register Inline Suggestions services (v0.6.7b).
+        // EditorInsertionService is singleton to maintain preview state across the application.
+        // Commands and ViewModel are transient as they are created per-usage.
+        services.AddSingleton<IEditorInsertionService, EditorInsertionService>();
+        services.AddTransient<InsertAtCursorCommand>();
+        services.AddTransient<ReplaceSelectionCommand>();
+        services.AddTransient<ViewModels.PreviewOverlayViewModel>();
     }
 
     /// <inheritdoc />

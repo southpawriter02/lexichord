@@ -1,0 +1,63 @@
+<UserControl x:Class="Lexichord.Modules.Agents.Controls.PreviewOverlayControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lexichord.Modules.Agents.ViewModels"
+             x:DataType="vm:PreviewOverlayViewModel">
+
+    <Border Classes="previewOverlay"
+            IsVisible="{Binding IsVisible}"
+            Background="{DynamicResource Brush.Surface.Preview}"
+            BorderBrush="{DynamicResource Brush.Accent.Primary}"
+            BorderThickness="2"
+            CornerRadius="6"
+            Padding="12">
+
+        <Grid RowDefinitions="*,Auto">
+            <!-- Preview Content -->
+            <ScrollViewer Grid.Row="0"
+                          MaxHeight="300"
+                          VerticalScrollBarVisibility="Auto">
+                <SelectableTextBlock Text="{Binding PreviewText}"
+                                      FontFamily="{DynamicResource EditorFontFamily}"
+                                      FontSize="{DynamicResource EditorFontSize}"
+                                      TextWrapping="Wrap"/>
+            </ScrollViewer>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8"
+                        Margin="0,12,0,0">
+
+                <Button Command="{Binding AcceptCommand}"
+                        Classes="primary"
+                        HotKey="Enter">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Data="{StaticResource IconCheck}" Width="14" Height="14"/>
+                        <TextBlock Text="Accept"/>
+                        <TextBlock Text="↵" Opacity="0.6"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding RejectCommand}"
+                        Classes="ghost"
+                        HotKey="Escape">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Data="{StaticResource IconClose}" Width="14" Height="14"/>
+                        <TextBlock Text="Reject"/>
+                        <TextBlock Text="Esc" Opacity="0.6"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+
+    <UserControl.Styles>
+        <Style Selector="Border.previewOverlay">
+            <Setter Property="Effect">
+                <DropShadowEffect BlurRadius="16" Opacity="0.3"/>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+</UserControl>

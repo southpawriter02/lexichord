@@ -283,5 +283,127 @@ public class EditorService : IEditorService
     }
 
     #endregion
+
+    #region v0.6.7b Inline Suggestions Stubs
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Delegates to the active document's CaretPosition.Offset.
+    /// Full implementation requires tracking the active document tab.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    public int CaretOffset
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc?.CaretPosition.Offset ?? 0;
+        }
+        set
+        {
+            _logger.LogDebug("CaretOffset set to {Offset} (stub)", value);
+        }
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Delegates to the active document's Selection.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    public bool HasSelection
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc != null && !activeDoc.Selection.IsEmpty;
+        }
+    }
+
+    /// <inheritdoc/>
+    public int SelectionStart
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc?.Selection.StartOffset ?? 0;
+        }
+    }
+
+    /// <inheritdoc/>
+    public int SelectionLength
+    {
+        get
+        {
+            var activeDoc = GetActiveDocument();
+            return activeDoc?.Selection.Length ?? 0;
+        }
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Logs the insertion. Full implementation will modify the
+    /// underlying AvaloniaEdit document.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    public void InsertText(int offset, string text)
+    {
+        _logger.LogDebug(
+            "InsertText at offset {Offset}: {Length} chars (stub)",
+            offset, text.Length);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Logs the deletion. Full implementation will modify the
+    /// underlying AvaloniaEdit document.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    public void DeleteText(int offset, int length)
+    {
+        _logger.LogDebug(
+            "DeleteText at offset {Offset}: {Length} chars (stub)",
+            offset, length);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// STUB: Logs the undo group start. Full AvaloniaEdit integration
+    /// will use Document.UndoStack.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    public void BeginUndoGroup(string description)
+    {
+        _logger.LogDebug("BeginUndoGroup: {Description} (stub)", description);
+    }
+
+    /// <inheritdoc/>
+    public void EndUndoGroup()
+    {
+        _logger.LogDebug("EndUndoGroup (stub)");
+    }
+
+    /// <inheritdoc/>
+    public void ClearSelection()
+    {
+        _logger.LogDebug("ClearSelection (stub)");
+    }
+
+    /// <summary>
+    /// Gets the currently active document (first open document as stub).
+    /// </summary>
+    private IManuscriptViewModel? GetActiveDocument()
+    {
+        lock (_lock)
+        {
+            return _openDocuments.FirstOrDefault();
+        }
+    }
+
+    #endregion
 }
 

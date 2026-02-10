@@ -16,11 +16,14 @@ This release enables sending selected editor text to the Co-pilot chat panel, wi
 
 - **Selection Context (v0.6.7a)** — Editor-to-Co-pilot text selection bridge in `Lexichord.Modules.Agents`. Added `ISelectionContextService` interface with `SendSelectionToCoPilotAsync`, `GenerateDefaultPrompt`, `HasActiveSelection`, `CurrentSelection`, and `ClearSelectionContext`. Implemented `SelectionContextService` with license gating (WriterPro+ via `GetCurrentTier()`), stale context detection via `IEditorService.SelectionChanged`, and ViewModel coordination. Added `DefaultPromptGenerator` with selection-aware prompt logic: code patterns → "Review this code:" (checked first for short code snippets), short <50 chars → "Explain this:", long >500 chars → "Summarize this:", default → "Improve this:". Added `SelectionContextCommand` (`ICommand`) for `Ctrl+Shift+A` shortcut and context menu binding, publishing `SelectionContextSetEvent` MediatR notification on success. Added `EditorContextMenuExtensions` registering "Ask Co-pilot about selection" menu item (license-gated, selection-enabled). Added `SelectionContextKeyBindings` (`IKeyBindingConfiguration`) for `Ctrl+Shift+A` → `copilot.sendSelection` with `EditorHasSelection` context condition. Added `SelectionContextIndicator.axaml` Avalonia UserControl displaying context summary, preview, and clear button. Extended `CoPilotViewModel` with `SetSelectionContext`, `ClearSelectionContext`, `FocusChatInput`, `HasSelectionContext`, `SelectionSummary`, `SelectionPreview`, and `FocusChatInputRequested` event. Extended `IEditorService` with `GetSelectedText()`, `SelectionChanged` event, and `RegisterContextMenuItem()`. Added `SelectionChangedEventArgs`, `ContextMenuItem`, and `IKeyBindingConfiguration` abstractions. Adapted spec's `LicenseRequiredException` to existing `LicenseTierException` and `HasFeature(LicenseFeature)` to `GetCurrentTier()` tier comparison. Registered in `AgentsModule` DI. Includes 13 unit tests.
 
+- **Inline Suggestions (v0.6.7b)** — AI-generated text preview and insertion system in `Lexichord.Modules.Agents`. Added `IEditorInsertionService` interface with `InsertAtCursorAsync`, `ReplaceSelectionAsync`, `ShowPreviewAsync`, `AcceptPreviewAsync`, `RejectPreviewAsync`, `IsPreviewActive`, `CurrentPreviewText`, `CurrentPreviewLocation`, and `PreviewStateChanged` event. Implemented `EditorInsertionService` with preview lifecycle management, transaction-based undo grouping via `IEditorService.BeginUndoGroup`/`EndUndoGroup`, and `Dispatcher.UIThread` marshalling. Added `TextSpan` record with `Start`, `Length`, `End`, `Contains`, `OverlapsWith`, `Intersect`, and `FromStartEnd` factory. Added `PreviewStateChangedEventArgs` with `IsActive`, `PreviewText`, and `Location`. Added `InsertAtCursorCommand` (`ICommand`) with WriterPro license gating via `GetCurrentTier()`, string parameter or `TextToInsert` property binding, and optional preview mode via `UsePreview` flag. Added `ReplaceSelectionCommand` (`ICommand`) with selection guard via `IEditorService.HasSelection`, WriterPro license gating, and preview mode support. Added `PreviewOverlayControl.axaml` Avalonia UserControl with ghost text display and Accept/Reject buttons. Added `PreviewOverlayViewModel` with `[ObservableProperty]` bindings subscribed to `PreviewStateChanged` events and `RelayCommand` accept/reject actions. Extended `IEditorService` with `CaretOffset`, `InsertText(int, string)`, `DeleteText(int, int)`, `BeginUndoGroup`, `EndUndoGroup`, `ClearSelection`, `HasSelection`, `SelectionStart`, and `SelectionLength`. Added stub implementations in `EditorService.cs` delegating to active `IManuscriptViewModel`. Registered in `AgentsModule` DI. Includes 21 unit tests.
+
 #### Sub-Part Changelogs
 
-| Version | Title             | Status      |
-| ------- | ----------------- | ----------- |
-| v0.6.7a | Selection Context | ✅ Complete |
+| Version                      | Title              | Status      |
+| ---------------------------- | ------------------ | ----------- |
+| v0.6.7a                      | Selection Context  | ✅ Complete |
+| [v0.6.7b](v0.6.x/v0.6.7b.md) | Inline Suggestions | ✅ Complete |
 
 ---
 
@@ -52,17 +55,17 @@ This release introduces the Co-pilot Agent — a conversational AI writing assis
 
 #### Sub-Part Changelogs
 
-| Version                             | Title               | Status      |
-| ----------------------------------- | ------------------- | ----------- |
-| [v0.6.6a](v0.6.x/LCS-CL-v066a.md) | Agent Abstractions  | ✅ Complete |
-| [v0.6.6b](v0.6.x/LCS-CL-v066b.md) | Co-Pilot Agent      | ✅ Complete |
-| [v0.6.6c](v0.6.x/LCS-CL-v066c.md) | Agent Registry      | ✅ Complete |
-| [v0.6.6d](v0.6.x/LCS-CL-v066d.md) | Usage Tracking      | ✅ Complete |
-| [v0.6.6e](v0.6.x/LCS-CL-v066e.md) | Graph Context Provider | ✅ Complete |
-| [v0.6.6f](v0.6.x/LCS-CL-v066f.md) | Pre-Generation Validator | ✅ Complete |
+| Version                           | Title                     | Status      |
+| --------------------------------- | ------------------------- | ----------- |
+| [v0.6.6a](v0.6.x/LCS-CL-v066a.md) | Agent Abstractions        | ✅ Complete |
+| [v0.6.6b](v0.6.x/LCS-CL-v066b.md) | Co-Pilot Agent            | ✅ Complete |
+| [v0.6.6c](v0.6.x/LCS-CL-v066c.md) | Agent Registry            | ✅ Complete |
+| [v0.6.6d](v0.6.x/LCS-CL-v066d.md) | Usage Tracking            | ✅ Complete |
+| [v0.6.6e](v0.6.x/LCS-CL-v066e.md) | Graph Context Provider    | ✅ Complete |
+| [v0.6.6f](v0.6.x/LCS-CL-v066f.md) | Pre-Generation Validator  | ✅ Complete |
 | [v0.6.6g](v0.6.x/LCS-CL-v066g.md) | Post-Generation Validator | ✅ Complete |
-| [v0.6.6h](v0.6.x/LCS-CL-v066h.md) | Entity Citation Renderer | ✅ Complete |
-| [v0.6.6i](v0.6.x/LCS-CL-v066i.md) | Knowledge-Aware Prompts | ✅ Complete |
+| [v0.6.6h](v0.6.x/LCS-CL-v066h.md) | Entity Citation Renderer  | ✅ Complete |
+| [v0.6.6i](v0.6.x/LCS-CL-v066i.md) | Knowledge-Aware Prompts   | ✅ Complete |
 
 ---
 
@@ -96,16 +99,16 @@ This release delivers real-time streaming LLM responses, enabling token-by-token
 
 #### Sub-Part Changelogs
 
-| Version                             | Title                 | Status      |
-| ----------------------------------- | --------------------- | ----------- |
-| [v0.6.5a](v0.6.x/LCS-CL-v065a.md) | Streaming Token Model | ✅ Complete |
-| [v0.6.5b](v0.6.x/LCS-CL-v065b.md) | SSE Parser            | ✅ Complete |
-| [v0.6.5c](v0.6.x/LCS-CL-v065c.md) | Streaming UI Handler  | ✅ Complete |
-| [v0.6.5d](v0.6.x/LCS-CL-v065d.md) | License Gating        | ✅ Complete |
-| [v0.6.5e](v0.6.x/LCS-CL-v065e.md) | Validation Orchestrator | ✅ Complete |
-| [v0.6.5f](v0.6.x/LCS-CL-v065f.md) | Schema Validator        | ✅ Complete |
-| [v0.6.5g](v0.6.x/LCS-CL-v065g.md) | Axiom Validator         | ✅ Complete |
-| [v0.6.5h](v0.6.x/LCS-CL-v065h.md) | Consistency Checker     | ✅ Complete |
+| Version                           | Title                        | Status      |
+| --------------------------------- | ---------------------------- | ----------- |
+| [v0.6.5a](v0.6.x/LCS-CL-v065a.md) | Streaming Token Model        | ✅ Complete |
+| [v0.6.5b](v0.6.x/LCS-CL-v065b.md) | SSE Parser                   | ✅ Complete |
+| [v0.6.5c](v0.6.x/LCS-CL-v065c.md) | Streaming UI Handler         | ✅ Complete |
+| [v0.6.5d](v0.6.x/LCS-CL-v065d.md) | License Gating               | ✅ Complete |
+| [v0.6.5e](v0.6.x/LCS-CL-v065e.md) | Validation Orchestrator      | ✅ Complete |
+| [v0.6.5f](v0.6.x/LCS-CL-v065f.md) | Schema Validator             | ✅ Complete |
+| [v0.6.5g](v0.6.x/LCS-CL-v065g.md) | Axiom Validator              | ✅ Complete |
+| [v0.6.5h](v0.6.x/LCS-CL-v065h.md) | Consistency Checker          | ✅ Complete |
 | [v0.6.5i](v0.6.x/LCS-CL-v065i.md) | Validation Result Aggregator | ✅ Complete |
 | [v0.6.5j](v0.6.x/LCS-CL-v065j.md) | Linter Integration           | ✅ Complete |
 

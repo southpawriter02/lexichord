@@ -131,4 +131,102 @@ public interface IEditorService
     void RegisterContextMenuItem(ContextMenuItem item);
 
     #endregion
+
+    #region v0.6.7b Inline Suggestions
+
+    /// <summary>
+    /// Gets or sets the caret (cursor) offset in the active document.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Provides direct access to the caret position as a 0-based
+    /// character offset. Used by <see cref="IEditorInsertionService"/> to
+    /// determine insertion position and to reposition after insertion.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    int CaretOffset { get; set; }
+
+    /// <summary>
+    /// Gets whether the active document has an active text selection.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Returns true if the user has selected one or more characters
+    /// in the active editor tab. Used by <c>ReplaceSelectionCommand</c> to
+    /// gate execution.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    bool HasSelection { get; }
+
+    /// <summary>
+    /// Gets the start offset of the current selection in the active document.
+    /// </summary>
+    /// <remarks>
+    /// Version: v0.6.7b
+    /// </remarks>
+    int SelectionStart { get; }
+
+    /// <summary>
+    /// Gets the length of the current selection in the active document.
+    /// </summary>
+    /// <remarks>
+    /// Version: v0.6.7b
+    /// </remarks>
+    int SelectionLength { get; }
+
+    /// <summary>
+    /// Inserts text at the specified offset in the active document.
+    /// </summary>
+    /// <param name="offset">0-based character offset for insertion.</param>
+    /// <param name="text">The text to insert.</param>
+    /// <remarks>
+    /// LOGIC: Low-level insertion that does not manage undo groups.
+    /// Callers should wrap in <see cref="BeginUndoGroup"/>/<see cref="EndUndoGroup"/>
+    /// for atomic undo behavior.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    void InsertText(int offset, string text);
+
+    /// <summary>
+    /// Deletes text at the specified range in the active document.
+    /// </summary>
+    /// <param name="offset">0-based start offset of the range to delete.</param>
+    /// <param name="length">Number of characters to delete.</param>
+    /// <remarks>
+    /// Version: v0.6.7b
+    /// </remarks>
+    void DeleteText(int offset, int length);
+
+    /// <summary>
+    /// Begins an undo group for batching multiple edits into a single undo step.
+    /// </summary>
+    /// <param name="description">Human-readable description of the undo group.</param>
+    /// <remarks>
+    /// LOGIC: All text modifications between <see cref="BeginUndoGroup"/> and
+    /// <see cref="EndUndoGroup"/> are treated as a single atomic operation for
+    /// Ctrl+Z. Used by <see cref="IEditorInsertionService"/> to ensure AI
+    /// insertions can be reverted in one step.
+    ///
+    /// Version: v0.6.7b
+    /// </remarks>
+    void BeginUndoGroup(string description);
+
+    /// <summary>
+    /// Ends the current undo group.
+    /// </summary>
+    /// <remarks>
+    /// Version: v0.6.7b
+    /// </remarks>
+    void EndUndoGroup();
+
+    /// <summary>
+    /// Clears the current text selection in the active document.
+    /// </summary>
+    /// <remarks>
+    /// Version: v0.6.7b
+    /// </remarks>
+    void ClearSelection();
+
+    #endregion
 }
