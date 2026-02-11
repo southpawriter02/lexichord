@@ -20,6 +20,8 @@ This release focuses on production-readiness with comprehensive testing, error h
 
 - **Performance Optimization (v0.6.8c)** — Performance optimization subsystem for the Agents module. Added 3 interfaces (`IConversationMemoryManager`, `IRequestCoalescer`, `ICachedContextAssembler`) and their implementations (`ConversationMemoryManager`, `RequestCoalescer`, `CachedContextAssembler`) in `Lexichord.Modules.Agents.Performance`. Added `PerformanceOptions` record for configurable limits (max messages: 50, max memory: 5MB, coalescing window: 100ms, cache duration: 30s, max compiled templates: 100) and `PerformanceBaseline` record for measurement tracking. ConversationMemoryManager preserves system messages during trimming with UTF-16 byte estimation. RequestCoalescer uses background batch processing with `TaskCompletionSource` bridging. CachedContextAssembler wraps `IContextInjector` with `MemoryCache` (size limit: 100) and document-path-keyed invalidation. Added `ObjectPool<StringBuilder>` for GC pressure reduction. DI registration: PerformanceOptions via `IOptions`, all services as singletons. Added NuGet packages: `Microsoft.Extensions.Caching.Memory`, `Microsoft.Extensions.ObjectPool`, `System.IO.Pipelines`. Includes 30 unit tests across 3 test classes and BenchmarkDotNet performance benchmarks targeting <5ms cache hit, <10ms conversation trim (100 messages), <1ms memory estimation at P95.
 
+- **Error Handling & Recovery (v0.6.8d)** — Error handling and recovery subsystem for the Agents module. Added structured exception hierarchy (`AgentException`, `ProviderException`, `AgentRateLimitException`, `AgentAuthenticationException`, `ProviderUnavailableException`, `InvalidResponseException`, `TokenLimitException`, `ContextAssemblyException`) with `RecoveryStrategy` enum (Retry, Queue, Truncate, Fallback, None). Added 3 interfaces (`IErrorRecoveryService`, `IRateLimitQueue`, `ITokenBudgetManager`) and their implementations (`ErrorRecoveryService`, `RateLimitQueue`, `TokenBudgetManager`) in `Lexichord.Modules.Agents.Resilience`. Added `ResilientChatService` decorator wrapping `IChatCompletionService` with Polly v8 resilience pipeline (exponential retry with jitter, circuit breaker, timeout). Rate-limited requests are queued via `System.Threading.Channels` with `TaskCompletionSource` bridging. Token budget enforcement preserves system messages and newest conversation history during truncation. MediatR `AgentErrorEvent` notifications provide telemetry. DI registration: all services as singletons, `ResilientChatService` wraps default provider from `ILLMProviderRegistry`. Added `Microsoft.Extensions.Resilience` NuGet package. Includes 102 unit tests across 4 test classes.
+
 #### Sub-Part Changelogs
 
 | Version                        | Title                    | Status      |
@@ -27,6 +29,7 @@ This release focuses on production-readiness with comprehensive testing, error h
 | [v0.6.8a](v0.6.x/v0.6.8a.md) | Unit Test Suite          | ✅ Complete |
 | [v0.6.8b](v0.6.x/v0.6.8b.md) | Integration Tests        | ✅ Complete |
 | [v0.6.8c](v0.6.x/v0.6.8c.md) | Performance Optimization | ✅ Complete |
+| [v0.6.8d](v0.6.x/v0.6.8d.md) | Error Handling & Recovery | ✅ Complete |
 
 ---
 

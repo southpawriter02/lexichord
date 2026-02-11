@@ -213,6 +213,39 @@ public class AgentsModule : IModule
         // and context assembly operations, reducing GC pressure.
         services.AddSingleton<ObjectPool<StringBuilder>>(sp =>
             new DefaultObjectPoolProvider().CreateStringBuilderPool());
+
+        // ── v0.6.8d: Error Handling & Recovery ──────────────────────────
+        // LOGIC: Register error recovery coordination service as singleton.
+        // ErrorRecoveryService is stateless — it maps exception types to strategies
+        // using static lookup tables and delegates truncation to TokenBudgetManager.
+        services.AddSingleton<Resilience.IErrorRecoveryService, Resilience.ErrorRecoveryService>();
+
+        // LOGIC: Register token budget manager as singleton.
+        // TokenBudgetManager is stateless and thread-safe — all state (messages,
+        // budget) is passed as parameters to its methods.
+        services.AddSingleton<Resilience.ITokenBudgetManager, Resilience.TokenBudgetManager>();
+
+        // LOGIC: Register rate limit queue as singleton.
+        // The queue maintains a long-running background processing loop and
+        // must persist across the application lifetime to track rate limit windows.
+        services.AddSingleton<Resilience.IRateLimitQueue, Resilience.RateLimitQueue>();
+
+        // LOGIC: Register ResilientChatService as the primary non-keyed IChatCompletionService.
+        // This decorator wraps the default provider (resolved from the LLMProviderRegistry)
+        // with Polly resilience policies (retry, circuit breaker, timeout).
+        // CoPilotAgent and CoPilotViewModel inject IChatCompletionService and will
+        // receive this resilient wrapper transparently.
+        services.AddSingleton<IChatCompletionService>(sp =>
+        {
+            // Resolve the default provider via the LLM provider registry
+            var registry = sp.GetRequiredService<ILLMProviderRegistry>();
+            var inner = registry.GetDefaultProvider();
+            var recovery = sp.GetRequiredService<Resilience.IErrorRecoveryService>();
+            var rateLimitQueue = sp.GetRequiredService<Resilience.IRateLimitQueue>();
+            var logger = sp.GetRequiredService<ILogger<Resilience.ResilientChatService>>();
+            var mediator = sp.GetRequiredService<MediatR.IMediator>();
+            return new Resilience.ResilientChatService(inner, recovery, rateLimitQueue, logger, mediator);
+        });
     }
 
     /// <inheritdoc />

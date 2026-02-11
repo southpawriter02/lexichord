@@ -49,6 +49,9 @@
 
     <!-- v0.6.8c: Performance Optimization - Efficient streaming I/O -->
     <PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
+
+    <!-- v0.6.8d: Error Handling & Recovery - Polly v8 resilience policies -->
+    <PackageReference Include="Microsoft.Extensions.Resilience" Version="9.0.0" />
   </ItemGroup>
 
   <!-- v0.6.3c: Embed built-in prompt templates as resources -->
