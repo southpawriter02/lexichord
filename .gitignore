@@ -35,9 +35,10 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-# Module build outputs (copied by MSBuild post-build)
-Modules/
-**/Modules/*.dll
+# Module build outputs — only in src projects, not test source files
+/Modules/
+src/**/Modules/
+src/**/Modules/*.dll
 **/Modules/*.so
 **/Modules/*.dylib
 **/Modules/*.a

@@ -16,11 +16,14 @@ This release focuses on production-readiness with comprehensive testing, error h
 
 - **Unit Test Suite (v0.6.8a)** — 96 unit tests for all Agents module core services in `Lexichord.Tests.Unit`. Added 4 shared test fixtures (`MockHttpMessageHandler`, `TestChatResponses`, `TestPromptTemplates`, `TestStreamingTokens`) and 8 test classes covering `SSEParser` (OpenAI + Anthropic formats), `CoPilotAgent` lifecycle, `AgentRegistry` discovery and license gating, `StreamingChatHandler` state management, `ContextInjector` provider orchestration, `UsageTracker` accumulation and event publishing, and `MustachePromptRenderer` edge cases. All tests pass with deterministic mocks (Moq) and assertions (FluentAssertions). Includes SSE malformed JSON resilience, provider timeout handling, parallel execution verification, and graceful degradation testing.
 
+- **Integration Tests (v0.6.8b)** — 22 integration tests for end-to-end `CoPilotAgent` invocation workflows in `Lexichord.Tests.Unit`. Added `MockLLMServer` fixture wrapping configurable `Mock<IChatCompletionService>` with fluent API for batch responses, streaming tokens, and error scenarios. Added `IntegrationTestBase` shared base class pre-configuring all 9 `CoPilotAgent` dependencies. 4 test classes: `AgentWorkflowTests` (7 tests — message/response, document context, selection, multi-turn history, validation, usage metrics, template verification), `StreamingIntegrationTests` (5 tests — token relay, content assembly, completion signal, Teams license gating, cancellation), `ContextInjectionIntegrationTests` (5 tests — RAG context, style rules, graceful degradation, citation production, no-citation case), `ErrorScenarioTests` (5 tests — HTTP timeout, rate limiting, auth failure, cancellation propagation, streaming error). Spec deviation: uses Moq instead of WireMock.Net since `CoPilotAgent` consumes `IChatCompletionService` directly. All tests pass deterministically (~1s total).
+
 #### Sub-Part Changelogs
 
-| Version                        | Title           | Status      |
-| ------------------------------ | --------------- | ----------- |
-| [v0.6.8a](v0.6.x/v0.6.8a.md) | Unit Test Suite | ✅ Complete |
+| Version                        | Title             | Status      |
+| ------------------------------ | ----------------- | ----------- |
+| [v0.6.8a](v0.6.x/v0.6.8a.md) | Unit Test Suite   | ✅ Complete |
+| [v0.6.8b](v0.6.x/v0.6.8b.md) | Integration Tests | ✅ Complete |
 
 ---
 
