@@ -529,6 +529,7 @@ public static class AgentsServiceCollectionExtensions
     /// Registers:
     /// </para>
     /// <list type="bullet">
+    ///   <item><description><see cref="Chat.Registry.AgentDefinitionScanner"/> (Singleton) — v0.7.1b</description></item>
     ///   <item><description><see cref="Lexichord.Abstractions.Agents.IAgentRegistry"/> → <see cref="Chat.Registry.AgentRegistry"/> (Singleton)</description></item>
     /// </list>
     /// <para>
@@ -536,12 +537,22 @@ public static class AgentsServiceCollectionExtensions
     /// and event subscriptions across the application lifetime.
     /// </para>
     /// <para>
+    /// <b>Dependencies:</b> Requires <see cref="MediatR.IMediator"/> to be registered
+    /// (typically via MediatR package registration).
+    /// </para>
+    /// <para>
     /// <b>Introduced in:</b> v0.6.6c as part of the Agent Registry feature.
+    /// <br/>
+    /// <b>Updated in:</b> v0.7.1b to include <see cref="Chat.Registry.AgentDefinitionScanner"/>.
     /// </para>
     /// </remarks>
     public static IServiceCollection AddAgentRegistry(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.1b — Register AgentDefinitionScanner as singleton for
+        // declarative agent registration via [AgentDefinition] attribute.
+        services.AddSingleton<Chat.Registry.AgentDefinitionScanner>();
 
         // LOGIC: Register AgentRegistry as singleton for shared caching
         // and license event subscription across the application lifetime.

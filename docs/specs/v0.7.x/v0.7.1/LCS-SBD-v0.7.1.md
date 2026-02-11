@@ -396,16 +396,16 @@ public class AgentItemViewModel : ViewModelBase
 
 | #   | Task                                    | Sub-Part | Module         | Status |
 | :-- | :-------------------------------------- | :------- | :------------- | :----- |
-| 1   | Create `AgentConfiguration` record      | v0.7.1a  | Abstractions   | [ ]    |
-| 2   | Create `AgentPersona` record            | v0.7.1a  | Abstractions   | [ ]    |
-| 3   | Create `AgentCapabilities` enum         | v0.7.1a  | Abstractions   | [ ]    |
-| 4   | Add unit tests for configuration models | v0.7.1a  | Tests.Agents   | [ ]    |
-| 5   | Extend `IAgentRegistry` interface       | v0.7.1b  | Abstractions   | [ ]    |
-| 6   | Implement `AgentRegistry` class         | v0.7.1b  | Modules.Agents | [ ]    |
-| 7   | Create `AgentDefinitionAttribute`       | v0.7.1b  | Abstractions   | [ ]    |
-| 8   | Add persona switching logic             | v0.7.1b  | Modules.Agents | [ ]    |
-| 9   | Create MediatR events                   | v0.7.1b  | Abstractions   | [ ]    |
-| 10  | Add registry unit tests                 | v0.7.1b  | Tests.Agents   | [ ]    |
+| 1   | Create `AgentConfiguration` record      | v0.7.1a  | Abstractions   | [✓]    |
+| 2   | Create `AgentPersona` record            | v0.7.1a  | Abstractions   | [✓]    |
+| 3   | Create `AgentCapabilities` enum         | v0.7.1a  | Abstractions   | [✓]    |
+| 4   | Add unit tests for configuration models | v0.7.1a  | Tests.Agents   | [✓]    |
+| 5   | Extend `IAgentRegistry` interface       | v0.7.1b  | Abstractions   | [✓]    |
+| 6   | Implement `AgentRegistry` class         | v0.7.1b  | Modules.Agents | [✓]    |
+| 7   | Create `AgentDefinitionAttribute`       | v0.7.1b  | Abstractions   | [✓]    |
+| 8   | Add persona switching logic             | v0.7.1b  | Modules.Agents | [✓]    |
+| 9   | Create MediatR events                   | v0.7.1b  | Abstractions   | [✓]    |
+| 10  | Add registry unit tests                 | v0.7.1b  | Tests.Agents   | [✓]    |
 | 11  | Create `IAgentConfigLoader` interface   | v0.7.1c  | Abstractions   | [ ]    |
 | 12  | Implement `YamlAgentConfigLoader`       | v0.7.1c  | Modules.Agents | [ ]    |
 | 13  | Create embedded resource agents         | v0.7.1c  | Modules.Agents | [ ]    |
@@ -960,14 +960,14 @@ dotnet run --project tests/Lexichord.Benchmarks -- \
 
 | #   | Deliverable                      | Sub-Part | Status |
 | :-- | :------------------------------- | :------- | :----- |
-| 1   | `AgentConfiguration.cs`          | v0.7.1a  | [ ]    |
-| 2   | `AgentPersona.cs`                | v0.7.1a  | [ ]    |
-| 3   | `AgentCapabilities.cs`           | v0.7.1a  | [ ]    |
-| 4   | `AgentConfigurationTests.cs`     | v0.7.1a  | [ ]    |
-| 5   | `IAgentRegistry.cs` (extended)   | v0.7.1b  | [ ]    |
-| 6   | `AgentRegistry.cs`               | v0.7.1b  | [ ]    |
-| 7   | `AgentDefinitionAttribute.cs`    | v0.7.1b  | [ ]    |
-| 8   | `AgentRegistryTests.cs`          | v0.7.1b  | [ ]    |
+| 1   | `AgentConfiguration.cs`          | v0.7.1a  | [✓]    |
+| 2   | `AgentPersona.cs`                | v0.7.1a  | [✓]    |
+| 3   | `AgentCapabilities.cs`           | v0.7.1a  | [✓]    |
+| 4   | `AgentConfigurationTests.cs`     | v0.7.1a  | [✓]    |
+| 5   | `IAgentRegistry.cs` (extended)   | v0.7.1b  | [✓]    |
+| 6   | `AgentRegistry.cs`               | v0.7.1b  | [✓]    |
+| 7   | `AgentDefinitionAttribute.cs`    | v0.7.1b  | [✓]    |
+| 8   | `AgentRegistryTests.cs`          | v0.7.1b  | [✓]    |
 | 9   | `IAgentConfigLoader.cs`          | v0.7.1c  | [ ]    |
 | 10  | `YamlAgentConfigLoader.cs`       | v0.7.1c  | [ ]    |
 | 11  | Embedded agent YAML resources    | v0.7.1c  | [ ]    |
@@ -977,7 +977,7 @@ dotnet run --project tests/Lexichord.Benchmarks -- \
 | 15  | `AgentItemViewModel.cs`          | v0.7.1d  | [ ]    |
 | 16  | `AgentSelectorViewModelTests.cs` | v0.7.1d  | [ ]    |
 | 17  | YAML schema documentation        | v0.7.1c  | [ ]    |
-| 18  | DI registration in AgentsModule  | All      | [ ]    |
+| 18  | DI registration in AgentsModule  | All      | [✓]    |
 
 ---
 

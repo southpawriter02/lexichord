@@ -107,10 +107,16 @@ public interface IAgentRegistry
     /// <remarks>
     /// LOGIC: Custom agents are stored in user settings and loaded on subsequent
     /// application starts. Only Teams users can register custom agents.
+    /// <para>
+    /// <b>OBSOLETE:</b> This method is deprecated in favor of
+    /// <see cref="RegisterAgent(AgentConfiguration, Func{IServiceProvider, IAgent})"/>
+    /// which provides better support for personas and configuration-driven registration.
+    /// </para>
     /// </remarks>
     /// <param name="agent">The agent to register.</param>
     /// <exception cref="LicenseTierException">User lacks Teams license.</exception>
     /// <exception cref="AgentAlreadyRegisteredException">Agent ID already exists.</exception>
+    [Obsolete("Use RegisterAgent(AgentConfiguration, Func<IServiceProvider, IAgent>) instead. This method will be removed in v0.8.0")]
     void RegisterCustomAgent(IAgent agent);
 
     /// <summary>
@@ -133,4 +139,276 @@ public interface IAgentRegistry
     /// Event raised when the available agents list changes.
     /// </summary>
     event EventHandler<AgentListChangedEventArgs>? AgentsChanged;
+
+    // -----------------------------------------------------------------------
+    // v0.7.1b Extensions: Persona Management & Factory Registration
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Gets all personas across all registered agents.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This property aggregates personas from all agents registered via
+    /// <see cref="RegisterAgent"/> (factory-based registrations). It does not
+    /// include personas from legacy <see cref="RegisterCustomAgent"/> registrations.
+    /// </para>
+    /// <para>
+    /// <b>Use Cases:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Populate persona picker UI</item>
+    ///   <item>Discover available personality variants</item>
+    ///   <item>Analytics on persona diversity</item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b.
+    /// </para>
+    /// </remarks>
+    IReadOnlyList<AgentPersona> AvailablePersonas { get; }
+
+    /// <summary>
+    /// Registers an agent with configuration and factory (v0.7.1b).
+    /// </summary>
+    /// <param name="config">The agent configuration including personas and capabilities.</param>
+    /// <param name="factory">Factory function to create agent instances from DI.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This method stores the agent configuration and factory for on-demand
+    /// instantiation. The factory is invoked lazily when the agent is first accessed.
+    /// </para>
+    /// <list type="number">
+    ///   <item>Validates configuration via <see cref="AgentConfiguration.Validate"/></item>
+    ///   <item>Stores configuration and factory for later instantiation</item>
+    ///   <item>Invalidates available agents cache</item>
+    ///   <item>Publishes <see cref="Events.AgentRegisteredEvent"/> via MediatR</item>
+    /// </list>
+    /// <para>
+    /// <b>License Validation:</b> The registry does NOT validate license tier at
+    /// registration time. License checks occur when the agent is first accessed
+    /// via <see cref="GetAgent"/> or <see cref="GetAgentWithPersona"/>.
+    /// </para>
+    /// <para>
+    /// <b>Factory Requirements:</b> The factory function should:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Resolve dependencies from <see cref="IServiceProvider"/></item>
+    ///   <item>Return a new or cached instance of <see cref="IAgent"/></item>
+    ///   <item>Be thread-safe (may be called concurrently)</item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b as replacement for <see cref="RegisterCustomAgent"/>.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="config"/> or <paramref name="factory"/> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown if configuration validation fails (e.g., invalid agent ID format).
+    /// </exception>
+    /// <seealso cref="AgentConfiguration"/>
+    /// <seealso cref="Events.AgentRegisteredEvent"/>
+    void RegisterAgent(AgentConfiguration config, Func<IServiceProvider, IAgent> factory);
+
+    /// <summary>
+    /// Gets an agent with a specific persona applied.
+    /// </summary>
+    /// <param name="agentId">The unique identifier of the agent.</param>
+    /// <param name="personaId">The unique identifier of the persona to apply.</param>
+    /// <returns>The agent instance with the persona applied.</returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This method retrieves (or creates) an agent instance and applies the
+    /// specified persona:
+    /// </para>
+    /// <list type="number">
+    ///   <item>Validates agent exists and persona ID is valid</item>
+    ///   <item>Checks license tier requirements for the agent</item>
+    ///   <item>Gets or creates agent instance from factory</item>
+    ///   <item>
+    ///     If agent implements <see cref="IPersonaAwareAgent"/>, calls
+    ///     <see cref="IPersonaAwareAgent.ApplyPersona"/>
+    ///   </item>
+    ///   <item>Records active persona preference</item>
+    ///   <item>Returns agent instance</item>
+    /// </list>
+    /// <para>
+    /// <b>Non-Persona-Aware Agents:</b> If the agent does not implement
+    /// <see cref="IPersonaAwareAgent"/>, the persona preference is recorded but
+    /// not applied to the current instance. It will be used for future instantiations.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="AgentNotFoundException">Agent ID not found.</exception>
+    /// <exception cref="PersonaNotFoundException">Persona ID not found for this agent.</exception>
+    /// <exception cref="Exceptions.AgentAccessDeniedException">User lacks required license tier.</exception>
+    /// <seealso cref="SwitchPersona"/>
+    /// <seealso cref="IPersonaAwareAgent"/>
+    IAgent GetAgentWithPersona(string agentId, string personaId);
+
+    /// <summary>
+    /// Updates an existing agent configuration (hot-reload).
+    /// </summary>
+    /// <param name="config">The updated configuration.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This method hot-reloads an agent's configuration without requiring
+    /// application restart:
+    /// </para>
+    /// <list type="number">
+    ///   <item>Validates the agent exists in registry</item>
+    ///   <item>Validates new configuration via <see cref="AgentConfiguration.Validate"/></item>
+    ///   <item>Updates stored configuration, preserving factory function</item>
+    ///   <item>Invalidates cached agent instance (forces recreation on next access)</item>
+    ///   <item>Preserves active persona preference</item>
+    ///   <item>Publishes <see cref="Events.AgentConfigReloadedEvent"/> via MediatR</item>
+    /// </list>
+    /// <para>
+    /// <b>Use Cases:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Update personas without restart</item>
+    ///   <item>Adjust temperature or model settings</item>
+    ///   <item>Add/remove capabilities</item>
+    ///   <item>Modify license tier requirements</item>
+    /// </list>
+    /// <para>
+    /// <b>Active Instances:</b> Cached agent instances are invalidated. New instances
+    /// will use the updated configuration, but existing conversation contexts remain intact.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b for workspace agent hot-reload.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="config"/> is null.</exception>
+    /// <exception cref="AgentNotFoundException">Agent ID not found in registry.</exception>
+    /// <seealso cref="Events.AgentConfigReloadedEvent"/>
+    void UpdateAgent(AgentConfiguration config);
+
+    /// <summary>
+    /// Switches the active persona for a cached agent.
+    /// </summary>
+    /// <param name="agentId">The agent whose persona should change.</param>
+    /// <param name="personaId">The ID of the persona to activate.</param>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This method changes the active persona for an agent:
+    /// </para>
+    /// <list type="number">
+    ///   <item>Validates agent and persona IDs are valid</item>
+    ///   <item>Checks if agent is cached in memory</item>
+    ///   <item>
+    ///     <b>If cached:</b> Applies persona via <see cref="IPersonaAwareAgent.ApplyPersona"/>
+    ///     (if supported)
+    ///   </item>
+    ///   <item>
+    ///     <b>If not cached:</b> Records preference for next instantiation
+    ///   </item>
+    ///   <item>Updates active persona tracking</item>
+    ///   <item>Publishes <see cref="Events.PersonaSwitchedEvent"/> via MediatR</item>
+    /// </list>
+    /// <para>
+    /// <b>Difference from GetAgentWithPersona:</b> This method only switches the
+    /// persona without returning the agent instance. Use this when you want to change
+    /// persona preference without immediately needing the agent.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="ArgumentException">Thrown if agent ID or persona ID is null/empty.</exception>
+    /// <exception cref="AgentNotFoundException">Agent ID not found.</exception>
+    /// <exception cref="PersonaNotFoundException">Persona ID not found for this agent.</exception>
+    /// <seealso cref="GetAgentWithPersona"/>
+    /// <seealso cref="GetActivePersona"/>
+    void SwitchPersona(string agentId, string personaId);
+
+    /// <summary>
+    /// Gets the currently active persona for an agent.
+    /// </summary>
+    /// <param name="agentId">The agent to query.</param>
+    /// <returns>
+    /// The active persona, or null if no persona has been explicitly set
+    /// (agent is using default behavior).
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This method returns the persona that was most recently applied via
+    /// <see cref="SwitchPersona"/> or <see cref="GetAgentWithPersona"/>. If no
+    /// persona has been explicitly set, returns the configuration's
+    /// <see cref="AgentConfiguration.DefaultPersona"/>.
+    /// </para>
+    /// <para>
+    /// <b>Return Values:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><b>Non-null:</b> Explicit persona active or default persona defined</item>
+    ///   <item>
+    ///     <b>Null:</b> No explicit switch and configuration has no default persona,
+    ///     or agent not found
+    ///   </item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="SwitchPersona"/>
+    AgentPersona? GetActivePersona(string agentId);
+
+    /// <summary>
+    /// Checks if an agent is accessible without throwing exceptions.
+    /// </summary>
+    /// <param name="agentId">The agent to check.</param>
+    /// <returns>True if agent exists and user has required license; otherwise false.</returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This is a non-throwing alternative to <see cref="GetAgent"/>. It checks:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Agent exists in registry</item>
+    ///   <item>User's current license tier meets agent's requirements</item>
+    /// </list>
+    /// <para>
+    /// <b>Use Cases:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>UI visibility checks (show/hide agent in picker)</item>
+    ///   <item>Pre-validation before attempting access</item>
+    ///   <item>Conditional feature availability</item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GetAgent"/>
+    bool CanAccess(string agentId);
+
+    /// <summary>
+    /// Gets the configuration for a specific agent.
+    /// </summary>
+    /// <param name="agentId">The agent to query.</param>
+    /// <returns>The agent configuration, or null if not found.</returns>
+    /// <remarks>
+    /// <para>
+    /// LOGIC: This method retrieves the stored <see cref="AgentConfiguration"/> for
+    /// agents registered via <see cref="RegisterAgent"/>. It does not return
+    /// configurations for legacy <see cref="RegisterCustomAgent"/> registrations.
+    /// </para>
+    /// <para>
+    /// <b>Use Cases:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Inspect available personas before switching</item>
+    ///   <item>Display agent metadata in UI</item>
+    ///   <item>Validate capabilities before invoking</item>
+    ///   <item>Audit license tier requirements</item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1b.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="AgentConfiguration"/>
+    AgentConfiguration? GetConfiguration(string agentId);
 }
