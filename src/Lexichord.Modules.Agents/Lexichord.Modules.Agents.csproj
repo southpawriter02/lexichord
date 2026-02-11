@@ -8,7 +8,7 @@
     <!-- Module metadata -->
     <AssemblyTitle>Lexichord Agents Module</AssemblyTitle>
     <Description>The Conductors - AI agent orchestration and prompt templating</Description>
-    <Version>0.6.3</Version>
+    <Version>0.6.8</Version>
 
     <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
     <OutputPath>$(SolutionDir)Modules\</OutputPath>
@@ -40,6 +40,15 @@
 
     <!-- v0.6.7c: Markdown AST parsing for document-aware prompting -->
     <PackageReference Include="Markdig" Version="0.37.0" />
+
+    <!-- v0.6.8c: Performance Optimization - In-memory caching for context assembly -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+
+    <!-- v0.6.8c: Performance Optimization - Object pooling for StringBuilder reuse -->
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="9.0.0" />
+
+    <!-- v0.6.8c: Performance Optimization - Efficient streaming I/O -->
+    <PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
   </ItemGroup>
 
   <!-- v0.6.3c: Embed built-in prompt templates as resources -->

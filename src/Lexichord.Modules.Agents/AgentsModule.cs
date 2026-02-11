@@ -14,10 +14,14 @@ using Lexichord.Modules.Agents.Chat.Services;
 using Lexichord.Modules.Agents.Commands;
 using Lexichord.Modules.Agents.Configuration;
 using Lexichord.Modules.Agents.Extensions;
+using Lexichord.Modules.Agents.Performance;
 using Lexichord.Modules.Agents.Services;
 using Lexichord.Modules.Agents.Templates;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
+using System.Text;
 
 namespace Lexichord.Modules.Agents;
 
@@ -79,9 +83,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 6, 7),
+        Version: new Version(0, 6, 8),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, and selection context");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, and performance optimization");
 
     /// <inheritdoc />
     /// <remarks>
@@ -179,6 +183,36 @@ public class AgentsModule : IModule
         // ViewModel is transient as it is created per-usage by the panel host.
         services.AddSingleton<IQuickActionsService, QuickActionsService>();
         services.AddTransient<ViewModels.QuickActionsPanelViewModel>();
+
+        // LOGIC: Register Performance Optimization services (v0.6.8c).
+        // PerformanceOptions are configured via IOptions pattern for appsettings binding.
+        services.Configure<PerformanceOptions>(_ => { });
+
+        // LOGIC: ConversationMemoryManager is singleton to maintain memory tracking state
+        // across the application lifetime.
+        services.AddSingleton<IConversationMemoryManager, ConversationMemoryManager>();
+
+        // LOGIC: RequestCoalescer is singleton since it manages a background processing
+        // loop and pending batch state that must persist across requests.
+        services.AddSingleton<IRequestCoalescer, RequestCoalescer>();
+
+        // LOGIC: CachedContextAssembler wraps IContextInjector with caching. Uses a factory
+        // to resolve the inner IContextInjector from the scoped service provider.
+        services.AddSingleton<ICachedContextAssembler>(sp =>
+        {
+            // NOTE: IContextInjector is scoped, but we only need it as a delegate target.
+            // We create a scope to resolve it for the singleton wrapper.
+            var scope = sp.CreateScope();
+            var inner = scope.ServiceProvider.GetRequiredService<IContextInjector>();
+            var logger = sp.GetRequiredService<ILogger<CachedContextAssembler>>();
+            var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PerformanceOptions>>();
+            return new CachedContextAssembler(inner, logger, options);
+        });
+
+        // LOGIC: Object pooling for StringBuilder reuse across template rendering
+        // and context assembly operations, reducing GC pressure.
+        services.AddSingleton<ObjectPool<StringBuilder>>(sp =>
+            new DefaultObjectPoolProvider().CreateStringBuilderPool());
     }
 
     /// <inheritdoc />
@@ -282,6 +316,31 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Agent registry is not registered. Agent discovery will not be available.");
+        }
+
+        // LOGIC: Verify performance optimization services are available (v0.6.8c).
+        var memoryManager = provider.GetService<IConversationMemoryManager>();
+        if (memoryManager is not null)
+        {
+            logger.LogDebug(
+                "Conversation memory manager available: {ManagerType}",
+                memoryManager.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Conversation memory manager is not registered. Memory limits will not be enforced.");
+        }
+
+        var cachedAssembler = provider.GetService<ICachedContextAssembler>();
+        if (cachedAssembler is not null)
+        {
+            logger.LogDebug(
+                "Cached context assembler available: {AssemblerType}",
+                cachedAssembler.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Cached context assembler is not registered. Context caching will not be available.");
         }
     }
 }
