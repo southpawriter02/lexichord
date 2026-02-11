@@ -45,6 +45,9 @@ public class AgentCapabilitiesTests
     /// <summary>
     /// Verifies that the All value is the combination of all individual capabilities.
     /// </summary>
+    /// <remarks>
+    /// Updated in v0.7.1a to include 6 new specialist agent capabilities.
+    /// </remarks>
     [Fact]
     [Trait("SubPart", "v0.6.6a")]
     public void All_ShouldBeCompositeOfAllCapabilities()
@@ -54,11 +57,17 @@ public class AgentCapabilitiesTests
                        AgentCapabilities.DocumentContext |
                        AgentCapabilities.RAGContext |
                        AgentCapabilities.StyleEnforcement |
-                       AgentCapabilities.Streaming;
+                       AgentCapabilities.Streaming |
+                       AgentCapabilities.CodeGeneration |
+                       AgentCapabilities.ResearchAssistance |
+                       AgentCapabilities.Summarization |
+                       AgentCapabilities.StructureAnalysis |
+                       AgentCapabilities.Brainstorming |
+                       AgentCapabilities.Translation;
 
         // Assert
         AgentCapabilities.All.Should().Be(expected);
-        ((int)AgentCapabilities.All).Should().Be(31);
+        ((int)AgentCapabilities.All).Should().Be(2047); // Updated from 31
     }
 
     /// <summary>
@@ -145,6 +154,9 @@ public class AgentCapabilitiesTests
     /// <summary>
     /// Verifies that GetCapabilityNames returns all expected names for All capabilities.
     /// </summary>
+    /// <remarks>
+    /// Updated in v0.7.1a to include 6 new specialist agent capability names.
+    /// </remarks>
     [Fact]
     [Trait("SubPart", "v0.6.6a")]
     public void GetCapabilityNames_All_ReturnsAllNames()
@@ -156,12 +168,18 @@ public class AgentCapabilitiesTests
         var names = capabilities.GetCapabilityNames();
 
         // Assert
-        names.Should().HaveCount(5);
+        names.Should().HaveCount(11); // Updated from 5
         names.Should().Contain("Chat");
         names.Should().Contain("Document");
         names.Should().Contain("RAG");
         names.Should().Contain("Style");
         names.Should().Contain("Streaming");
+        names.Should().Contain("CodeGen");
+        names.Should().Contain("Research");
+        names.Should().Contain("Summary");
+        names.Should().Contain("Structure");
+        names.Should().Contain("Brainstorm");
+        names.Should().Contain("Translate");
     }
 
     /// <summary>
@@ -198,5 +216,70 @@ public class AgentCapabilitiesTests
         names.Should().NotContain("Document");
         names.Should().NotContain("Style");
         names.Should().NotContain("Streaming");
+    }
+
+    // -----------------------------------------------------------------------
+    // v0.7.1a New Capabilities Tests
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Verifies that new v0.7.1a capabilities have correct bit values.
+    /// </summary>
+    [Fact]
+    [Trait("SubPart", "v0.7.1a")]
+    public void AgentCapabilities_NewCapabilities_HaveExpectedBitValues()
+    {
+        // Assert — verify each new flag value matches the spec
+        ((int)AgentCapabilities.CodeGeneration).Should().Be(32);
+        ((int)AgentCapabilities.ResearchAssistance).Should().Be(64);
+        ((int)AgentCapabilities.Summarization).Should().Be(128);
+        ((int)AgentCapabilities.StructureAnalysis).Should().Be(256);
+        ((int)AgentCapabilities.Brainstorming).Should().Be(512);
+        ((int)AgentCapabilities.Translation).Should().Be(1024);
+    }
+
+    /// <summary>
+    /// Verifies that All flag includes all 11 capabilities (updated in v0.7.1a).
+    /// </summary>
+    [Fact]
+    [Trait("SubPart", "v0.7.1a")]
+    public void All_IncludesAllNewCapabilities()
+    {
+        // Arrange
+        var expected = AgentCapabilities.Chat |
+                       AgentCapabilities.DocumentContext |
+                       AgentCapabilities.RAGContext |
+                       AgentCapabilities.StyleEnforcement |
+                       AgentCapabilities.Streaming |
+                       AgentCapabilities.CodeGeneration |
+                       AgentCapabilities.ResearchAssistance |
+                       AgentCapabilities.Summarization |
+                       AgentCapabilities.StructureAnalysis |
+                       AgentCapabilities.Brainstorming |
+                       AgentCapabilities.Translation;
+
+        // Assert
+        AgentCapabilities.All.Should().Be(expected);
+        ((int)AgentCapabilities.All).Should().Be(2047); // Updated from 31
+    }
+
+    /// <summary>
+    /// Verifies that GetCapabilityNames includes display names for new capabilities.
+    /// </summary>
+    [Fact]
+    [Trait("SubPart", "v0.7.1a")]
+    public void GetCapabilityNames_IncludesNewCapabilityNames()
+    {
+        // Act
+        var names = AgentCapabilities.All.GetCapabilityNames();
+
+        // Assert
+        names.Should().HaveCount(11); // Updated from 5
+        names.Should().Contain("CodeGen");
+        names.Should().Contain("Research");
+        names.Should().Contain("Summary");
+        names.Should().Contain("Structure");
+        names.Should().Contain("Brainstorm");
+        names.Should().Contain("Translate");
     }
 }

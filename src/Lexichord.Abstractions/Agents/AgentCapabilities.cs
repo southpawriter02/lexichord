@@ -100,11 +100,104 @@ public enum AgentCapabilities
     Streaming = 16,
 
     /// <summary>
+    /// Can generate or analyze code.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When enabled, the agent can generate code snippets, analyze code structure,
+    /// explain code behavior, and suggest code improvements.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1a as part of specialist agent capabilities.
+    /// </para>
+    /// </remarks>
+    CodeGeneration = 32,
+
+    /// <summary>
+    /// Can perform research and cite sources.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When enabled, the agent can search for information, synthesize findings,
+    /// and provide citations for claims. Typically combined with RAGContext.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1a as part of specialist agent capabilities.
+    /// </para>
+    /// </remarks>
+    ResearchAssistance = 64,
+
+    /// <summary>
+    /// Can summarize long-form content.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When enabled, the agent can condense large documents, extract key points,
+    /// and create executive summaries while preserving essential information.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1a as part of specialist agent capabilities.
+    /// </para>
+    /// </remarks>
+    Summarization = 128,
+
+    /// <summary>
+    /// Can analyze and suggest improvements to structure.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When enabled, the agent can evaluate document organization, identify
+    /// structural weaknesses, and recommend reorganization strategies.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1a as part of specialist agent capabilities.
+    /// </para>
+    /// </remarks>
+    StructureAnalysis = 256,
+
+    /// <summary>
+    /// Can help with brainstorming and ideation.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When enabled, the agent can generate creative ideas, explore alternatives,
+    /// facilitate ideation sessions, and help overcome creative blocks.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1a as part of specialist agent capabilities.
+    /// </para>
+    /// </remarks>
+    Brainstorming = 512,
+
+    /// <summary>
+    /// Can translate between languages.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When enabled, the agent can translate text between languages while
+    /// preserving tone, style, and cultural nuances.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.1a as part of specialist agent capabilities.
+    /// </para>
+    /// </remarks>
+    Translation = 1024,
+
+    /// <summary>
     /// All standard writing assistant capabilities.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Convenience combination for fully-featured writing assistants.
-    /// Equivalent to <c>Chat | DocumentContext | RAGContext | StyleEnforcement | Streaming</c>.
+    /// Equivalent to <c>Chat | DocumentContext | RAGContext | StyleEnforcement | Streaming |
+    /// CodeGeneration | ResearchAssistance | Summarization | StructureAnalysis |
+    /// Brainstorming | Translation</c>.
+    /// </para>
+    /// <para>
+    /// <b>Extended in:</b> v0.7.1a to include specialist agent capabilities.
+    /// </para>
     /// </remarks>
-    All = Chat | DocumentContext | RAGContext | StyleEnforcement | Streaming
+    All = Chat | DocumentContext | RAGContext | StyleEnforcement | Streaming |
+          CodeGeneration | ResearchAssistance | Summarization |
+          StructureAnalysis | Brainstorming | Translation
 }

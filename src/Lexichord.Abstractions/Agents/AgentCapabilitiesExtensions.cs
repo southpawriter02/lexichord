@@ -89,7 +89,16 @@ public static class AgentCapabilitiesExtensions
     ///   <item><description><see cref="AgentCapabilities.RAGContext"/> → "RAG"</description></item>
     ///   <item><description><see cref="AgentCapabilities.StyleEnforcement"/> → "Style"</description></item>
     ///   <item><description><see cref="AgentCapabilities.Streaming"/> → "Streaming"</description></item>
+    ///   <item><description><see cref="AgentCapabilities.CodeGeneration"/> → "CodeGen"</description></item>
+    ///   <item><description><see cref="AgentCapabilities.ResearchAssistance"/> → "Research"</description></item>
+    ///   <item><description><see cref="AgentCapabilities.Summarization"/> → "Summary"</description></item>
+    ///   <item><description><see cref="AgentCapabilities.StructureAnalysis"/> → "Structure"</description></item>
+    ///   <item><description><see cref="AgentCapabilities.Brainstorming"/> → "Brainstorm"</description></item>
+    ///   <item><description><see cref="AgentCapabilities.Translation"/> → "Translate"</description></item>
     /// </list>
+    /// <para>
+    /// <b>Extended in:</b> v0.7.1a to include specialist agent capabilities.
+    /// </para>
     /// </remarks>
     /// <example>
     /// <code>
@@ -101,8 +110,8 @@ public static class AgentCapabilitiesExtensions
     public static string[] GetCapabilityNames(this AgentCapabilities capabilities)
     {
         // LOGIC: Build a list of display names for each enabled capability flag.
-        // Pre-allocate with a reasonable capacity since there are at most 5 flags.
-        var names = new List<string>(5);
+        // Pre-allocate with a reasonable capacity since there are at most 11 flags.
+        var names = new List<string>(11);
 
         if (capabilities.HasCapability(AgentCapabilities.Chat))
             names.Add("Chat");
@@ -114,6 +123,18 @@ public static class AgentCapabilitiesExtensions
             names.Add("Style");
         if (capabilities.HasCapability(AgentCapabilities.Streaming))
             names.Add("Streaming");
+        if (capabilities.HasCapability(AgentCapabilities.CodeGeneration))
+            names.Add("CodeGen");
+        if (capabilities.HasCapability(AgentCapabilities.ResearchAssistance))
+            names.Add("Research");
+        if (capabilities.HasCapability(AgentCapabilities.Summarization))
+            names.Add("Summary");
+        if (capabilities.HasCapability(AgentCapabilities.StructureAnalysis))
+            names.Add("Structure");
+        if (capabilities.HasCapability(AgentCapabilities.Brainstorming))
+            names.Add("Brainstorm");
+        if (capabilities.HasCapability(AgentCapabilities.Translation))
+            names.Add("Translate");
 
         return names.ToArray();
     }

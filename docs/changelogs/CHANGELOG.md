@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.7.1] - 2026-02 (In Progress)
+
+### The Agent Registry (Persona Management)
+
+This release introduces the Agent Registry system, enabling specialized AI agents with configurable personality variants (personas).
+
+#### What's New
+
+- **Agent Configuration Model (v0.7.1a)** — Foundational data contracts for agent definitions in `Lexichord.Abstractions.Agents`. Added `AgentConfiguration` partial record with agent identity (AgentId, Name, Description, Icon), behavior configuration (TemplateId, Capabilities, DefaultOptions), persona management (Personas collection, DefaultPersona property, GetPersona() method), licensing (RequiredTier), and extensibility (CustomSettings dictionary). Added `AgentPersona` partial record with persona identity (PersonaId, DisplayName, Tagline), behavioral overrides (Temperature, SystemPromptOverride), and optional VoiceDescription. Both records include comprehensive validation via `Validate()` method with kebab-case regex patterns (`^[a-z0-9]+(-[a-z0-9]+)*$`) for IDs. Extended `AgentCapabilities` enum with 6 new flags: CodeGeneration (32), ResearchAssistance (64), Summarization (128), StructureAnalysis (256), Brainstorming (512), Translation (1024), updating All flag from 31 to 2047. Updated `AgentCapabilitiesExtensions.GetCapabilityNames()` to include shortened display names for new capabilities ("CodeGen", "Research", "Summary", "Structure", "Brainstorm", "Translate"). Design decision: Used `double` instead of `float` for `AgentPersona.Temperature` to match `ChatOptions.Temperature` type and avoid casting. No new NuGet packages required. Includes 25 unit tests (17 new, 8 updated) with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.1a.md)
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                     | Status      |
+| ----------------------------------- | ------------------------- | ----------- |
+| [v0.7.1a](v0.7.x/LCS-CL-v0.7.1a.md) | Agent Configuration Model | ✅ Complete |
+
+---
+
 ## [v0.6.8] - 2026-02 (In Progress)
 
 ### The Hardening (Reliability & Performance)
