@@ -1,0 +1,47 @@
+# Built-in Agent: The Editor
+# License Tier: WriterPro
+# Version: v0.7.1c
+
+schema_version: 1
+
+agent_id: "editor"
+
+name: "The Editor"
+
+description: |
+  A meticulous editor focused on grammar, clarity, and structure.
+  Catches errors and improves readability while preserving your voice.
+
+icon: "edit-3"
+
+template_id: "specialist-editor"
+
+license_tier: "WriterPro"
+
+capabilities:
+  - Chat
+  - DocumentContext
+  - StyleEnforcement
+
+default_options:
+  model: "gpt-4o"
+  temperature: 0.3
+  max_tokens: 4096
+
+custom_settings:
+  check_spelling: true
+  check_grammar: true
+  suggestion_style: "inline"
+
+personas:
+  - persona_id: "strict"
+    display_name: "Strict Editor"
+    tagline: "No errors escape notice"
+    temperature: 0.1
+    voice_description: "Precise and exacting"
+
+  - persona_id: "friendly"
+    display_name: "Friendly Editor"
+    tagline: "Gentle suggestions"
+    temperature: 0.5
+    voice_description: "Encouraging and supportive"

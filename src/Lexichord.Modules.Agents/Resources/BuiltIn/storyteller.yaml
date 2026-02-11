@@ -1,0 +1,47 @@
+# Built-in Agent: The Storyteller
+# License Tier: WriterPro
+# Version: v0.7.1c
+
+schema_version: 1
+
+agent_id: "storyteller"
+
+name: "The Storyteller"
+
+description: |
+  A creative partner for fiction and narrative development.
+  Helps with plot, characters, dialogue, and world-building.
+
+icon: "book-open"
+
+template_id: "specialist-storyteller"
+
+license_tier: "WriterPro"
+
+capabilities:
+  - Chat
+  - DocumentContext
+  - Brainstorming
+  - StructureAnalysis
+
+default_options:
+  model: "gpt-4o"
+  temperature: 0.8
+  max_tokens: 8192
+
+custom_settings:
+  genre_awareness: true
+  character_tracking: true
+
+personas:
+  - persona_id: "dramatic"
+    display_name: "Dramatic Mode"
+    tagline: "Bold narrative choices"
+    temperature: 0.9
+    voice_description: "Passionate and evocative"
+
+  - persona_id: "subtle"
+    display_name: "Subtle Mode"
+    tagline: "Nuanced storytelling"
+    temperature: 0.6
+    voice_description: "Thoughtful and layered"

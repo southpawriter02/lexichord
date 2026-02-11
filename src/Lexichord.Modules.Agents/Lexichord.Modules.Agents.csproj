@@ -8,7 +8,7 @@
     <!-- Module metadata -->
     <AssemblyTitle>Lexichord Agents Module</AssemblyTitle>
     <Description>The Conductors - AI agent orchestration and prompt templating</Description>
-    <Version>0.6.8</Version>
+    <Version>0.7.1</Version>
 
     <!-- CRITICAL: Output to Modules directory for ModuleLoader discovery -->
     <OutputPath>$(SolutionDir)Modules\</OutputPath>
@@ -57,6 +57,11 @@
   <!-- v0.6.3c: Embed built-in prompt templates as resources -->
   <ItemGroup>
     <EmbeddedResource Include="Resources\Prompts\*.yaml" />
+  </ItemGroup>
+
+  <!-- v0.7.1c: Embed built-in agent configurations as resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\BuiltIn\*.yaml" />
   </ItemGroup>
 
   <ItemGroup>

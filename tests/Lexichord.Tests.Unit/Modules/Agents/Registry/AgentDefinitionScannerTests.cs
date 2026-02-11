@@ -56,7 +56,7 @@ public class AgentDefinitionScannerTests
     /// Valid test agent decorated with [AgentDefinition].
     /// </summary>
     [AgentDefinition("test-agent-1", Priority = 50)]
-    private class TestAgent1 : IAgent
+    public class TestAgent1 : IAgent
     {
         public string AgentId => "test-agent-1";
         public string Name => "Test Agent 1";
@@ -71,7 +71,7 @@ public class AgentDefinitionScannerTests
     /// Valid test agent with different priority.
     /// </summary>
     [AgentDefinition("test-agent-2", Priority = 100)]
-    private class TestAgent2 : IAgent
+    public class TestAgent2 : IAgent
     {
         public string AgentId => "test-agent-2";
         public string Name => "Test Agent 2";
@@ -86,7 +86,7 @@ public class AgentDefinitionScannerTests
     /// Valid test agent with lower priority (should be first).
     /// </summary>
     [AgentDefinition("test-agent-3", Priority = 10)]
-    private class TestAgent3 : IAgent
+    public class TestAgent3 : IAgent
     {
         public string AgentId => "test-agent-3";
         public string Name => "Test Agent 3";
@@ -101,7 +101,7 @@ public class AgentDefinitionScannerTests
     /// Invalid test type - decorated but doesn't implement IAgent.
     /// </summary>
     [AgentDefinition("invalid-agent")]
-    private class InvalidAgent
+    public class InvalidAgent
     {
         // Does NOT implement IAgent
     }
@@ -109,7 +109,7 @@ public class AgentDefinitionScannerTests
     /// <summary>
     /// Valid test type but not decorated with [AgentDefinition].
     /// </summary>
-    private class UndecoratedAgent : IAgent
+    public class UndecoratedAgent : IAgent
     {
         public string AgentId => "undecorated";
         public string Name => "Undecorated";
@@ -253,12 +253,12 @@ public class AgentDefinitionScannerTests
         // Act
         var results = _sut.ScanAssemblies(assembly).ToList();
 
-        // Assert - Verify info logging occurred for each discovered agent
+        // Assert - Verify debug logging occurred for each discovered agent
         foreach (var result in results.Where(d => d.AgentId.StartsWith("test-agent-")))
         {
             _loggerMock.Verify(
                 l => l.Log(
-                    LogLevel.Information,
+                    LogLevel.Debug,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Found agent definition: {result.AgentId}")),
                     It.IsAny<Exception>(),

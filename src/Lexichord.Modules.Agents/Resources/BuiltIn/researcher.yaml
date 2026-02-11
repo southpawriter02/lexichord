@@ -1,0 +1,47 @@
+# Built-in Agent: The Researcher
+# License Tier: WriterPro
+# Version: v0.7.1c
+
+schema_version: 1
+
+agent_id: "researcher"
+
+name: "The Researcher"
+
+description: |
+  An analytical assistant that helps with research and citations.
+  Finds connections, suggests sources, and organizes information.
+
+icon: "search"
+
+template_id: "specialist-researcher"
+
+license_tier: "WriterPro"
+
+capabilities:
+  - Chat
+  - DocumentContext
+  - ResearchAssistance
+  - Summarization
+
+default_options:
+  model: "gpt-4o"
+  temperature: 0.2
+  max_tokens: 8192
+
+custom_settings:
+  citation_style: "chicago"
+  include_sources: true
+
+personas:
+  - persona_id: "academic"
+    display_name: "Academic Mode"
+    tagline: "Scholarly rigor"
+    temperature: 0.1
+    voice_description: "Formal and thorough"
+
+  - persona_id: "casual"
+    display_name: "Casual Mode"
+    tagline: "Accessible insights"
+    temperature: 0.4
+    voice_description: "Conversational yet informed"

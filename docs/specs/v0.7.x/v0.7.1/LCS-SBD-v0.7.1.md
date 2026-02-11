@@ -406,10 +406,10 @@ public class AgentItemViewModel : ViewModelBase
 | 8   | Add persona switching logic             | v0.7.1b  | Modules.Agents | [✓]    |
 | 9   | Create MediatR events                   | v0.7.1b  | Abstractions   | [✓]    |
 | 10  | Add registry unit tests                 | v0.7.1b  | Tests.Agents   | [✓]    |
-| 11  | Create `IAgentConfigLoader` interface   | v0.7.1c  | Abstractions   | [ ]    |
-| 12  | Implement `YamlAgentConfigLoader`       | v0.7.1c  | Modules.Agents | [ ]    |
-| 13  | Create embedded resource agents         | v0.7.1c  | Modules.Agents | [ ]    |
-| 14  | Integrate `IRobustFileSystemWatcher`    | v0.7.1c  | Modules.Agents | [ ]    |
+| 11  | Create `IAgentConfigLoader` interface   | v0.7.1c  | Abstractions   | [✓]    |
+| 12  | Implement `YamlAgentConfigLoader`       | v0.7.1c  | Modules.Agents | [✓]    |
+| 13  | Create embedded resource agents         | v0.7.1c  | Modules.Agents | [✓]    |
+| 14  | Integrate `IRobustFileSystemWatcher`    | v0.7.1c  | Modules.Agents | [✓]    |
 | 15  | Add YAML parsing unit tests             | v0.7.1c  | Tests.Agents   | [ ]    |
 | 16  | Create `AgentSelectorView.axaml`        | v0.7.1d  | Modules.Agents | [ ]    |
 | 17  | Implement `AgentSelectorViewModel`      | v0.7.1d  | Modules.Agents | [ ]    |
@@ -968,9 +968,9 @@ dotnet run --project tests/Lexichord.Benchmarks -- \
 | 6   | `AgentRegistry.cs`               | v0.7.1b  | [✓]    |
 | 7   | `AgentDefinitionAttribute.cs`    | v0.7.1b  | [✓]    |
 | 8   | `AgentRegistryTests.cs`          | v0.7.1b  | [✓]    |
-| 9   | `IAgentConfigLoader.cs`          | v0.7.1c  | [ ]    |
-| 10  | `YamlAgentConfigLoader.cs`       | v0.7.1c  | [ ]    |
-| 11  | Embedded agent YAML resources    | v0.7.1c  | [ ]    |
+| 9   | `IAgentConfigLoader.cs`          | v0.7.1c  | [✓]    |
+| 10  | `YamlAgentConfigLoader.cs`       | v0.7.1c  | [✓]    |
+| 11  | Embedded agent YAML resources    | v0.7.1c  | [✓]    |
 | 12  | `YamlAgentConfigLoaderTests.cs`  | v0.7.1c  | [ ]    |
 | 13  | `AgentSelectorView.axaml`        | v0.7.1d  | [ ]    |
 | 14  | `AgentSelectorViewModel.cs`      | v0.7.1d  | [ ]    |

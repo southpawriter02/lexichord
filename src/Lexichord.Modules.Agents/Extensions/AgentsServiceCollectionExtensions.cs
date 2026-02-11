@@ -550,6 +550,10 @@ public static class AgentsServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        // LOGIC: v0.7.1c — Register agent configuration loading services
+        // (validator and YAML loader) for built-in and workspace agents.
+        services.AddAgentConfigLoading();
+
         // LOGIC: v0.7.1b — Register AgentDefinitionScanner as singleton for
         // declarative agent registration via [AgentDefinition] attribute.
         services.AddSingleton<Chat.Registry.AgentDefinitionScanner>();
@@ -599,6 +603,47 @@ public static class AgentsServiceCollectionExtensions
 
         // LOGIC: Transient — stateless event handler.
         services.AddTransient<MediatR.INotificationHandler<Lexichord.Abstractions.Agents.Events.AgentInvocationEvent>, Chat.Events.Handlers.AgentInvocationHandler>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Agent Configuration Loading services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Configuration.IAgentConfigValidator"/> (Singleton)</description></item>
+    ///   <item><description><see cref="Configuration.AgentConfigValidator"/> (Singleton)</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Agents.IAgentConfigLoader"/> (Singleton)</description></item>
+    ///   <item><description><see cref="Configuration.YamlAgentConfigLoader"/> (Singleton)</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.7.1c as part of the Agent Configuration Files feature.
+    /// </para>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// <list type="bullet">
+    ///   <item><description><c>IFileSystemWatcher</c> (from Workspace module)</description></item>
+    ///   <item><description><c>ILicenseContext</c> (from Licensing module)</description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddAgentConfigLoading(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.1c — Register AgentConfigValidator as singleton for reuse
+        // across all configuration loading operations.
+        services.AddSingleton<Configuration.IAgentConfigValidator, Configuration.AgentConfigValidator>();
+
+        // LOGIC: v0.7.1c — Register YamlAgentConfigLoader as singleton for
+        // shared file watching and configuration caching.
+        services.AddSingleton<Lexichord.Abstractions.Agents.IAgentConfigLoader, Configuration.YamlAgentConfigLoader>();
 
         return services;
     }

@@ -1,0 +1,35 @@
+# Built-in Agent: General Chat
+# License Tier: Core (available to all users)
+# Version: v0.7.1c
+
+schema_version: 1
+
+agent_id: "general-chat"
+
+name: "General Chat"
+
+description: |
+  A versatile writing assistant for general conversation and brainstorming.
+  Suitable for all writing tasks that don't require specialized expertise.
+
+icon: "message-square"
+
+template_id: "general-chat"
+
+license_tier: "Core"
+
+capabilities:
+  - Chat
+  - Brainstorming
+
+default_options:
+  model: "gpt-4o"
+  temperature: 0.7
+  max_tokens: 4096
+
+personas:
+  - persona_id: "balanced"
+    display_name: "Balanced"
+    tagline: "The versatile companion"
+    temperature: 0.7
+    voice_description: "Friendly and adaptable"
