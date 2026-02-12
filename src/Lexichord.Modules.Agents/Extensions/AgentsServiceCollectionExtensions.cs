@@ -647,5 +647,56 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers the Agent Selector UI ViewModels.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ViewModels.AgentSelectorViewModel"/> (Transient) — v0.7.1d</description></item>
+    ///   <item><description><see cref="ViewModels.AgentItemViewModel"/> (Transient) — v0.7.1d</description></item>
+    ///   <item><description><see cref="ViewModels.PersonaItemViewModel"/> (Transient) — v0.7.1d</description></item>
+    /// </list>
+    /// <para>
+    /// The ViewModels are registered as transient for per-instance isolation,
+    /// allowing independent state management for each UI component instance.
+    /// </para>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Agents.IAgentRegistry"/> (v0.7.1b) — Agent and persona retrieval</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ISettingsService"/> (v0.1.6a) — Favorites and recents persistence</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — Tier display and access control</description></item>
+    ///   <item><description><c>IMediator</c> (v0.0.7a) — Event subscription and upgrade prompts</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.7.1d as part of the Agent Selector UI feature.
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddAgentSelectorUI(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.1d — Register AgentSelectorViewModel as transient for per-instance
+        // isolation, allowing independent favorites, recents, and selection state.
+        services.AddTransient<ViewModels.AgentSelectorViewModel>();
+
+        // LOGIC: v0.7.1d — Register AgentItemViewModel as transient. While typically
+        // instantiated by AgentSelectorViewModel, registration enables DI testing.
+        services.AddTransient<ViewModels.AgentItemViewModel>();
+
+        // LOGIC: v0.7.1d — Register PersonaItemViewModel as transient. While typically
+        // instantiated by AgentSelectorViewModel, registration enables DI testing.
+        services.AddTransient<ViewModels.PersonaItemViewModel>();
+
+        return services;
+    }
 }
+
 

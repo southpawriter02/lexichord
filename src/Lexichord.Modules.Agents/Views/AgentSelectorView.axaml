@@ -1,0 +1,257 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.ViewModels"
+             xmlns:views="using:Lexichord.Modules.Agents.Views"
+             mc:Ignorable="d"
+             d:DesignWidth="400" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Agents.Views.AgentSelectorView"
+             x:DataType="vm:AgentSelectorViewModel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    AGENT SELECTOR VIEW (v0.7.1d)
+    Dropdown component for discovering, selecting, and switching between agents
+    and personas in the Co-pilot panel.
+
+    LOGIC:
+    - Trigger button displays current agent icon, name, and persona.
+    - Popup dropdown shows:
+      - Search box for filtering agents
+      - Favorites section (if any favorites exist)
+      - Recent agents section (if any recents exist)
+      - All agents section
+    - Each agent displays as AgentCardView with tier badge and favorite toggle.
+    - Persona switching submenu appears when agent has multiple personas.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Trigger Button Container -->
+        <Style Selector="Border.agent-selector-trigger">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.agent-selector-trigger:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}"/>
+        </Style>
+        <Style Selector="Border.agent-selector-trigger.open">
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}"/>
+        </Style>
+
+        <!-- Agent Icon -->
+        <Style Selector="Border.agent-icon">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}"/>
+            <Setter Property="Padding" Value="6"/>
+        </Style>
+
+        <!-- Dropdown Popup Container -->
+        <Style Selector="Border.agent-dropdown">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BoxShadow" Value="0 8 24 0 #40000000"/>
+            <Setter Property="MinWidth" Value="320"/>
+            <Setter Property="MaxWidth" Value="380"/>
+            <Setter Property="MaxHeight" Value="500"/>
+        </Style>
+
+        <!-- Search TextBox -->
+        <Style Selector="TextBox.agent-search">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- Section Header -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}"/>
+            <Setter Property="Margin" Value="8,12,8,8"/>
+        </Style>
+
+        <!-- Chevron Icon (rotates when open) -->
+        <Style Selector="PathIcon.chevron">
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBaseBrush}"/>
+            <Setter Property="RenderTransform" Value="rotate(0deg)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="PathIcon.chevron.open">
+            <Setter Property="RenderTransform" Value="rotate(180deg)"/>
+        </Style>
+
+        <!-- Favorite Button -->
+        <Style Selector="Button.favorite-toggle">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.favorite-toggle:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Design.DataContext>
+        <vm:AgentSelectorViewModel/>
+    </Design.DataContext>
+
+    <!-- Main Container -->
+    <Grid>
+        <!-- Trigger Button -->
+        <Border Classes="agent-selector-trigger"
+                Classes.open="{Binding IsDropdownOpen}"
+                AutomationProperties.Name="Select agent"
+                AutomationProperties.HelpText="Click to open agent selector dropdown">
+            <Border.GestureRecognizers>
+                <TappedGestureRecognizer Command="{Binding ToggleDropdownCommand}"/>
+            </Border.GestureRecognizers>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <!-- Agent Icon -->
+                <Border Grid.Column="0" Classes="agent-icon" Margin="0,0,12,0">
+                    <!-- TODO: Add LucideIconConverter and bind to SelectedAgent.Icon -->
+                    <PathIcon Data="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                              Foreground="{DynamicResource AccentPrimaryBrush}"/>
+                </Border>
+
+                <!-- Agent Name + Persona -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding SelectedAgent.Name, FallbackValue='Select Agent'}"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource ForegroundBaseBrush}"/>
+                    <TextBlock Text="{Binding SelectedPersona.DisplayName}"
+                               FontSize="11"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                               IsVisible="{Binding SelectedPersona, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                </StackPanel>
+
+                <!-- Favorite Toggle (for current agent) -->
+                <Button Grid.Column="2"
+                        Classes="favorite-toggle"
+                        Margin="8,0"
+                        Command="{Binding ToggleFavoriteCommand}"
+                        CommandParameter="{Binding SelectedAgent}"
+                        IsVisible="{Binding SelectedAgent, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        ToolTip.Tip="Toggle favorite">
+                    <!-- TODO: Add FavoriteIconConverter -->
+                    <PathIcon Width="16" Height="16"
+                              Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                              Foreground="{DynamicResource AccentPrimaryBrush}"
+                              IsVisible="{Binding SelectedAgent.IsFavorite}"/>
+                    <PathIcon Width="16" Height="16"
+                              Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z M12 5.5l-1.55 3.14-3.46.5 2.5 2.44-.59 3.45L12 13.39l3.09 1.63-.59-3.45 2.5-2.44-3.46-.5L12 5.5z"
+                              Foreground="{DynamicResource ForegroundMutedBrush}"
+                              IsVisible="{Binding !SelectedAgent.IsFavorite}"/>
+                </Button>
+
+                <!-- Chevron Icon -->
+                <PathIcon Grid.Column="3"
+                          Classes="chevron"
+                          Classes.open="{Binding IsDropdownOpen}"
+                          Data="M6 9l6 6 6-6"/>
+            </Grid>
+        </Border>
+
+        <!-- Dropdown Popup -->
+        <Popup IsOpen="{Binding IsDropdownOpen, Mode=TwoWay}"
+               PlacementMode="Bottom"
+               PlacementTarget="{Binding $parent[Border]}"
+               IsLightDismissEnabled="True">
+            <Border Classes="agent-dropdown">
+                <StackPanel>
+                    <!-- Search Box -->
+                    <TextBox Classes="agent-search"
+                             Text="{Binding SearchQuery, Mode=TwoWay}"
+                             Watermark="Search agents..."
+                             AutomationProperties.Name="Search agents">
+                        <TextBox.InnerLeftContent>
+                            <PathIcon Data="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35"
+                                      Width="16" Height="16"
+                                      Margin="4,0,0,0"
+                                      Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+
+                    <!-- Scrollable Agent List -->
+                    <ScrollViewer MaxHeight="400" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- Favorites Section -->
+                            <StackPanel IsVisible="{Binding !!FavoriteAgents.Count}">
+                                <TextBlock Classes="section-header" Text="FAVORITES"/>
+                                <ItemsControl ItemsSource="{Binding FavoriteAgents}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AgentItemViewModel">
+                                            <views:AgentCardView Margin="0,0,0,4"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- Recent Agents Section -->
+                            <StackPanel IsVisible="{Binding !!RecentAgents.Count}">
+                                <TextBlock Classes="section-header" Text="RECENT"/>
+                                <ItemsControl ItemsSource="{Binding RecentAgents}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AgentItemViewModel">
+                                            <views:AgentCardView Margin="0,0,0,4"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- All Agents Section -->
+                            <StackPanel>
+                                <TextBlock Classes="section-header" Text="ALL AGENTS"/>
+                                <ItemsControl ItemsSource="{Binding FilteredAgents}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AgentItemViewModel">
+                                            <views:AgentCardView Margin="0,0,0,4"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- No Results Message -->
+                            <TextBlock Text="No agents found"
+                                       Margin="8"
+                                       FontStyle="Italic"
+                                       Foreground="{DynamicResource ForegroundMutedBrush}"
+                                       HorizontalAlignment="Center"
+                                       IsVisible="{Binding !FilteredAgents.Count}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

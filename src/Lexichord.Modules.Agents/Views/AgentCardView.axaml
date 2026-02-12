@@ -1,0 +1,229 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="320" d:DesignHeight="80"
+             x:Class="Lexichord.Modules.Agents.Views.AgentCardView"
+             x:DataType="vm:AgentItemViewModel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    AGENT CARD VIEW (v0.7.1d)
+    Individual agent card component for display in the Agent Selector dropdown.
+
+    LOGIC:
+    - Displays agent icon, name, description, and capabilities summary.
+    - Shows tier badge if RequiredTier > Core.
+    - Shows lock icon if agent is locked (insufficient license tier).
+    - Shows checkmark if agent is currently selected.
+    - Allows toggling favorite status.
+    - Clicking card selects the agent.
+    - If agent has multiple personas, shows persona submenu.
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Agent Card Container (uses CardStyles.axaml AgentCard theme) -->
+        <Style Selector="Border.agent-card">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.agent-card:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}"/>
+        </Style>
+        <Style Selector="Border.agent-card.selected">
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPrimaryBrush}"/>
+        </Style>
+        <Style Selector="Border.agent-card.locked">
+            <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="Cursor" Value="Not-allowed"/>
+        </Style>
+        <Style Selector="Border.agent-card.locked:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+        </Style>
+
+        <!-- Agent Icon Container -->
+        <Style Selector="Border.agent-icon-small">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Background" Value="{DynamicResource AccentMutedBrush}"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
+
+        <!-- Tier Badge (pill-style) -->
+        <Style Selector="Border.tier-badge">
+            <Setter Property="Background" Value="{DynamicResource AccentPrimaryBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="8,2"/>
+        </Style>
+        <Style Selector="TextBlock.tier-badge-text">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Lock Icon -->
+        <Style Selector="PathIcon.lock-icon">
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}"/>
+        </Style>
+
+        <!-- Checkmark Icon -->
+        <Style Selector="PathIcon.checkmark-icon">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}"/>
+        </Style>
+
+        <!-- Persona Radio Button -->
+        <Style Selector="RadioButton.persona-option">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Design.DataContext>
+        <vm:AgentItemViewModel/>
+    </Design.DataContext>
+
+    <!-- Main Card -->
+    <Border Classes="agent-card"
+            Classes.selected="{Binding IsSelected}"
+            Classes.locked="{Binding IsLocked}"
+            AutomationProperties.Name="{Binding AccessibilityLabel}">
+        <Border.GestureRecognizers>
+            <TappedGestureRecognizer Command="{Binding $parent[UserControl].((vm:AgentSelectorViewModel)DataContext).SelectAgentCommand}"
+                                     CommandParameter="{Binding}"/>
+        </Border.GestureRecognizers>
+
+        <StackPanel>
+            <!-- Main Row: Icon + Name/Description + Badge + Favorite + Status -->
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                <!-- Agent Icon -->
+                <Border Grid.Column="0" Classes="agent-icon-small" Margin="0,0,12,0">
+                    <!-- TODO: Add LucideIconConverter and bind to Icon -->
+                    <PathIcon Data="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                              Foreground="{DynamicResource AccentPrimaryBrush}"/>
+                </Border>
+
+                <!-- Name + Description + Capabilities -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource ForegroundBaseBrush}"/>
+                    <TextBlock Text="{Binding Description}"
+                               FontSize="11"
+                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                               TextWrapping="Wrap"
+                               MaxWidth="180"
+                               Margin="0,2,0,0"/>
+                    <TextBlock Text="{Binding CapabilitiesSummary}"
+                               FontSize="10"
+                               Foreground="{DynamicResource ForegroundSubtleBrush}"
+                               Margin="0,4,0,0"
+                               IsVisible="{Binding CapabilitiesSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                </StackPanel>
+
+                <!-- Tier Badge -->
+                <Border Grid.Column="2"
+                        Classes="tier-badge"
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ShowTierBadge}">
+                    <TextBlock Classes="tier-badge-text" Text="{Binding TierBadgeText}"/>
+                </Border>
+
+                <!-- Favorite Toggle Button -->
+                <Button Grid.Column="3"
+                        Classes="favorite-toggle"
+                        Margin="4,0"
+                        VerticalAlignment="Center"
+                        Command="{Binding $parent[UserControl].((vm:AgentSelectorViewModel)DataContext).ToggleFavoriteCommand}"
+                        CommandParameter="{Binding}"
+                        ToolTip.Tip="Toggle favorite"
+                        IsVisible="{Binding !IsLocked}">
+                    <!-- TODO: Add FavoriteIconConverter -->
+                    <PathIcon Width="16" Height="16"
+                              Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                              Foreground="{DynamicResource AccentPrimaryBrush}"
+                              IsVisible="{Binding IsFavorite}"/>
+                    <PathIcon Width="16" Height="16"
+                              Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z M12 5.5l-1.55 3.14-3.46.5 2.5 2.44-.59 3.45L12 13.39l3.09 1.63-.59-3.45 2.5-2.44-3.46-.5L12 5.5z"
+                              Foreground="{DynamicResource ForegroundMutedBrush}"
+                              IsVisible="{Binding !IsFavorite}"/>
+                </Button>
+
+                <!-- Status Icon (Lock or Checkmark) -->
+                <Panel Grid.Column="4" VerticalAlignment="Center">
+                    <!-- Lock Icon (if locked) -->
+                    <PathIcon Classes="lock-icon"
+                              Data="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"
+                              IsVisible="{Binding IsLocked}"/>
+
+                    <!-- Checkmark Icon (if selected) -->
+                    <PathIcon Classes="checkmark-icon"
+                              Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                              IsVisible="{Binding IsSelected}"/>
+                </Panel>
+            </Grid>
+
+            <!-- Persona Selection (inline, only if multiple personas) -->
+            <StackPanel Margin="0,12,0,0"
+                        IsVisible="{Binding !!Personas.Count}">
+                <TextBlock Text="Persona:"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource ForegroundMutedBrush}"
+                           Margin="0,0,0,4"/>
+                <ItemsControl ItemsSource="{Binding Personas}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PersonaItemViewModel">
+                            <RadioButton Classes="persona-option"
+                                         GroupName="{Binding $parent[UserControl].DataContext.AgentId}"
+                                         IsChecked="{Binding IsSelected}"
+                                         Command="{Binding $parent[UserControl].((vm:AgentSelectorViewModel)DataContext).SelectPersonaCommand}"
+                                         CommandParameter="{Binding}"
+                                         AutomationProperties.Name="{Binding AccessibilityLabel}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="{Binding DisplayName}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource ForegroundBaseBrush}"/>
+                                    <TextBlock Text="•" Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                    <TextBlock Text="{Binding Tagline}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"/>
+                                    <Border Background="{DynamicResource AccentMutedBrush}"
+                                            CornerRadius="4"
+                                            Padding="4,2"
+                                            Margin="4,0,0,0">
+                                        <TextBlock Text="{Binding TemperatureLabel}"
+                                                   FontSize="10"
+                                                   Foreground="{DynamicResource ForegroundBaseBrush}"/>
+                                    </Border>
+                                </StackPanel>
+                            </RadioButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

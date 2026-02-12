@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-08 (v0.6.6a added)                                             |
+| **Last Updated** | 2026-02-11 (v0.7.1d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1424,6 +1424,33 @@
 | `UsageTrackingTests`             | v0.6.8a    | Tests.Unit   | UsageTracker accumulation and events (12)   |
 | `ContextInjectorTests`           | v0.6.8a    | Tests.Unit   | ContextInjector provider orchestration (12) |
 | `MustacheRendererTests`          | v0.6.8a    | Tests.Unit   | MustachePromptRenderer edge cases (12)      |
+
+### 1.X v0.7.x Agent Registry Interfaces
+
+| Interface                  | Defined In | Module         | Purpose                         |
+| :------------------------- | :--------- | :------------- | :------------------------------ |
+| `AgentSelectorViewModel`   | v0.7.1d    | Modules.Agents | Agent selection UI coordination |
+| `AgentItemViewModel`       | v0.7.1d    | Modules.Agents | Agent display item wrapper      |
+| `PersonaItemViewModel`     | v0.7.1d    | Modules.Agents | Persona option wrapper          |
+
+**New Views (v0.7.1d):**
+
+| View                  | Defined In | Module         | Purpose                                |
+| :-------------------- | :--------- | :------------- | :------------------------------------- |
+| `AgentSelectorView`   | v0.7.1d    | Modules.Agents | Dropdown UI component for agent selection |
+| `AgentCardView`       | v0.7.1d    | Modules.Agents | Agent card UI component with tier badges  |
+
+**New Converters (v0.7.1d):**
+
+| Converter               | Defined In | Module         | Purpose                          |
+| :---------------------- | :--------- | :------------- | :------------------------------- |
+| `FavoriteIconConverter` | v0.7.1d    | Modules.Agents | Boolean → star icon path data    |
+
+**New Extension Methods (v0.7.1d):**
+
+| Extension Method       | Defined In | Module         | Purpose                          |
+| :--------------------- | :--------- | :------------- | :------------------------------- |
+| `AddAgentSelectorUI()` | v0.7.1d    | Modules.Agents | DI registration for UI ViewModels |
 
 ## 2. MediatR Events Registry
 
