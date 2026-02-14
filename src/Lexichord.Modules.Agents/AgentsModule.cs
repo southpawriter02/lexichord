@@ -246,6 +246,14 @@ public class AgentsModule : IModule
             var mediator = sp.GetRequiredService<MediatR.IMediator>();
             return new Resilience.ResilientChatService(inner, recovery, rateLimitQueue, logger, mediator);
         });
+
+        // ── v0.7.2: Context Assembler ───────────────────────────────────────
+        // LOGIC: Register the full Context Assembler pipeline:
+        //   v0.7.2a — Strategy abstraction layer (IContextStrategyFactory)
+        //   v0.7.2b — Concrete strategy implementations (Document, Selection, etc.)
+        //   v0.7.2c — Context Orchestrator (parallel execution, dedup, budget)
+        //   v0.7.2d — Context Preview Panel (bridge, ViewModels)
+        services.AddContextStrategies();
     }
 
     /// <inheritdoc />

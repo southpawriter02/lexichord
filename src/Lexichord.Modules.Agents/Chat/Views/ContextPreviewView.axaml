@@ -1,0 +1,245 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Chat.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="320" d:DesignHeight="500"
+             x:Class="Lexichord.Modules.Agents.Chat.Views.ContextPreviewView"
+             x:DataType="vm:ContextPreviewViewModel">
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    CONTEXT PREVIEW VIEW - v0.7.2d
+    Real-time display of assembled context fragments, token budget usage,
+    and strategy toggle controls for the Context Assembler system.
+
+    Per LCS-DES-v0.7.2d:
+    - Shows all fragments with labels, token counts, and expandable content
+    - Token budget bar with color-coded utilization indicator
+    - Strategy enable/disable toggles for user control
+    - Assembly duration display for performance monitoring
+    - Copy All functionality for exporting context
+    ═══════════════════════════════════════════════════════════════════════════
+    -->
+
+    <UserControl.Styles>
+        <!-- Budget progress bar base style -->
+        <Style Selector="ProgressBar.budget-bar">
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Height" Value="8" />
+        </Style>
+
+        <!-- Fragment card container -->
+        <Style Selector="Border.fragment-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <!-- Section header text -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+
+        <!-- Link button style for inline actions -->
+        <Style Selector="Button.link-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="4">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+            <!-- Row 0: Header -->
+            <Border Grid.Row="0"
+                    Padding="12,8"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="4,4,0,0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Context Preview"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="1"
+                            Command="{Binding ToggleExpandedCommand}"
+                            ToolTip.Tip="Toggle panel"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="4">
+                        <TextBlock Text="▼"
+                                   FontSize="10"
+                                   Opacity="0.6" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Row 1: Token Budget Indicator -->
+            <Border Grid.Row="1"
+                    Padding="12,8"
+                    IsVisible="{Binding IsExpanded}">
+                <StackPanel Spacing="4">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Token Budget"
+                                   Classes="section-header" />
+                        <TextBlock Text="{Binding BudgetStatusText}"
+                                   FontSize="12"
+                                   Opacity="0.7"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+
+                    <ProgressBar Value="{Binding BudgetPercentage}"
+                                 Maximum="1"
+                                 Classes="budget-bar" />
+
+                    <TextBlock FontSize="11"
+                               Opacity="0.6">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Last assembly: {0}">
+                                <Binding Path="DurationText" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Row 2: Strategy Toggles -->
+            <Border Grid.Row="2"
+                    Padding="12,4,12,8"
+                    IsVisible="{Binding IsExpanded}">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Strategies"
+                               Classes="section-header"
+                               Margin="0,0,0,4" />
+
+                    <ItemsControl ItemsSource="{Binding Strategies}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:StrategyToggleItem">
+                                <CheckBox Content="{Binding DisplayName}"
+                                          IsChecked="{Binding IsEnabled}"
+                                          ToolTip.Tip="{Binding Tooltip}"
+                                          Margin="0,0,12,4"
+                                          FontSize="12" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Row 3: Fragment List -->
+            <ScrollViewer Grid.Row="3"
+                          VerticalScrollBarVisibility="Auto"
+                          IsVisible="{Binding IsExpanded}">
+                <ItemsControl ItemsSource="{Binding Fragments}"
+                              Margin="8">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FragmentViewModel">
+                            <Border Classes="fragment-card"
+                                    Margin="0,0,0,8"
+                                    Padding="12"
+                                    CornerRadius="4">
+                                <StackPanel Spacing="6">
+
+                                    <!-- Fragment Header -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <StackPanel Grid.Column="0"
+                                                    Orientation="Horizontal"
+                                                    Spacing="6">
+                                            <TextBlock Text="{Binding SourceIcon}"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding Label}"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding TokenCountText}"
+                                                   FontSize="11"
+                                                   Opacity="0.6"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+
+                                    <!-- Fragment Content Preview -->
+                                    <Border Background="{DynamicResource SurfaceBrush}"
+                                            Padding="8"
+                                            CornerRadius="2">
+                                        <SelectableTextBlock Text="{Binding DisplayContent}"
+                                                             FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                                                             FontSize="11"
+                                                             TextWrapping="Wrap"
+                                                             MaxHeight="300" />
+                                    </Border>
+
+                                    <!-- Fragment Actions -->
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="12"
+                                                IsVisible="{Binding NeedsExpansion}">
+                                        <Button Content="{Binding ExpandButtonText}"
+                                                Command="{Binding ToggleExpandedCommand}"
+                                                Classes="link-button" />
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Loading Overlay (over fragment list) -->
+            <Border Grid.Row="3"
+                    Background="#80000000"
+                    CornerRadius="0"
+                    IsVisible="{Binding IsAssembling}">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8">
+                    <TextBlock Text="Assembling context..."
+                               Foreground="White"
+                               FontSize="12"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- Row 4: Footer Actions -->
+            <Border Grid.Row="4"
+                    Padding="8,4"
+                    IsVisible="{Binding IsExpanded}"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="0,0,4,4">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8"
+                            HorizontalAlignment="Right">
+                    <Button Content="Enable All"
+                            Command="{Binding EnableAllCommand}"
+                            Classes="link-button"
+                            FontSize="11" />
+                    <Button Content="Disable All"
+                            Command="{Binding DisableAllCommand}"
+                            Classes="link-button"
+                            FontSize="11" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

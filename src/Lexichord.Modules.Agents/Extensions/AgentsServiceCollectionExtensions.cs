@@ -7,6 +7,7 @@
 
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts.LLM;
+using MediatR;
 using Lexichord.Modules.Agents.Context;
 using Lexichord.Modules.Agents.Context.Strategies;
 using Lexichord.Modules.Agents.Templates;
@@ -779,6 +780,10 @@ public static class AgentsServiceCollectionExtensions
         // all strategies during context assembly. See AddContextOrchestrator().
         services.AddContextOrchestrator();
 
+        // LOGIC: v0.7.2d — Register the Context Preview Panel bridge and ViewModel
+        // for real-time display of assembly results. See AddContextPreviewPanel().
+        services.AddContextPreviewPanel();
+
         return services;
     }
 
@@ -834,6 +839,65 @@ public static class AgentsServiceCollectionExtensions
         // Singleton is required to maintain strategy enabled/disabled state
         // in the ConcurrentDictionary across requests.
         services.AddSingleton<IContextOrchestrator, ContextOrchestrator>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Context Preview Panel bridge and ViewModel for
+    /// real-time display of assembled context fragments.
+    /// </summary>
+    /// <param name="services">The service collection to add to.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ContextPreviewBridge"/> as Singleton — MediatR notification handler bridge</description></item>
+    ///   <item><description><see cref="INotificationHandler{T}"/> for <see cref="ContextAssembledEvent"/> — forwards to bridge</description></item>
+    ///   <item><description><see cref="INotificationHandler{T}"/> for <see cref="StrategyToggleEvent"/> — forwards to bridge</description></item>
+    ///   <item><description><see cref="Chat.ViewModels.ContextPreviewViewModel"/> as Transient — per-panel instance</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Singleton Bridge Pattern:</strong>
+    /// The bridge is a Singleton that implements <see cref="INotificationHandler{T}"/>
+    /// for both event types. It re-publishes notifications as C# events that transient
+    /// ViewModels subscribe to in their constructors. This solves the MediatR-to-ViewModel
+    /// lifetime mismatch where MediatR would create new handler instances per notification.
+    /// </para>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.7.2d as part of the Context Preview Panel.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Called automatically from AddContextStrategies()
+    /// services.AddContextStrategies(); // includes AddContextPreviewPanel()
+    ///
+    /// // Or called directly for testing
+    /// services.AddContextPreviewPanel();
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddContextPreviewPanel(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.2d — Register ContextPreviewBridge as Singleton.
+        // The bridge must be a singleton so the same instance receives MediatR
+        // notifications and forwards them to subscribed ViewModels.
+        services.AddSingleton<ContextPreviewBridge>();
+
+        // LOGIC: v0.7.2d — Register the bridge as INotificationHandler for both events.
+        // MediatR resolves handlers by interface, so we forward to the same singleton instance.
+        services.AddSingleton<INotificationHandler<ContextAssembledEvent>>(
+            sp => sp.GetRequiredService<ContextPreviewBridge>());
+        services.AddSingleton<INotificationHandler<StrategyToggleEvent>>(
+            sp => sp.GetRequiredService<ContextPreviewBridge>());
+
+        // LOGIC: v0.7.2d — Register ContextPreviewViewModel as Transient.
+        // Each Context Preview panel view needs its own ViewModel with independent state.
+        services.AddTransient<Chat.ViewModels.ContextPreviewViewModel>();
 
         return services;
     }

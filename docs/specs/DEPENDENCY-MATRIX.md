@@ -1541,6 +1541,30 @@
 - v0.6.1b (ITokenCounter) — Token counting for budget trimming
 - MediatR (IMediator) — Event publishing
 
+### 1.40 v0.7.2d Context Preview Panel
+
+**New Classes (v0.7.2d):**
+
+| Class                        | Introduced | Module         | Purpose                                   |
+| :--------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `ContextPreviewBridge`       | v0.7.2d    | Modules.Agents | MediatR → ViewModel event bridge          |
+| `FragmentViewModel`          | v0.7.2d    | Modules.Agents | Per-fragment display ViewModel            |
+| `StrategyToggleItem`         | v0.7.2d    | Modules.Agents | Strategy toggle control ViewModel         |
+| `ContextPreviewViewModel`    | v0.7.2d    | Modules.Agents | Main preview panel ViewModel              |
+| `ContextPreviewView`         | v0.7.2d    | Modules.Agents | Avalonia AXAML view                       |
+
+**New Extension Methods (v0.7.2d):**
+
+| Method                       | Defined In | Module         | Purpose                                   |
+| :--------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `AddContextPreviewPanel`     | v0.7.2d    | Modules.Agents | DI registration for preview panel         |
+
+**Dependencies (v0.7.2d):**
+- v0.7.2c (IContextOrchestrator, ContextAssembledEvent, StrategyToggleEvent) — Orchestrator and events
+- v0.7.2a (ContextFragment, IContextStrategy) — Fragment display and strategy listing
+- MediatR (INotificationHandler<T>) — Event handling via bridge
+- CommunityToolkit.Mvvm (ObservableObject, RelayCommand) — MVVM infrastructure
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

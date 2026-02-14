@@ -439,15 +439,15 @@ ASSEMBLE CONTEXT:
 |   3   | Implement content deduplication         |     3      |   ✅    |
 |   3   | Implement token budget trimming         |     2      |   ✅    |
 |   3   | Unit tests for orchestrator             |     4      |   ✅    |
-|   4   | Create `ContextPreviewView.axaml`       |     4      |   ☐    |
-|   4   | Create `ContextPreviewViewModel`        |     3      |   ☐    |
-|   4   | Create `ContextFragmentControl`         |     2      |   ☐    |
-|   4   | Implement toggle switches               |     2      |   ☐    |
-|   4   | Implement refresh functionality         |     1      |   ☐    |
-|   4   | Integrate with Co-pilot panel           |     2      |   ☐    |
-|   4   | Unit tests for ViewModel                |     3      |   ☐    |
+|   4   | Create `ContextPreviewView.axaml`       |     4      |   ✅    |
+|   4   | Create `ContextPreviewViewModel`        |     3      |   ✅    |
+|   4   | Create `ContextFragmentControl`         |     2      |   ✅    |
+|   4   | Implement toggle switches               |     2      |   ✅    |
+|   4   | Implement refresh functionality         |     1      |   ✅    |
+|   4   | Integrate with Co-pilot panel           |     2      |   ✅    |
+|   4   | Unit tests for ViewModel                |     3      |   ✅    |
 |   5   | Integration tests for full context flow |     4      |   ☐    |
-|   5   | DI registration in AgentsModule.cs      |     1      |   ☐    |
+|   5   | DI registration in AgentsModule.cs      |     1      |   ✅    |
 |       | **Total**                               |   **64**   |        |
 
 ---

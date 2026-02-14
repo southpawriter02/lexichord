@@ -87,7 +87,7 @@ graph LR
 | **LCS-DES-072a** | Context Strategy Interface  | [LCS-DES-072a.md](LCS-DES-072a.md) | Complete |
 | **LCS-DES-072b** | Built-in Context Strategies | [LCS-DES-072b.md](LCS-DES-072b.md) | Complete |
 | **LCS-DES-072c** | Context Orchestrator        | [LCS-DES-072c.md](LCS-DES-072c.md) | Complete |
-| **LCS-DES-072d** | Context Preview Panel       | [LCS-DES-072d.md](LCS-DES-072d.md) | Draft  |
+| **LCS-DES-072d** | Context Preview Panel       | [LCS-DES-072d.md](LCS-DES-072d.md) | Complete |
 
 ### 2.1 Sub-Part Dependency Graph
 
