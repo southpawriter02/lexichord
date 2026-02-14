@@ -243,6 +243,7 @@ public class FragmentViewModelTests
     [InlineData("heading", "📑")]
     [InlineData("rag", "🔍")]
     [InlineData("style", "🎨")]
+    [InlineData("knowledge", "🧠")]
     [InlineData("unknown", "📋")]
     [InlineData("custom-source", "📋")]
     public void SourceIcon_ReturnsCorrectIcon(string sourceId, string expectedIcon)

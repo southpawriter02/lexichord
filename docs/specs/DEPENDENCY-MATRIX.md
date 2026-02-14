@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.2c added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.2h added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1639,6 +1639,22 @@
 - v0.4.6e (Axiom, AxiomSeverity) — Axiom formatting with severity display
 - Microsoft.Extensions.Logging.Abstractions (ILogger<T>) — Structured logging
 - System.Text.Json (JsonSerializer, JsonIgnoreCondition) — JSON formatting with null suppression
+
+### 1.44 v0.7.2h Context Assembler Integration
+
+**Modified Classes (v0.7.2h):**
+
+| Class                            | Modified   | Module            | Changes                                   |
+| :------------------------------- | :--------- | :---------------- | :---------------------------------------- |
+| `ContextOrchestrator`            | v0.7.2h    | Modules.Agents    | Added "knowledge" priority mapping (30) to GetPriorityForSource() |
+| `FragmentViewModel`              | v0.7.2h    | Modules.Agents    | Added "knowledge" → "🧠" icon mapping to SourceIcon |
+| `StrategyToggleItem`             | v0.7.2h    | Modules.Agents    | Added "knowledge" tooltip to Tooltip switch |
+
+**Dependencies (v0.7.2h):**
+- v0.7.2a (StrategyPriority, IContextStrategy) — Priority constants and strategy interface
+- v0.7.2c (ContextOrchestrator, ContextAssembledEvent, StrategyToggleEvent) — Orchestrator and events
+- v0.7.2d (FragmentViewModel, StrategyToggleItem, ContextPreviewViewModel) — Preview panel ViewModels
+- v0.7.2e (KnowledgeContextStrategy, KnowledgeContextConfig) — Knowledge strategy implementation
 
 ## 2. MediatR Events Registry
 

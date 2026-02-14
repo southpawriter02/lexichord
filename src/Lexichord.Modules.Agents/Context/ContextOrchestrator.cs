@@ -425,8 +425,15 @@ public sealed class ContextOrchestrator : IContextOrchestrator
     ///   <item><term>heading</term><description>70 (Medium + 10)</description></item>
     ///   <item><term>rag</term><description>60 (Medium)</description></item>
     ///   <item><term>style</term><description>50 (Optional + 30)</description></item>
+    ///   <item><term>knowledge</term><description>30 (Optional + 10)</description></item>
     ///   <item><term>unknown</term><description>40 (Low)</description></item>
     /// </list>
+    /// <para>
+    /// <strong>Updated in:</strong> v0.7.2h to add the <c>"knowledge"</c> priority mapping.
+    /// Knowledge context is supplementary domain information from the Knowledge Graph,
+    /// so it receives a lower priority (30) than all other built-in strategies to ensure
+    /// it is trimmed first when the token budget is tight.
+    /// </para>
     /// </remarks>
     private static int GetPriorityForSource(string sourceId)
     {
@@ -438,6 +445,7 @@ public sealed class ContextOrchestrator : IContextOrchestrator
             "heading" => StrategyPriority.Medium + 10,      // 70
             "rag" => StrategyPriority.Medium,               // 60
             "style" => StrategyPriority.Optional + 30,      // 50
+            "knowledge" => StrategyPriority.Optional + 10,  // 30
             _ => StrategyPriority.Low                       // 40
         };
     }

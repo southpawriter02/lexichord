@@ -152,6 +152,24 @@ internal sealed partial class FragmentViewModel : ObservableObject
     /// <summary>
     /// Gets the icon for the source strategy type.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Icon mapping by strategy source ID:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><c>"document"</c> → 📄 (page for document content)</description></item>
+    ///   <item><description><c>"selection"</c> → ✂️ (scissors for selected text)</description></item>
+    ///   <item><description><c>"cursor"</c> → 📍 (pin for cursor position)</description></item>
+    ///   <item><description><c>"heading"</c> → 📑 (tabs for heading hierarchy)</description></item>
+    ///   <item><description><c>"rag"</c> → 🔍 (search for semantic search results)</description></item>
+    ///   <item><description><c>"style"</c> → 🎨 (palette for style rules)</description></item>
+    ///   <item><description><c>"knowledge"</c> → 🧠 (brain for knowledge graph entities)</description></item>
+    ///   <item><description>Unknown → 📋 (clipboard fallback)</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Updated in:</strong> v0.7.2h to add the <c>"knowledge"</c> icon mapping.
+    /// </para>
+    /// </remarks>
     public string SourceIcon => SourceId switch
     {
         "document" => "📄",
@@ -160,6 +178,7 @@ internal sealed partial class FragmentViewModel : ObservableObject
         "heading" => "📑",
         "rag" => "🔍",
         "style" => "🎨",
+        "knowledge" => "🧠",
         _ => "📋"
     };
 

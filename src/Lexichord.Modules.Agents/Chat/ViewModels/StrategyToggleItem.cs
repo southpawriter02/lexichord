@@ -104,6 +104,11 @@ internal sealed partial class StrategyToggleItem : ObservableObject
     /// <summary>
     /// Gets the tooltip text explaining what context this strategy provides.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <strong>Updated in:</strong> v0.7.2h to add the <c>"knowledge"</c> tooltip.
+    /// </para>
+    /// </remarks>
     public string Tooltip => StrategyId switch
     {
         "document" => "Include the current document content",
@@ -112,6 +117,7 @@ internal sealed partial class StrategyToggleItem : ObservableObject
         "heading" => "Include document heading structure",
         "rag" => "Include semantically related documentation",
         "style" => "Include active style rules",
+        "knowledge" => "Include knowledge graph entities and relationships",
         _ => $"Context from {DisplayName}"
     };
 

@@ -121,6 +121,7 @@ public class StrategyToggleItemTests
     [InlineData("heading", "heading structure")]
     [InlineData("rag", "semantically related")]
     [InlineData("style", "style rules")]
+    [InlineData("knowledge", "knowledge graph")]
     public void Tooltip_KnownStrategy_ReturnsDescriptiveText(string strategyId, string expectedSubstring)
     {
         // Arrange

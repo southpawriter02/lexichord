@@ -8,7 +8,7 @@
 | **System Breakdown** | LCS-SBD-072-KG |
 | **Version** | v0.7.2 |
 | **Codename** | Graph Context Strategy (CKVS Phase 4a) |
-| **Status** | In Progress |
+| **Status** | Complete |
 | **Last Updated** | 2026-02-14 |
 
 ---
@@ -26,7 +26,7 @@ This index catalogs all design specifications for the **Graph Context Strategy**
 | [LCS-DES-072-KG-e](LCS-DES-072-KG-e.md) | Knowledge Context Strategy | 5 | Implements IContextStrategy for graph data ✅ |
 | [LCS-DES-072-KG-f](LCS-DES-072-KG-f.md) | Entity Relevance Scorer | 4 | Ranks entities by query similarity ✅ |
 | [LCS-DES-072-KG-g](LCS-DES-072-KG-g.md) | Knowledge Context Formatter | 3 | Serializes for prompt injection ✅ |
-| [LCS-DES-072-KG-h](LCS-DES-072-KG-h.md) | Context Assembler Integration | 2 | Registers strategy with assembler |
+| [LCS-DES-072-KG-h](LCS-DES-072-KG-h.md) | Context Assembler Integration | 2 | Registers strategy with assembler ✅ |
 | **Total** | | **14** | |
 
 ---
@@ -243,5 +243,6 @@ Where:
 | 1.1 | 2026-02-14 | Lead Architect | Marked v0.7.2e as complete |
 | 1.2 | 2026-02-14 | Lead Architect | Marked v0.7.2f as complete |
 | 1.3 | 2026-02-14 | Lead Architect | Marked v0.7.2g as complete |
+| 1.4 | 2026-02-14 | Lead Architect | Marked v0.7.2h as complete; status → Complete |
 
 ---
