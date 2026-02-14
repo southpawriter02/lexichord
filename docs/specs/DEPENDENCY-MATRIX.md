@@ -1565,6 +1565,21 @@
 - MediatR (INotificationHandler<T>) — Event handling via bridge
 - CommunityToolkit.Mvvm (ObservableObject, RelayCommand) — MVVM infrastructure
 
+### 1.41 v0.7.2e Knowledge Context Strategy
+
+**New Classes (v0.7.2e):**
+
+| Class                        | Introduced | Module         | Purpose                                   |
+| :--------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `KnowledgeContextConfig`     | v0.7.2e    | Modules.Agents | Agent-specific knowledge context config   |
+| `KnowledgeContextStrategy`   | v0.7.2e    | Modules.Agents | Knowledge graph context strategy          |
+
+**Dependencies (v0.7.2e):**
+- v0.6.6e (IKnowledgeContextProvider, KnowledgeContextOptions, KnowledgeContext, ContextFormat) — Knowledge context pipeline
+- v0.7.2a (ContextStrategyBase, ContextGatheringRequest, ContextFragment) — Strategy base class and data models
+- v0.0.4c (ILicenseContext) — Runtime license tier checks
+- v0.6.1b (ITokenCounter) — Token estimation
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

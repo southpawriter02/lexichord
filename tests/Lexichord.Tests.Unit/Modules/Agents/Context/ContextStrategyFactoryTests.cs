@@ -24,6 +24,7 @@ namespace Lexichord.Tests.Unit.Modules.Agents.Context;
 /// Tests verify factory behavior including license tier filtering and strategy creation.
 /// v0.7.2a introduced the factory with no registered strategies.
 /// v0.7.2b populated registrations with 6 concrete strategies.
+/// v0.7.2e added the knowledge strategy (7 total).
 /// </remarks>
 [Trait("Category", "Unit")]
 [Trait("SubPart", "v0.7.2a")]
@@ -132,7 +133,7 @@ public class ContextStrategyFactoryTests
     /// (all strategies require WriterPro or higher).
     /// </summary>
     /// <remarks>
-    /// v0.7.2b: All 6 registered strategies require at least WriterPro,
+    /// v0.7.2b/e: All 7 registered strategies require at least WriterPro,
     /// so Core tier sees no available strategies.
     /// </remarks>
     [Fact]
@@ -175,11 +176,11 @@ public class ContextStrategyFactoryTests
     /// Verifies that AvailableStrategyIds returns all strategies for Teams tier.
     /// </summary>
     /// <remarks>
-    /// v0.7.2b: Teams tier provides access to all 6 strategies
-    /// (WriterPro strategies + rag + style).
+    /// v0.7.2e: Teams tier provides access to all 7 strategies
+    /// (WriterPro strategies + rag + style + knowledge).
     /// </remarks>
     [Fact]
-    public void AvailableStrategyIds_TeamsTier_ReturnsSixStrategies()
+    public void AvailableStrategyIds_TeamsTier_ReturnsSevenStrategies()
     {
         // Arrange
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Teams));
@@ -188,16 +189,17 @@ public class ContextStrategyFactoryTests
         var result = sut.AvailableStrategyIds;
 
         // Assert
-        result.Should().HaveCount(6);
+        result.Should().HaveCount(7);
         result.Should().Contain("rag");
         result.Should().Contain("style");
+        result.Should().Contain("knowledge");
     }
 
     /// <summary>
     /// Verifies that AvailableStrategyIds returns all strategies for Enterprise tier.
     /// </summary>
     [Fact]
-    public void AvailableStrategyIds_EnterpriseTier_ReturnsSixStrategies()
+    public void AvailableStrategyIds_EnterpriseTier_ReturnsSevenStrategies()
     {
         // Arrange
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Enterprise));
@@ -206,7 +208,7 @@ public class ContextStrategyFactoryTests
         var result = sut.AvailableStrategyIds;
 
         // Assert
-        result.Should().HaveCount(6);
+        result.Should().HaveCount(7);
     }
 
     /// <summary>
@@ -457,7 +459,7 @@ public class ContextStrategyFactoryTests
     /// Verifies that CreateAllStrategies skips strategies that fail to create.
     /// </summary>
     /// <remarks>
-    /// v0.7.2b: With Enterprise tier and failing DI, all 6 strategies attempt
+    /// v0.7.2e: With Enterprise tier and failing DI, all 7 strategies attempt
     /// creation but fail gracefully. Result is empty (all skipped).
     /// </remarks>
     [Fact]
@@ -539,6 +541,30 @@ public class ContextStrategyFactoryTests
 
         // Act
         var result = sut.IsAvailable("rag", tier);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    /// <summary>
+    /// Verifies tier-based availability for the "knowledge" strategy (requires Teams).
+    /// </summary>
+    /// <remarks>
+    /// v0.7.2e: "knowledge" strategy requires Teams (tier 2).
+    /// Core (0) = false, WriterPro (1) = false, Teams (2) = true, Enterprise (3) = true.
+    /// </remarks>
+    [Theory]
+    [InlineData(LicenseTier.Core, false)]
+    [InlineData(LicenseTier.WriterPro, false)]
+    [InlineData(LicenseTier.Teams, true)]
+    [InlineData(LicenseTier.Enterprise, true)]
+    public void IsAvailable_KnowledgeStrategy_ChecksTierRequirement(LicenseTier tier, bool expected)
+    {
+        // Arrange
+        var sut = CreateFactory();
+
+        // Act
+        var result = sut.IsAvailable("knowledge", tier);
 
         // Assert
         result.Should().Be(expected);

@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-072-KG                                               |
 | **Version**      | v0.7.2                                                       |
 | **Codename**     | Graph Context Strategy (CKVS Phase 4a)                       |
-| **Status**       | Draft                                                        |
-| **Last Updated** | 2026-01-31                                                   |
+| **Status**       | In Progress                                                  |
+| **Last Updated** | 2026-02-14                                                   |
 | **Owner**        | Lead Architect                                               |
 | **Depends On**   | v0.7.2 (Context Assembler), v0.6.6-KG (Knowledge-Aware Co-pilot) |
 
@@ -60,7 +60,7 @@ The existing v0.7.2 spec covers the **Context Assembler** for specialist agents:
 
 | Sub-Part | Title | Description | Est. Hours |
 |:---------|:------|:------------|:-----------|
-| v0.7.2e | Knowledge Context Strategy | Implements IContextStrategy | 5 |
+| v0.7.2e | Knowledge Context Strategy | Implements IContextStrategy | 5 ☑ |
 | v0.7.2f | Entity Relevance Scorer | Ranks entities by query similarity | 4 |
 | v0.7.2g | Knowledge Context Formatter | Serializes for prompt injection | 3 |
 | v0.7.2h | Context Assembler Integration | Registers strategy with assembler | 2 |

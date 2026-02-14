@@ -776,6 +776,11 @@ public static class AgentsServiceCollectionExtensions
         services.AddTransient<RAGContextStrategy>();
         services.AddTransient<StyleContextStrategy>();
 
+        // LOGIC: v0.7.2e — Register knowledge graph context strategy.
+        // Bridges the v0.6.6e IKnowledgeContextProvider pipeline into
+        // the v0.7.2 Context Assembler strategy interface.
+        services.AddTransient<KnowledgeContextStrategy>();
+
         // LOGIC: v0.7.2c — Register the Context Orchestrator that coordinates
         // all strategies during context assembly. See AddContextOrchestrator().
         services.AddContextOrchestrator();

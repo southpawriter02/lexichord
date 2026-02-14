@@ -88,6 +88,7 @@ graph LR
 | **LCS-DES-072b** | Built-in Context Strategies | [LCS-DES-072b.md](LCS-DES-072b.md) | Complete |
 | **LCS-DES-072c** | Context Orchestrator        | [LCS-DES-072c.md](LCS-DES-072c.md) | Complete |
 | **LCS-DES-072d** | Context Preview Panel       | [LCS-DES-072d.md](LCS-DES-072d.md) | Complete |
+| **LCS-DES-072-KG-e** | Knowledge Context Strategy | [LCS-DES-072-KG-e.md](LCS-DES-072-KG-e.md) | Complete |
 
 ### 2.1 Sub-Part Dependency Graph
 
@@ -286,16 +287,17 @@ public sealed record StrategyToggleEvent(
 
 ---
 
-## 6. Strategy Implementations (v0.7.2b)
+## 6. Strategy Implementations (v0.7.2b, v0.7.2e)
 
-| Strategy ID | Class                      | License    | Priority | Max Tokens | Description                 |
-| :---------- | :------------------------- | :--------- | :------: | :--------: | :-------------------------- |
-| `document`  | `DocumentContextStrategy`  | WriterPro+ |   100    |    4000    | Current document content    |
-| `selection` | `SelectionContextStrategy` | WriterPro+ |    90    |    1000    | Selected text with context  |
-| `cursor`    | `CursorContextStrategy`    | WriterPro+ |    80    |    500     | Text around cursor position |
-| `heading`   | `HeadingContextStrategy`   | WriterPro+ |    70    |    300     | Heading hierarchy path      |
-| `rag`       | `RAGContextStrategy`       | Teams+     |    60    |    2000    | Semantic search results     |
-| `style`     | `StyleContextStrategy`     | Teams+     |    50    |    1000    | Active style rules          |
+| Strategy ID | Class                        | License    | Priority | Max Tokens | Description                 |
+| :---------- | :--------------------------- | :--------- | :------: | :--------: | :-------------------------- |
+| `document`  | `DocumentContextStrategy`    | WriterPro+ |   100    |    4000    | Current document content    |
+| `selection` | `SelectionContextStrategy`   | WriterPro+ |    90    |    1000    | Selected text with context  |
+| `cursor`    | `CursorContextStrategy`      | WriterPro+ |    80    |    500     | Text around cursor position |
+| `heading`   | `HeadingContextStrategy`     | WriterPro+ |    70    |    300     | Heading hierarchy path      |
+| `rag`       | `RAGContextStrategy`         | Teams+     |    60    |    2000    | Semantic search results     |
+| `style`     | `StyleContextStrategy`       | Teams+     |    50    |    1000    | Active style rules          |
+| `knowledge` | `KnowledgeContextStrategy`   | Teams+     |    30    |    4000    | Knowledge graph entities    |
 
 ### 6.1 Strategy Class Diagram
 
@@ -844,5 +846,6 @@ var tokenUsage = _meter.CreateHistogram<int>(
 | :------ | :--------- | :--------------------------------------------- |
 | 0.1     | 2026-01-28 | Initial draft                                  |
 | 0.2     | 2026-02-14 | Updated LCS-DES-072a, 072b status to Complete  |
+| 0.3     | 2026-02-14 | Added LCS-DES-072-KG-e (Knowledge Context Strategy) as Complete |
 
 ---
