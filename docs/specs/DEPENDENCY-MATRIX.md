@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.2b added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.2c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1505,6 +1505,42 @@
 - v0.2.1b (IStyleEngine) — Style sheet and rule access
 - v0.6.1b (ITokenCounter) — Token counting (via base class)
 
+### 1.38 v0.7.2c Context Orchestrator
+
+**New Interfaces (v0.7.2c):**
+
+| Interface              | Defined In | Module       | Purpose                              |
+| :--------------------- | :--------- | :----------- | :----------------------------------- |
+| `IContextOrchestrator` | v0.7.2c    | Abstractions | Context assembly coordination        |
+
+**New Records (v0.7.2c):**
+
+| Record                   | Defined In | Module         | Purpose                           |
+| :----------------------- | :--------- | :------------- | :-------------------------------- |
+| `AssembledContext`        | v0.7.2c    | Abstractions   | Assembly result with helpers      |
+| `ContextAssembledEvent`  | v0.7.2c    | Modules.Agents | MediatR event after assembly      |
+| `StrategyToggleEvent`    | v0.7.2c    | Modules.Agents | MediatR event on strategy toggle  |
+
+**New Classes (v0.7.2c):**
+
+| Class                   | Defined In | Module         | Purpose                           |
+| :---------------------- | :--------- | :------------- | :-------------------------------- |
+| `ContextOrchestrator`   | v0.7.2c    | Modules.Agents | Core orchestration engine         |
+| `ContextOptions`        | v0.7.2c    | Modules.Agents | Assembly configuration options    |
+| `ContentDeduplicator`   | v0.7.2c    | Modules.Agents | Jaccard similarity calculator     |
+
+**New Extension Methods (v0.7.2c):**
+
+| Method                   | Defined In | Module         | Purpose                           |
+| :----------------------- | :--------- | :------------- | :-------------------------------- |
+| `AddContextOrchestrator` | v0.7.2c    | Modules.Agents | DI registration for orchestrator  |
+
+**Dependencies (v0.7.2c):**
+- v0.7.2a (IContextStrategyFactory, ContextFragment, ContextBudget) — Strategy factory and types
+- v0.7.2b (Concrete strategies) — Strategy implementations
+- v0.6.1b (ITokenCounter) — Token counting for budget trimming
+- MediatR (IMediator) — Event publishing
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1554,6 +1590,8 @@
 | `SearchResultsExportedEvent`    | v0.5.7d    | Search results exported to file   |
 | `SelectionContextSetEvent`     | v0.6.7a    | Selection sent to Co-pilot chat   |
 | `QuickActionExecutedEvent`     | v0.6.7d    | Quick action executed (telemetry) |
+| `ContextAssembledEvent`        | v0.7.2c    | Context assembly completed        |
+| `StrategyToggleEvent`          | v0.7.2c    | Context strategy toggled          |
 
 ---
 

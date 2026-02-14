@@ -5,7 +5,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts.LLM;
+using Lexichord.Modules.Agents.Context;
 using Lexichord.Modules.Agents.Context.Strategies;
 using Lexichord.Modules.Agents.Templates;
 using Lexichord.Modules.Agents.Templates.Formatters;
@@ -772,6 +774,66 @@ public static class AgentsServiceCollectionExtensions
         // Teams-tier strategies (advanced collaboration features)
         services.AddTransient<RAGContextStrategy>();
         services.AddTransient<StyleContextStrategy>();
+
+        // LOGIC: v0.7.2c — Register the Context Orchestrator that coordinates
+        // all strategies during context assembly. See AddContextOrchestrator().
+        services.AddContextOrchestrator();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Context Orchestrator and its configuration options.
+    /// </summary>
+    /// <param name="services">The service collection to add to.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ContextOptions"/> via <c>AddOptions</c> with sensible defaults</description></item>
+    ///   <item><description><see cref="IContextOrchestrator"/> → <see cref="ContextOrchestrator"/> as Singleton</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Singleton Lifetime:</strong>
+    /// The orchestrator is registered as a singleton because it maintains per-strategy
+    /// enabled/disabled state in a <c>ConcurrentDictionary</c>. This state persists
+    /// for the application lifetime and is shared across all context assembly requests.
+    /// </para>
+    /// <para>
+    /// <strong>Configuration:</strong>
+    /// <see cref="ContextOptions"/> uses <c>AddOptions</c> with defaults rather than
+    /// configuration binding, because <c>AgentsModule.RegisterServices()</c> does not
+    /// receive <c>IConfiguration</c>. Consumers can override defaults by binding
+    /// <c>IConfiguration.GetSection("Context")</c> to <c>ContextOptions</c> in the host.
+    /// </para>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.7.2c as part of the Context Orchestrator.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Called automatically from AddContextStrategies()
+    /// services.AddContextStrategies(); // includes AddContextOrchestrator()
+    ///
+    /// // Or called directly for testing
+    /// services.AddContextOrchestrator();
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddContextOrchestrator(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.2c — Register ContextOptions with defaults.
+        // Uses AddOptions<T>() pattern (matching PerformanceOptions) since
+        // AgentsModule.RegisterServices() does not receive IConfiguration.
+        services.AddOptions<ContextOptions>();
+
+        // LOGIC: v0.7.2c — Register ContextOrchestrator as Singleton.
+        // Singleton is required to maintain strategy enabled/disabled state
+        // in the ConcurrentDictionary across requests.
+        services.AddSingleton<IContextOrchestrator, ContextOrchestrator>();
 
         return services;
     }
