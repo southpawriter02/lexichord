@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-13 (v0.7.2a added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.2b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1485,6 +1485,25 @@
 **Dependencies (v0.7.2a):**
 - v0.6.1b (ITokenCounter) — Token counting and truncation
 - v0.0.6a (ILicenseContext) — License tier checking
+
+**New Classes (v0.7.2b):**
+
+| Class                       | Defined In | Module         | Purpose                           |
+| :-------------------------- | :--------- | :------------- | :-------------------------------- |
+| `DocumentContextStrategy`   | v0.7.2b    | Modules.Agents | Document content strategy         |
+| `SelectionContextStrategy`  | v0.7.2b    | Modules.Agents | Selected text strategy            |
+| `CursorContextStrategy`     | v0.7.2b    | Modules.Agents | Cursor window strategy            |
+| `HeadingContextStrategy`    | v0.7.2b    | Modules.Agents | Heading hierarchy strategy        |
+| `RAGContextStrategy`        | v0.7.2b    | Modules.Agents | Semantic search strategy          |
+| `StyleContextStrategy`      | v0.7.2b    | Modules.Agents | Style rules strategy              |
+
+**Dependencies (v0.7.2b):**
+- v0.7.2a (IContextStrategy, ContextStrategyBase) — Strategy abstraction layer
+- v0.1.3a (IEditorService) — Document/selection/cursor access
+- v0.5.3c (IHeadingHierarchyService) — Heading tree building
+- v0.4.5a (ISemanticSearchService) — RAG semantic search
+- v0.2.1b (IStyleEngine) — Style sheet and rule access
+- v0.6.1b (ITokenCounter) — Token counting (via base class)
 
 ## 2. MediatR Events Registry
 

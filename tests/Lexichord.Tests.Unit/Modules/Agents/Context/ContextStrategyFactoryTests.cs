@@ -9,6 +9,7 @@ using FluentAssertions;
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Modules.Agents.Context;
+using Lexichord.Modules.Agents.Context.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -21,8 +22,8 @@ namespace Lexichord.Tests.Unit.Modules.Agents.Context;
 /// </summary>
 /// <remarks>
 /// Tests verify factory behavior including license tier filtering and strategy creation.
-/// Note: v0.7.2a has no registered strategies, so many tests verify empty/null behavior.
-/// Introduced in v0.7.2a.
+/// v0.7.2a introduced the factory with no registered strategies.
+/// v0.7.2b populated registrations with 6 concrete strategies.
 /// </remarks>
 [Trait("Category", "Unit")]
 [Trait("SubPart", "v0.7.2a")]
@@ -127,17 +128,18 @@ public class ContextStrategyFactoryTests
     #region AvailableStrategyIds Tests
 
     /// <summary>
-    /// Verifies that AvailableStrategyIds returns empty list when no strategies registered.
+    /// Verifies that AvailableStrategyIds returns empty list for Core tier
+    /// (all strategies require WriterPro or higher).
     /// </summary>
     /// <remarks>
-    /// NOTE: v0.7.2a has no registered strategies, so this is the expected behavior.
-    /// v0.7.2b will add concrete strategies and this test will need updating.
+    /// v0.7.2b: All 6 registered strategies require at least WriterPro,
+    /// so Core tier sees no available strategies.
     /// </remarks>
     [Fact]
-    public void AvailableStrategyIds_NoStrategiesRegistered_ReturnsEmptyList()
+    public void AvailableStrategyIds_CoreTier_ReturnsEmptyList()
     {
         // Arrange
-        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Enterprise));
+        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Core));
 
         // Act
         var result = sut.AvailableStrategyIds;
@@ -147,20 +149,80 @@ public class ContextStrategyFactoryTests
     }
 
     /// <summary>
-    /// Verifies that AvailableStrategyIds returns same instance on multiple calls.
+    /// Verifies that AvailableStrategyIds returns WriterPro-tier strategies.
+    /// </summary>
+    /// <remarks>
+    /// v0.7.2b: WriterPro tier provides access to document, selection, cursor, heading.
+    /// </remarks>
+    [Fact]
+    public void AvailableStrategyIds_WriterProTier_ReturnsFourStrategies()
+    {
+        // Arrange
+        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.WriterPro));
+
+        // Act
+        var result = sut.AvailableStrategyIds;
+
+        // Assert
+        result.Should().HaveCount(4);
+        result.Should().Contain("document");
+        result.Should().Contain("selection");
+        result.Should().Contain("cursor");
+        result.Should().Contain("heading");
+    }
+
+    /// <summary>
+    /// Verifies that AvailableStrategyIds returns all strategies for Teams tier.
+    /// </summary>
+    /// <remarks>
+    /// v0.7.2b: Teams tier provides access to all 6 strategies
+    /// (WriterPro strategies + rag + style).
+    /// </remarks>
+    [Fact]
+    public void AvailableStrategyIds_TeamsTier_ReturnsSixStrategies()
+    {
+        // Arrange
+        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Teams));
+
+        // Act
+        var result = sut.AvailableStrategyIds;
+
+        // Assert
+        result.Should().HaveCount(6);
+        result.Should().Contain("rag");
+        result.Should().Contain("style");
+    }
+
+    /// <summary>
+    /// Verifies that AvailableStrategyIds returns all strategies for Enterprise tier.
+    /// </summary>
+    [Fact]
+    public void AvailableStrategyIds_EnterpriseTier_ReturnsSixStrategies()
+    {
+        // Arrange
+        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Enterprise));
+
+        // Act
+        var result = sut.AvailableStrategyIds;
+
+        // Assert
+        result.Should().HaveCount(6);
+    }
+
+    /// <summary>
+    /// Verifies that AvailableStrategyIds returns consistent results on multiple calls.
     /// </summary>
     [Fact]
     public void AvailableStrategyIds_MultipleCalls_ReturnsSameList()
     {
         // Arrange
-        var sut = CreateFactory();
+        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Teams));
 
         // Act
         var result1 = sut.AvailableStrategyIds;
         var result2 = sut.AvailableStrategyIds;
 
         // Assert
-        // Note: We're checking behavior, not reference equality, since it's a computed property
         result1.Should().Equal(result2);
     }
 
@@ -207,24 +269,19 @@ public class ContextStrategyFactoryTests
     }
 
     /// <summary>
-    /// Verifies that CreateStrategy returns null when strategy not available for tier.
+    /// Verifies that CreateStrategy returns null when strategy requires higher tier.
     /// </summary>
     /// <remarks>
-    /// NOTE: This test is currently hypothetical since v0.7.2a has no registered strategies.
-    /// When strategies are added in v0.7.2b, this test will verify tier-based filtering.
-    /// For now, it verifies the behavior of returning null for unavailable strategies.
+    /// v0.7.2b: "rag" strategy requires Teams tier. Core tier should be denied.
     /// </remarks>
     [Fact]
     public void CreateStrategy_InsufficientTier_ReturnsNull()
     {
-        // Arrange
-        // NOTE: Since no strategies are registered in v0.7.2a, this test will always
-        // return null due to unknown strategy, not due to tier checking.
-        // When strategies are added in v0.7.2b, update this test with actual strategy IDs.
+        // Arrange — Core tier cannot access Teams-tier "rag" strategy
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Core));
 
         // Act
-        var result = sut.CreateStrategy("hypothetical-teams-strategy");
+        var result = sut.CreateStrategy("rag");
 
         // Assert
         result.Should().BeNull();
@@ -234,8 +291,7 @@ public class ContextStrategyFactoryTests
     /// Verifies that CreateStrategy logs debug when strategy not available for tier.
     /// </summary>
     /// <remarks>
-    /// NOTE: This test is currently hypothetical since v0.7.2a has no registered strategies.
-    /// When strategies are added in v0.7.2b, this test will verify tier-based logging.
+    /// v0.7.2b: "rag" strategy requires Teams tier. Core tier triggers debug log.
     /// </remarks>
     [Fact]
     public void CreateStrategy_InsufficientTier_LogsDebug()
@@ -245,15 +301,13 @@ public class ContextStrategyFactoryTests
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Core), logger: logger);
 
         // Act
-        sut.CreateStrategy("hypothetical-teams-strategy");
+        sut.CreateStrategy("rag");
 
         // Assert
-        // NOTE: Since strategy is unknown, we'll get a warning instead of debug for tier.
-        // When strategies are added in v0.7.2b, update this assertion.
         logger.Received(1).Log(
-            LogLevel.Warning,
+            LogLevel.Debug,
             Arg.Any<EventId>(),
-            Arg.Any<object>(),
+            Arg.Is<object>(o => o.ToString()!.Contains("rag") && o.ToString()!.Contains("not available")),
             null,
             Arg.Any<Func<object, Exception?, string>>());
     }
@@ -261,6 +315,10 @@ public class ContextStrategyFactoryTests
     /// <summary>
     /// Verifies that CreateStrategy handles DI resolution errors gracefully.
     /// </summary>
+    /// <remarks>
+    /// v0.7.2b: "document" is now a registered strategy. When DI can't resolve it,
+    /// the factory returns null instead of throwing.
+    /// </remarks>
     [Fact]
     public void CreateStrategy_DIResolutionFails_ReturnsNull()
     {
@@ -271,8 +329,6 @@ public class ContextStrategyFactoryTests
         var sut = CreateFactory(services: services, license: CreateLicenseContext(LicenseTier.Enterprise));
 
         // Act
-        // NOTE: Since no strategies are registered, this will return null due to unknown strategy.
-        // When strategies are added in v0.7.2b, this test will verify error handling.
         var result = sut.CreateStrategy("document");
 
         // Assert
@@ -282,6 +338,9 @@ public class ContextStrategyFactoryTests
     /// <summary>
     /// Verifies that CreateStrategy logs error when DI resolution fails.
     /// </summary>
+    /// <remarks>
+    /// v0.7.2b: "document" is now a registered strategy. DI failure triggers error log.
+    /// </remarks>
     [Fact]
     public void CreateStrategy_DIResolutionFails_LogsError()
     {
@@ -296,14 +355,37 @@ public class ContextStrategyFactoryTests
         sut.CreateStrategy("document");
 
         // Assert
-        // NOTE: Since strategy is unknown, we'll get a warning instead of error.
-        // When strategies are added in v0.7.2b, update this assertion to expect LogLevel.Error.
-        logger.Received().Log(
-            Arg.Any<LogLevel>(),
+        logger.Received(1).Log(
+            LogLevel.Error,
             Arg.Any<EventId>(),
-            Arg.Any<object>(),
-            Arg.Any<Exception?>(),
+            Arg.Is<object>(o => o.ToString()!.Contains("document")),
+            Arg.Any<Exception>(),
             Arg.Any<Func<object, Exception?, string>>());
+    }
+
+    /// <summary>
+    /// Verifies that WriterPro tier can access "document" but not "rag".
+    /// </summary>
+    [Fact]
+    public void CreateStrategy_WriterProTier_CanAccessDocumentButNotRag()
+    {
+        // Arrange
+        var services = Substitute.For<IServiceProvider>();
+        services.GetService(Arg.Any<Type>()).Returns(_ => throw new InvalidOperationException("Not configured"));
+
+        var sut = CreateFactory(services: services, license: CreateLicenseContext(LicenseTier.WriterPro));
+
+        // Act — "document" is registered and WriterPro has access, so DI is attempted
+        var docResult = sut.CreateStrategy("document");
+
+        // Assert — returns null because DI fails, but the strategy IS registered (not an unknown warning)
+        docResult.Should().BeNull();
+
+        // Act — "rag" requires Teams tier, so WriterPro is denied before DI is attempted
+        var ragResult = sut.CreateStrategy("rag");
+
+        // Assert
+        ragResult.Should().BeNull();
     }
 
     #endregion
@@ -311,17 +393,36 @@ public class ContextStrategyFactoryTests
     #region CreateAllStrategies Tests
 
     /// <summary>
-    /// Verifies that CreateAllStrategies returns empty list when no strategies registered.
+    /// Verifies that CreateAllStrategies returns empty list when DI can't resolve strategies.
     /// </summary>
     /// <remarks>
-    /// NOTE: v0.7.2a has no registered strategies, so this is the expected behavior.
-    /// v0.7.2b will add concrete strategies and this test will need updating.
+    /// v0.7.2b: Strategies are registered, but DI resolution fails for all.
+    /// The factory gracefully returns empty instead of throwing.
     /// </remarks>
     [Fact]
-    public void CreateAllStrategies_NoStrategiesRegistered_ReturnsEmptyList()
+    public void CreateAllStrategies_AllStrategiesFail_ReturnsEmptyList()
     {
         // Arrange
-        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Enterprise));
+        var services = Substitute.For<IServiceProvider>();
+        services.GetService(Arg.Any<Type>()).Returns(_ => throw new InvalidOperationException("Service not found"));
+
+        var sut = CreateFactory(services: services, license: CreateLicenseContext(LicenseTier.Enterprise));
+
+        // Act
+        var result = sut.CreateAllStrategies();
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Verifies that CreateAllStrategies returns empty for Core tier (no strategies available).
+    /// </summary>
+    [Fact]
+    public void CreateAllStrategies_CoreTier_ReturnsEmptyList()
+    {
+        // Arrange
+        var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Core));
 
         // Act
         var result = sut.CreateAllStrategies();
@@ -356,8 +457,8 @@ public class ContextStrategyFactoryTests
     /// Verifies that CreateAllStrategies skips strategies that fail to create.
     /// </summary>
     /// <remarks>
-    /// NOTE: This test is currently hypothetical since v0.7.2a has no registered strategies.
-    /// When strategies are added in v0.7.2b, this test will verify error handling.
+    /// v0.7.2b: With Enterprise tier and failing DI, all 6 strategies attempt
+    /// creation but fail gracefully. Result is empty (all skipped).
     /// </remarks>
     [Fact]
     public void CreateAllStrategies_SomeStrategiesFail_SkipsFailedStrategies()
@@ -372,8 +473,6 @@ public class ContextStrategyFactoryTests
         var result = sut.CreateAllStrategies();
 
         // Assert
-        // NOTE: Since no strategies are registered, result will be empty anyway.
-        // When strategies are added in v0.7.2b, this test will verify partial success.
         result.Should().BeEmpty();
     }
 
@@ -398,26 +497,48 @@ public class ContextStrategyFactoryTests
     }
 
     /// <summary>
-    /// Verifies that IsAvailable checks tier requirement.
+    /// Verifies tier-based availability for the "document" strategy (requires WriterPro).
     /// </summary>
     /// <remarks>
-    /// NOTE: This test is currently hypothetical since v0.7.2a has no registered strategies.
-    /// When strategies are added in v0.7.2b, update this test with actual strategy IDs and tiers.
+    /// v0.7.2b: "document" strategy requires WriterPro (tier 1).
+    /// Core (0) = false, WriterPro (1) = true, Teams (2) = true, Enterprise (3) = true.
     /// </remarks>
     [Theory]
     [InlineData(LicenseTier.Core, false)]
-    [InlineData(LicenseTier.WriterPro, false)]
-    [InlineData(LicenseTier.Teams, false)]
-    [InlineData(LicenseTier.Enterprise, false)]
-    public void IsAvailable_ChecksTierRequirement(LicenseTier tier, bool expected)
+    [InlineData(LicenseTier.WriterPro, true)]
+    [InlineData(LicenseTier.Teams, true)]
+    [InlineData(LicenseTier.Enterprise, true)]
+    public void IsAvailable_DocumentStrategy_ChecksTierRequirement(LicenseTier tier, bool expected)
     {
         // Arrange
         var sut = CreateFactory();
 
         // Act
-        // NOTE: Using hypothetical strategy ID. When strategies are added in v0.7.2b,
-        // replace "hypothetical-writerpro-strategy" with actual strategy ID (e.g., "document").
-        var result = sut.IsAvailable("hypothetical-writerpro-strategy", tier);
+        var result = sut.IsAvailable("document", tier);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    /// <summary>
+    /// Verifies tier-based availability for the "rag" strategy (requires Teams).
+    /// </summary>
+    /// <remarks>
+    /// v0.7.2b: "rag" strategy requires Teams (tier 2).
+    /// Core (0) = false, WriterPro (1) = false, Teams (2) = true, Enterprise (3) = true.
+    /// </remarks>
+    [Theory]
+    [InlineData(LicenseTier.Core, false)]
+    [InlineData(LicenseTier.WriterPro, false)]
+    [InlineData(LicenseTier.Teams, true)]
+    [InlineData(LicenseTier.Enterprise, true)]
+    public void IsAvailable_RagStrategy_ChecksTierRequirement(LicenseTier tier, bool expected)
+    {
+        // Arrange
+        var sut = CreateFactory();
+
+        // Act
+        var result = sut.IsAvailable("rag", tier);
 
         // Assert
         result.Should().Be(expected);

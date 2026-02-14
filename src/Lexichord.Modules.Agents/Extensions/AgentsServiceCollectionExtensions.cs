@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------
 
 using Lexichord.Abstractions.Contracts.LLM;
+using Lexichord.Modules.Agents.Context.Strategies;
 using Lexichord.Modules.Agents.Templates;
 using Lexichord.Modules.Agents.Templates.Formatters;
 using Lexichord.Modules.Agents.Templates.Providers;
@@ -755,8 +756,22 @@ public static class AgentsServiceCollectionExtensions
 
         // NOTE: ITokenCounter is already registered by other modules (v0.6.1b)
         // NOTE: ILicenseContext is already registered by Licensing module (v0.0.6a)
-        // NOTE: In v0.7.2a, no concrete strategies are registered. This will be
-        //       added in v0.7.2b when strategy implementations are created.
+
+        // LOGIC: v0.7.2b — Register concrete context strategy implementations.
+        // Strategies are registered as Transient because:
+        //   1. They are lightweight and stateless (no shared mutable state)
+        //   2. Each resolution gets fresh logger/service references
+        //   3. Factory creates them on demand per context-gathering cycle
+
+        // WriterPro-tier strategies (core writing context)
+        services.AddTransient<DocumentContextStrategy>();
+        services.AddTransient<SelectionContextStrategy>();
+        services.AddTransient<CursorContextStrategy>();
+        services.AddTransient<HeadingContextStrategy>();
+
+        // Teams-tier strategies (advanced collaboration features)
+        services.AddTransient<RAGContextStrategy>();
+        services.AddTransient<StyleContextStrategy>();
 
         return services;
     }

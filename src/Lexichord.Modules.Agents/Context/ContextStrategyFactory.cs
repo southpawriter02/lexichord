@@ -7,6 +7,7 @@
 
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Modules.Agents.Context.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -29,8 +30,11 @@ namespace Lexichord.Modules.Agents.Context;
 /// <strong>Strategy Registration:</strong>
 /// The factory maintains a static registration dictionary (<see cref="_registrations"/>)
 /// that maps strategy IDs to their implementation types and minimum license tiers.
-/// In v0.7.2a, this dictionary is intentionally empty - concrete strategies will be
-/// registered in v0.7.2b.
+/// As of v0.7.2b, this dictionary contains 6 built-in strategies:
+/// <list type="bullet">
+///   <item><description><c>document</c>, <c>selection</c>, <c>cursor</c>, <c>heading</c> — WriterPro tier</description></item>
+///   <item><description><c>rag</c>, <c>style</c> — Teams tier</description></item>
+/// </list>
 /// </para>
 /// <para>
 /// <strong>Thread Safety:</strong>
@@ -69,22 +73,22 @@ public sealed class ContextStrategyFactory : IContextStrategyFactory
     private readonly ILogger<ContextStrategyFactory> _logger;
 
     // LOGIC: Static registration of built-in strategies.
-    // v0.7.2a: Empty dictionary (no strategies implemented yet)
-    // v0.7.2b: Will add concrete implementations for these types:
-    //   ["document"] = (typeof(DocumentContextStrategy), LicenseTier.WriterPro),
-    //   ["selection"] = (typeof(SelectionContextStrategy), LicenseTier.WriterPro),
-    //   ["cursor"] = (typeof(CursorContextStrategy), LicenseTier.WriterPro),
-    //   ["heading"] = (typeof(HeadingContextStrategy), LicenseTier.WriterPro),
-    //   ["rag"] = (typeof(RAGContextStrategy), LicenseTier.Teams),
-    //   ["style"] = (typeof(StyleContextStrategy), LicenseTier.Teams),
-    //
-    // This dictionary maps strategy ID → (Implementation Type, Minimum License Tier)
+    // Maps strategy ID → (Implementation Type, Minimum License Tier).
+    // v0.7.2a: Empty dictionary (interface layer only).
+    // v0.7.2b: Populated with 6 concrete strategy implementations:
+    //   - WriterPro tier: document, selection, cursor, heading
+    //   - Teams tier: rag, style
     private static readonly Dictionary<string, (Type Type, LicenseTier MinTier)> _registrations = new()
     {
-        // NOTE: v0.7.2a intentionally has no registered strategies.
-        // This allows the interface layer to be tested and deployed
-        // independently of concrete strategy implementations.
-        // Concrete strategies will be added in v0.7.2b.
+        // WriterPro-tier strategies (core writing context)
+        ["document"] = (typeof(DocumentContextStrategy), LicenseTier.WriterPro),
+        ["selection"] = (typeof(SelectionContextStrategy), LicenseTier.WriterPro),
+        ["cursor"] = (typeof(CursorContextStrategy), LicenseTier.WriterPro),
+        ["heading"] = (typeof(HeadingContextStrategy), LicenseTier.WriterPro),
+
+        // Teams-tier strategies (advanced collaboration features)
+        ["rag"] = (typeof(RAGContextStrategy), LicenseTier.Teams),
+        ["style"] = (typeof(StyleContextStrategy), LicenseTier.Teams),
     };
 
     /// <summary>

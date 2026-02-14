@@ -84,8 +84,8 @@ graph LR
 
 | ID               | Title                       | Document                           | Status |
 | :--------------- | :-------------------------- | :--------------------------------- | :----- |
-| **LCS-DES-072a** | Context Strategy Interface  | [LCS-DES-072a.md](LCS-DES-072a.md) | Draft  |
-| **LCS-DES-072b** | Built-in Context Strategies | [LCS-DES-072b.md](LCS-DES-072b.md) | Draft  |
+| **LCS-DES-072a** | Context Strategy Interface  | [LCS-DES-072a.md](LCS-DES-072a.md) | Complete |
+| **LCS-DES-072b** | Built-in Context Strategies | [LCS-DES-072b.md](LCS-DES-072b.md) | Complete |
 | **LCS-DES-072c** | Context Orchestrator        | [LCS-DES-072c.md](LCS-DES-072c.md) | Draft  |
 | **LCS-DES-072d** | Context Preview Panel       | [LCS-DES-072d.md](LCS-DES-072d.md) | Draft  |
 
@@ -840,8 +840,9 @@ var tokenUsage = _meter.CreateHistogram<int>(
 
 ## 18. Changelog
 
-| Version | Date       | Changes       |
-| :------ | :--------- | :------------ |
-| 0.1     | 2026-01-28 | Initial draft |
+| Version | Date       | Changes                                        |
+| :------ | :--------- | :--------------------------------------------- |
+| 0.1     | 2026-01-28 | Initial draft                                  |
+| 0.2     | 2026-02-14 | Updated LCS-DES-072a, 072b status to Complete  |
 
 ---

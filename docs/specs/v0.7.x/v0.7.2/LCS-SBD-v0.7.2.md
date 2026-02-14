@@ -426,13 +426,13 @@ ASSEMBLE CONTEXT:
 |   1   | Create `ContextGatheringRequest` record |     1      |   ✅    |
 |   1   | Create `ContextFragment` record         |     1      |   ✅    |
 |   1   | Unit tests for core contracts           |     2      |   ✅    |
-|   2   | Implement `DocumentContextStrategy`     |     3      |   ☐    |
-|   2   | Implement `SelectionContextStrategy`    |     2      |   ☐    |
-|   2   | Implement `CursorContextStrategy`       |     2      |   ☐    |
-|   2   | Implement `HeadingContextStrategy`      |     3      |   ☐    |
-|   2   | Implement `RAGContextStrategy`          |     4      |   ☐    |
-|   2   | Implement `StyleContextStrategy`        |     3      |   ☐    |
-|   2   | Unit tests for all strategies           |     6      |   ☐    |
+|   2   | Implement `DocumentContextStrategy`     |     3      |   ✅    |
+|   2   | Implement `SelectionContextStrategy`    |     2      |   ✅    |
+|   2   | Implement `CursorContextStrategy`       |     2      |   ✅    |
+|   2   | Implement `HeadingContextStrategy`      |     3      |   ✅    |
+|   2   | Implement `RAGContextStrategy`          |     4      |   ✅    |
+|   2   | Implement `StyleContextStrategy`        |     3      |   ✅    |
+|   2   | Unit tests for all strategies           |     6      |   ✅    |
 |   3   | Define `IContextOrchestrator` interface |     1      |   ☐    |
 |   3   | Implement parallel strategy execution   |     3      |   ☐    |
 |   3   | Implement priority sorting              |     2      |   ☐    |
@@ -974,23 +974,23 @@ dotnet test --filter "FullyQualifiedName~ContextPreviewViewModel"
 
 | #   | Deliverable                                  | Status |
 | :-- | :------------------------------------------- | :----- |
-| 1   | `IContextStrategy` interface in Abstractions | [ ]    |
-| 2   | `ContextGatheringRequest` record             | [ ]    |
-| 3   | `ContextFragment` record                     | [ ]    |
-| 4   | `DocumentContextStrategy` implementation     | [ ]    |
-| 5   | `SelectionContextStrategy` implementation    | [ ]    |
-| 6   | `CursorContextStrategy` implementation       | [ ]    |
-| 7   | `HeadingContextStrategy` implementation      | [ ]    |
-| 8   | `RAGContextStrategy` implementation          | [ ]    |
-| 9   | `StyleContextStrategy` implementation        | [ ]    |
+| 1   | `IContextStrategy` interface in Abstractions | [x]    |
+| 2   | `ContextGatheringRequest` record             | [x]    |
+| 3   | `ContextFragment` record                     | [x]    |
+| 4   | `DocumentContextStrategy` implementation     | [x]    |
+| 5   | `SelectionContextStrategy` implementation    | [x]    |
+| 6   | `CursorContextStrategy` implementation       | [x]    |
+| 7   | `HeadingContextStrategy` implementation      | [x]    |
+| 8   | `RAGContextStrategy` implementation          | [x]    |
+| 9   | `StyleContextStrategy` implementation        | [x]    |
 | 10  | `IContextOrchestrator` interface             | [ ]    |
 | 11  | `ContextOrchestrator` implementation         | [ ]    |
 | 12  | `ContextPreviewView.axaml`                   | [ ]    |
 | 13  | `ContextPreviewViewModel`                    | [ ]    |
-| 14  | Unit tests for all strategies                | [ ]    |
+| 14  | Unit tests for all strategies                | [x]    |
 | 15  | Unit tests for orchestrator                  | [ ]    |
 | 16  | Integration tests for full context flow      | [ ]    |
-| 17  | DI registration complete                     | [ ]    |
+| 17  | DI registration complete                     | [x]    |
 
 ---
 
