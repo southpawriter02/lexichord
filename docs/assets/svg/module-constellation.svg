@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100" width="600" height="100">
+  <!-- Connection lines (drawn first, behind nodes) -->
+  <g stroke="#c4b5a0" stroke-width="0.8" opacity="0.25">
+    <!-- Hub to spokes -->
+    <line x1="300" y1="50" x2="180" y2="30"/>
+    <line x1="300" y1="50" x2="420" y2="30"/>
+    <line x1="300" y1="50" x2="180" y2="70"/>
+    <line x1="300" y1="50" x2="420" y2="70"/>
+    <line x1="300" y1="50" x2="140" y2="50"/>
+    <line x1="300" y1="50" x2="460" y2="50"/>
+    <!-- Cross connections -->
+    <line x1="180" y1="30" x2="180" y2="70"/>
+    <line x1="420" y1="30" x2="420" y2="70"/>
+    <line x1="180" y1="30" x2="420" y2="30"/>
+    <line x1="180" y1="70" x2="420" y2="70"/>
+  </g>
+  <!-- Central hub (Host) -->
+  <circle cx="300" cy="50" r="10" fill="#8B5CF6" opacity="0.7"/>
+  <circle cx="300" cy="50" r="6" fill="#8B5CF6" opacity="0.9"/>
+  <!-- Module nodes -->
+  <circle cx="180" cy="30" r="6" fill="#A78BFA" opacity="0.6"/>
+  <circle cx="420" cy="30" r="6" fill="#A78BFA" opacity="0.6"/>
+  <circle cx="180" cy="70" r="6" fill="#A78BFA" opacity="0.6"/>
+  <circle cx="420" cy="70" r="6" fill="#A78BFA" opacity="0.6"/>
+  <circle cx="140" cy="50" r="5" fill="#C4B5FD" opacity="0.5"/>
+  <circle cx="460" cy="50" r="5" fill="#C4B5FD" opacity="0.5"/>
+  <!-- Data pulse dots (tiny, on connections) -->
+  <circle cx="240" cy="40" r="1.5" fill="#8B5CF6" opacity="0.5"/>
+  <circle cx="360" cy="40" r="1.5" fill="#8B5CF6" opacity="0.5"/>
+  <circle cx="240" cy="60" r="1.5" fill="#8B5CF6" opacity="0.5"/>
+  <circle cx="360" cy="60" r="1.5" fill="#8B5CF6" opacity="0.5"/>
+  <!-- Labels -->
+  <text x="300" y="80" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#8B5CF6" opacity="0.5">HOST</text>
+  <text x="180" y="20" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#A78BFA" opacity="0.4">EDITOR</text>
+  <text x="420" y="20" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#A78BFA" opacity="0.4">AGENTS</text>
+  <text x="180" y="86" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#A78BFA" opacity="0.4">STYLE</text>
+  <text x="420" y="86" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#A78BFA" opacity="0.4">KNOWLEDGE</text>
+  <text x="120" y="50" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#C4B5FD" opacity="0.4">RAG</text>
+  <text x="480" y="50" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#C4B5FD" opacity="0.4">LLM</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 70" width="600" height="70">
+  <!-- Final staff snippet -->
+  <g stroke="#c4b5a0" stroke-width="0.6" opacity="0.2">
+    <line x1="240" y1="30" x2="360" y2="30"/>
+    <line x1="240" y1="37" x2="360" y2="37"/>
+    <line x1="240" y1="44" x2="360" y2="44"/>
+    <line x1="240" y1="51" x2="360" y2="51"/>
+    <line x1="240" y1="58" x2="360" y2="58"/>
+  </g>
+  <!-- Whole note (open) -->
+  <ellipse cx="300" cy="44" rx="9" ry="6" fill="none" stroke="#8B5CF6" stroke-width="2" opacity="0.6" transform="rotate(-12,300,44)"/>
+  <!-- Fermata arc above -->
+  <path d="M 282,22 Q 300,6 318,22" fill="none" stroke="#8B5CF6" stroke-width="2" opacity="0.5"/>
+  <!-- Fermata dot -->
+  <circle cx="300" cy="18" r="2" fill="#8B5CF6" opacity="0.5"/>
+  <!-- Double barline (final) -->
+  <line x1="345" y1="30" x2="345" y2="58" stroke="#c4b5a0" stroke-width="1" opacity="0.3"/>
+  <line x1="350" y1="30" x2="350" y2="58" stroke="#c4b5a0" stroke-width="2.5" opacity="0.3"/>
+</svg>

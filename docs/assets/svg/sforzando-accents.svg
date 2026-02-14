@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 60" width="600" height="60">
+  <!-- Sforzando accent marks -->
+  <g opacity="0.4">
+    <path d="M 180,40 L 200,20 L 220,40" fill="none" stroke="#C4B5FD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 250,40 L 270,20 L 290,40" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 320,40 L 340,20 L 360,40" fill="none" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 390,40 L 410,20 L 430,40" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Lightning bolt in center accent -->
+  <path d="M 336,22 L 332,30 L 338,30 L 334,40" fill="none" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  <!-- Staccato dots -->
+  <circle cx="200" cy="46" r="2" fill="#C4B5FD" opacity="0.3"/>
+  <circle cx="270" cy="46" r="2" fill="#A78BFA" opacity="0.4"/>
+  <circle cx="340" cy="46" r="2.5" fill="#8B5CF6" opacity="0.5"/>
+  <circle cx="410" cy="46" r="2" fill="#A78BFA" opacity="0.4"/>
+</svg>

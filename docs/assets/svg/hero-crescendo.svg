@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 120" width="800" height="120">
+  <!-- Staff lines -->
+  <g stroke="#c4b5a0" stroke-width="1" opacity="0.5">
+    <line x1="80" y1="30" x2="720" y2="30"/>
+    <line x1="80" y1="42" x2="720" y2="42"/>
+    <line x1="80" y1="54" x2="720" y2="54"/>
+    <line x1="80" y1="66" x2="720" y2="66"/>
+    <line x1="80" y1="78" x2="720" y2="78"/>
+  </g>
+  <!-- Treble clef (stylized) -->
+  <text x="90" y="72" font-family="serif" font-size="56" fill="#8B5CF6" opacity="0.8">𝄞</text>
+  <!-- Notes ascending — the crescendo -->
+  <g fill="#8B5CF6">
+    <ellipse cx="200" cy="72" rx="8" ry="6" transform="rotate(-15,200,72)"/><line x1="208" y1="72" x2="208" y2="32" stroke="#8B5CF6" stroke-width="2"/>
+    <ellipse cx="270" cy="66" rx="8" ry="6" transform="rotate(-15,270,66)"/><line x1="278" y1="66" x2="278" y2="26" stroke="#8B5CF6" stroke-width="2"/>
+    <ellipse cx="340" cy="54" rx="8" ry="6" transform="rotate(-15,340,54)"/><line x1="348" y1="54" x2="348" y2="14" stroke="#8B5CF6" stroke-width="2"/>
+  </g>
+  <g fill="#A78BFA">
+    <ellipse cx="410" cy="48" rx="8" ry="6" transform="rotate(-15,410,48)"/><line x1="418" y1="48" x2="418" y2="8" stroke="#A78BFA" stroke-width="2"/>
+    <ellipse cx="480" cy="42" rx="8" ry="6" transform="rotate(-15,480,42)"/><line x1="488" y1="42" x2="488" y2="2" stroke="#A78BFA" stroke-width="2"/>
+  </g>
+  <g fill="#C4B5FD">
+    <ellipse cx="550" cy="36" rx="8" ry="6" transform="rotate(-15,550,36)"/><line x1="558" y1="36" x2="558" y2="-4" stroke="#C4B5FD" stroke-width="2"/>
+    <ellipse cx="620" cy="30" rx="8" ry="6" transform="rotate(-15,620,30)"/><line x1="628" y1="30" x2="628" y2="-10" stroke="#C4B5FD" stroke-width="2"/>
+  </g>
+  <!-- Crescendo hairpin -->
+  <line x1="180" y1="100" x2="650" y2="92" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  <line x1="180" y1="100" x2="650" y2="108" stroke="#8B5CF6" stroke-width="1.5" opacity="0.6"/>
+  <!-- Double barline at end -->
+  <line x1="695" y1="30" x2="695" y2="78" stroke="#c4b5a0" stroke-width="1.5" opacity="0.5"/>
+  <line x1="700" y1="30" x2="700" y2="78" stroke="#c4b5a0" stroke-width="3" opacity="0.5"/>
+</svg>

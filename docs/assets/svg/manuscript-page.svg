@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100" width="600" height="100">
+  <!-- Page outline -->
+  <rect x="150" y="5" width="300" height="90" rx="4" fill="none" stroke="#c4b5a0" stroke-width="1" opacity="0.3"/>
+  <!-- Dog-ear corner -->
+  <path d="M 420,5 L 450,5 L 450,35 Z" fill="none" stroke="#c4b5a0" stroke-width="1" opacity="0.3"/>
+  <path d="M 420,5 L 420,35 L 450,35" fill="#c4b5a0" opacity="0.08"/>
+  <!-- Mini staff lines -->
+  <g stroke="#c4b5a0" stroke-width="0.5" opacity="0.25">
+    <line x1="170" y1="22" x2="430" y2="22"/>
+    <line x1="170" y1="28" x2="430" y2="28"/>
+    <line x1="170" y1="34" x2="430" y2="34"/>
+    <line x1="170" y1="40" x2="430" y2="40"/>
+    <line x1="170" y1="46" x2="430" y2="46"/>
+  </g>
+  <g stroke="#c4b5a0" stroke-width="0.5" opacity="0.25">
+    <line x1="170" y1="58" x2="430" y2="58"/>
+    <line x1="170" y1="64" x2="430" y2="64"/>
+    <line x1="170" y1="70" x2="430" y2="70"/>
+    <line x1="170" y1="76" x2="430" y2="76"/>
+    <line x1="170" y1="82" x2="430" y2="82"/>
+  </g>
+  <!-- Scattered notes on staff -->
+  <g fill="#8B5CF6" opacity="0.6">
+    <ellipse cx="210" cy="34" rx="5" ry="3.5" transform="rotate(-12,210,34)"/>
+    <line x1="215" y1="34" x2="215" y2="18" stroke="#8B5CF6" stroke-width="1.2"/>
+    <ellipse cx="270" cy="40" rx="5" ry="3.5" transform="rotate(-12,270,40)"/>
+    <line x1="275" y1="40" x2="275" y2="24" stroke="#8B5CF6" stroke-width="1.2"/>
+    <ellipse cx="330" cy="28" rx="5" ry="3.5" transform="rotate(-12,330,28)"/>
+    <line x1="335" y1="28" x2="335" y2="12" stroke="#8B5CF6" stroke-width="1.2"/>
+  </g>
+  <g fill="#A78BFA" opacity="0.5">
+    <ellipse cx="240" cy="70" rx="5" ry="3.5" transform="rotate(-12,240,70)"/>
+    <line x1="245" y1="70" x2="245" y2="54" stroke="#A78BFA" stroke-width="1.2"/>
+    <ellipse cx="310" cy="64" rx="5" ry="3.5" transform="rotate(-12,310,64)"/>
+    <line x1="315" y1="64" x2="315" y2="48" stroke="#A78BFA" stroke-width="1.2"/>
+    <ellipse cx="380" cy="76" rx="5" ry="3.5" transform="rotate(-12,380,76)"/>
+    <line x1="385" y1="76" x2="385" y2="60" stroke="#A78BFA" stroke-width="1.2"/>
+  </g>
+  <!-- Time signature -->
+  <text x="176" y="32" font-family="serif" font-size="12" fill="#8B5CF6" opacity="0.4">4</text>
+  <text x="176" y="44" font-family="serif" font-size="12" fill="#8B5CF6" opacity="0.4">4</text>
+</svg>
