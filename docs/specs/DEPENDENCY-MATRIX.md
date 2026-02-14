@@ -1611,6 +1611,35 @@
 - Microsoft.Extensions.Options (IOptions<ScoringConfig>) — Configuration injection
 - Microsoft.Extensions.Logging.Abstractions (ILogger<T>) — Structured logging
 
+### 1.43 v0.7.2g Knowledge Context Formatter
+
+**New Records (v0.7.2g):**
+
+| Record                       | Introduced | Module         | Purpose                                   |
+| :--------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `FormattedContext`           | v0.7.2g    | Abstractions   | Formatted context with metadata           |
+
+**Modified Interfaces (v0.7.2g):**
+
+| Interface                        | Modified   | Module         | Changes                                   |
+| :------------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `IKnowledgeContextFormatter`     | v0.7.2g    | Abstractions   | Added FormatWithMetadata(), TruncateToTokenBudget() |
+
+**Modified Classes (v0.7.2g):**
+
+| Class                            | Modified   | Module            | Changes                                   |
+| :------------------------------- | :--------- | :---------------- | :---------------------------------------- |
+| `KnowledgeContextFormatter`      | v0.7.2g    | Modules.Knowledge | ITokenCounter?, FormatWithMetadata, TruncateToTokenBudget, enhanced format methods, helper methods |
+| `KnowledgeContextProvider`       | v0.7.2g    | Modules.Knowledge | Use FormatWithMetadata() in both methods  |
+
+**Dependencies (v0.7.2g):**
+- v0.6.1b (ITokenCounter) — Accurate token estimation (optional, nullable)
+- v0.6.6e (IKnowledgeContextFormatter, ContextFormatOptions, ContextFormat) — Existing interface and format types
+- v0.4.5e (KnowledgeEntity, KnowledgeRelationship) — Entity data and relationship formatting
+- v0.4.6e (Axiom, AxiomSeverity) — Axiom formatting with severity display
+- Microsoft.Extensions.Logging.Abstractions (ILogger<T>) — Structured logging
+- System.Text.Json (JsonSerializer, JsonIgnoreCondition) — JSON formatting with null suppression
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |

@@ -3,6 +3,10 @@
 // Tests: Lexichord.Modules.Knowledge.Copilot.Context.KnowledgeContextFormatter
 // Feature: v0.6.6e
 // =============================================================================
+// Updated for v0.7.2g: Constructor accepts optional ITokenCounter? parameter.
+// Assertions updated for v0.7.2g enhanced formatting (YAML header, Markdown
+// entity grouping, Plain text KNOWLEDGE CONTEXT header, entity name resolution).
+// =============================================================================
 
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts;
@@ -22,11 +26,13 @@ public class KnowledgeContextFormatterTests
 
     public KnowledgeContextFormatterTests()
     {
+        // v0.7.2g: Constructor now accepts (ILogger<T>, ITokenCounter?).
+        // Pass null for ITokenCounter to use the heuristic fallback.
         var formatterType = typeof(Lexichord.Modules.Knowledge.KnowledgeModule).Assembly
             .GetType("Lexichord.Modules.Knowledge.Copilot.Context.KnowledgeContextFormatter")!;
         var loggerType = typeof(Logger<>).MakeGenericType(formatterType);
         var logger = Activator.CreateInstance(loggerType, NullLoggerFactory.Instance);
-        _formatter = (IKnowledgeContextFormatter)Activator.CreateInstance(formatterType, logger)!;
+        _formatter = (IKnowledgeContextFormatter)Activator.CreateInstance(formatterType, logger, null)!;
     }
 
     private static List<KnowledgeEntity> CreateTestEntities() =>
@@ -71,10 +77,13 @@ public class KnowledgeContextFormatterTests
         var result = _formatter.FormatContext(entities, null, null, options);
 
         // Assert
+        // v0.7.2g: Entity grouping by type, using **TypeName** headers
         result.Should().Contain("## Knowledge Entities");
-        result.Should().Contain("### Endpoint: GET /api/users");
-        result.Should().Contain("### Parameter: userId");
-        result.Should().Contain("- **method**: GET");
+        result.Should().Contain("**Endpoint**");
+        result.Should().Contain("- **GET /api/users**");
+        result.Should().Contain("**Parameter**");
+        result.Should().Contain("- **userId**");
+        result.Should().Contain("  - method: GET");
     }
 
     [Fact]
@@ -88,10 +97,11 @@ public class KnowledgeContextFormatterTests
         var result = _formatter.FormatContext(entities, null, null, options);
 
         // Assert
+        // v0.7.2g: YAML header comment and quoted names
+        result.Should().Contain("# Knowledge Context");
         result.Should().Contain("entities:");
         result.Should().Contain("  - type: Endpoint");
-        result.Should().Contain("    name: GET /api/users");
-        result.Should().Contain("      method: GET");
+        result.Should().Contain("    name: \"GET /api/users\"");
     }
 
     [Fact]
@@ -124,6 +134,8 @@ public class KnowledgeContextFormatterTests
         var result = _formatter.FormatContext(entities, null, null, options);
 
         // Assert
+        // v0.7.2g: KNOWLEDGE CONTEXT header
+        result.Should().Contain("KNOWLEDGE CONTEXT:");
         result.Should().Contain("Endpoint: GET /api/users");
         result.Should().Contain("  method: GET");
     }

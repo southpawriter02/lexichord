@@ -3,6 +3,10 @@
 // Tests: Lexichord.Modules.Knowledge.Copilot.Context.KnowledgeContextProvider
 // Feature: v0.6.6e
 // =============================================================================
+// Updated for v0.7.2f: Constructor accepts optional IEntityRelevanceScorer?.
+// Updated for v0.7.2g: Provider now uses FormatWithMetadata() instead of
+//   FormatContext() + EstimateTokens() separately.
+// =============================================================================
 
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts;
@@ -42,6 +46,8 @@ public class KnowledgeContextProviderTests
         var loggerType = typeof(Logger<>).MakeGenericType(providerType);
         var logger = Activator.CreateInstance(loggerType, NullLoggerFactory.Instance);
 
+        // v0.7.2f: Constructor now accepts optional IEntityRelevanceScorer? as 7th param.
+        // Pass null to use fallback term-based ranker.
         _provider = (IKnowledgeContextProvider)Activator.CreateInstance(
             providerType,
             _graphRepository,
@@ -49,7 +55,8 @@ public class KnowledgeContextProviderTests
             _claimRepository,
             _ranker,
             _formatter,
-            logger)!;
+            logger,
+            null)!;
     }
 
     private static KnowledgeContextOptions DefaultOptions => new()
@@ -61,6 +68,25 @@ public class KnowledgeContextProviderTests
         IncludeClaims = false,
         Format = ContextFormat.Markdown
     };
+
+    /// <summary>
+    /// Configures the formatter mock to return a FormattedContext from FormatWithMetadata.
+    /// v0.7.2g: Provider now calls FormatWithMetadata() instead of FormatContext() + EstimateTokens().
+    /// </summary>
+    private void SetupFormatterMock(string content, int tokenCount)
+    {
+        _formatter.FormatWithMetadata(
+                Arg.Any<IReadOnlyList<KnowledgeEntity>>(),
+                Arg.Any<IReadOnlyList<KnowledgeRelationship>?>(),
+                Arg.Any<IReadOnlyList<Axiom>?>(),
+                Arg.Any<ContextFormatOptions>())
+            .Returns(new FormattedContext
+            {
+                Content = content,
+                TokenCount = tokenCount,
+                Format = ContextFormat.Markdown
+            });
+    }
 
     [Fact]
     public async Task GetContext_ReturnsRelevantEntities()
@@ -91,13 +117,7 @@ public class KnowledgeContextProviderTests
         _axiomStore.GetAxiomsForType(Arg.Any<string>())
             .Returns(new List<Axiom>());
 
-        _formatter.FormatContext(
-                Arg.Any<IReadOnlyList<KnowledgeEntity>>(),
-                Arg.Any<IReadOnlyList<KnowledgeRelationship>?>(),
-                Arg.Any<IReadOnlyList<Axiom>?>(),
-                Arg.Any<ContextFormatOptions>())
-            .Returns("## Formatted context");
-        _formatter.EstimateTokens(Arg.Any<string>()).Returns(50);
+        SetupFormatterMock("## Formatted context", 50);
 
         // Act
         var context = await _provider.GetContextAsync("users", DefaultOptions);
@@ -156,13 +176,8 @@ public class KnowledgeContextProviderTests
             .Returns(new List<KnowledgeRelationship>());
         _axiomStore.GetAxiomsForType(Arg.Any<string>())
             .Returns(new List<Axiom>());
-        _formatter.FormatContext(
-                Arg.Any<IReadOnlyList<KnowledgeEntity>>(),
-                Arg.Any<IReadOnlyList<KnowledgeRelationship>?>(),
-                Arg.Any<IReadOnlyList<Axiom>?>(),
-                Arg.Any<ContextFormatOptions>())
-            .Returns("context");
-        _formatter.EstimateTokens(Arg.Any<string>()).Returns(100);
+
+        SetupFormatterMock("context", 100);
 
         // Act
         var context = await _provider.GetContextAsync("api", DefaultOptions);
@@ -200,13 +215,8 @@ public class KnowledgeContextProviderTests
 
         _axiomStore.GetAxiomsForType(Arg.Any<string>())
             .Returns(new List<Axiom>());
-        _formatter.FormatContext(
-                Arg.Any<IReadOnlyList<KnowledgeEntity>>(),
-                Arg.Any<IReadOnlyList<KnowledgeRelationship>?>(),
-                Arg.Any<IReadOnlyList<Axiom>?>(),
-                Arg.Any<ContextFormatOptions>())
-            .Returns("context");
-        _formatter.EstimateTokens(Arg.Any<string>()).Returns(50);
+
+        SetupFormatterMock("context", 50);
 
         // Act
         var options = DefaultOptions with { IncludeRelationships = true };
@@ -234,13 +244,8 @@ public class KnowledgeContextProviderTests
             .Returns(new List<KnowledgeRelationship>());
         _axiomStore.GetAxiomsForType(Arg.Any<string>())
             .Returns(new List<Axiom>());
-        _formatter.FormatContext(
-                Arg.Any<IReadOnlyList<KnowledgeEntity>>(),
-                Arg.Any<IReadOnlyList<KnowledgeRelationship>?>(),
-                Arg.Any<IReadOnlyList<Axiom>?>(),
-                Arg.Any<ContextFormatOptions>())
-            .Returns("context");
-        _formatter.EstimateTokens(Arg.Any<string>()).Returns(20);
+
+        SetupFormatterMock("context", 20);
 
         // Act
         var context = await _provider.GetContextForEntitiesAsync(

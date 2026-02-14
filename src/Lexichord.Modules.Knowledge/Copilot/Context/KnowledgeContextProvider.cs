@@ -208,15 +208,14 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
             }
 
             // 7. Format context
-            var formatted = _formatter.FormatContext(
+            // v0.7.2g: Use FormatWithMetadata for unified formatting + metadata.
+            var formattedResult = _formatter.FormatWithMetadata(
                 selectedEntities, relationships, axioms,
                 new ContextFormatOptions { Format = options.Format });
 
-            var tokenCount = _formatter.EstimateTokens(formatted);
-
             _logger.LogInformation(
                 "Knowledge context assembled: {EntityCount} entities, {TokenCount} tokens, truncated={Truncated}",
-                selectedEntities.Count, tokenCount, rankedEntities.Count > selectedEntities.Count);
+                selectedEntities.Count, formattedResult.TokenCount, rankedEntities.Count > selectedEntities.Count);
 
             return new KnowledgeContext
             {
@@ -224,8 +223,8 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
                 Relationships = relationships,
                 Axioms = axioms,
                 Claims = claims,
-                FormattedContext = formatted,
-                TokenCount = tokenCount,
+                FormattedContext = formattedResult.Content,
+                TokenCount = formattedResult.TokenCount,
                 OriginalQuery = query,
                 WasTruncated = rankedEntities.Count > selectedEntities.Count
             };
@@ -281,21 +280,22 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
                 axioms = GetApplicableAxioms(entities);
             }
 
-            var formatted = _formatter.FormatContext(
+            // v0.7.2g: Use FormatWithMetadata for unified formatting + metadata.
+            var formattedResult = _formatter.FormatWithMetadata(
                 entities, relationships, axioms,
                 new ContextFormatOptions { Format = options.Format });
 
             _logger.LogInformation(
                 "Entity context assembled: {EntityCount} entities, {TokenCount} tokens",
-                entities.Count, _formatter.EstimateTokens(formatted));
+                entities.Count, formattedResult.TokenCount);
 
             return new KnowledgeContext
             {
                 Entities = entities,
                 Relationships = relationships,
                 Axioms = axioms,
-                FormattedContext = formatted,
-                TokenCount = _formatter.EstimateTokens(formatted)
+                FormattedContext = formattedResult.Content,
+                TokenCount = formattedResult.TokenCount
             };
         }
         catch (Exception ex)

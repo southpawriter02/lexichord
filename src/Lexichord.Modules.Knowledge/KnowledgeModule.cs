@@ -375,10 +375,15 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IEntityRelevanceRanker,
             Copilot.Context.EntityRelevanceRanker>();
 
-        // LOGIC: Register KnowledgeContextFormatter as singleton.
+        // LOGIC: Register KnowledgeContextFormatter as singleton via factory lambda.
         // Stateless multi-format formatter — safe to share across threads.
-        services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IKnowledgeContextFormatter,
-            Copilot.Context.KnowledgeContextFormatter>();
+        // v0.7.2g: Factory resolution for optional ITokenCounter (accurate token estimation).
+        // When ITokenCounter is not registered, the formatter falls back to the
+        // ~4 characters per token heuristic.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IKnowledgeContextFormatter>(sp =>
+            new Copilot.Context.KnowledgeContextFormatter(
+                sp.GetRequiredService<ILogger<Copilot.Context.KnowledgeContextFormatter>>(),
+                sp.GetService<ITokenCounter>()));
 
         // LOGIC: Register KnowledgeContextProvider as scoped.
         // Depends on IAxiomStore (scoped) and IClaimRepository (scoped),
