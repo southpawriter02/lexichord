@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Events;
 using Lexichord.Abstractions.Contracts;
@@ -64,9 +65,9 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     private readonly ILicenseContext _licenseContext;
 
     /// <summary>
-    /// Mediator for publishing upgrade prompts and subscribing to agent events.
+    /// Messenger for publishing upgrade prompts and subscribing to agent events.
     /// </summary>
-    private readonly IMediator _mediator;
+    private readonly IMessenger _messenger;
 
     /// <summary>
     /// Logger for diagnostic output.
@@ -83,29 +84,29 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// <param name="registry">The agent registry.</param>
     /// <param name="settings">The settings service.</param>
     /// <param name="licenseContext">The license context.</param>
-    /// <param name="mediator">The mediator.</param>
+    /// <param name="messenger">The messenger for event notifications.</param>
     /// <param name="logger">The logger.</param>
     /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
     /// <remarks>
-    /// LOGIC: Subscribes to MediatR events for live updates when agents are
+    /// LOGIC: Subscribes to MVVM Toolkit messaging events for live updates when agents are
     /// registered, personas are switched, or configurations are reloaded.
     /// </remarks>
     public AgentSelectorViewModel(
         IAgentRegistry registry,
         ISettingsService settings,
         ILicenseContext licenseContext,
-        IMediator mediator,
+        IMessenger messenger,
         ILogger<AgentSelectorViewModel> logger)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        // LOGIC: Register for MediatR event notifications.
+        // LOGIC: Register for MVVM Toolkit messaging event notifications.
         // This enables real-time UI updates when agents are registered/updated.
-        _mediator.RegisterAll(this);
+        _messenger.RegisterAll(this);
 
         _logger.LogDebug("AgentSelectorViewModel created");
     }
@@ -238,8 +239,8 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
             await LoadRecentAsync();
 
             // LOGIC: Restore last used agent and persona.
-            var lastAgentId = await _settings.GetAsync<string>("agent.last_used");
-            var lastPersonaId = await _settings.GetAsync<string>("agent.last_persona");
+            var lastAgentId = _settings.Get<string>("agent.last_used", string.Empty);
+            var lastPersonaId = _settings.Get<string>("agent.last_persona", string.Empty);
 
             if (!string.IsNullOrEmpty(lastAgentId))
             {
@@ -272,7 +273,17 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     }
 
     /// <summary>
-    /// Command to select an agent.
+    /// Command to select an agent from the UI.
+    /// </summary>
+    /// <param name="agent">The agent to select.</param>
+    /// <remarks>
+    /// LOGIC: UI command that delegates to <see cref="SelectAgentAsync"/> with no persona override.
+    /// </remarks>
+    [RelayCommand]
+    private Task SelectAgent(AgentItemViewModel agent) => SelectAgentAsync(agent, personaId: null);
+
+    /// <summary>
+    /// Selects an agent with optional persona.
     /// </summary>
     /// <param name="agent">The agent to select.</param>
     /// <param name="personaId">Optional persona ID to apply.</param>
@@ -281,7 +292,6 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// Otherwise, selects agent, optionally applies persona, updates recents,
     /// and persists selection to settings.
     /// </remarks>
-    [RelayCommand]
     private async Task SelectAgentAsync(AgentItemViewModel agent, string? personaId = null)
     {
         if (agent is null)
@@ -323,7 +333,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
         await UpdateRecentAgentsAsync(agent);
 
         // LOGIC: Persist selection to settings for restoration on next launch.
-        await _settings.SetAsync("agent.last_used", agent.AgentId);
+        _settings.Set("agent.last_used", agent.AgentId);
 
         // LOGIC: Close dropdown after selection.
         IsDropdownOpen = false;
@@ -340,12 +350,12 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// updates UI selection state, and persists to settings.
     /// </remarks>
     [RelayCommand]
-    private async Task SelectPersonaAsync(PersonaItemViewModel persona)
+    private Task SelectPersonaAsync(PersonaItemViewModel persona)
     {
         if (SelectedAgent is null || persona is null)
         {
             _logger.LogWarning("SelectPersonaAsync called with null agent or persona");
-            return;
+            return Task.CompletedTask;
         }
 
         _logger.LogDebug("Selecting persona: {PersonaId} for {AgentId}", persona.PersonaId, SelectedAgent.AgentId);
@@ -362,9 +372,10 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
         }
 
         // LOGIC: Persist persona selection to settings.
-        await _settings.SetAsync("agent.last_persona", persona.PersonaId);
+        _settings.Set("agent.last_persona", persona.PersonaId);
 
         _logger.LogInformation("Persona selected: {PersonaId}", persona.PersonaId);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -523,13 +534,20 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     {
         await Task.Run(() =>
         {
-            var configs = _registry.AvailableAgents;
+            var agents = _registry.AvailableAgents;
 
             // LOGIC: Marshal to UI thread for collection updates.
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                foreach (var config in configs.OrderBy(c => c.Name))
+                foreach (var agent in agents.OrderBy(a => a.Name))
                 {
+                    var config = _registry.GetConfiguration(agent.AgentId);
+                    if (config is null)
+                    {
+                        _logger.LogWarning("No configuration found for agent: {AgentId}", agent.AgentId);
+                        continue;
+                    }
+
                     var vm = CreateAgentViewModel(config);
                     AllAgents.Add(vm);
                 }
@@ -564,7 +582,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
             })
             .ToList();
 
-        return new AgentItemViewModel
+        var viewModel = new AgentItemViewModel
         {
             AgentId = config.AgentId,
             Name = config.Name,
@@ -573,9 +591,16 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
             Capabilities = config.Capabilities,
             RequiredTier = config.RequiredTier,
             CanAccess = canAccess,
-            Personas = new ObservableCollection<PersonaItemViewModel>(personas),
             IsFavorite = false
         };
+
+        // LOGIC: Add personas to the existing collection (Personas property is get-only)
+        foreach (var persona in personas)
+        {
+            viewModel.Personas.Add(persona);
+        }
+
+        return viewModel;
     }
 
     /// <summary>
@@ -585,9 +610,9 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// LOGIC: Reads "agent.favorites" list from settings, marks corresponding
     /// agents as favorites, and adds them to FavoriteAgents collection.
     /// </remarks>
-    private async Task LoadFavoritesAsync()
+    private Task LoadFavoritesAsync()
     {
-        var favoriteIds = await _settings.GetAsync<List<string>>("agent.favorites") ?? [];
+        var favoriteIds = _settings.Get<List<string>>("agent.favorites", []);
 
         foreach (var id in favoriteIds)
         {
@@ -601,6 +626,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
 
         OnPropertyChanged(nameof(HasFavorites));
         _logger.LogDebug("Loaded {Count} favorites", FavoriteAgents.Count);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -609,11 +635,12 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// <remarks>
     /// LOGIC: Persists the list of favorite agent IDs to "agent.favorites" setting.
     /// </remarks>
-    private async Task SaveFavoritesAsync()
+    private Task SaveFavoritesAsync()
     {
         var favoriteIds = FavoriteAgents.Select(a => a.AgentId).ToList();
-        await _settings.SetAsync("agent.favorites", favoriteIds);
+        _settings.Set("agent.favorites", favoriteIds);
         _logger.LogDebug("Saved {Count} favorites", favoriteIds.Count);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -623,9 +650,9 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// LOGIC: Reads "agent.recent" list from settings (max 5), and adds
     /// corresponding agents to RecentAgents collection.
     /// </remarks>
-    private async Task LoadRecentAsync()
+    private Task LoadRecentAsync()
     {
-        var recentIds = await _settings.GetAsync<List<string>>("agent.recent") ?? [];
+        var recentIds = _settings.Get<List<string>>("agent.recent", []);
 
         foreach (var id in recentIds.Take(5))
         {
@@ -638,6 +665,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
 
         OnPropertyChanged(nameof(HasRecentAgents));
         _logger.LogDebug("Loaded {Count} recent agents", RecentAgents.Count);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -648,7 +676,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// LOGIC: Removes agent if already in list, inserts at front, trims to 5,
     /// and persists to settings.
     /// </remarks>
-    private async Task UpdateRecentAgentsAsync(AgentItemViewModel agent)
+    private Task UpdateRecentAgentsAsync(AgentItemViewModel agent)
     {
         // LOGIC: Remove if already present (to move to front).
         RecentAgents.Remove(agent);
@@ -664,9 +692,10 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
 
         // LOGIC: Persist to settings.
         var recentIds = RecentAgents.Select(a => a.AgentId).ToList();
-        await _settings.SetAsync("agent.recent", recentIds);
+        _settings.Set("agent.recent", recentIds);
 
         OnPropertyChanged(nameof(HasRecentAgents));
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -677,7 +706,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
     /// LOGIC: Publishes a ShowUpgradePromptRequest event via MediatR for
     /// the host to display an upgrade dialog.
     /// </remarks>
-    private async Task ShowUpgradePromptAsync(AgentItemViewModel agent)
+    private Task ShowUpgradePromptAsync(AgentItemViewModel agent)
     {
         // NOTE: ShowUpgradePromptRequest is not yet defined in the codebase.
         // This is a placeholder for future upgrade prompt integration.
@@ -692,6 +721,7 @@ public sealed partial class AgentSelectorViewModel : ObservableObject,
         //     Feature: $"agent:{agent.AgentId}",
         //     RequiredTier: agent.RequiredTier,
         //     Message: $"'{agent.Name}' requires {agent.RequiredTier} tier."));
+        return Task.CompletedTask;
     }
 
     #endregion

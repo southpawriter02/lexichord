@@ -422,10 +422,10 @@ ASSEMBLE CONTEXT:
 
 | Phase | Task                                    | Est. Hours | Status |
 | :---: | :-------------------------------------- | :--------: | :----: |
-|   1   | Define `IContextStrategy` interface     |     2      |   ☐    |
-|   1   | Create `ContextGatheringRequest` record |     1      |   ☐    |
-|   1   | Create `ContextFragment` record         |     1      |   ☐    |
-|   1   | Unit tests for core contracts           |     2      |   ☐    |
+|   1   | Define `IContextStrategy` interface     |     2      |   ✅    |
+|   1   | Create `ContextGatheringRequest` record |     1      |   ✅    |
+|   1   | Create `ContextFragment` record         |     1      |   ✅    |
+|   1   | Unit tests for core contracts           |     2      |   ✅    |
 |   2   | Implement `DocumentContextStrategy`     |     3      |   ☐    |
 |   2   | Implement `SelectionContextStrategy`    |     2      |   ☐    |
 |   2   | Implement `CursorContextStrategy`       |     2      |   ☐    |

@@ -697,6 +697,69 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers the Context Strategy services.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Agents.Context.IContextStrategyFactory"/> → <see cref="Context.ContextStrategyFactory"/> (Singleton)</description></item>
+    /// </list>
+    /// <para>
+    /// The factory is registered as a singleton because it is stateless and manages
+    /// strategy instantiation via the DI container. Strategies themselves are created
+    /// as transient instances by the factory on-demand.
+    /// </para>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ITokenCounter"/> (v0.6.1b) — Required for token estimation in strategies</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.6a) — Required for license tier filtering</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Note:</strong> In v0.7.2a, no concrete strategies are registered yet.
+    /// The factory registration enables the interface layer for testing and integration.
+    /// Concrete strategies will be added in v0.7.2b.
+    /// </para>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.7.2a as part of the Context Strategy Interface.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddContextStrategies();
+    /// }
+    ///
+    /// // Later, resolve via DI
+    /// var factory = serviceProvider.GetRequiredService&lt;IContextStrategyFactory&gt;();
+    /// var strategies = factory.CreateAllStrategies();
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddContextStrategies(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.2a — Register ContextStrategyFactory as singleton for
+        // application-wide strategy management. The factory is stateless and
+        // uses the DI container to create strategy instances on demand.
+        services.AddSingleton<Lexichord.Abstractions.Agents.Context.IContextStrategyFactory, Context.ContextStrategyFactory>();
+
+        // NOTE: ITokenCounter is already registered by other modules (v0.6.1b)
+        // NOTE: ILicenseContext is already registered by Licensing module (v0.0.6a)
+        // NOTE: In v0.7.2a, no concrete strategies are registered. This will be
+        //       added in v0.7.2b when strategy implementations are created.
+
+        return services;
+    }
 }
 
 

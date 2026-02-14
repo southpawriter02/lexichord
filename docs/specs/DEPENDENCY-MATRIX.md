@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-11 (v0.7.1d added)                                             |
+| **Last Updated** | 2026-02-13 (v0.7.2a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1451,6 +1451,40 @@
 | Extension Method       | Defined In | Module         | Purpose                          |
 | :--------------------- | :--------- | :------------- | :------------------------------- |
 | `AddAgentSelectorUI()` | v0.7.1d    | Modules.Agents | DI registration for UI ViewModels |
+
+**New Interfaces (v0.7.2a):**
+
+| Interface                   | Defined In | Module         | Purpose                           |
+| :-------------------------- | :--------- | :------------- | :-------------------------------- |
+| `IContextStrategy`          | v0.7.2a    | Abstractions   | Context gathering strategy        |
+| `IContextStrategyFactory`   | v0.7.2a    | Abstractions   | Strategy creation with license    |
+
+**New Records (v0.7.2a):**
+
+| Record                      | Defined In | Module         | Purpose                           |
+| :-------------------------- | :--------- | :------------- | :-------------------------------- |
+| `ContextGatheringRequest`   | v0.7.2a    | Abstractions   | Request data for context gathering |
+| `ContextFragment`           | v0.7.2a    | Abstractions   | Context data from strategies      |
+| `ContextBudget`             | v0.7.2a    | Abstractions   | Token budget configuration        |
+
+**New Classes (v0.7.2a):**
+
+| Class                       | Defined In | Module         | Purpose                           |
+| :-------------------------- | :--------- | :------------- | :-------------------------------- |
+| `StrategyPriority`          | v0.7.2a    | Abstractions   | Priority constants (100-20)       |
+| `ContextStrategyBase`       | v0.7.2a    | Modules.Agents | Abstract base for strategies      |
+| `ContextStrategyFactory`    | v0.7.2a    | Modules.Agents | Factory implementation            |
+
+**New Extension Methods (v0.7.2a):**
+
+| Extension Method               | Defined In | Module         | Purpose                           |
+| :----------------------------- | :--------- | :------------- | :-------------------------------- |
+| `AddContextStrategies()`       | v0.7.2a    | Modules.Agents | DI registration for factory       |
+| `ToDisplayString()` (on AgentCapabilities) | v0.7.2a | Abstractions | Format capabilities as comma-separated string |
+
+**Dependencies (v0.7.2a):**
+- v0.6.1b (ITokenCounter) — Token counting and truncation
+- v0.0.6a (ILicenseContext) — License tier checking
 
 ## 2. MediatR Events Registry
 

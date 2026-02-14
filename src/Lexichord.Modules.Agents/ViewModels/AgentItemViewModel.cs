@@ -174,7 +174,6 @@ public partial class AgentItemViewModel : ObservableObject
     public string TierBadgeText => RequiredTier switch
     {
         LicenseTier.Core => string.Empty,
-        LicenseTier.Writer => "WRITER",
         LicenseTier.WriterPro => "PRO",
         LicenseTier.Teams => "TEAMS",
         LicenseTier.Enterprise => "ENTERPRISE",

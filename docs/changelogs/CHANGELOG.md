@@ -33,6 +33,24 @@ This release introduces the Agent Registry system, enabling specialized AI agent
 
 ---
 
+## [v0.7.2] - 2026-02 (In Progress)
+
+### The Context Assembler (Intelligent Context Gathering)
+
+This release introduces the Context Assembler system, enabling intelligent, priority-based gathering of contextual information from multiple sources to provide to AI agents during request processing.
+
+#### What's New
+
+- **Context Strategy Interface (v0.7.2a)** — Pluggable abstraction layer for context gathering in `Lexichord.Abstractions.Agents.Context` and `Lexichord.Modules.Agents.Context`. Added 6 core abstractions: `StrategyPriority` static class with 5 priority constants (Critical=100, High=80, Medium=60, Low=40, Optional=20); `ContextGatheringRequest` record with DocumentPath, CursorPosition, SelectedText, AgentId, Hints, plus `Empty()` factory, type-safe `GetHint<T>()` method, and computed properties (HasDocument, HasSelection, HasCursor); `ContextFragment` record with SourceId, Label, Content, TokenEstimate, Relevance, plus `Empty()` factory, `TruncateTo()` smart paragraph-aware truncation, and HasContent property; `ContextBudget` record with MaxTokens, RequiredStrategies, ExcludedStrategies, plus `Default` (8000 tokens) and `WithLimit()` factories, and filtering helpers (IsRequired, IsExcluded, ShouldExecute); `IContextStrategy` interface with StrategyId, DisplayName, Priority, MaxTokens properties and `GatherAsync()` method (returns null when no context, throws on errors); `IContextStrategyFactory` interface with AvailableStrategyIds property and methods for strategy creation (CreateStrategy, CreateAllStrategies) and license checking (IsAvailable). Added 2 implementations: `ContextStrategyBase` abstract class with protected constructor taking ITokenCounter and ILogger, plus helper methods `CreateFragment()` (auto token estimation with logging), `TruncateToMaxTokens()` (smart paragraph truncation with warnings), and `ValidateRequest()` (prerequisite checking with debug logging); `ContextStrategyFactory` with static registration dictionary (intentionally empty in v0.7.2a), license tier filtering via ILicenseContext.Tier, and DI-based strategy resolution. Extended `AgentCapabilitiesExtensions` with `ToDisplayString()` method (joins GetCapabilityNames with commas, returns "None" for AgentCapabilities.None). License tier mapping: WriterPro (document, selection, cursor, heading), Teams (all WriterPro + rag, style). Registered via `AddContextStrategies()` extension method. Design decisions: Coexists with v0.6.3d IContextProvider (different use cases), token counting via constructor injection, factory-level license gating, null return for no context vs exceptions for errors, singleton factory with transient strategies. No concrete strategies in v0.7.2a (added in v0.7.2b). Reuses v0.6.1b ITokenCounter and v0.0.6a ILicenseContext. No new NuGet packages. Includes 88 unit tests (6 interface contract tests, 4 record tests, 2 implementation tests) with 100% code coverage and FluentAssertions/NSubstitute. [Detailed changelog](v0.7.x/LCS-CL-v0.7.2a.md)
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                        | Status      |
+| ----------------------------------- | ---------------------------- | ----------- |
+| [v0.7.2a](v0.7.x/LCS-CL-v0.7.2a.md) | Context Strategy Interface   | ✅ Complete |
+
+---
+
 ## [v0.6.8] - 2026-02 (In Progress)
 
 ### The Hardening (Reliability & Performance)

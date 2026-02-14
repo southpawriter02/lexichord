@@ -3,6 +3,10 @@
 // See LICENSE file in the project root for full license information.
 
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using Lexichord.Modules.Agents.ViewModels;
 
 namespace Lexichord.Modules.Agents.Views;
 
@@ -33,5 +37,25 @@ public partial class AgentCardView : UserControl
     public AgentCardView()
     {
         InitializeComponent();
+    }
+
+    /// <summary>
+    /// Handles the agent card tapped event to trigger selection.
+    /// </summary>
+    private void OnAgentCardTapped(object? sender, TappedEventArgs e)
+    {
+        // LOGIC: Find the AgentSelectorViewModel in the visual tree and invoke SelectAgentCommand
+        if (DataContext is AgentItemViewModel agentItem)
+        {
+            // Find parent AgentSelectorViewModel from visual tree
+            var parent = this.FindAncestorOfType<AgentSelectorView>();
+            if (parent?.DataContext is AgentSelectorViewModel viewModel)
+            {
+                if (viewModel.SelectAgentCommand.CanExecute(agentItem))
+                {
+                    viewModel.SelectAgentCommand.Execute(agentItem);
+                }
+            }
+        }
     }
 }

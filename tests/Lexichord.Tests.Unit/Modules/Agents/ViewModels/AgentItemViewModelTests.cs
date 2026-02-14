@@ -80,7 +80,6 @@ public class AgentItemViewModelTests
     /// </summary>
     [Theory]
     [InlineData(LicenseTier.Core, "")]
-    [InlineData(LicenseTier.Writer, "WRITER")]
     [InlineData(LicenseTier.WriterPro, "PRO")]
     [InlineData(LicenseTier.Teams, "TEAMS")]
     [InlineData(LicenseTier.Enterprise, "ENTERPRISE")]
@@ -120,7 +119,6 @@ public class AgentItemViewModelTests
     /// Verifies that ShowTierBadge returns true for paid tiers.
     /// </summary>
     [Theory]
-    [InlineData(LicenseTier.Writer)]
     [InlineData(LicenseTier.WriterPro)]
     [InlineData(LicenseTier.Teams)]
     [InlineData(LicenseTier.Enterprise)]

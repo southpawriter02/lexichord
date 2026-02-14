@@ -138,4 +138,34 @@ public static class AgentCapabilitiesExtensions
 
         return names.ToArray();
     }
+
+    /// <summary>
+    /// Returns a comma-separated string of capability names.
+    /// </summary>
+    /// <param name="capabilities">The agent's capabilities.</param>
+    /// <returns>
+    /// A comma-separated string of capability display names, or "None" if no capabilities are set.
+    /// </returns>
+    /// <remarks>
+    /// LOGIC: Joins the output of <see cref="GetCapabilityNames"/> with commas for display in UI.
+    /// Returns "None" for <see cref="AgentCapabilities.None"/> to provide a clear indication.
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.2a to support Agent Selector UI.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var caps = AgentCapabilities.Chat | AgentCapabilities.RAGContext;
+    /// var display = caps.ToDisplayString();
+    /// // Result: "Chat, RAG"
+    ///
+    /// AgentCapabilities.None.ToDisplayString();
+    /// // Result: "None"
+    /// </code>
+    /// </example>
+    public static string ToDisplayString(this AgentCapabilities capabilities)
+    {
+        var names = capabilities.GetCapabilityNames();
+        return names.Length > 0 ? string.Join(", ", names) : "None";
+    }
 }

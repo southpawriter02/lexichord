@@ -3,6 +3,9 @@
 // See LICENSE file in the project root for full license information.
 
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Lexichord.Modules.Agents.ViewModels;
 
 namespace Lexichord.Modules.Agents.Views;
 
@@ -33,5 +36,20 @@ public partial class AgentSelectorView : UserControl
     public AgentSelectorView()
     {
         InitializeComponent();
+    }
+
+    /// <summary>
+    /// Handles the trigger tapped event to toggle the dropdown.
+    /// </summary>
+    private void OnTriggerTapped(object? sender, TappedEventArgs e)
+    {
+        // LOGIC: Invoke ToggleDropdownCommand from ViewModel
+        if (DataContext is AgentSelectorViewModel viewModel)
+        {
+            if (viewModel.ToggleDropdownCommand.CanExecute(null))
+            {
+                viewModel.ToggleDropdownCommand.Execute(null);
+            }
+        }
     }
 }
