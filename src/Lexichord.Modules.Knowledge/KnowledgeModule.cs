@@ -392,6 +392,30 @@ public sealed class KnowledgeModule : IModule
         // v0.6.6i: Knowledge-Aware Prompts
         services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IKnowledgePromptBuilder,
             Copilot.Prompts.KnowledgePromptBuilder>();
+
+        // =====================================================================
+        // v0.7.2f: Entity Relevance Scorer (CKVS Phase 4a)
+        // =====================================================================
+
+        // LOGIC: Register ScoringConfig with defaults using Options pattern.
+        // Defaults: SemanticWeight=0.35, MentionWeight=0.25, TypeWeight=0.20,
+        // RecencyWeight=0.10, NameMatchWeight=0.10, RecencyDecayDays=365.
+        // These can be overridden via IConfiguration binding if needed.
+        services.AddSingleton(
+            Microsoft.Extensions.Options.Options.Create(
+                new Abstractions.Contracts.Knowledge.Copilot.ScoringConfig()));
+
+        // LOGIC: Register EntityRelevanceScorer as singleton via factory lambda.
+        // Uses factory resolution to optionally resolve IEmbeddingService (nullable).
+        // When IEmbeddingService is not registered, the scorer gracefully falls back
+        // to non-semantic scoring by redistributing the semantic weight.
+        // Singleton is appropriate: scorer is stateless and thread-safe.
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Copilot.IEntityRelevanceScorer>(sp =>
+            new Copilot.Context.Scoring.EntityRelevanceScorer(
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<
+                    Abstractions.Contracts.Knowledge.Copilot.ScoringConfig>>(),
+                sp.GetRequiredService<ILogger<Copilot.Context.Scoring.EntityRelevanceScorer>>(),
+                sp.GetService<IEmbeddingService>()));
     }
 
     /// <inheritdoc/>

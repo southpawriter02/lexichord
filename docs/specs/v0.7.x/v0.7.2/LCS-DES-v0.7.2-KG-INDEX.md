@@ -24,7 +24,7 @@ This index catalogs all design specifications for the **Graph Context Strategy**
 | Spec ID | Title | Est. Hours | Description |
 | :------ | :---- | :--------- | :---------- |
 | [LCS-DES-072-KG-e](LCS-DES-072-KG-e.md) | Knowledge Context Strategy | 5 | Implements IContextStrategy for graph data ✅ |
-| [LCS-DES-072-KG-f](LCS-DES-072-KG-f.md) | Entity Relevance Scorer | 4 | Ranks entities by query similarity |
+| [LCS-DES-072-KG-f](LCS-DES-072-KG-f.md) | Entity Relevance Scorer | 4 | Ranks entities by query similarity ✅ |
 | [LCS-DES-072-KG-g](LCS-DES-072-KG-g.md) | Knowledge Context Formatter | 3 | Serializes for prompt injection |
 | [LCS-DES-072-KG-h](LCS-DES-072-KG-h.md) | Context Assembler Integration | 2 | Registers strategy with assembler |
 | **Total** | | **14** | |
@@ -241,5 +241,6 @@ Where:
 | :------ | :--- | :----- | :------ |
 | 1.0 | 2026-01-31 | Lead Architect | Initial creation |
 | 1.1 | 2026-02-14 | Lead Architect | Marked v0.7.2e as complete |
+| 1.2 | 2026-02-14 | Lead Architect | Marked v0.7.2f as complete |
 
 ---

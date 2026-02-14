@@ -5,7 +5,9 @@
 // =============================================================================
 // LOGIC: Orchestrates the full context retrieval pipeline:
 //   1. Search for relevant entities via IGraphRepository.SearchEntitiesAsync
-//   2. Rank entities by relevance using IEntityRelevanceRanker
+//   2. Score/rank entities by relevance using IEntityRelevanceScorer (preferred,
+//      v0.7.2f multi-signal) or IEntityRelevanceRanker (fallback, v0.6.6e
+//      term-based)
 //   3. Select entities within token budget
 //   4. Optionally retrieve relationships, axioms, and claims
 //   5. Format context using IKnowledgeContextFormatter
@@ -14,8 +16,10 @@
 //   or empty query results, with info-level logging.
 //
 // v0.6.6e: Graph Context Provider (CKVS Phase 3b)
+// v0.7.2f: Entity Relevance Scorer integration (CKVS Phase 4a)
 // Dependencies: IGraphRepository (v0.4.5e), IAxiomStore (v0.4.6-KG),
 //               IClaimRepository (v0.5.6h), IEntityRelevanceRanker (v0.6.6e),
+//               IEntityRelevanceScorer (v0.7.2f, optional),
 //               IKnowledgeContextFormatter (v0.6.6e)
 // =============================================================================
 
@@ -70,6 +74,7 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
     private readonly IAxiomStore _axiomStore;
     private readonly IClaimRepository _claimRepository;
     private readonly IEntityRelevanceRanker _ranker;
+    private readonly IEntityRelevanceScorer? _scorer;
     private readonly IKnowledgeContextFormatter _formatter;
     private readonly ILogger<KnowledgeContextProvider> _logger;
 
@@ -79,25 +84,34 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
     /// <param name="graphRepository">The graph repository for entity and relationship queries.</param>
     /// <param name="axiomStore">The axiom store for domain rules.</param>
     /// <param name="claimRepository">The claim repository for evidence lookup.</param>
-    /// <param name="ranker">The entity relevance ranker.</param>
+    /// <param name="ranker">The entity relevance ranker (v0.6.6e fallback).</param>
     /// <param name="formatter">The context formatter.</param>
     /// <param name="logger">Logger for provider operations.</param>
+    /// <param name="scorer">
+    /// Optional multi-signal entity relevance scorer (v0.7.2f). When available,
+    /// preferred over the term-based ranker for entity scoring. Falls back to
+    /// <paramref name="ranker"/> when null.
+    /// </param>
     public KnowledgeContextProvider(
         IGraphRepository graphRepository,
         IAxiomStore axiomStore,
         IClaimRepository claimRepository,
         IEntityRelevanceRanker ranker,
         IKnowledgeContextFormatter formatter,
-        ILogger<KnowledgeContextProvider> logger)
+        ILogger<KnowledgeContextProvider> logger,
+        IEntityRelevanceScorer? scorer = null)
     {
         _graphRepository = graphRepository;
         _axiomStore = axiomStore;
         _claimRepository = claimRepository;
         _ranker = ranker;
+        _scorer = scorer;
         _formatter = formatter;
         _logger = logger;
 
-        _logger.LogDebug("KnowledgeContextProvider initialized");
+        _logger.LogDebug(
+            "KnowledgeContextProvider initialized. MultiSignalScorer={ScorerAvailable}",
+            _scorer is not null);
     }
 
     /// <inheritdoc />
@@ -129,8 +143,37 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
 
             _logger.LogDebug("Search returned {Count} entities", searchResults.Count);
 
-            // 2. Rank by relevance
-            var rankedEntities = _ranker.RankEntities(query, searchResults);
+            // 2. Score/rank by relevance
+            // v0.7.2f: Prefer multi-signal scorer when available; fall back to term-based ranker
+            IReadOnlyList<RankedEntity> rankedEntities;
+            if (_scorer is not null)
+            {
+                _logger.LogDebug("Using multi-signal EntityRelevanceScorer (v0.7.2f)");
+
+                var scoringRequest = new ScoringRequest
+                {
+                    Query = query,
+                    DocumentContent = null, // Not available at provider level
+                    PreferredEntityTypes = options.EntityTypes
+                };
+
+                var scoredEntities = await _scorer.ScoreEntitiesAsync(
+                    scoringRequest, searchResults, ct);
+
+                // Convert ScoredEntity → RankedEntity for budget selection
+                rankedEntities = scoredEntities.Select(se => new RankedEntity
+                {
+                    Entity = se.Entity,
+                    RelevanceScore = se.Score,
+                    EstimatedTokens = EstimateEntityTokens(se.Entity),
+                    MatchedTerms = se.MatchedTerms
+                }).ToList();
+            }
+            else
+            {
+                _logger.LogDebug("Using term-based EntityRelevanceRanker (v0.6.6e fallback)");
+                rankedEntities = _ranker.RankEntities(query, searchResults);
+            }
 
             // 3. Select within token budget
             var selectedEntities = _ranker.SelectWithinBudget(
@@ -349,5 +392,26 @@ internal sealed class KnowledgeContextProvider : IKnowledgeContextProvider
         }
 
         return claims;
+    }
+
+    /// <summary>
+    /// Estimates the token count for a single entity when formatted.
+    /// </summary>
+    /// <param name="entity">The entity to estimate.</param>
+    /// <returns>Estimated token count.</returns>
+    /// <remarks>
+    /// LOGIC: Uses ~4 characters per token heuristic plus 10-token overhead
+    /// for formatting markup. Matches the estimation in EntityRelevanceRanker.
+    /// v0.7.2f: Needed for ScoredEntity → RankedEntity conversion when using
+    /// the multi-signal scorer path.
+    /// </remarks>
+    private static int EstimateEntityTokens(KnowledgeEntity entity)
+    {
+        var totalChars = entity.Name.Length + entity.Type.Length;
+        foreach (var prop in entity.Properties)
+        {
+            totalChars += prop.Key.Length + (prop.Value?.ToString()?.Length ?? 0);
+        }
+        return totalChars / 4 + 10; // Add overhead for formatting
     }
 }

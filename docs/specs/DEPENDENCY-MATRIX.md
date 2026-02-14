@@ -1580,6 +1580,37 @@
 - v0.0.4c (ILicenseContext) — Runtime license tier checks
 - v0.6.1b (ITokenCounter) — Token estimation
 
+### 1.42 v0.7.2f Entity Relevance Scorer
+
+**New Interfaces (v0.7.2f):**
+
+| Interface                    | Introduced | Module         | Purpose                                   |
+| :--------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `IEntityRelevanceScorer`     | v0.7.2f    | Abstractions   | Async multi-signal entity scoring         |
+
+**New Records (v0.7.2f):**
+
+| Record                       | Introduced | Module         | Purpose                                   |
+| :--------------------------- | :--------- | :------------- | :---------------------------------------- |
+| `ScoringConfig`              | v0.7.2f    | Abstractions   | Signal weights and scoring parameters     |
+| `RelevanceSignalScores`      | v0.7.2f    | Abstractions   | Per-signal score breakdown                |
+| `ScoringRequest`             | v0.7.2f    | Abstractions   | Scorer input (query, doc, types)          |
+| `ScoredEntity`               | v0.7.2f    | Abstractions   | Entity with composite score + signals     |
+
+**New Classes (v0.7.2f):**
+
+| Class                        | Introduced | Module           | Purpose                                   |
+| :--------------------------- | :--------- | :--------------- | :---------------------------------------- |
+| `EntityRelevanceScorer`      | v0.7.2f    | Modules.Knowledge | 5-signal scoring engine                   |
+| `CosineSimilarity`           | v0.7.2f    | Modules.Knowledge | Embedding vector cosine similarity        |
+
+**Dependencies (v0.7.2f):**
+- v0.4.4a (IEmbeddingService) — Semantic similarity embeddings (optional, nullable)
+- v0.6.6e (IEntityRelevanceRanker, KnowledgeContextOptions) — Fallback ranking and budget selection
+- v0.4.5e (KnowledgeEntity) — Scoring target entity type
+- Microsoft.Extensions.Options (IOptions<ScoringConfig>) — Configuration injection
+- Microsoft.Extensions.Logging.Abstractions (ILogger<T>) — Structured logging
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
