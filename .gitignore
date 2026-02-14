@@ -492,3 +492,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# macOS specific
+.DS_Store
