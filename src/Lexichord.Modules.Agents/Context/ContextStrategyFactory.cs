@@ -8,6 +8,7 @@
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Modules.Agents.Context.Strategies;
+using Lexichord.Modules.Agents.Editor.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -30,9 +31,9 @@ namespace Lexichord.Modules.Agents.Context;
 /// <strong>Strategy Registration:</strong>
 /// The factory maintains a static registration dictionary (<see cref="_registrations"/>)
 /// that maps strategy IDs to their implementation types and minimum license tiers.
-/// As of v0.7.2e, this dictionary contains 7 built-in strategies:
+/// As of v0.7.3c, this dictionary contains 9 built-in strategies:
 /// <list type="bullet">
-///   <item><description><c>document</c>, <c>selection</c>, <c>cursor</c>, <c>heading</c> — WriterPro tier</description></item>
+///   <item><description><c>document</c>, <c>selection</c>, <c>cursor</c>, <c>heading</c>, <c>surrounding-text</c>, <c>terminology</c> — WriterPro tier</description></item>
 ///   <item><description><c>rag</c>, <c>style</c>, <c>knowledge</c> — Teams tier</description></item>
 /// </list>
 /// </para>
@@ -76,8 +77,9 @@ public sealed class ContextStrategyFactory : IContextStrategyFactory
     // Maps strategy ID → (Implementation Type, Minimum License Tier).
     // v0.7.2a: Empty dictionary (interface layer only).
     // v0.7.2b: Populated with 6 concrete strategy implementations.
-    // v0.7.2e: Added knowledge strategy (7 total):
-    //   - WriterPro tier: document, selection, cursor, heading
+    // v0.7.2e: Added knowledge strategy (7 total).
+    // v0.7.3c: Added editor-specific strategies (9 total):
+    //   - WriterPro tier: document, selection, cursor, heading, surrounding-text, terminology
     //   - Teams tier: rag, style, knowledge
     private static readonly Dictionary<string, (Type Type, LicenseTier MinTier)> _registrations = new()
     {
@@ -86,6 +88,10 @@ public sealed class ContextStrategyFactory : IContextStrategyFactory
         ["selection"] = (typeof(SelectionContextStrategy), LicenseTier.WriterPro),
         ["cursor"] = (typeof(CursorContextStrategy), LicenseTier.WriterPro),
         ["heading"] = (typeof(HeadingContextStrategy), LicenseTier.WriterPro),
+
+        // WriterPro-tier strategies (Editor Agent context, v0.7.3c)
+        ["surrounding-text"] = (typeof(SurroundingTextContextStrategy), LicenseTier.WriterPro),
+        ["terminology"] = (typeof(EditorTerminologyContextStrategy), LicenseTier.WriterPro),
 
         // Teams-tier strategies (advanced collaboration features)
         ["rag"] = (typeof(RAGContextStrategy), LicenseTier.Teams),

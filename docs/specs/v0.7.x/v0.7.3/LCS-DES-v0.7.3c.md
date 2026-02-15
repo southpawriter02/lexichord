@@ -12,8 +12,8 @@
 | **License Tier** | `Writer Pro` | Requires Writer Pro |
 | **Feature Gate Key** | `FeatureFlags.Agents.Editor` | License gate |
 | **Author** | Lead Architect | |
-| **Status** | `Draft` | |
-| **Last Updated** | `2026-01-27` | |
+| **Status** | `Complete` | |
+| **Last Updated** | `2026-02-14` | |
 | **Parent Document** | [LCS-DES-073-INDEX](./LCS-DES-073-INDEX.md) | |
 | **Scope Breakdown** | [LCS-SBD-073 Section 3.3](./LCS-SBD-073.md#33-v073c-context-aware-rewriting) | |
 
@@ -1116,17 +1116,17 @@ public class TerminologyContextStrategyTests
 
 ## 11. Deliverable Checklist
 
-| # | Deliverable | Status |
-| :--- | :--- | :--- |
-| 1 | `EditorRewriteContextStrategy.cs` | [ ] |
-| 2 | `SurroundingTextStrategy.cs` | [ ] |
-| 3 | `StyleRulesContextStrategy.cs` | [ ] |
-| 4 | `TerminologyContextStrategy.cs` | [ ] |
-| 5 | `TokenBudgetManager.cs` | [ ] |
-| 6 | Unit tests for SurroundingTextStrategy | [ ] |
-| 7 | Unit tests for StyleRulesContextStrategy | [ ] |
-| 8 | Unit tests for TerminologyContextStrategy | [ ] |
-| 9 | DI registration | [ ] |
+| # | Deliverable | Status | Notes |
+| :--- | :--- | :--- | :--- |
+| 1 | `EditorRewriteContextStrategy.cs` | [x] Skipped | Orchestrator handles coordination; not needed |
+| 2 | `SurroundingTextContextStrategy.cs` | [x] | Implemented as `SurroundingTextContextStrategy` |
+| 3 | `StyleRulesContextStrategy.cs` | [x] Skipped | Existing `StyleContextStrategy` (v0.7.2b) already provides style rules |
+| 4 | `EditorTerminologyContextStrategy.cs` | [x] | Implemented as `EditorTerminologyContextStrategy` |
+| 5 | `TokenBudgetManager.cs` | [x] Skipped | `ContextStrategyBase.TruncateToMaxTokens()` + `ContextBudget` already handle this |
+| 6 | Unit tests for SurroundingTextContextStrategy | [x] | 19 tests |
+| 7 | Unit tests for StyleRulesContextStrategy | [x] Skipped | Existing tests cover `StyleContextStrategy` |
+| 8 | Unit tests for EditorTerminologyContextStrategy | [x] | 26 tests |
+| 9 | DI registration | [x] | `AddEditorAgentContextStrategies()` + factory registrations |
 
 ---
 
@@ -1155,3 +1155,4 @@ dotnet test --filter "FullyQualifiedName~ContextStrategy"
 | Version | Date | Author | Changes |
 | :--- | :--- | :--- | :--- |
 | 1.0 | 2026-01-27 | Lead Architect | Initial draft |
+| 1.1 | 2026-02-14 | Implementation | Completed — adapted to codebase (see LCS-CL-v0.7.3c.md) |

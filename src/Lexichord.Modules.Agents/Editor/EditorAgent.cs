@@ -487,7 +487,7 @@ public sealed class EditorAgent : IAgent, IEditorAgent
     ///   <item><description>Cursor position at the selection start</description></item>
     ///   <item><description>Selected text for surrounding context strategies</description></item>
     ///   <item><description>Agent ID "editor" for strategy filtering</description></item>
-    ///   <item><description>4000-token budget with "style" and "terminology" required</description></item>
+    ///   <item><description>4000-token budget with "surrounding-text", "style", and "terminology" required (v0.7.3c)</description></item>
     /// </list>
     /// If context assembly fails, logs a warning and returns
     /// <see cref="AssembledContext.Empty"/> for graceful degradation.
@@ -505,7 +505,7 @@ public sealed class EditorAgent : IAgent, IEditorAgent
 
         var budget = new ContextBudget(
             MaxTokens: ContextTokenBudget,
-            RequiredStrategies: new[] { "style", "terminology" },
+            RequiredStrategies: new[] { "surrounding-text", "style", "terminology" },
             ExcludedStrategies: null);
 
         try

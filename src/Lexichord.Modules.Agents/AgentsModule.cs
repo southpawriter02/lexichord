@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------
 
 using Lexichord.Abstractions.Agents;
+using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.LLM;
@@ -270,6 +271,13 @@ public class AgentsModule : IModule
         //   - RewriteRequestedEventHandler: auto-registered via MediatR assembly scanning
         //   NOTE: IRewriteApplicator is NOT registered — provided by v0.7.3d
         services.AddEditorAgentPipeline();
+
+        // LOGIC: Register the Editor Agent context strategy services:
+        //   v0.7.3c — Context-Aware Rewriting strategies
+        //   - SurroundingTextContextStrategy: Transient, gathers surrounding paragraphs
+        //   - EditorTerminologyContextStrategy: Transient, scans terminology matches
+        //   Both are registered in ContextStrategyFactory as WriterPro-tier strategies.
+        services.AddEditorAgentContextStrategies();
     }
 
     /// <inheritdoc />
@@ -426,6 +434,27 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Editor Agent is not registered. AI rewrite pipeline will not be available.");
+        }
+
+        // LOGIC: Verify Editor Agent context strategies are available (v0.7.3c).
+        var strategyFactory = provider.GetService<IContextStrategyFactory>();
+        if (strategyFactory is not null)
+        {
+            var availableIds = strategyFactory.AvailableStrategyIds;
+            var hasSurrounding = availableIds.Contains("surrounding-text");
+            var hasTerminology = availableIds.Contains("terminology");
+
+            if (hasSurrounding && hasTerminology)
+            {
+                logger.LogDebug(
+                    "Editor Agent context strategies available: surrounding-text, terminology");
+            }
+            else
+            {
+                logger.LogWarning(
+                    "Editor Agent context strategies partially available: surrounding-text={HasSurrounding}, terminology={HasTerminology}",
+                    hasSurrounding, hasTerminology);
+            }
         }
     }
 }

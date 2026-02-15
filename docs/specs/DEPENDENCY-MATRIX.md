@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.3b added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.3c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1763,6 +1763,30 @@
 - v0.5.x (IChatCompletionService, IPromptRenderer, IPromptTemplateRepository) — LLM invocation
 - v0.0.4c (ILicenseContext, RequiresLicenseAttribute) — License gating
 - v0.0.7a (IMediator, INotificationHandler) — Event publishing and handling
+
+### 1.47 v0.7.3c Context-Aware Rewriting
+
+**New Classes (v0.7.3c):**
+
+| Class                                | Defined In | Module         | Purpose                                            |
+| :----------------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SurroundingTextContextStrategy`     | v0.7.3c    | Modules.Agents | Surrounding paragraph context with [SELECTION IS HERE] marker |
+| `EditorTerminologyContextStrategy`   | v0.7.3c    | Modules.Agents | Terminology matching against selected text          |
+
+**Strategy Registrations (v0.7.3c):**
+
+| Strategy ID        | Type                                | License Tier | Priority |
+| :----------------- | :---------------------------------- | :----------- | :------- |
+| `surrounding-text` | `SurroundingTextContextStrategy`    | WriterPro    | Critical (100) |
+| `terminology`      | `EditorTerminologyContextStrategy`  | WriterPro    | Medium (60) |
+
+**Dependencies (v0.7.3c):**
+- v0.7.2a (IContextStrategy, ContextStrategyBase, ContextFragment, ContextGatheringRequest, StrategyPriority, IContextStrategyFactory) — Strategy abstractions
+- v0.7.2c (IContextOrchestrator) — Context assembly coordination
+- v0.1.3a (IEditorService) — Document content access
+- v0.2.2b (ITerminologyRepository, StyleTerm) — Terminology retrieval
+- v0.6.1b (ITokenCounter) — Token counting via ContextStrategyBase
+- v0.0.4c (RequiresLicenseAttribute, LicenseTier) — License gating
 
 ## 2. MediatR Events Registry
 

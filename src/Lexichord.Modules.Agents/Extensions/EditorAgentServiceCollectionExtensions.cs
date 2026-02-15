@@ -8,6 +8,7 @@
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Modules.Agents.Editor;
+using Lexichord.Modules.Agents.Editor.Context;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lexichord.Modules.Agents.Extensions;
@@ -23,9 +24,10 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <list type="bullet">
 ///   <item><description><see cref="AddEditorAgentContextMenu"/> (v0.7.3a) — Context menu, ViewModel, keyboard shortcuts</description></item>
 ///   <item><description><see cref="AddEditorAgentPipeline"/> (v0.7.3b) — Agent, command handler, event handler</description></item>
+///   <item><description><see cref="AddEditorAgentContextStrategies"/> (v0.7.3c) — Context-aware rewriting strategies</description></item>
 /// </list>
 /// <para>
-/// <b>Introduced in:</b> v0.7.3a. Extended in v0.7.3b.
+/// <b>Introduced in:</b> v0.7.3a. Extended in v0.7.3b, v0.7.3c.
 /// </para>
 /// </remarks>
 /// <seealso cref="IEditorAgentContextMenuProvider"/>
@@ -189,6 +191,78 @@ public static class EditorAgentServiceCollectionExtensions
         // internal CancellationTokenSource. Each DI scope (e.g., each context menu
         // invocation) gets its own handler instance.
         services.AddScoped<IRewriteCommandHandler, RewriteCommandHandler>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Editor Agent context strategy services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="SurroundingTextContextStrategy"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime because strategies are stateless — each context-gathering
+    ///     cycle creates a fresh instance via the <see cref="Lexichord.Abstractions.Agents.Context.IContextStrategyFactory"/>.
+    ///     Gathers surrounding paragraphs from the document for tone consistency.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="EditorTerminologyContextStrategy"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime for the same reason. Scans selected text against the
+    ///     terminology database and provides matching terms with replacements.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Registration in Factory:</b>
+    /// These strategies are also registered in <see cref="Lexichord.Modules.Agents.Context.ContextStrategyFactory"/>
+    /// as WriterPro-tier strategies with IDs <c>"surrounding-text"</c> and <c>"terminology"</c>.
+    /// The factory resolves them from the DI container when requested.
+    /// </para>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> (v0.6.7c) — Document content access for surrounding text</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ITerminologyRepository"/> (v0.2.2b) — Active terminology lookup</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ITokenCounter"/> (v0.6.1b) — Token estimation for budget management</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.3c as part of Context-Aware Rewriting.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddEditorAgentContextMenu();       // v0.7.3a
+    ///     services.AddEditorAgentPipeline();           // v0.7.3b
+    ///     services.AddEditorAgentContextStrategies();  // v0.7.3c
+    /// }
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddEditorAgentContextStrategies(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register SurroundingTextContextStrategy as Transient.
+        // Strategies are lightweight and stateless — the ContextStrategyFactory
+        // creates them on demand per context-gathering cycle.
+        services.AddTransient<SurroundingTextContextStrategy>();
+
+        // LOGIC: Register EditorTerminologyContextStrategy as Transient.
+        // Same rationale as above.
+        services.AddTransient<EditorTerminologyContextStrategy>();
 
         return services;
     }
