@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using FuzzySharp;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Commands;
+using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,7 @@ public partial class CommandPaletteViewModel : ObservableObject
 
     private readonly ICommandRegistry _commandRegistry;
     private readonly IMediator _mediator;
+    private readonly IEditorService _editorService;
     private readonly ILogger<CommandPaletteViewModel> _logger;
 
     private List<CommandDefinition> _allCommands = [];
@@ -66,10 +68,12 @@ public partial class CommandPaletteViewModel : ObservableObject
     public CommandPaletteViewModel(
         ICommandRegistry commandRegistry,
         IMediator mediator,
+        IEditorService editorService,
         ILogger<CommandPaletteViewModel> logger)
     {
         _commandRegistry = commandRegistry ?? throw new ArgumentNullException(nameof(commandRegistry));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -152,7 +156,7 @@ public partial class CommandPaletteViewModel : ObservableObject
                 fileResult.FullPath);
 
             Hide();
-            // TODO: v0.1.5c - Integrate with IEditorService.OpenDocumentAsync
+            await _editorService.OpenDocumentAsync(fileResult.FullPath);
         }
     }
 
