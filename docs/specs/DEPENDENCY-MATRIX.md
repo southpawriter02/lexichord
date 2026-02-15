@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.3a added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.3b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1707,6 +1707,63 @@
 - v0.6.7a (IKeyBindingConfiguration, IKeyBindingService) — Keyboard shortcuts
 - CommunityToolkit.Mvvm (ObservableObject, RelayCommand) — MVVM patterns
 
+### 1.46 v0.7.3b Agent Command Pipeline
+
+**New Records (v0.7.3b):**
+
+| Record                    | Defined In | Module         | Purpose                                            |
+| :------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `RewriteRequest`          | v0.7.3b    | Modules.Agents | Rewrite command input with validation              |
+| `RewriteResult`           | v0.7.3b    | Modules.Agents | Rewrite command output with Failed() factory       |
+| `RewriteProgressUpdate`   | v0.7.3b    | Modules.Agents | Streaming progress notification                    |
+
+**New Enums (v0.7.3b):**
+
+| Enum                      | Defined In | Module         | Purpose                                            |
+| :------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `RewriteProgressState`    | v0.7.3b    | Modules.Agents | Initializing/GatheringContext/GeneratingRewrite/Completed/Failed |
+
+**New Interfaces (v0.7.3b):**
+
+| Interface                 | Defined In | Module         | Purpose                                            |
+| :------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `IEditorAgent`            | v0.7.3b    | Modules.Agents | Editor-specific agent extending IAgent             |
+| `IRewriteCommandHandler`  | v0.7.3b    | Modules.Agents | Pipeline orchestration contract                    |
+| `IRewriteApplicator`      | v0.7.3b    | Modules.Agents | Forward-declared for v0.7.3d document application  |
+
+**New Classes (v0.7.3b):**
+
+| Class                             | Defined In | Module         | Purpose                                            |
+| :-------------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `EditorAgent`                     | v0.7.3b    | Modules.Agents | IAgent + IEditorAgent implementation               |
+| `RewriteCommandHandler`           | v0.7.3b    | Modules.Agents | Pipeline orchestrator with license gating           |
+| `RewriteRequestedEventHandler`    | v0.7.3b    | Modules.Agents | MediatR bridge from v0.7.3a events                 |
+
+**New Events (v0.7.3b):**
+
+| Event                     | Defined In | Module         | Purpose                                            |
+| :------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `RewriteStartedEvent`     | v0.7.3b    | Modules.Agents | Pipeline start notification                        |
+| `RewriteCompletedEvent`   | v0.7.3b    | Modules.Agents | Pipeline completion notification                   |
+
+**New Prompt Templates (v0.7.3b):**
+
+| Template ID                | File                              | Purpose                        |
+| :------------------------- | :-------------------------------- | :----------------------------- |
+| `editor-rewrite-formal`    | `editor-rewrite-formal.yaml`      | Formal rewrite prompt          |
+| `editor-rewrite-simplify`  | `editor-rewrite-simplify.yaml`    | Simplify rewrite prompt        |
+| `editor-rewrite-expand`    | `editor-rewrite-expand.yaml`      | Expand rewrite prompt          |
+| `editor-rewrite-custom`    | `editor-rewrite-custom.yaml`      | Custom rewrite prompt          |
+
+**Dependencies (v0.7.3b):**
+- v0.7.3a (RewriteIntent, RewriteRequestedEvent, FeatureCodes.EditorAgent) — Context menu integration
+- v0.7.2c (IContextOrchestrator, AssembledContext, ContextBudget) — Context assembly
+- v0.6.6a (IAgent, AgentDefinitionAttribute, AgentCapabilities) — Agent contracts
+- v0.6.7b (TextSpan) — Selection span record
+- v0.5.x (IChatCompletionService, IPromptRenderer, IPromptTemplateRepository) — LLM invocation
+- v0.0.4c (ILicenseContext, RequiresLicenseAttribute) — License gating
+- v0.0.7a (IMediator, INotificationHandler) — Event publishing and handling
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1761,6 +1818,8 @@
 | `RewriteRequestedEvent`        | v0.7.3a    | Rewrite command requested         |
 | `ShowUpgradeModalEvent`        | v0.7.3a    | License upgrade modal triggered   |
 | `ShowCustomRewriteDialogEvent` | v0.7.3a    | Custom rewrite dialog requested   |
+| `RewriteStartedEvent`         | v0.7.3b    | Rewrite pipeline started          |
+| `RewriteCompletedEvent`       | v0.7.3b    | Rewrite pipeline completed        |
 
 ---
 

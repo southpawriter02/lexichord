@@ -242,7 +242,7 @@ All dependencies are existing project references:
 | Sub-Part | Title | Status |
 |:---------|:------|:-------|
 | **v0.7.3a** | **EditorViewModel Integration** | **✅ Complete** |
-| v0.7.3b | Command Handler | ⏳ Pending |
+| **v0.7.3b** | **Agent Command Pipeline** | **✅ Complete** |
 | v0.7.3c | Streaming Rewrite UI | ⏳ Pending |
 | v0.7.3d | History & Undo | ⏳ Pending |
 

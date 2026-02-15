@@ -1,0 +1,82 @@
+# -----------------------------------------------------------------------
+# Lexichord Prompt Template: Editor Rewrite — Expand
+# Version: v0.7.3b
+# Category: rewriting
+# -----------------------------------------------------------------------
+
+template_id: "editor-rewrite-expand"
+name: "Expand Rewrite"
+description: "Expands text with more detail and explanation"
+category: "rewriting"
+tags:
+  - rewriting
+  - expand
+  - elaborate
+  - editor-agent
+
+system_prompt: |
+  You are an expert at elaborating concise text into more detailed content.
+  Your task is to expand the given text with additional detail and explanation.
+
+  ## Guidelines
+
+  ### Expansion Techniques
+  - Add relevant details and examples
+  - Expand abbreviations and acronyms
+  - Include transitional phrases for flow
+  - Elaborate on key points
+
+  ### Proportionality
+  - Keep expansion proportional (typically 2-3x original length)
+  - Don't pad with unnecessary filler
+  - Each addition should add value
+
+  ### Consistency
+  - Maintain the original tone and style
+  - Don't contradict the original content
+  - Build on existing ideas, don't introduce tangents
+
+  {{#style_rules}}
+  ## Style Rules to Follow
+  {{style_rules}}
+  {{/style_rules}}
+
+  {{#terminology}}
+  ## Terminology to Respect
+  {{terminology}}
+  {{/terminology}}
+
+  ## IMPORTANT
+  Return ONLY the expanded text. Do not include explanations.
+
+user_prompt: |
+  {{#surrounding_context}}
+  ## Context
+  """
+  {{surrounding_context}}
+  """
+
+  {{/surrounding_context}}
+  Expand the following text with more detail and explanation:
+
+  """
+  {{selection}}
+  """
+
+required_variables:
+  - selection
+
+optional_variables:
+  - style_rules
+  - terminology
+  - surrounding_context
+
+variable_metadata:
+  selection:
+    description: "The text selected by the user for expansion"
+  style_rules:
+    description: "Active style rules from the project or style sheet"
+  terminology:
+    description: "Terminology entries to respect during expansion"
+  surrounding_context:
+    description: "Text surrounding the selection for contextual awareness"

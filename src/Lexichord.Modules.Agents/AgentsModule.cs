@@ -262,6 +262,14 @@ public class AgentsModule : IModule
         //   - RewriteCommandViewModel: Transient for per-view command state
         //   - RewriteKeyboardShortcuts: Singleton IKeyBindingConfiguration
         services.AddEditorAgentContextMenu();
+
+        // LOGIC: Register the Editor Agent command pipeline services:
+        //   v0.7.3b — EditorAgent, RewriteCommandHandler
+        //   - IEditorAgent (+ IAgent): Singleton for stateless rewrite operations
+        //   - IRewriteCommandHandler: Scoped for per-request execution isolation
+        //   - RewriteRequestedEventHandler: auto-registered via MediatR assembly scanning
+        //   NOTE: IRewriteApplicator is NOT registered — provided by v0.7.3d
+        services.AddEditorAgentPipeline();
     }
 
     /// <inheritdoc />
@@ -404,6 +412,20 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Editor Agent context menu provider is not registered. AI rewrite features will not be available.");
+        }
+
+        // LOGIC: Verify Editor Agent pipeline is available (v0.7.3b).
+        var editorAgent = provider.GetService<Editor.IEditorAgent>();
+        if (editorAgent is not null)
+        {
+            logger.LogDebug(
+                "Editor Agent pipeline available: AgentId={AgentId}, Capabilities={Capabilities}",
+                editorAgent.AgentId,
+                editorAgent.Capabilities);
+        }
+        else
+        {
+            logger.LogWarning("Editor Agent is not registered. AI rewrite pipeline will not be available.");
         }
     }
 }

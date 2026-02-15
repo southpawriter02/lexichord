@@ -5,6 +5,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Modules.Agents.Editor;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,29 +13,25 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Lexichord.Modules.Agents.Extensions;
 
 /// <summary>
-/// Extension methods for registering Editor Agent context menu services.
+/// Extension methods for registering Editor Agent services.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>LOGIC:</b> This class provides the <see cref="AddEditorAgentContextMenu"/> extension
-/// method that registers all services required for the Editor Agent's context menu integration.
+/// <b>LOGIC:</b> This class provides extension methods for registering all services
+/// required by the Editor Agent feature:
 /// </para>
-/// <para>
-/// <b>Services Registered:</b>
 /// <list type="bullet">
-///   <item><description><see cref="IEditorAgentContextMenuProvider"/> → <see cref="EditorAgentContextMenuProvider"/> (Singleton)</description></item>
-///   <item><description><see cref="RewriteCommandViewModel"/> (Transient)</description></item>
-///   <item><description><see cref="RewriteKeyboardShortcuts"/> as <see cref="IKeyBindingConfiguration"/> (Singleton)</description></item>
+///   <item><description><see cref="AddEditorAgentContextMenu"/> (v0.7.3a) — Context menu, ViewModel, keyboard shortcuts</description></item>
+///   <item><description><see cref="AddEditorAgentPipeline"/> (v0.7.3b) — Agent, command handler, event handler</description></item>
 /// </list>
-/// </para>
 /// <para>
-/// <b>Introduced in:</b> v0.7.3a as part of the Editor Agent feature.
+/// <b>Introduced in:</b> v0.7.3a. Extended in v0.7.3b.
 /// </para>
 /// </remarks>
 /// <seealso cref="IEditorAgentContextMenuProvider"/>
 /// <seealso cref="EditorAgentContextMenuProvider"/>
-/// <seealso cref="RewriteCommandViewModel"/>
-/// <seealso cref="RewriteKeyboardShortcuts"/>
+/// <seealso cref="IEditorAgent"/>
+/// <seealso cref="IRewriteCommandHandler"/>
 public static class EditorAgentServiceCollectionExtensions
 {
     /// <summary>
@@ -106,6 +103,92 @@ public static class EditorAgentServiceCollectionExtensions
         // IKeyBindingConfiguration. The Configure method is called once during
         // module initialization to register keyboard bindings.
         services.AddSingleton<IKeyBindingConfiguration, RewriteKeyboardShortcuts>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Editor Agent command pipeline services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="IEditorAgent"/> → <see cref="EditorAgent"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime because the agent is stateless — all per-invocation state
+    ///     is stack-local. Registered both as <see cref="IEditorAgent"/> (for the pipeline)
+    ///     and as <see cref="IAgent"/> (for the agent registry).
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IRewriteCommandHandler"/> → <see cref="RewriteCommandHandler"/> (Scoped)
+    ///     <para>
+    ///     Scoped lifetime ensures per-operation isolation of <see cref="IRewriteCommandHandler.IsExecuting"/>
+    ///     and the internal <see cref="CancellationTokenSource"/>. Each scope gets its own
+    ///     handler instance.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Forward-Declared Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="IRewriteApplicator"/> is NOT registered here. It will be provided by v0.7.3d.
+    ///     <see cref="RewriteCommandHandler"/> accepts it as nullable (<c>IRewriteApplicator?</c>)
+    ///     and skips document application when null.
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>MediatR Auto-Registration:</b>
+    /// <see cref="RewriteRequestedEventHandler"/> is automatically discovered by MediatR's
+    /// assembly scanning (configured via <c>AddMediatR</c> in the infrastructure module).
+    /// No explicit registration is needed.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.3b as part of the Agent Command Pipeline.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddEditorAgentContextMenu();  // v0.7.3a
+    ///     services.AddEditorAgentPipeline();      // v0.7.3b
+    /// }
+    ///
+    /// // Later, resolve via DI
+    /// var handler = serviceProvider.GetRequiredService&lt;IRewriteCommandHandler&gt;();
+    /// var result = await handler.ExecuteAsync(rewriteRequest);
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddEditorAgentPipeline(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register EditorAgent as Singleton implementing IEditorAgent.
+        // The agent is stateless (all state is per-invocation on the stack),
+        // making singleton lifetime safe and performant.
+        services.AddSingleton<IEditorAgent, EditorAgent>();
+
+        // LOGIC: Also register the EditorAgent as an IAgent for the agent registry.
+        // This forward-resolves from the IEditorAgent singleton to avoid duplicate
+        // instances. The AgentDefinitionScanner and IAgentRegistry can discover
+        // the editor agent through the IAgent service collection.
+        services.AddSingleton<IAgent>(sp => sp.GetRequiredService<IEditorAgent>());
+
+        // LOGIC: Register RewriteCommandHandler as Scoped implementing IRewriteCommandHandler.
+        // Scoped lifetime ensures per-request isolation of IsExecuting state and the
+        // internal CancellationTokenSource. Each DI scope (e.g., each context menu
+        // invocation) gets its own handler instance.
+        services.AddScoped<IRewriteCommandHandler, RewriteCommandHandler>();
 
         return services;
     }

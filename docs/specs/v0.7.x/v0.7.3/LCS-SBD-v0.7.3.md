@@ -1763,10 +1763,10 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~EditorAgent"
 | :- | :------------------------------------------------------------- | :----- |
 | 1  | `EditorAgentContextMenuProvider.cs`                            | [x]    |
 | 2  | `RewriteCommandViewModel.cs`                                   | [x]    |
-| 3  | `EditorAgent.cs` implementing `IEditorAgent`                   | [ ]    |
-| 4  | `RewriteRequest.cs` / `RewriteResult.cs` records               | [ ]    |
-| 5  | `RewriteCommandHandler.cs`                                     | [ ]    |
-| 6  | `EditorAgentPromptTemplates.yaml`                              | [ ]    |
+| 3  | `EditorAgent.cs` implementing `IEditorAgent`                   | [x]    |
+| 4  | `RewriteRequest.cs` / `RewriteResult.cs` records               | [x]    |
+| 5  | `RewriteCommandHandler.cs`                                     | [x]    |
+| 6  | `EditorAgentPromptTemplates.yaml`                              | [x]    |
 | 7  | `EditorRewriteContextStrategy.cs`                              | [ ]    |
 | 8  | `SurroundingTextStrategy.cs`                                   | [ ]    |
 | 9  | `StyleRulesContextStrategy.cs`                                 | [ ]    |
@@ -1774,7 +1774,7 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~EditorAgent"
 | 11 | `RewriteUndoableOperation.cs`                                  | [ ]    |
 | 12 | `RewriteApplicator.cs`                                         | [ ]    |
 | 13 | Unit tests for context menu (v0.7.3a)                          | [x]    |
-| 14 | Unit tests for command pipeline (v0.7.3b)                      | [ ]    |
+| 14 | Unit tests for command pipeline (v0.7.3b)                      | [x]    |
 | 15 | Unit tests for context strategies (v0.7.3c)                    | [ ]    |
 | 16 | Unit tests for undo/redo (v0.7.3d)                             | [ ]    |
 | 17 | Integration tests for full workflow                            | [ ]    |

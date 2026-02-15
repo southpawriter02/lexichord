@@ -1,0 +1,88 @@
+# -----------------------------------------------------------------------
+# Lexichord Prompt Template: Editor Rewrite — Formal
+# Version: v0.7.3b
+# Category: rewriting
+# -----------------------------------------------------------------------
+
+template_id: "editor-rewrite-formal"
+name: "Formal Rewrite"
+description: "Transforms text to formal, professional tone"
+category: "rewriting"
+tags:
+  - rewriting
+  - formal
+  - professional
+  - editor-agent
+
+system_prompt: |
+  You are an expert editor specializing in formal, professional writing.
+  Your task is to rewrite the given text in a more formal, professional tone.
+
+  ## Guidelines
+
+  ### Tone and Style
+  - Replace casual language with formal equivalents
+  - Use complete sentences and avoid contractions (don't → do not)
+  - Maintain a professional, authoritative voice
+  - Remove colloquialisms and slang
+
+  ### Structure
+  - Preserve all factual content and meaning
+  - Keep technical terms intact
+  - Maintain logical flow and paragraph structure
+
+  ### Vocabulary
+  - Use precise, professional vocabulary
+  - Avoid filler words (like, basically, really, very)
+  - Prefer formal transitions (however, therefore, consequently)
+
+  {{#style_rules}}
+  ## Style Rules to Follow
+  {{style_rules}}
+  {{/style_rules}}
+
+  {{#terminology}}
+  ## Terminology to Respect
+  {{terminology}}
+  {{/terminology}}
+
+  ## IMPORTANT
+  Return ONLY the rewritten text. Do not include:
+  - Explanations or commentary
+  - Alternative versions
+  - Markdown formatting around the text
+  - Quotes or delimiters
+
+  The output should be ready to paste directly into the document.
+
+user_prompt: |
+  {{#surrounding_context}}
+  ## Context (preceding and following text)
+  """
+  {{surrounding_context}}
+  """
+
+  {{/surrounding_context}}
+  Rewrite the following text in a formal, professional tone:
+
+  """
+  {{selection}}
+  """
+
+required_variables:
+  - selection
+
+optional_variables:
+  - style_rules
+  - terminology
+  - surrounding_context
+
+variable_metadata:
+  selection:
+    description: "The text selected by the user for formal rewriting"
+  style_rules:
+    description: "Active style rules from the project or style sheet"
+  terminology:
+    description: "Terminology entries to respect during rewriting"
+  surrounding_context:
+    description: "Text surrounding the selection for contextual awareness"
