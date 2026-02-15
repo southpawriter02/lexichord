@@ -376,6 +376,9 @@ public class CommandPaletteViewModelTests
         var fileResult = new FileSearchResult { FullPath = "/test/file.txt", Score = 100 };
         viewModel.SelectedItem = fileResult;
 
+        _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
+            .ReturnsAsync((IManuscriptViewModel?)null!);
+
         await viewModel.ExecuteSelectedAsync();
 
         _editorServiceMock.Verify(x => x.OpenDocumentAsync("/test/file.txt"), Times.Once);
@@ -388,6 +391,9 @@ public class CommandPaletteViewModelTests
         await viewModel.ShowAsync(PaletteMode.Files);
         var fileResult = new FileSearchResult { FullPath = "/test/file.txt", Score = 100 };
         viewModel.SelectedItem = fileResult;
+
+        _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
+            .ReturnsAsync((IManuscriptViewModel?)null!);
 
         await viewModel.ExecuteSelectedAsync();
 
