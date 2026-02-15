@@ -68,4 +68,20 @@ public class IndexStatisticsTests
         // Assert
         pendingCount.Should().Be(0);
     }
+
+    [Fact]
+    public void PendingCount_ShouldReturnZero_WhenStatusCountsIsNull()
+    {
+        // Arrange
+        var stats = new IndexStatistics
+        {
+            StatusCounts = null!
+        };
+
+        // Act
+        var pendingCount = stats.PendingCount;
+
+        // Assert
+        pendingCount.Should().Be(0);
+    }
 }

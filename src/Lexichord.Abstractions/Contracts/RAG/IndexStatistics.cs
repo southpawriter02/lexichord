@@ -61,7 +61,7 @@ public record IndexStatistics
     /// <remarks>
     /// Derived from <see cref="StatusCounts"/> for the Pending status.
     /// </remarks>
-    public int PendingCount => StatusCounts.TryGetValue(IndexingStatus.Pending, out var count) ? count : 0;
+    public int PendingCount => StatusCounts is not null && StatusCounts.TryGetValue(IndexingStatus.Pending, out var count) ? count : 0;
 
     /// <summary>
     /// Gets a human-readable representation of <see cref="StorageSizeBytes"/>.
