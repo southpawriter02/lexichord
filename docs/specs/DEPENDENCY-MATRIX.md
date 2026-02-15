@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-15 (v0.7.5a added)                                             |
+| **Last Updated** | 2026-02-15 (v0.7.5b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1983,6 +1983,64 @@
 - v0.1.3a (IEditorService) — Document content access
 - v0.0.4c (ILicenseContext) — License validation
 - Microsoft.Extensions.Caching.Memory — Result caching
+
+### 1.52 v0.7.5b Automatic Fix Suggestions
+
+**New Interfaces (v0.7.5b — Abstractions):**
+
+| Interface                  | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IFixSuggestionGenerator`  | v0.7.5b    | Abstractions   | AI-powered fix suggestion generation               |
+
+**New Records (v0.7.5b — Abstractions):**
+
+| Record                     | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `FixSuggestion`            | v0.7.5b    | Abstractions   | Core suggestion with confidence, diff, alternatives|
+| `AlternativeSuggestion`    | v0.7.5b    | Abstractions   | Alternative fix option                             |
+| `FixValidationResult`      | v0.7.5b    | Abstractions   | Validation status with semantic similarity         |
+| `FixGenerationOptions`     | v0.7.5b    | Abstractions   | Generation configuration options                   |
+| `TextDiff`                 | v0.7.5b    | Abstractions   | Structured diff with operations and formats        |
+| `DiffOperation`            | v0.7.5b    | Abstractions   | Single diff operation (add/delete/unchanged)       |
+
+**New Enums (v0.7.5b — Abstractions):**
+
+| Enum                       | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `TonePreference`           | v0.7.5b    | Abstractions   | Neutral/Formal/Casual/Technical/Simplified         |
+| `ValidationStatus`         | v0.7.5b    | Abstractions   | Valid/ValidWithWarnings/Invalid/ValidationFailed   |
+| `DiffType`                 | v0.7.5b    | Abstractions   | Unchanged/Addition/Deletion                        |
+
+**New Classes (v0.7.5b — Modules.Agents):**
+
+| Class                      | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `FixSuggestionGenerator`   | v0.7.5b    | Modules.Agents | IFixSuggestionGenerator with LLM integration       |
+| `DiffGenerator`            | v0.7.5b    | Modules.Agents | DiffPlex wrapper for diff generation               |
+| `FixValidator`             | v0.7.5b    | Modules.Agents | Re-linting and semantic similarity validation      |
+
+**New Prompt Template (v0.7.5b — Modules.Agents):**
+
+| Template                   | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `tuning-agent-fix.yaml`    | v0.7.5b    | Modules.Agents | Mustache template for fix generation prompts       |
+
+**DI Registrations (v0.7.5b):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `IFixSuggestionGenerator`  | Singleton  | TuningServiceCollectionExtensions           |
+| `DiffGenerator`            | Singleton  | TuningServiceCollectionExtensions           |
+| `FixValidator`             | Singleton  | TuningServiceCollectionExtensions           |
+
+**Dependencies (v0.7.5b):**
+- v0.7.5a (StyleDeviation) — Input deviation data
+- v0.5.1a (IChatCompletionService) — LLM calls
+- v0.5.2a (IPromptRenderer) — Template rendering
+- v0.5.2b (IPromptTemplateRepository) — Template retrieval
+- v0.2.1a (IStyleEngine) — Re-linting validation
+- v0.0.4c (ILicenseContext) — License validation
+- DiffPlex 1.7.2 — Diff generation
 
 ## 2. MediatR Events Registry
 

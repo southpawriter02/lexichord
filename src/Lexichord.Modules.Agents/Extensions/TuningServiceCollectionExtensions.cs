@@ -22,14 +22,20 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// </para>
 /// <list type="bullet">
 ///   <item><description><see cref="AddStyleDeviationScanner"/> (v0.7.5a) — Style deviation scanning with caching and real-time updates</description></item>
+///   <item><description><see cref="AddFixSuggestionGenerator"/> (v0.7.5b) — AI-powered fix suggestions for style deviations</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
+/// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5b with fix suggestion generation support.
 /// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
 /// <seealso cref="ScannerOptions"/>
+/// <seealso cref="IFixSuggestionGenerator"/>
+/// <seealso cref="FixSuggestionGenerator"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -145,6 +151,97 @@ public static class TuningServiceCollectionExtensions
         // 3. Injected services (ILintingOrchestrator, IEditorService, etc.) are singletons or thread-safe
         // 4. MediatR event handlers are auto-registered and use the same instance
         services.AddSingleton<IStyleDeviationScanner, StyleDeviationScanner>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Fix Suggestion Generator service to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="DiffGenerator"/> (Singleton)
+    ///     <para>
+    ///     Internal helper for generating text diffs using DiffPlex.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="FixValidator"/> (Singleton)
+    ///     <para>
+    ///     Internal helper for validating fix suggestions against the linter.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IFixSuggestionGenerator"/> → <see cref="FixSuggestionGenerator"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the generator is stateless.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.LLM.IChatCompletionService"/> (v0.6.1a) — LLM communication</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.LLM.IPromptRenderer"/> (v0.6.3b) — Template rendering</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.LLM.IPromptTemplateRepository"/> (v0.6.3c) — Template storage</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.IStyleEngine"/> (v0.2.1a) — Fix validation via re-analysis</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — License tier validation</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>License Requirement:</b> Requires WriterPro tier or higher.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5b as part of the Automatic Fix Suggestions feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    /// }
+    ///
+    /// // Resolve and use via DI
+    /// var generator = serviceProvider.GetRequiredService&lt;IFixSuggestionGenerator&gt;();
+    /// var suggestion = await generator.GenerateFixAsync(deviation);
+    ///
+    /// if (suggestion.Success &amp;&amp; suggestion.IsHighConfidence)
+    /// {
+    ///     Console.WriteLine($"Fix: {suggestion.SuggestedText}");
+    /// }
+    /// </code>
+    /// </example>
+    /// <seealso cref="IFixSuggestionGenerator"/>
+    /// <seealso cref="FixSuggestionGenerator"/>
+    /// <seealso cref="FixSuggestion"/>
+    /// <seealso cref="FixGenerationOptions"/>
+    public static IServiceCollection AddFixSuggestionGenerator(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register internal helper services
+        // These are internal implementation details not exposed via interfaces
+        services.AddSingleton<DiffGenerator>();
+        services.AddSingleton<FixValidator>();
+
+        // LOGIC: Register FixSuggestionGenerator as Singleton implementing IFixSuggestionGenerator.
+        // Singleton lifetime is appropriate because:
+        // 1. The generator is stateless
+        // 2. Thread-safe via SemaphoreSlim for batch operations
+        // 3. Injected services are singletons or thread-safe
+        services.AddSingleton<IFixSuggestionGenerator, FixSuggestionGenerator>();
 
         return services;
     }

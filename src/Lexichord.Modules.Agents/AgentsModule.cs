@@ -330,6 +330,16 @@ public class AgentsModule : IModule
         //   - Result caching via IMemoryCache with content hash validation
         //   - Real-time deviation detection via MediatR event handlers
         services.AddStyleDeviationScanner();
+
+        // LOGIC: Register the Fix Suggestion Generator services:
+        //   v0.7.5b — Automatic Fix Suggestions
+        //   - IFixSuggestionGenerator → FixSuggestionGenerator: Singleton
+        //     Generates AI-powered fix suggestions for style deviations
+        //   - DiffGenerator: Internal helper for text diff generation
+        //   - FixValidator: Internal helper for fix validation via re-linting
+        //   - Uses tuning-agent-fix.yaml prompt template
+        //   - Batch processing with SemaphoreSlim parallelism control
+        services.AddFixSuggestionGenerator();
     }
 
     /// <inheritdoc />
@@ -580,6 +590,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Style Deviation Scanner is not registered. Tuning Agent features will not be available.");
+        }
+
+        // LOGIC: Verify Fix Suggestion Generator is available (v0.7.5b).
+        var fixSuggestionGenerator = provider.GetService<IFixSuggestionGenerator>();
+        if (fixSuggestionGenerator is not null)
+        {
+            logger.LogDebug(
+                "Fix Suggestion Generator available: {GeneratorType}",
+                fixSuggestionGenerator.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Fix Suggestion Generator is not registered. AI fix suggestion features will not be available.");
         }
     }
 }

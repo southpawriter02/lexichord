@@ -1903,12 +1903,12 @@ dotnet test --filter "Version~v0.7.5" --logger "trx;LogFileName=v075-results.trx
 | 1  | `IStyleDeviationScanner` interface                             | [x]    |
 | 2  | `StyleDeviationScanner` implementation                         | [x]    |
 | 3  | `StyleDeviation` and `DeviationScanResult` records             | [x]    |
-| 4  | `IFixSuggestionGenerator` interface                            | [ ]    |
-| 5  | `FixSuggestionGenerator` implementation                        | [ ]    |
-| 6  | `FixSuggestion` and related records                            | [ ]    |
-| 7  | Tuning prompt templates (YAML)                                 | [ ]    |
-| 8  | `TextDiff` and diff generation                                 | [ ]    |
-| 9  | Fix validation against linter                                  | [ ]    |
+| 4  | `IFixSuggestionGenerator` interface                            | [x]    |
+| 5  | `FixSuggestionGenerator` implementation                        | [x]    |
+| 6  | `FixSuggestion` and related records                            | [x]    |
+| 7  | Tuning prompt templates (YAML)                                 | [x]    |
+| 8  | `TextDiff` and diff generation                                 | [x]    |
+| 9  | Fix validation against linter                                  | [x]    |
 | 10 | `TuningPanelView.axaml`                                        | [ ]    |
 | 11 | `TuningPanelViewModel`                                         | [ ]    |
 | 12 | `SuggestionCardView.axaml`                                     | [ ]    |
