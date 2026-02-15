@@ -23,11 +23,11 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <list type="bullet">
 ///   <item><description><see cref="AddReadabilityTargetService"/> (v0.7.4a) — Readability target resolution and preset management</description></item>
 ///   <item><description><see cref="AddSimplifierAgentPipeline"/> (v0.7.4b) — Simplifier Agent, response parser, pipeline interface</description></item>
+///   <item><description><see cref="AddSimplifierPreviewUI"/> (v0.7.4c) — Preview/Diff UI ViewModel</description></item>
 /// </list>
 /// <para>
 /// <b>Future Sub-Parts:</b>
 /// <list type="bullet">
-///   <item><description>v0.7.4c — Simplification result integration (acceptance, preview)</description></item>
 ///   <item><description>v0.7.4d — UI integration (toolbar, status bar, keyboard shortcuts)</description></item>
 /// </list>
 /// </para>
@@ -39,6 +39,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <seealso cref="ReadabilityTargetService"/>
 /// <seealso cref="ISimplificationPipeline"/>
 /// <seealso cref="SimplifierAgent"/>
+/// <seealso cref="SimplificationPreviewViewModel"/>
 public static class SimplifierServiceCollectionExtensions
 {
     /// <summary>
@@ -197,6 +198,71 @@ public static class SimplifierServiceCollectionExtensions
         // the same instance used by ISimplificationPipeline consumers.
         services.AddSingleton<IAgent>(sp =>
             (IAgent)sp.GetRequiredService<ISimplificationPipeline>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Simplifier Agent Preview/Diff UI services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="SimplificationPreviewViewModel"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime is used because each preview instance requires its own
+    ///     isolated state. Multiple previews can be open simultaneously, each with
+    ///     different original text and simplification results.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ISimplificationPipeline"/> (v0.7.4b) — Re-simplification support</description></item>
+    ///   <item><description><see cref="IReadabilityTargetService"/> (v0.7.4a) — Preset retrieval</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> — Apply changes to document</description></item>
+    ///   <item><description><see cref="MediatR.IMediator"/> — Event publishing</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> — License validation</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.4c as part of the Simplifier Agent Preview/Diff UI.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddReadabilityTargetService();        // v0.7.4a
+    ///     services.AddSimplifierAgentPipeline();         // v0.7.4b
+    ///     services.AddSimplifierPreviewUI();             // v0.7.4c
+    /// }
+    ///
+    /// // Creating a preview ViewModel
+    /// var viewModel = serviceProvider.GetRequiredService&lt;SimplificationPreviewViewModel&gt;();
+    /// await viewModel.InitializeAsync(documentPath);
+    /// viewModel.SetResult(simplificationResult, originalText);
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddSimplifierPreviewUI(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register SimplificationPreviewViewModel as Transient.
+        // Transient lifetime is appropriate because:
+        // 1. Each preview instance needs isolated state (original text, changes, selection)
+        // 2. Multiple previews may be open simultaneously (different documents)
+        // 3. The ViewModel is disposable and should be cleaned up when the preview closes
+        services.AddTransient<SimplificationPreviewViewModel>();
 
         return services;
     }

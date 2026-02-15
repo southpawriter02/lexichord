@@ -1,0 +1,252 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Simplifier"
+             mc:Ignorable="d"
+             d:DesignWidth="400" d:DesignHeight="200"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Views.ReadabilityComparisonPanel"
+             x:DataType="vm:SimplificationPreviewViewModel">
+
+    <!--
+    ===============================================================================
+    READABILITY COMPARISON PANEL - v0.7.4c
+    Displays before/after readability metrics for simplified text.
+    Shows grade level improvement, reading ease change, and word count difference.
+
+    Per LCS-DES-v0.7.4c:
+    - Side-by-side metrics comparison (original vs simplified)
+    - Visual indicators for improvement/regression
+    - Grade level reduction highlight
+    - Target achievement status
+    ===============================================================================
+    -->
+
+    <UserControl.Styles>
+        <!-- Metric label style -->
+        <Style Selector="TextBlock.metric-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+
+        <!-- Metric value style -->
+        <Style Selector="TextBlock.metric-value">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- Metric value small style -->
+        <Style Selector="TextBlock.metric-value-small">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+
+        <!-- Section header -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+
+        <!-- Improvement indicator (green) -->
+        <Style Selector="Border.improvement">
+            <Setter Property="Background" Value="#2022C55E" />
+            <Setter Property="BorderBrush" Value="#4022C55E" />
+        </Style>
+
+        <!-- Metric card -->
+        <Style Selector="Border.metric-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="12">
+
+        <StackPanel Spacing="12">
+
+            <!-- Header with target status -->
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Readability Metrics"
+                           Classes="section-header" />
+
+                <!-- Target achieved badge -->
+                <Border Grid.Column="1"
+                        IsVisible="{Binding TargetAchieved}"
+                        Background="#2022C55E"
+                        BorderBrush="#4022C55E"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="8,2">
+                    <TextBlock Text="Target Achieved"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Foreground="#22C55E" />
+                </Border>
+            </Grid>
+
+            <!-- Main metrics comparison -->
+            <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto">
+
+                <!-- Original Metrics -->
+                <Border Grid.Column="0"
+                        Classes="metric-card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Original"
+                                   HorizontalAlignment="Center"
+                                   FontSize="11"
+                                   Opacity="0.6" />
+
+                        <!-- Grade Level -->
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding OriginalMetrics.FleschKincaidGradeLevel, StringFormat='{}{0:F1}'}"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-value" />
+                            <TextBlock Text="Grade Level"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-label" />
+                        </StackPanel>
+
+                        <!-- Reading Ease -->
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding OriginalMetrics.FleschReadingEase, StringFormat='{}{0:F0}'}"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-value-small" />
+                            <TextBlock Text="Reading Ease"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-label" />
+                        </StackPanel>
+
+                        <!-- Word Count -->
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding OriginalMetrics.WordCount}"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-value-small" />
+                            <TextBlock Text="Words"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-label" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Arrow and reduction indicator -->
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="4"
+                            Margin="12,0">
+                    <TextBlock Text="&#x2192;"
+                               FontSize="24"
+                               HorizontalAlignment="Center"
+                               Opacity="0.4" />
+
+                    <!-- Grade reduction badge -->
+                    <Border Background="#2022C55E"
+                            BorderBrush="#4022C55E"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="8,4"
+                            IsVisible="{Binding ShowGradeReductionBadge}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="#22C55E">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="-{0:F1}">
+                                        <Binding Path="GradeLevelReduction" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock Text="grades"
+                                       HorizontalAlignment="Center"
+                                       FontSize="9"
+                                       Opacity="0.7" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Simplified Metrics -->
+                <Border Grid.Column="2"
+                        Classes="metric-card improvement">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Simplified"
+                                   HorizontalAlignment="Center"
+                                   FontSize="11"
+                                   Opacity="0.6" />
+
+                        <!-- Grade Level -->
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding SimplifiedMetrics.FleschKincaidGradeLevel, StringFormat='{}{0:F1}'}"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-value"
+                                       Foreground="#22C55E" />
+                            <TextBlock Text="Grade Level"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-label" />
+                        </StackPanel>
+
+                        <!-- Reading Ease -->
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding SimplifiedMetrics.FleschReadingEase, StringFormat='{}{0:F0}'}"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-value-small" />
+                            <TextBlock Text="Reading Ease"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-label" />
+                        </StackPanel>
+
+                        <!-- Word Count -->
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding SimplifiedMetrics.WordCount}"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-value-small" />
+                            <TextBlock Text="Words"
+                                       HorizontalAlignment="Center"
+                                       Classes="metric-label" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+            <!-- Target info (if available) -->
+            <Border IsVisible="{Binding TargetUsed, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="4"
+                    Padding="12,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel>
+                        <TextBlock Text="Target"
+                                   FontSize="10"
+                                   Opacity="0.6" />
+                        <TextBlock FontSize="12">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="Grade {0:F0} (max {1} words/sentence)">
+                                    <Binding Path="TargetUsed.TargetGradeLevel" />
+                                    <Binding Path="TargetUsed.MaxSentenceLength" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="{Binding TargetUsed.Source}"
+                                   FontSize="10"
+                                   Opacity="0.5"
+                                   HorizontalAlignment="Right" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+
+    </Border>
+</UserControl>

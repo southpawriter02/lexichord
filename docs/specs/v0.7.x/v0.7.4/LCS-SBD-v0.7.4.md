@@ -1538,9 +1538,20 @@ dotnet test --filter "Category=Integration&Version~v0.7.4"
 | 9  | `SimplificationRequest.cs` record                              | [x]    |
 | 10 | `SimplificationResult.cs` record                               | [x]    |
 | 11 | `SimplificationChange.cs` record                               | [x]    |
-| 12 | `SimplificationPreviewView.axaml` UI                           | [ ]    |
-| 13 | `SimplificationPreviewViewModel.cs` ViewModel                  | [ ]    |
-| 14 | `ReadabilityComparisonPanel.axaml` component                   | [ ]    |
+| 12 | `SimplificationPreviewView.axaml` UI                           | [x]    |
+| 13 | `SimplificationPreviewViewModel.cs` ViewModel                  | [x]    |
+| 14 | `ReadabilityComparisonPanel.axaml` component                   | [x]    |
+| 14a| `DiffTextBox.axaml` side-by-side diff control                  | [x]    |
+| 14b| `InlineDiffView.axaml` inline diff control                     | [x]    |
+| 14c| `ChangesOnlyView.axaml` change list control                    | [x]    |
+| 14d| `SimplificationChangeViewModel.cs` change wrapper              | [x]    |
+| 14e| `SimplificationAcceptedEvent.cs` MediatR event                 | [x]    |
+| 14f| `SimplificationRejectedEvent.cs` MediatR event                 | [x]    |
+| 14g| `ResimplificationRequestedEvent.cs` MediatR event              | [x]    |
+| 14h| `DiffViewMode.cs` enum                                         | [x]    |
+| 14i| Unit tests for SimplificationPreviewViewModel                  | [x]    |
+| 14j| Unit tests for SimplificationChangeViewModel                   | [x]    |
+| 14k| Unit tests for MediatR events                                  | [x]    |
 | 15 | `IBatchSimplificationService.cs` interface                     | [ ]    |
 | 16 | `BatchSimplificationService.cs` implementation                 | [ ]    |
 | 17 | `BatchSimplificationResult.cs` record                          | [ ]    |
@@ -1552,7 +1563,7 @@ dotnet test --filter "Category=Integration&Version~v0.7.4"
 | 23 | Unit tests for BatchSimplificationService                      | [ ]    |
 | 24 | Integration tests for full workflow                            | [ ]    |
 | 25 | DI registration in AgentsModule.cs                             | [x]    |
-| 26 | DiffPlex NuGet package added                                   | [ ]    |
+| 26 | DiffPlex NuGet package added                                   | [x]    |
 
 ---
 

@@ -305,6 +305,12 @@ public class AgentsModule : IModule
         //   - IAgent (forwarded): Enables agent discovery via IAgentRegistry
         //   - Prompt template: specialist-simplifier.yaml with structured output format
         services.AddSimplifierAgentPipeline();
+
+        // LOGIC: Register the Simplifier Agent Preview/Diff UI services:
+        //   v0.7.4c — Preview/Diff UI
+        //   - SimplificationPreviewViewModel: Transient for isolated preview instances
+        //   - Enables before/after comparison, selective acceptance, re-simplification
+        services.AddSimplifierPreviewUI();
     }
 
     /// <inheritdoc />

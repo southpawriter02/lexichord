@@ -1,0 +1,188 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:Lexichord.Modules.Agents.Simplifier.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Controls.DiffTextBox"
+             x:DataType="local:DiffTextBox">
+
+    <!--
+    ===============================================================================
+    DIFF TEXT BOX CONTROL - v0.7.4c
+    Side-by-side text diff visualization using DiffPlex library.
+    Shows original and simplified text with highlighted differences.
+
+    Per LCS-DES-v0.7.4c:
+    - Two-column layout for before/after comparison
+    - Color-coded change highlighting (red for deletions, green for additions)
+    - Line number display
+    - Synchronized scrolling between panels
+    - Monospace font for accurate text alignment
+    ===============================================================================
+    -->
+
+    <UserControl.Styles>
+        <!-- Panel header style -->
+        <Style Selector="TextBlock.panel-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.8" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+
+        <!-- Diff text style -->
+        <Style Selector="SelectableTextBlock.diff-text">
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,monospace" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+
+        <!-- Deletion highlight -->
+        <Style Selector="Border.deletion">
+            <Setter Property="Background" Value="#30EF4444" />
+        </Style>
+
+        <!-- Addition highlight -->
+        <Style Selector="Border.addition">
+            <Setter Property="Background" Value="#3022C55E" />
+        </Style>
+
+        <!-- Line number gutter -->
+        <Style Selector="TextBlock.line-number">
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,monospace" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="MinWidth" Value="40" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="4">
+
+        <Grid ColumnDefinitions="*,1,*">
+
+            <!-- Left Panel: Original Text -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource SurfaceElevatedBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="4,0,0,0">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Original"
+                                   Classes="panel-header" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding OriginalWordCount, StringFormat='{}{0} words', RelativeSource={RelativeSource AncestorType=local:DiffTextBox}}"
+                                   FontSize="11"
+                                   Opacity="0.5"
+                                   Padding="8,4" />
+                    </Grid>
+                </Border>
+
+                <!-- Content -->
+                <ScrollViewer Grid.Row="1"
+                              x:Name="OriginalScrollViewer"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="OriginalDiffLinesList"
+                                  ItemsSource="{Binding OriginalDiffLines, RelativeSource={RelativeSource AncestorType=local:DiffTextBox}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <!-- Line number -->
+                                    <Border Grid.Column="0"
+                                            Background="{DynamicResource SurfaceElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                            BorderThickness="0,0,1,0">
+                                        <TextBlock Text="{Binding LineNumber}"
+                                                   Classes="line-number" />
+                                    </Border>
+
+                                    <!-- Line content with diff highlighting -->
+                                    <Border Grid.Column="1"
+                                            Background="{Binding Background}">
+                                        <SelectableTextBlock Text="{Binding Text}"
+                                                             FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                                                             FontSize="13"
+                                                             Padding="8,2"
+                                                             TextWrapping="Wrap" />
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Divider -->
+            <Border Grid.Column="1"
+                    Background="{DynamicResource BorderSubtleBrush}"
+                    Width="1" />
+
+            <!-- Right Panel: Simplified Text -->
+            <Grid Grid.Column="2" RowDefinitions="Auto,*">
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource SurfaceElevatedBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="0,4,0,0">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Simplified"
+                                   Classes="panel-header" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding SimplifiedWordCount, StringFormat='{}{0} words', RelativeSource={RelativeSource AncestorType=local:DiffTextBox}}"
+                                   FontSize="11"
+                                   Opacity="0.5"
+                                   Padding="8,4" />
+                    </Grid>
+                </Border>
+
+                <!-- Content -->
+                <ScrollViewer Grid.Row="1"
+                              x:Name="SimplifiedScrollViewer"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="SimplifiedDiffLinesList"
+                                  ItemsSource="{Binding SimplifiedDiffLines, RelativeSource={RelativeSource AncestorType=local:DiffTextBox}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <!-- Line number -->
+                                    <Border Grid.Column="0"
+                                            Background="{DynamicResource SurfaceElevatedBrush}"
+                                            BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                            BorderThickness="0,0,1,0">
+                                        <TextBlock Text="{Binding LineNumber}"
+                                                   Classes="line-number" />
+                                    </Border>
+
+                                    <!-- Line content with diff highlighting -->
+                                    <Border Grid.Column="1"
+                                            Background="{Binding Background}">
+                                        <SelectableTextBlock Text="{Binding Text}"
+                                                             FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                                                             FontSize="13"
+                                                             Padding="8,2"
+                                                             TextWrapping="Wrap" />
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+    </Border>
+</UserControl>

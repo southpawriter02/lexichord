@@ -1,0 +1,332 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Simplifier"
+             xmlns:views="using:Lexichord.Modules.Agents.Simplifier.Views"
+             xmlns:controls="using:Lexichord.Modules.Agents.Simplifier.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Views.SimplificationPreviewView"
+             x:DataType="vm:SimplificationPreviewViewModel">
+
+    <!--
+    ===============================================================================
+    SIMPLIFICATION PREVIEW VIEW - v0.7.4c
+    Main preview panel for the Simplifier Agent showing before/after comparison,
+    readability metrics, and change management controls.
+
+    Per LCS-DES-v0.7.4c:
+    - Readability metrics comparison panel
+    - Tabbed diff views (Side-by-Side, Inline, Changes Only)
+    - Preset selector for re-simplification
+    - Accept/Reject action buttons
+    - Keyboard shortcuts (Ctrl+Enter = Accept All, Escape = Reject)
+    - License gating for WriterPro tier
+    ===============================================================================
+    -->
+
+    <UserControl.KeyBindings>
+        <!-- Ctrl+Enter: Accept All -->
+        <KeyBinding Gesture="Ctrl+Enter" Command="{Binding AcceptAllCommand}" />
+        <!-- Escape: Reject -->
+        <KeyBinding Gesture="Escape" Command="{Binding RejectAllCommand}" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <!-- Section header style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+
+        <!-- Tab button base style -->
+        <Style Selector="RadioButton.tab-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Tab button checked style -->
+        <Style Selector="RadioButton.tab-button:checked">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!-- Primary button style -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Secondary button style -->
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Danger button style -->
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#EF4444" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+            <!-- Row 0: Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="16,12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Simplification Preview"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Review and accept changes to simplify your text"
+                                   FontSize="12"
+                                   Opacity="0.6" />
+                    </StackPanel>
+
+                    <!-- Preset selector -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Target:"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"
+                                   Opacity="0.7" />
+                        <ComboBox ItemsSource="{Binding AvailablePresets}"
+                                  SelectedItem="{Binding SelectedPreset}"
+                                  MinWidth="150"
+                                  IsEnabled="{Binding !IsProcessing}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text="{Binding TargetGradeLevel, StringFormat='(Grade {0:F0})'}"
+                                                   FontSize="10"
+                                                   Opacity="0.6"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Content="Re-simplify"
+                                Command="{Binding ResimplifyCommand}"
+                                Classes="secondary"
+                                Padding="8,4"
+                                FontSize="11" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Row 1: License Warning (if not licensed) -->
+            <Border Grid.Row="1"
+                    IsVisible="{Binding !IsLicensed}"
+                    Background="#40EAB308"
+                    Padding="16,8">
+                <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Text="&#x26A0;"
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding LicenseWarning}"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Row 2: Readability Metrics -->
+            <Border Grid.Row="2"
+                    Padding="16,8"
+                    IsVisible="{Binding !IsLoading}">
+                <views:ReadabilityComparisonPanel DataContext="{Binding}" />
+            </Border>
+
+            <!-- Row 3: Diff View (with tab selection) -->
+            <Border Grid.Row="3"
+                    Padding="16,0">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- View mode tabs -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource SurfaceElevatedBrush}"
+                            CornerRadius="4"
+                            Padding="4"
+                            Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <RadioButton Content="Side by Side"
+                                         GroupName="ViewMode"
+                                         Classes="tab-button"
+                                         IsChecked="{Binding ViewMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:DiffViewMode.SideBySide}}"
+                                         Command="{Binding SetViewModeCommand}"
+                                         CommandParameter="{x:Static vm:DiffViewMode.SideBySide}" />
+                            <RadioButton Content="Inline"
+                                         GroupName="ViewMode"
+                                         Classes="tab-button"
+                                         IsChecked="{Binding ViewMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:DiffViewMode.Inline}}"
+                                         Command="{Binding SetViewModeCommand}"
+                                         CommandParameter="{x:Static vm:DiffViewMode.Inline}" />
+                            <RadioButton Content="Changes Only"
+                                         GroupName="ViewMode"
+                                         Classes="tab-button"
+                                         IsChecked="{Binding ViewMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:DiffViewMode.ChangesOnly}}"
+                                         Command="{Binding SetViewModeCommand}"
+                                         CommandParameter="{x:Static vm:DiffViewMode.ChangesOnly}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Diff content (switches based on ViewMode) -->
+                    <Panel Grid.Row="1">
+
+                        <!-- Loading overlay -->
+                        <Border IsVisible="{Binding IsLoading}"
+                                Background="{DynamicResource SurfaceBrush}"
+                                ZIndex="10">
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="12">
+                                <TextBlock Text="Simplifying text..."
+                                           FontSize="14"
+                                           HorizontalAlignment="Center" />
+                                <ProgressBar IsIndeterminate="True"
+                                             Width="200" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Error message -->
+                        <Border IsVisible="{Binding HasError}"
+                                Background="#20EF4444"
+                                BorderBrush="#40EF4444"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="16"
+                                Margin="0,0,0,8">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Error"
+                                           FontWeight="SemiBold"
+                                           Foreground="#EF4444" />
+                                <TextBlock Text="{Binding ErrorMessage}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Side-by-Side View -->
+                        <controls:DiffTextBox IsVisible="{Binding ViewMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:DiffViewMode.SideBySide}}"
+                                              OriginalText="{Binding OriginalText}"
+                                              SimplifiedText="{Binding SimplifiedText}" />
+
+                        <!-- Inline View -->
+                        <controls:InlineDiffView IsVisible="{Binding ViewMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:DiffViewMode.Inline}}"
+                                                 OriginalText="{Binding OriginalText}"
+                                                 SimplifiedText="{Binding SimplifiedText}" />
+
+                        <!-- Changes Only View -->
+                        <controls:ChangesOnlyView IsVisible="{Binding ViewMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:DiffViewMode.ChangesOnly}}"
+                                                  DataContext="{Binding}" />
+
+                    </Panel>
+                </Grid>
+            </Border>
+
+            <!-- Row 4: Action Buttons -->
+            <Border Grid.Row="4"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="16,12">
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <!-- Left: Keyboard shortcut hints -->
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="16"
+                                VerticalAlignment="Center">
+                        <TextBlock FontSize="11" Opacity="0.5">
+                            <Run Text="Ctrl+Enter" FontWeight="Medium" />
+                            <Run Text=" Accept All" />
+                        </TextBlock>
+                        <TextBlock FontSize="11" Opacity="0.5">
+                            <Run Text="Esc" FontWeight="Medium" />
+                            <Run Text=" Reject" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!-- Right: Action buttons -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="8">
+
+                        <!-- Reject button -->
+                        <Button Content="Reject"
+                                Command="{Binding RejectAllCommand}"
+                                Classes="secondary"
+                                IsEnabled="{Binding !IsProcessing}" />
+
+                        <!-- Accept Selected button (if partial selection) -->
+                        <Button Command="{Binding AcceptSelectedCommand}"
+                                Classes="secondary"
+                                IsVisible="{Binding !AllChangesSelected}"
+                                IsEnabled="{Binding !IsProcessing}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Accept Selected" />
+                                <TextBlock Text="{Binding SelectedChangeCount, StringFormat='({0})'}"
+                                           Opacity="0.7" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Accept All button -->
+                        <Button Command="{Binding AcceptAllCommand}"
+                                Classes="primary"
+                                IsEnabled="{Binding !IsProcessing}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Accept All" />
+                                <TextBlock Text="{Binding TotalChangeCount, StringFormat='({0})'}"
+                                           Opacity="0.8" />
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+
+            <!-- Processing overlay -->
+            <Border Grid.RowSpan="5"
+                    Background="#80000000"
+                    IsVisible="{Binding IsProcessing}"
+                    ZIndex="100">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="12">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="200" />
+                    <TextBlock Text="Processing..."
+                               Foreground="White"
+                               FontSize="12"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

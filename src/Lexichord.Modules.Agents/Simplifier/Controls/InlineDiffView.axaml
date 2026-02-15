@@ -1,0 +1,132 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:Lexichord.Modules.Agents.Simplifier.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Controls.InlineDiffView"
+             x:DataType="local:InlineDiffView">
+
+    <!--
+    ===============================================================================
+    INLINE DIFF VIEW CONTROL - v0.7.4c
+    Single-column unified diff visualization with +/- line markers.
+    Shows changes in a compact format similar to git diff.
+
+    Per LCS-DES-v0.7.4c:
+    - Unified diff format with + and - prefixes
+    - Color-coded line backgrounds (red for removed, green for added)
+    - Line numbers in gutter
+    - Compact single-column layout
+    - Context lines shown in normal style
+    ===============================================================================
+    -->
+
+    <UserControl.Styles>
+        <!-- Panel header style -->
+        <Style Selector="TextBlock.panel-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.8" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+
+        <!-- Line marker style -->
+        <Style Selector="TextBlock.line-marker">
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,monospace" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <!-- Line number gutter -->
+        <Style Selector="TextBlock.line-number">
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,monospace" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="MinWidth" Value="40" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="4">
+
+        <Grid RowDefinitions="Auto,*">
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="4,4,0,0">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                    <TextBlock Text="Unified Diff"
+                               Classes="panel-header" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding AdditionCount, StringFormat='+{0}', RelativeSource={RelativeSource AncestorType=local:InlineDiffView}}"
+                               FontSize="11"
+                               Foreground="#22C55E"
+                               Padding="8,4" />
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding DeletionCount, StringFormat='-{0}', RelativeSource={RelativeSource AncestorType=local:InlineDiffView}}"
+                               FontSize="11"
+                               Foreground="#EF4444"
+                               Padding="8,4" />
+                    <TextBlock Grid.Column="3"
+                               Text="{Binding TotalLines, StringFormat='{}{0} lines', RelativeSource={RelativeSource AncestorType=local:InlineDiffView}}"
+                               FontSize="11"
+                               Opacity="0.5"
+                               Padding="8,4" />
+                </Grid>
+            </Border>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding DiffLines, RelativeSource={RelativeSource AncestorType=local:InlineDiffView}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,Auto,*">
+                                <!-- Line number gutter -->
+                                <Border Grid.Column="0"
+                                        Background="{DynamicResource SurfaceElevatedBrush}"
+                                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                        BorderThickness="0,0,1,0">
+                                    <TextBlock Text="{Binding LineNumber}"
+                                               Classes="line-number" />
+                                </Border>
+
+                                <!-- Change marker (+/-) -->
+                                <Border Grid.Column="1"
+                                        Background="{Binding Background}"
+                                        Padding="4,0">
+                                    <TextBlock Text="{Binding Marker}"
+                                               Classes="line-marker"
+                                               Foreground="{Binding MarkerForeground}" />
+                                </Border>
+
+                                <!-- Line content -->
+                                <Border Grid.Column="2"
+                                        Background="{Binding Background}">
+                                    <SelectableTextBlock Text="{Binding Text}"
+                                                         FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                                                         FontSize="13"
+                                                         Padding="8,2"
+                                                         TextWrapping="Wrap" />
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,331 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Simplifier"
+             mc:Ignorable="d"
+             d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Controls.ChangesOnlyView"
+             x:DataType="vm:SimplificationPreviewViewModel">
+
+    <!--
+    ===============================================================================
+    CHANGES ONLY VIEW CONTROL - v0.7.4c
+    List-based view showing only the individual changes with selection checkboxes.
+    Focuses on change-by-change review with explanations.
+
+    Per LCS-DES-v0.7.4c:
+    - Card-based layout for each change
+    - Checkbox for selecting/deselecting individual changes
+    - Change type badge with icon
+    - Before/after text comparison
+    - Expandable explanation section
+    - Confidence indicator
+    ===============================================================================
+    -->
+
+    <UserControl.Styles>
+        <!-- Change card style -->
+        <Style Selector="Border.change-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- Selected card style -->
+        <Style Selector="Border.change-card.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <!-- Highlighted card style -->
+        <Style Selector="Border.change-card.highlighted">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Opacity" Value="0.1" />
+        </Style>
+
+        <!-- Badge styles -->
+        <Style Selector="Border.badge-blue">
+            <Setter Property="Background" Value="#203B82F6" />
+            <Setter Property="BorderBrush" Value="#403B82F6" />
+        </Style>
+        <Style Selector="Border.badge-green">
+            <Setter Property="Background" Value="#2022C55E" />
+            <Setter Property="BorderBrush" Value="#4022C55E" />
+        </Style>
+        <Style Selector="Border.badge-orange">
+            <Setter Property="Background" Value="#20F97316" />
+            <Setter Property="BorderBrush" Value="#40F97316" />
+        </Style>
+        <Style Selector="Border.badge-purple">
+            <Setter Property="Background" Value="#20A855F7" />
+            <Setter Property="BorderBrush" Value="#40A855F7" />
+        </Style>
+        <Style Selector="Border.badge-gray">
+            <Setter Property="Background" Value="#20808080" />
+            <Setter Property="BorderBrush" Value="#40808080" />
+        </Style>
+
+        <!-- Link button style -->
+        <Style Selector="Button.link-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        </Style>
+
+        <!-- Original text style (strikethrough) -->
+        <Style Selector="TextBlock.original-text">
+            <Setter Property="Foreground" Value="#EF4444" />
+            <Setter Property="TextDecorations" Value="Strikethrough" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+
+        <!-- Simplified text style -->
+        <Style Selector="TextBlock.simplified-text">
+            <Setter Property="Foreground" Value="#22C55E" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="1"
+            CornerRadius="4">
+
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- Row 0: Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="4,4,0,0"
+                    Padding="12,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Changes"
+                                   FontWeight="SemiBold"
+                                   FontSize="14"
+                                   VerticalAlignment="Center" />
+                        <Border Background="{DynamicResource AccentBrush}"
+                                CornerRadius="10"
+                                Padding="8,2">
+                            <TextBlock Text="{Binding TotalChangeCount}"
+                                       FontSize="11"
+                                       FontWeight="Medium"
+                                       Foreground="White" />
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                        <TextBlock VerticalAlignment="Center"
+                                   FontSize="11"
+                                   Opacity="0.6">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} selected">
+                                    <Binding Path="SelectedChangeCount" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Row 1: Selection Actions -->
+            <Border Grid.Row="1"
+                    Padding="12,4"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button Content="Select All"
+                            Command="{Binding SelectAllChangesCommand}"
+                            Classes="link-button"
+                            FontSize="11" />
+                    <Button Content="Deselect All"
+                            Command="{Binding DeselectAllChangesCommand}"
+                            Classes="link-button"
+                            FontSize="11" />
+                </StackPanel>
+            </Border>
+
+            <!-- Row 2: Changes List -->
+            <ScrollViewer Grid.Row="2"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="8">
+                <ItemsControl ItemsSource="{Binding Changes}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SimplificationChangeViewModel">
+                            <Border Classes="change-card">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+
+                                    <!-- Row 0: Header with checkbox and badge -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <CheckBox Grid.Column="0"
+                                                  IsChecked="{Binding IsSelected}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,8,0" />
+
+                                        <!-- Change type badge -->
+                                        <Border Grid.Column="1"
+                                                CornerRadius="4"
+                                                Padding="8,2"
+                                                BorderThickness="1"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Left"
+                                                Classes.badge-blue="{Binding ChangeTypeBadgeClass, Converter={x:Static StringConverters.IsNotNullOrEmpty}, ConverterParameter=badge-blue}"
+                                                Classes.badge-green="{Binding ChangeTypeBadgeClass, Converter={x:Static StringConverters.IsNotNullOrEmpty}, ConverterParameter=badge-green}"
+                                                Classes.badge-orange="{Binding ChangeTypeBadgeClass, Converter={x:Static StringConverters.IsNotNullOrEmpty}, ConverterParameter=badge-orange}"
+                                                Classes.badge-purple="{Binding ChangeTypeBadgeClass, Converter={x:Static StringConverters.IsNotNullOrEmpty}, ConverterParameter=badge-purple}">
+                                            <TextBlock Text="{Binding ChangeTypeDisplay}"
+                                                       FontSize="10"
+                                                       FontWeight="Medium" />
+                                        </Border>
+
+                                        <!-- Confidence indicator -->
+                                        <StackPanel Grid.Column="2"
+                                                    Orientation="Horizontal"
+                                                    Spacing="4"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Confidence, StringFormat='{}{0:P0}'}"
+                                                       FontSize="10"
+                                                       Opacity="0.6" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Row 1: Before/After Text -->
+                                    <Grid Grid.Row="1"
+                                          Margin="24,8,0,0"
+                                          ColumnDefinitions="*,Auto,*">
+                                        <!-- Original text -->
+                                        <Border Background="#10EF4444"
+                                                CornerRadius="4"
+                                                Padding="8">
+                                            <SelectableTextBlock Text="{Binding OriginalText}"
+                                                                 FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                                                                 FontSize="12"
+                                                                 Classes="original-text"
+                                                                 TextWrapping="Wrap" />
+                                        </Border>
+
+                                        <!-- Arrow -->
+                                        <TextBlock Grid.Column="1"
+                                                   Text="&#x2192;"
+                                                   FontSize="16"
+                                                   Opacity="0.4"
+                                                   VerticalAlignment="Center"
+                                                   Margin="8,0" />
+
+                                        <!-- Simplified text -->
+                                        <Border Grid.Column="2"
+                                                Background="#1022C55E"
+                                                CornerRadius="4"
+                                                Padding="8">
+                                            <SelectableTextBlock Text="{Binding SimplifiedText}"
+                                                                 FontFamily="Cascadia Code,Consolas,Menlo,monospace"
+                                                                 FontSize="12"
+                                                                 Classes="simplified-text"
+                                                                 TextWrapping="Wrap" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Row 2: Expand/Collapse -->
+                                    <StackPanel Grid.Row="2"
+                                                Margin="24,8,0,0"
+                                                Orientation="Horizontal">
+                                        <Button Classes="link-button"
+                                                Command="{Binding $parent[ItemsControl].((vm:SimplificationPreviewViewModel)DataContext).ToggleChangeCommand}"
+                                                CommandParameter="{Binding}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="{Binding ExpandCollapseText}" />
+                                                <TextBlock Text="{Binding ExpandCollapseChevron}"
+                                                           FontSize="10" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <!-- Row 3: Explanation (expandable) -->
+                                    <Border Grid.Row="3"
+                                            Margin="24,8,0,0"
+                                            IsVisible="{Binding IsExpanded}"
+                                            Background="{DynamicResource SurfaceBrush}"
+                                            CornerRadius="4"
+                                            Padding="12">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Text="Explanation"
+                                                       FontSize="10"
+                                                       FontWeight="SemiBold"
+                                                       Opacity="0.6" />
+                                            <TextBlock Text="{Binding Explanation}"
+                                                       FontSize="12"
+                                                       TextWrapping="Wrap"
+                                                       Opacity="0.9" />
+
+                                            <!-- Length change indicator -->
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="8"
+                                                        Margin="0,4,0,0">
+                                                <TextBlock FontSize="10" Opacity="0.5">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="Length: {0} → {1} characters">
+                                                            <Binding Path="OriginalText.Length" />
+                                                            <Binding Path="SimplifiedText.Length" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding LengthDifference, StringFormat='({0:+#;-#;0})'}"
+                                                           FontSize="10"
+                                                           Foreground="{Binding LengthDifferenceColor}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Row 3: Summary Footer -->
+            <Border Grid.Row="3"
+                    Padding="12,8"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,1,0,0"
+                    CornerRadius="0,0,4,4">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock FontSize="11"
+                               Opacity="0.6"
+                               VerticalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} of {1} changes selected">
+                                <Binding Path="SelectedChangeCount" />
+                                <Binding Path="TotalChangeCount" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding AllChangesSelected}">
+                        <TextBlock Text="All selected"
+                                   FontSize="10"
+                                   Foreground="#22C55E"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

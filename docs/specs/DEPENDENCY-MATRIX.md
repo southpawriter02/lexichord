@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-15 (v0.7.4a added)                                             |
+| **Last Updated** | 2026-02-15 (v0.7.4c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1887,6 +1887,53 @@
 - v0.0.4c (ILicenseContext, LicenseTier) — License tier checking
 - v0.6.6c (LicenseTierException) — Tier gating exceptions
 
+### 1.50 v0.7.4c Simplifier Preview/Diff UI
+
+**New Enums (v0.7.4c — Modules.Agents):**
+
+| Enum              | Defined In | Module         | Values                                       |
+| :---------------- | :--------- | :------------- | :------------------------------------------- |
+| `DiffViewMode`    | v0.7.4c    | Modules.Agents | SideBySide, Inline, ChangesOnly              |
+
+**New Records/Events (v0.7.4c — Abstractions):**
+
+| Record                           | Defined In | Module         | Purpose                                      |
+| :------------------------------- | :--------- | :------------- | :------------------------------------------- |
+| `SimplificationAcceptedEvent`    | v0.7.4c    | Abstractions   | INotification for accepted simplifications   |
+| `SimplificationRejectedEvent`    | v0.7.4c    | Abstractions   | INotification for rejected simplifications   |
+| `ResimplificationRequestedEvent` | v0.7.4c    | Abstractions   | INotification for re-simplification requests |
+
+**New Classes (v0.7.4c — Modules.Agents):**
+
+| Class                              | Defined In | Module         | Purpose                                        |
+| :--------------------------------- | :--------- | :------------- | :--------------------------------------------- |
+| `SimplificationPreviewViewModel`   | v0.7.4c    | Modules.Agents | Main ViewModel for preview/diff UI             |
+| `SimplificationChangeViewModel`    | v0.7.4c    | Modules.Agents | Observable wrapper for SimplificationChange    |
+| `CloseRequestedEventArgs`          | v0.7.4c    | Modules.Agents | EventArgs for preview close requests           |
+
+**New Views/Controls (v0.7.4c — Modules.Agents):**
+
+| View/Control                     | Defined In | Module         | Purpose                                        |
+| :------------------------------- | :--------- | :------------- | :--------------------------------------------- |
+| `SimplificationPreviewView`      | v0.7.4c    | Modules.Agents | Main preview panel (AXAML)                     |
+| `ReadabilityComparisonPanel`     | v0.7.4c    | Modules.Agents | Before/after metrics comparison (AXAML)        |
+| `DiffTextBox`                    | v0.7.4c    | Modules.Agents | Side-by-side diff with DiffPlex (AXAML)        |
+| `InlineDiffView`                 | v0.7.4c    | Modules.Agents | Inline unified diff (AXAML)                    |
+| `ChangesOnlyView`                | v0.7.4c    | Modules.Agents | Card-based change list (AXAML)                 |
+
+**DI Registrations (v0.7.4c):**
+
+| Service                          | Lifetime   | Registered Via                              |
+| :------------------------------- | :--------- | :------------------------------------------ |
+| `SimplificationPreviewViewModel` | Transient  | SimplifierServiceCollectionExtensions       |
+
+**Dependencies (v0.7.4c):**
+- v0.7.4a (IReadabilityTargetService, AudiencePreset) — Target presets
+- v0.7.4b (ISimplificationPipeline, SimplificationResult) — Simplification pipeline
+- v0.1.3a (IEditorService) — Document operations, undo groups
+- v0.0.4c (ILicenseContext, LicenseTier) — License gating
+- DiffPlex 1.7.2 — Text diff visualization
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1949,6 +1996,9 @@
 | `RewritePreviewStartedEvent`   | v0.7.3d    | Preview text applied              |
 | `RewritePreviewCommittedEvent` | v0.7.3d    | Preview finalized to undo stack   |
 | `RewritePreviewCancelledEvent` | v0.7.3d    | Preview cancelled                 |
+| `SimplificationAcceptedEvent`  | v0.7.4c    | Simplification changes accepted   |
+| `SimplificationRejectedEvent`  | v0.7.4c    | Simplification changes rejected   |
+| `ResimplificationRequestedEvent` | v0.7.4c  | Re-simplification with new preset |
 
 ---
 
@@ -1993,6 +2043,7 @@
 | `Neo4j.Driver`                                               | 5.27.x  | v0.4.5e       | Neo4j Bolt driver for Knowledge Graph |
 | `Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions` | 9.0.x   | v0.4.5e       | Health check abstractions for Neo4j   |
 | `Stubble.Core`                                               | 1.10.x  | v0.6.3b       | Mustache template rendering           |
+| `DiffPlex`                                                   | 1.7.x   | v0.7.4c       | Text diff visualization               |
 
 ---
 
