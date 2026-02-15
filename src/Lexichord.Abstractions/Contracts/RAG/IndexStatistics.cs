@@ -56,6 +56,14 @@ public record IndexStatistics
     public DateTimeOffset? LastIndexedAt { get; init; }
 
     /// <summary>
+    /// Gets the number of documents pending indexing.
+    /// </summary>
+    /// <remarks>
+    /// Derived from <see cref="StatusCounts"/> for the Pending status.
+    /// </remarks>
+    public int PendingCount => StatusCounts.TryGetValue(IndexingStatus.Pending, out var count) ? count : 0;
+
+    /// <summary>
     /// Gets a human-readable representation of <see cref="StorageSizeBytes"/>.
     /// </summary>
     /// <remarks>
