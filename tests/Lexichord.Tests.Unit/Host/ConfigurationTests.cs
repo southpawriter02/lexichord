@@ -8,19 +8,22 @@ namespace Lexichord.Tests.Unit.Host;
 
 public class ConfigurationTests : IDisposable
 {
+    private readonly string _tempDir;
     private readonly string _testConfigPath;
     private readonly string _testLocalConfigPath;
 
     public ConfigurationTests()
     {
-        _testConfigPath = "appsettings.test.json";
-        _testLocalConfigPath = "appsettings.Local.json";
+        _tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(_tempDir);
+        _testConfigPath = Path.Combine(_tempDir, "appsettings.test.json");
+        _testLocalConfigPath = Path.Combine(_tempDir, "appsettings.Local.json");
     }
 
     public void Dispose()
     {
-        if (File.Exists(_testConfigPath)) File.Delete(_testConfigPath);
-        if (File.Exists(_testLocalConfigPath)) File.Delete(_testLocalConfigPath);
+        if (Directory.Exists(_tempDir))
+            Directory.Delete(_tempDir, recursive: true);
     }
 
     [Fact]
@@ -31,9 +34,9 @@ public class ConfigurationTests : IDisposable
         File.WriteAllText(_testConfigPath, json);
 
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(_testConfigPath, optional: true)
-            .AddJsonFile(_testLocalConfigPath, optional: true)
+            .SetBasePath(_tempDir)
+            .AddJsonFile("appsettings.test.json", optional: true)
+            .AddJsonFile("appsettings.Local.json", optional: true)
             .AddEnvironmentVariables();
 
         // Act
@@ -54,9 +57,9 @@ public class ConfigurationTests : IDisposable
         File.WriteAllText(_testLocalConfigPath, jsonLocal);
 
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(_testConfigPath, optional: true)
-            .AddJsonFile(_testLocalConfigPath, optional: true)
+            .SetBasePath(_tempDir)
+            .AddJsonFile("appsettings.test.json", optional: true)
+            .AddJsonFile("appsettings.Local.json", optional: true)
             .AddEnvironmentVariables();
 
         // Act
@@ -81,9 +84,9 @@ public class ConfigurationTests : IDisposable
         try
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(_testConfigPath, optional: true)
-                .AddJsonFile(_testLocalConfigPath, optional: true)
+                .SetBasePath(_tempDir)
+                .AddJsonFile("appsettings.test.json", optional: true)
+                .AddJsonFile("appsettings.Local.json", optional: true)
                 .AddEnvironmentVariables();
 
             // Act
