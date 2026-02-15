@@ -339,4 +339,35 @@ public static class FeatureCodes
     public const string EditorAgent = "Feature.EditorAgent";
 
     #endregion
+
+    #region Simplifier Agent Features (v0.7.4)
+
+    /// <summary>
+    /// The Simplifier Agent feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Simplifier Agent features including readability-targeted
+    /// text simplification, audience presets (General Public, Technical, Executive,
+    /// International/ESL), and custom preset creation. When this feature is not enabled,
+    /// simplifier menu items show a lock icon and clicking them triggers an upgrade prompt
+    /// instead of executing the simplification.
+    /// Introduced in v0.7.4a.
+    /// </remarks>
+    public const string SimplifierAgent = "Feature.SimplifierAgent";
+
+    /// <summary>
+    /// The Custom Audience Presets feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to creating, updating, and deleting custom audience presets.
+    /// Built-in presets (General Public, Technical, Executive, International/ESL) are
+    /// available to all users. When this feature is not enabled, custom preset CRUD
+    /// operations throw <see cref="Agents.LicenseTierException"/>.
+    /// Introduced in v0.7.4a.
+    /// </remarks>
+    public const string CustomAudiencePresets = "Feature.CustomAudiencePresets";
+
+    #endregion
 }

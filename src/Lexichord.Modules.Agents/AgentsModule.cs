@@ -7,6 +7,7 @@
 
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Context;
+using Lexichord.Abstractions.Agents.Simplifier;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.LLM;
@@ -84,9 +85,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 7, 3),
+        Version: new Version(0, 7, 4),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, and undo/redo integration");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, undo/redo integration, and readability target service");
 
     /// <inheritdoc />
     /// <remarks>
@@ -286,6 +287,16 @@ public class AgentsModule : IModule
         //   NOTE: This enables RewriteCommandHandler to delegate document application
         //   to the applicator (was previously skipped when applicator was null).
         services.AddEditorAgentUndoIntegration();
+
+        // ── v0.7.4: Simplifier Agent ───────────────────────────────────────
+        // LOGIC: Register the Simplifier Agent readability target service:
+        //   v0.7.4a — Readability Target Service
+        //   - IReadabilityTargetService → ReadabilityTargetService: Singleton for preset management
+        //   - Built-in presets: General Public, Technical, Executive, International/ESL
+        //   - Custom preset CRUD (WriterPro/Teams tier) with ISettingsService persistence
+        //   - Target resolution from Voice Profile, presets, or explicit parameters
+        //   - Target validation against source text readability metrics
+        services.AddReadabilityTargetService();
     }
 
     /// <inheritdoc />
@@ -480,6 +491,24 @@ public class AgentsModule : IModule
             {
                 logger.LogWarning("Editor Agent rewrite applicator is not registered. Rewrite undo/redo integration will not be available.");
             }
+        }
+
+        // LOGIC: Verify Readability Target Service is available (v0.7.4a).
+        var readabilityTargetService = provider.GetService<IReadabilityTargetService>();
+        if (readabilityTargetService is not null)
+        {
+            var presets = await readabilityTargetService.GetAllPresetsAsync();
+            var builtInCount = presets.Count(p => p.IsBuiltIn);
+            var customCount = presets.Count(p => !p.IsBuiltIn);
+
+            logger.LogDebug(
+                "Readability Target Service available with {BuiltInCount} built-in presets and {CustomCount} custom presets",
+                builtInCount,
+                customCount);
+        }
+        else
+        {
+            logger.LogWarning("Readability Target Service is not registered. Simplifier Agent features will not be available.");
         }
     }
 }

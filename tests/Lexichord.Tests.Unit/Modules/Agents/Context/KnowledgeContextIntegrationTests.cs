@@ -425,6 +425,8 @@ public class KnowledgeContextIntegrationTests
             CreateMockStrategy("selection", "Selected paragraph text in editor", 200, 0.95f),
             CreateMockStrategy("cursor", "Text surrounding current cursor pos", 150, 0.9f),
             CreateMockStrategy("heading", "Document heading hierarchy outline", 100, 0.85f),
+            CreateMockStrategy("surrounding-text", "Surrounding paragraph context", 250, 0.88f),
+            CreateMockStrategy("terminology", "Matching terminology from database", 150, 0.82f),
             CreateMockStrategy("rag", "Semantically related documentation now", 300, 0.8f),
             CreateMockStrategy("style", "Active style rules for this document", 100, 0.75f),
             CreateMockStrategy("knowledge", "Knowledge graph entities and relations", 200, 0.7f),
@@ -435,9 +437,11 @@ public class KnowledgeContextIntegrationTests
         // Act
         var result = await sut.AssembleAsync(CreateRequest(), ContextBudget.Default, CancellationToken.None);
 
-        // Assert — all 7 strategies should contribute fragments
-        result.Fragments.Should().HaveCount(7);
+        // Assert — all 9 strategies should contribute fragments (v0.7.3c added surrounding-text, terminology)
+        result.Fragments.Should().HaveCount(9);
         result.HasFragmentFrom("knowledge").Should().BeTrue();
+        result.HasFragmentFrom("surrounding-text").Should().BeTrue();
+        result.HasFragmentFrom("terminology").Should().BeTrue();
 
         // Assert — knowledge should be last (lowest priority at 30)
         result.Fragments[^1].SourceId.Should().Be("knowledge");

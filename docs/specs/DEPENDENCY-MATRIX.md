@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.3d added)                                             |
+| **Last Updated** | 2026-02-15 (v0.7.4a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1833,6 +1833,59 @@
 - v0.1.3a (IEditorService, TextSpan) — Sync text manipulation and span tracking
 - v0.0.7a (IMediator) — Event publishing
 - v0.7.3d (IUndoableOperation, IUndoRedoService) — New undo abstractions (nullable in applicator)
+
+### 1.49 v0.7.4a Readability Target Service
+
+**New Interfaces (v0.7.4a — Abstractions):**
+
+| Interface                    | Version    | Module         | Description                                        |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IReadabilityTargetService`  | v0.7.4a    | Abstractions   | Readability target resolution and preset management |
+
+**New Records (v0.7.4a — Abstractions):**
+
+| Record                        | Version    | Module         | Description                                        |
+| :---------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `AudiencePreset`              | v0.7.4a    | Abstractions   | Audience preset configuration with validation      |
+| `ReadabilityTarget`           | v0.7.4a    | Abstractions   | Resolved target with grade level and tolerance     |
+| `TargetValidationResult`      | v0.7.4a    | Abstractions   | Target achievability with warnings                 |
+
+**New Enums (v0.7.4a — Abstractions):**
+
+| Enum                        | Version    | Module         | Description                                        |
+| :-------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `ReadabilityTargetSource`   | v0.7.4a    | Abstractions   | VoiceProfile/Preset/Explicit/Default               |
+| `TargetAchievability`       | v0.7.4a    | Abstractions   | Achievable/Challenging/Unlikely/AlreadyMet         |
+
+**New Classes (v0.7.4a — Modules.Agents):**
+
+| Class                          | Version    | Module         | Description                                        |
+| :----------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `ReadabilityTargetService`     | v0.7.4a    | Modules.Agents | IReadabilityTargetService with preset persistence  |
+| `BuiltInPresets`               | v0.7.4a    | Modules.Agents | 4 built-in audience presets                        |
+
+**New Feature Codes (v0.7.4a):**
+
+| Constant                  | Version    | Module         | Description                                        |
+| :------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `FeatureCodes.SimplifierAgent` | v0.7.4a | Abstractions | Simplifier Agent feature gate (WriterPro)          |
+| `FeatureCodes.CustomAudiencePresets` | v0.7.4a | Abstractions | Custom preset CRUD gate (WriterPro)        |
+
+**Built-In Presets (v0.7.4a):**
+
+| Preset ID        | Name                | Grade | Max Sentence | Avoid Jargon |
+| :--------------- | :------------------ | :---- | :----------- | :----------- |
+| `general-public` | General Public      | 8     | 20 words     | Yes          |
+| `technical`      | Technical Audience  | 12    | 25 words     | No           |
+| `executive`      | Executive Summary   | 10    | 18 words     | Yes          |
+| `international`  | International / ESL | 6     | 15 words     | Yes          |
+
+**Dependencies (v0.7.4a):**
+- v0.3.4a (IVoiceProfileService, VoiceProfile) — Active profile settings
+- v0.3.3c (IReadabilityService, ReadabilityMetrics) — Text readability analysis
+- v0.1.6a (ISettingsService) — Custom preset persistence
+- v0.0.4c (ILicenseContext, LicenseTier) — License tier checking
+- v0.6.6c (LicenseTierException) — Tier gating exceptions
 
 ## 2. MediatR Events Registry
 

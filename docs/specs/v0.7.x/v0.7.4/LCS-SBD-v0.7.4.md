@@ -1525,11 +1525,13 @@ dotnet test --filter "Category=Integration&Version~v0.7.4"
 
 | #  | Deliverable                                                    | Status |
 | :- | :------------------------------------------------------------- | :----- |
-| 1  | `IReadabilityTargetService.cs` interface                       | [ ]    |
-| 2  | `ReadabilityTargetService.cs` implementation                   | [ ]    |
-| 3  | `AudiencePreset.cs` record                                     | [ ]    |
-| 4  | `ReadabilityTarget.cs` record                                  | [ ]    |
-| 5  | Built-in audience presets JSON                                 | [ ]    |
+| 1  | `IReadabilityTargetService.cs` interface                       | [x]    |
+| 2  | `ReadabilityTargetService.cs` implementation                   | [x]    |
+| 3  | `AudiencePreset.cs` record                                     | [x]    |
+| 4  | `ReadabilityTarget.cs` record                                  | [x]    |
+| 4a | `TargetValidationResult.cs` record                             | [x]    |
+| 5  | Built-in audience presets (`BuiltInPresets.cs`)                | [x]    |
+| 5a | `SimplifierServiceCollectionExtensions.cs` DI extensions       | [x]    |
 | 6  | `ISimplificationPipeline.cs` interface                         | [ ]    |
 | 7  | `SimplifierAgent.cs` implementation                            | [ ]    |
 | 8  | `specialist-simplifier.yaml` prompt template                   | [ ]    |
@@ -1545,11 +1547,11 @@ dotnet test --filter "Category=Integration&Version~v0.7.4"
 | 18 | `BatchSimplificationProgress.cs` record                        | [ ]    |
 | 19 | `SimplificationCompletedEvent.cs` MediatR event                | [ ]    |
 | 20 | Batch progress UI dialog                                       | [ ]    |
-| 21 | Unit tests for ReadabilityTargetService                        | [ ]    |
+| 21 | Unit tests for ReadabilityTargetService                        | [x]    |
 | 22 | Unit tests for SimplifierAgent                                 | [ ]    |
 | 23 | Unit tests for BatchSimplificationService                      | [ ]    |
 | 24 | Integration tests for full workflow                            | [ ]    |
-| 25 | DI registration in AgentsModule.cs                             | [ ]    |
+| 25 | DI registration in AgentsModule.cs                             | [x]    |
 | 26 | DiffPlex NuGet package added                                   | [ ]    |
 
 ---

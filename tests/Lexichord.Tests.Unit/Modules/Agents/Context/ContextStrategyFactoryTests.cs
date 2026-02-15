@@ -154,9 +154,10 @@ public class ContextStrategyFactoryTests
     /// </summary>
     /// <remarks>
     /// v0.7.2b: WriterPro tier provides access to document, selection, cursor, heading.
+    /// v0.7.3c: Added surrounding-text and terminology strategies for Editor Agent.
     /// </remarks>
     [Fact]
-    public void AvailableStrategyIds_WriterProTier_ReturnsFourStrategies()
+    public void AvailableStrategyIds_WriterProTier_ReturnsSixStrategies()
     {
         // Arrange
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.WriterPro));
@@ -165,11 +166,14 @@ public class ContextStrategyFactoryTests
         var result = sut.AvailableStrategyIds;
 
         // Assert
-        result.Should().HaveCount(4);
+        // LOGIC: 6 strategies = base(4: document, selection, cursor, heading) + v0.7.3c(surrounding-text, terminology)
+        result.Should().HaveCount(6);
         result.Should().Contain("document");
         result.Should().Contain("selection");
         result.Should().Contain("cursor");
         result.Should().Contain("heading");
+        result.Should().Contain("surrounding-text");
+        result.Should().Contain("terminology");
     }
 
     /// <summary>
@@ -177,10 +181,10 @@ public class ContextStrategyFactoryTests
     /// </summary>
     /// <remarks>
     /// v0.7.2e: Teams tier provides access to all 7 strategies
-    /// (WriterPro strategies + rag + style + knowledge).
+    /// (WriterPro strategies + rag + style + knowledge + surrounding-text + terminology).
     /// </remarks>
     [Fact]
-    public void AvailableStrategyIds_TeamsTier_ReturnsSevenStrategies()
+    public void AvailableStrategyIds_TeamsTier_ReturnsNineStrategies()
     {
         // Arrange
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Teams));
@@ -189,17 +193,20 @@ public class ContextStrategyFactoryTests
         var result = sut.AvailableStrategyIds;
 
         // Assert
-        result.Should().HaveCount(7);
+        // LOGIC: 9 strategies = base(5) + WriterPro(rag, surrounding-text, terminology) + Teams(style, knowledge)
+        result.Should().HaveCount(9);
         result.Should().Contain("rag");
         result.Should().Contain("style");
         result.Should().Contain("knowledge");
+        result.Should().Contain("surrounding-text");
+        result.Should().Contain("terminology");
     }
 
     /// <summary>
     /// Verifies that AvailableStrategyIds returns all strategies for Enterprise tier.
     /// </summary>
     [Fact]
-    public void AvailableStrategyIds_EnterpriseTier_ReturnsSevenStrategies()
+    public void AvailableStrategyIds_EnterpriseTier_ReturnsNineStrategies()
     {
         // Arrange
         var sut = CreateFactory(license: CreateLicenseContext(LicenseTier.Enterprise));
@@ -208,7 +215,8 @@ public class ContextStrategyFactoryTests
         var result = sut.AvailableStrategyIds;
 
         // Assert
-        result.Should().HaveCount(7);
+        // LOGIC: 9 strategies including all tiers
+        result.Should().HaveCount(9);
     }
 
     /// <summary>

@@ -6,7 +6,28 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
-## [v0.7.3] - 2026-02 (In Progress)
+## [v0.7.4] - 2026-02 (In Progress)
+
+### The Simplifier Agent (Readability-Targeted Simplification)
+
+This release introduces the Simplifier Agent system, enabling writers to simplify text to target specific readability levels based on audience presets or Voice Profile settings.
+
+#### What's New
+
+- **Readability Target Service (v0.7.4a)** — Foundation for readability-targeted text simplification in `Lexichord.Abstractions.Agents.Simplifier` and `Lexichord.Modules.Agents.Simplifier`. Added `IReadabilityTargetService` interface with methods for preset management (`GetAllPresetsAsync()`, `GetPresetByIdAsync()`), target resolution (`GetTargetAsync()` with priority: explicit params > preset > Voice Profile > defaults), target validation (`ValidateTarget()` with achievability levels: Achievable, Challenging, Unlikely, AlreadyMet), and custom preset CRUD (`CreateCustomPresetAsync()`, `UpdateCustomPresetAsync()`, `DeleteCustomPresetAsync()` requiring WriterPro/Teams). Added `AudiencePreset` record with `Id`, `Name`, `TargetGradeLevel`, `MaxSentenceLength`, `AvoidJargon`, `Description`, `IsBuiltIn` properties; `IsValid()` quick check; `Validate()` detailed errors; `CloneWithId()` for customization. Added `ReadabilityTarget` record with computed `MinAcceptableGrade`/`MaxAcceptableGrade` (target ± tolerance), `IsGradeLevelAcceptable()` check, `FromPreset()` and `FromExplicit()` factory methods, and `ReadabilityTargetSource` enum (VoiceProfile, Preset, Explicit, Default). Added `TargetValidationResult` record with `Achievability` (via `TargetAchievability` enum), `GradeLevelDelta`, `Warnings` list, `SuggestedPreset`, and `IsAchievable`/`IsAlreadyMet`/`HasWarnings` computed properties with factory methods. Added `BuiltInPresets` static class with 4 presets: General Public (Grade 8, 20 words, avoid jargon), Technical (Grade 12, 25 words, explain jargon), Executive (Grade 10, 18 words, avoid jargon), International/ESL (Grade 6, 15 words, avoid jargon). Added `ReadabilityTargetService` implementation as Singleton with `IVoiceProfileService`, `IReadabilityService`, `ISettingsService`, `ILicenseContext` dependencies; custom preset persistence via `SimplifierAgent:CustomPresets` settings key; thread-safe locking for preset operations. Added `FeatureCodes.SimplifierAgent` and `FeatureCodes.CustomAudiencePresets` constants (both WriterPro tier). Added `AddReadabilityTargetService()` DI extension. Updated `AgentsModule` to v0.7.4 with registration and init verification. Spec adaptations: used `TargetGradeLevel` directly (no `VoiceProfile.TargetAudience`), used `ComplexWordRatio * 100` for percentage (no `ComplexWordPercentage`), omitted passive voice validation (no `PassiveVoicePercentage`). No new NuGet packages. Includes 78 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.4a.md)
+
+#### Sub-Part Changelogs
+
+| Version                               | Title                        | Status      |
+| ------------------------------------- | ---------------------------- | ----------- |
+| [v0.7.4a](v0.7.x/LCS-CL-v0.7.4a.md) | Readability Target Service   | ✅ Complete |
+| v0.7.4b                               | Simplifier Agent Core        | 🚧 Planned  |
+| v0.7.4c                               | Simplification Strategies    | 🚧 Planned  |
+| v0.7.4d                               | UI Integration               | 🚧 Planned  |
+
+---
+
+## [v0.7.3] - 2026-02 (Complete)
 
 ### The Editor Agent (AI-Powered Text Rewriting)
 
