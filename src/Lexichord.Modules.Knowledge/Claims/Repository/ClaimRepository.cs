@@ -385,13 +385,15 @@ public sealed class ClaimRepository : IClaimRepository
             {
                 try
                 {
+                    var claimRow = MapToRow(claim);
                     if (existingDict.TryGetValue(claim.Id, out var existing))
                     {
                         if (HasChanged(existing, claim))
                         {
-                            await connection.ExecuteAsync(new DapperCommandDefinition(updateSql, MapToRow(claim), transaction, cancellationToken: ct));
+                            await connection.ExecuteAsync(new DapperCommandDefinition(updateSql, claimRow, transaction, cancellationToken: ct));
                             updated++;
                             InvalidateCache(claim.Id);
+                            existingDict[claim.Id] = claimRow; // Update local state for subsequent duplicates
                         }
                         else
                         {
@@ -400,8 +402,9 @@ public sealed class ClaimRepository : IClaimRepository
                     }
                     else
                     {
-                        await connection.ExecuteAsync(new DapperCommandDefinition(insertSql, MapToRow(claim), transaction, cancellationToken: ct));
+                        await connection.ExecuteAsync(new DapperCommandDefinition(insertSql, claimRow, transaction, cancellationToken: ct));
                         created++;
+                        existingDict[claim.Id] = claimRow; // Add to local state for subsequent duplicates
                     }
                 }
                 catch (Exception ex)
