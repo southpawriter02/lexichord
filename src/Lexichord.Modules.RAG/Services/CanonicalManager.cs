@@ -507,6 +507,86 @@ public sealed class CanonicalManager : ICanonicalManager
         return provenance;
     }
 
+    /// <inheritdoc/>
+    public async Task<IDictionary<Guid, IReadOnlyList<ChunkProvenance>>> GetProvenanceBatchAsync(
+        IEnumerable<Guid> canonicalIds,
+        CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(canonicalIds);
+        var idList = canonicalIds.Distinct().ToList();
+
+        if (idList.Count == 0)
+        {
+            return new Dictionary<Guid, IReadOnlyList<ChunkProvenance>>();
+        }
+
+        await using var connection = await _connectionFactory.CreateConnectionAsync(ct);
+
+        // LOGIC: Get provenance for multiple canonical records and their variants in one query.
+        // We need to return which CanonicalRecordId each provenance belongs to.
+        const string sql = @"
+            SELECT
+                p.""Id"",
+                p.""ChunkId"",
+                p.""SourceDocumentId"",
+                p.""SourceLocation"",
+                p.""IngestedAt"",
+                p.""VerifiedAt"",
+                p.""VerifiedBy"",
+                cr.""Id"" AS ""CanonicalRecordId""
+            FROM ""ChunkProvenance"" p
+            INNER JOIN ""CanonicalRecords"" cr ON p.""ChunkId"" = cr.""CanonicalChunkId""
+            WHERE cr.""Id"" = ANY(@CanonicalIds)
+
+            UNION ALL
+
+            SELECT
+                p.""Id"",
+                p.""ChunkId"",
+                p.""SourceDocumentId"",
+                p.""SourceLocation"",
+                p.""IngestedAt"",
+                p.""VerifiedAt"",
+                p.""VerifiedBy"",
+                cv.""CanonicalRecordId"" AS ""CanonicalRecordId""
+            FROM ""ChunkProvenance"" p
+            INNER JOIN ""ChunkVariants"" cv ON p.""ChunkId"" = cv.""VariantChunkId""
+            WHERE cv.""CanonicalRecordId"" = ANY(@CanonicalIds)";
+
+        var command = new DapperCommandDefinition(sql, new { CanonicalIds = idList }, cancellationToken: ct);
+        var rows = await connection.QueryAsync<ProvenanceWithCanonicalIdRow>(command);
+
+        var result = rows
+            .GroupBy(r => r.CanonicalRecordId)
+            .ToDictionary(
+                g => g.Key,
+                g => (IReadOnlyList<ChunkProvenance>)g.Select(r => new ChunkProvenance(
+                    r.Id,
+                    r.ChunkId,
+                    r.SourceDocumentId,
+                    r.SourceLocation,
+                    r.IngestedAt,
+                    r.VerifiedAt,
+                    r.VerifiedBy))
+                .OrderBy(p => p.IngestedAt)
+                .ToList());
+
+        // Ensure all requested IDs are in the dictionary
+        foreach (var id in idList)
+        {
+            if (!result.ContainsKey(id))
+            {
+                result[id] = Array.Empty<ChunkProvenance>();
+            }
+        }
+
+        _logger.LogDebug(
+            "Retrieved provenance batch for {Count} canonical records",
+            idList.Count);
+
+        return result;
+    }
+
     #region Private Methods
 
     /// <summary>
@@ -602,6 +682,16 @@ public sealed class CanonicalManager : ICanonicalManager
         DateTimeOffset IngestedAt,
         DateTimeOffset? VerifiedAt,
         string? VerifiedBy);
+
+    private record ProvenanceWithCanonicalIdRow(
+        Guid Id,
+        Guid ChunkId,
+        Guid? SourceDocumentId,
+        string? SourceLocation,
+        DateTimeOffset IngestedAt,
+        DateTimeOffset? VerifiedAt,
+        string? VerifiedBy,
+        Guid CanonicalRecordId);
 
     #endregion
 }

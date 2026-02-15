@@ -212,4 +212,16 @@ public interface ICanonicalManager
     /// </returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="canonicalId"/> is empty.</exception>
     Task<IReadOnlyList<ChunkProvenance>> GetProvenanceAsync(Guid canonicalId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves provenance records for multiple canonical records in a single batch.
+    /// </summary>
+    /// <param name="canonicalIds">The list of canonical record IDs to retrieve provenance for.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>
+    /// A dictionary mapping canonical IDs to their provenance records.
+    /// Canonical IDs with no provenance will be present in the dictionary with an empty list.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="canonicalIds"/> is null.</exception>
+    Task<IDictionary<Guid, IReadOnlyList<ChunkProvenance>>> GetProvenanceBatchAsync(IEnumerable<Guid> canonicalIds, CancellationToken ct = default);
 }
