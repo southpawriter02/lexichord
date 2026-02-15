@@ -1,11 +1,11 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v9.0",
+    "name": ".NETCoreApp,Version=v10.0",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v9.0": {
+    ".NETCoreApp,Version=v10.0": {
       "Lexichord.Modules.Agents/0.7.1": {
         "dependencies": {
           "Avalonia": "11.3.2",
@@ -22,7 +22,6 @@
           "Microsoft.Extensions.Options": "9.0.0",
           "Microsoft.Extensions.Resilience": "9.0.0",
           "Stubble.Core": "1.10.8",
-          "System.IO.Pipelines": "9.0.0",
           "YamlDotNet": "15.1.6"
         },
         "runtime": {
@@ -31,7 +30,6 @@
       },
       "Avalonia/11.3.2": {
         "dependencies": {
-          "Avalonia.BuildServices": "0.0.31",
           "Avalonia.Remote.Protocol": "11.3.2",
           "MicroCom.Runtime": "0.11.0"
         },
@@ -82,7 +80,6 @@
           }
         }
       },
-      "Avalonia.BuildServices/0.0.31": {},
       "Avalonia.Remote.Protocol/11.3.2": {
         "runtime": {
           "lib/net8.0/Avalonia.Remote.Protocol.dll": {
@@ -189,7 +186,6 @@
           }
         }
       },
-      "Microsoft.CSharp/4.7.0": {},
       "Microsoft.Extensions.Caching.Abstractions/9.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Primitives": "9.0.0"
@@ -446,11 +442,6 @@
         }
       },
       "Stubble.Core/1.10.8": {
-        "dependencies": {
-          "Microsoft.CSharp": "4.7.0",
-          "System.Collections.Immutable": "5.0.0",
-          "System.Threading.Tasks.Extensions": "4.5.4"
-        },
         "runtime": {
           "lib/netstandard2.0/Stubble.Core.dll": {
             "assemblyVersion": "1.10.0.0",
@@ -458,8 +449,6 @@
           }
         }
       },
-      "System.Collections.Immutable/5.0.0": {},
-      "System.IO.Pipelines/9.0.0": {},
       "System.Reactive/6.0.1": {
         "runtime": {
           "lib/net6.0/System.Reactive.dll": {
@@ -476,7 +465,6 @@
           }
         }
       },
-      "System.Threading.Tasks.Extensions/4.5.4": {},
       "YamlDotNet/15.1.6": {
         "runtime": {
           "lib/net8.0/YamlDotNet.dll": {
@@ -498,7 +486,7 @@
         },
         "runtime": {
           "Lexichord.Abstractions.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -517,13 +505,6 @@
       "sha512": "sha512-3w1v4/wEpHFq6WWVNyyrne2Jyz5bdQvnK3AW36rCto42L+AtdbnO/SG2SIqJ7ObXJl+Y3LXz2XDGx9Blzqduow==",
       "path": "avalonia/11.3.2",
       "hashPath": "avalonia.11.3.2.nupkg.sha512"
-    },
-    "Avalonia.BuildServices/0.0.31": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-KmCN6Hc+45q4OnF10ge450yVUvWuxU6bdQiyKqiSvrHKpahNrEdk0kG6Ip6GHk2SKOCttGQuA206JVdkldEENg==",
-      "path": "avalonia.buildservices/0.0.31",
-      "hashPath": "avalonia.buildservices.0.0.31.nupkg.sha512"
     },
     "Avalonia.Remote.Protocol/11.3.2": {
       "type": "package",
@@ -608,13 +589,6 @@
       "sha512": "sha512-MEnrZ3UIiH40hjzMDsxrTyi8dtqB5ziv3iBeeU4bXsL/7NLSal9F1lZKpK+tfBRnUoDSdtcW3KufE4yhATOMCA==",
       "path": "microcom.runtime/0.11.0",
       "hashPath": "microcom.runtime.0.11.0.nupkg.sha512"
-    },
-    "Microsoft.CSharp/4.7.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
-      "path": "microsoft.csharp/4.7.0",
-      "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
     },
     "Microsoft.Extensions.Caching.Abstractions/9.0.0": {
       "type": "package",
@@ -777,20 +751,6 @@
       "path": "stubble.core/1.10.8",
       "hashPath": "stubble.core.1.10.8.nupkg.sha512"
     },
-    "System.Collections.Immutable/5.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-FXkLXiK0sVVewcso0imKQoOxjoPAj42R8HtjjbSjVPAzwDfzoyoznWxgA3c38LDbN9SJux1xXoXYAhz98j7r2g==",
-      "path": "system.collections.immutable/5.0.0",
-      "hashPath": "system.collections.immutable.5.0.0.nupkg.sha512"
-    },
-    "System.IO.Pipelines/9.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-eA3cinogwaNB4jdjQHOP3Z3EuyiDII7MT35jgtnsA4vkn0LUrrSHsU0nzHTzFzmaFYeKV7MYyMxOocFzsBHpTw==",
-      "path": "system.io.pipelines/9.0.0",
-      "hashPath": "system.io.pipelines.9.0.0.nupkg.sha512"
-    },
     "System.Reactive/6.0.1": {
       "type": "package",
       "serviceable": true,
@@ -804,13 +764,6 @@
       "sha512": "sha512-7mu9v0QDv66ar3DpGSZHg9NuNcxDaaAcnMULuZlaTpP9+hwXhrxNGsF5GmLkSHxFdb5bBc1TzeujsRgTrPWi+Q==",
       "path": "system.threading.ratelimiting/8.0.0",
       "hashPath": "system.threading.ratelimiting.8.0.0.nupkg.sha512"
-    },
-    "System.Threading.Tasks.Extensions/4.5.4": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg==",
-      "path": "system.threading.tasks.extensions/4.5.4",
-      "hashPath": "system.threading.tasks.extensions.4.5.4.nupkg.sha512"
     },
     "YamlDotNet/15.1.6": {
       "type": "package",

@@ -177,6 +177,9 @@ public class PostgresRagFixture : IAsyncLifetime
         mockCanonicalManager
             .Setup(c => c.GetProvenanceAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Array.Empty<ChunkProvenance>());
+        mockCanonicalManager
+            .Setup(c => c.GetProvenanceBatchAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, IReadOnlyList<ChunkProvenance>>());
         services.AddSingleton(mockCanonicalManager.Object);
 
         services.AddSingleton<IChunkRepository>(sp =>

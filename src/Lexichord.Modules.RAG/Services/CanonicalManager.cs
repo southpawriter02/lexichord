@@ -536,7 +536,7 @@ public sealed class CanonicalManager : ICanonicalManager
                 cr.""Id"" AS ""CanonicalRecordId""
             FROM ""ChunkProvenance"" p
             INNER JOIN ""CanonicalRecords"" cr ON p.""ChunkId"" = cr.""CanonicalChunkId""
-            WHERE cr.""Id"" = ANY(@CanonicalIds)
+            WHERE cr.""Id"" IN @CanonicalIds
 
             UNION ALL
 
@@ -551,7 +551,7 @@ public sealed class CanonicalManager : ICanonicalManager
                 cv.""CanonicalRecordId"" AS ""CanonicalRecordId""
             FROM ""ChunkProvenance"" p
             INNER JOIN ""ChunkVariants"" cv ON p.""ChunkId"" = cv.""VariantChunkId""
-            WHERE cv.""CanonicalRecordId"" = ANY(@CanonicalIds)";
+            WHERE cv.""CanonicalRecordId"" IN @CanonicalIds";
 
         var command = new DapperCommandDefinition(sql, new { CanonicalIds = idList }, cancellationToken: ct);
         var rows = await connection.QueryAsync<ProvenanceWithCanonicalIdRow>(command);
