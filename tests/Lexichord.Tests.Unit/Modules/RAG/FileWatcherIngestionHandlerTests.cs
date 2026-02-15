@@ -27,7 +27,8 @@ public class FileWatcherIngestionHandlerTests : IDisposable
     public FileWatcherIngestionHandlerTests()
     {
         _mediatorMock = new Mock<IMediator>();
-        _options = FileWatcherOptions.Default;
+        // Use a longer debounce delay for tests to ensure stability on slow CI runners
+        _options = FileWatcherOptions.Default with { DebounceDelayMs = 2000 };
         _sut = new FileWatcherIngestionHandler(
             _mediatorMock.Object,
             Options.Create(_options),
