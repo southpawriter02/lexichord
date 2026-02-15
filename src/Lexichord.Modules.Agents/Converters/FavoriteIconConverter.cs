@@ -2,8 +2,10 @@
 // Licensed under the Lexichord License v1.0.
 // See LICENSE file in the project root for full license information.
 
+using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace Lexichord.Modules.Agents.Converters;
 
@@ -67,36 +69,41 @@ public sealed class FavoriteIconConverter : IValueConverter
     private const string OutlineStarPath = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z M12 5.5l-1.55 3.14-3.46.5 2.5 2.44-.59 3.45L12 13.39l3.09 1.63-.59-3.45 2.5-2.44-3.46-.5L12 5.5z";
 
     /// <summary>
-    /// Converts a boolean favorite status to star icon path data.
+    /// Converts a boolean favorite status to star icon geometry.
     /// </summary>
     /// <param name="value">
     /// The boolean value to convert. Expected type: <see cref="bool"/>.
     /// </param>
-    /// <param name="targetType">The target type (expected: <see cref="string"/>).</param>
+    /// <param name="targetType">The target type.</param>
     /// <param name="parameter">Optional parameter (unused).</param>
     /// <param name="culture">The culture info (unused).</param>
     /// <returns>
-    /// A string containing SVG path data:
-    /// <list type="bullet">
-    ///   <item><description><see langword="true"/> — <see cref="FilledStarPath"/>.</description></item>
-    ///   <item><description><see langword="false"/> — <see cref="OutlineStarPath"/>.</description></item>
-    ///   <item><description><see langword="null"/> or non-boolean — <see cref="OutlineStarPath"/> (fallback).</description></item>
-    /// </list>
+    /// A <see cref="StreamGeometry"/> containing the icon path data, or null if conversion fails.
     /// </returns>
     /// <remarks>
-    /// <strong>LOGIC:</strong> Defaults to outline star if the input is not a valid boolean,
-    /// providing a safe fallback for design-time or invalid bindings.
+    /// <strong>LOGIC:</strong> Defaults to outline star if the input is not a valid boolean.
+    /// Uses <see cref="StreamGeometry.Parse"/> to create the geometry object expected by PathIcon.Data.
+    /// Includes try-catch to prevent crashes in design-time or test environments where Avalonia might not be fully initialized.
     /// </remarks>
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
+        string path = OutlineStarPath;
+
         // LOGIC: Convert boolean to appropriate star icon path data.
-        if (value is bool isFavorite)
+        if (value is bool isFavorite && isFavorite)
         {
-            return isFavorite ? FilledStarPath : OutlineStarPath;
+            path = FilledStarPath;
         }
 
-        // LOGIC: Fallback to outline star for null or non-boolean values.
-        return OutlineStarPath;
+        try
+        {
+            return StreamGeometry.Parse(path);
+        }
+        catch (Exception)
+        {
+            // Fallback for test/design-time environments or invalid paths
+            return null;
+        }
     }
 
     /// <summary>
