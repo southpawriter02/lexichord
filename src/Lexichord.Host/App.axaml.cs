@@ -59,8 +59,16 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // LOGIC: For now, use empty configuration. v0.0.3d will add proper config.
-            var configuration = new ConfigurationBuilder().Build();
+            // LOGIC: Configure application configuration
+            // Hierarchy: appsettings.json -> appsettings.{Environment}.json -> appsettings.Local.json -> Environment Variables
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(System.AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            var configuration = builder.Build();
 
             // LOGIC: Configure full Serilog pipeline (replaces bootstrap logger)
             SerilogExtensions.ConfigureSerilog(configuration);
