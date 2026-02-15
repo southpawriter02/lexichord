@@ -311,6 +311,14 @@ public class AgentsModule : IModule
         //   - SimplificationPreviewViewModel: Transient for isolated preview instances
         //   - Enables before/after comparison, selective acceptance, re-simplification
         services.AddSimplifierPreviewUI();
+
+        // ── v0.7.4d: Batch Simplification ────────────────────────────────────
+        // LOGIC: Register batch simplification services:
+        //   - IBatchSimplificationService → BatchSimplificationService: Singleton
+        //     Orchestrates paragraph-by-paragraph simplification with skip detection
+        //   - BatchProgressViewModel: Transient for per-operation progress tracking
+        //   - BatchCompletionViewModel: Transient for per-operation completion summary
+        services.AddBatchSimplificationService();
     }
 
     /// <inheritdoc />

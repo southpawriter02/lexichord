@@ -24,13 +24,8 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddReadabilityTargetService"/> (v0.7.4a) — Readability target resolution and preset management</description></item>
 ///   <item><description><see cref="AddSimplifierAgentPipeline"/> (v0.7.4b) — Simplifier Agent, response parser, pipeline interface</description></item>
 ///   <item><description><see cref="AddSimplifierPreviewUI"/> (v0.7.4c) — Preview/Diff UI ViewModel</description></item>
+///   <item><description><see cref="AddBatchSimplificationService"/> (v0.7.4d) — Batch simplification service and ViewModels</description></item>
 /// </list>
-/// <para>
-/// <b>Future Sub-Parts:</b>
-/// <list type="bullet">
-///   <item><description>v0.7.4d — UI integration (toolbar, status bar, keyboard shortcuts)</description></item>
-/// </list>
-/// </para>
 /// <para>
 /// <b>Introduced in:</b> v0.7.4a as part of the Simplifier Agent feature.
 /// </para>
@@ -263,6 +258,111 @@ public static class SimplifierServiceCollectionExtensions
         // 2. Multiple previews may be open simultaneously (different documents)
         // 3. The ViewModel is disposable and should be cleaned up when the preview closes
         services.AddTransient<SimplificationPreviewViewModel>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Batch Simplification services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="IBatchSimplificationService"/> → <see cref="BatchSimplificationService"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the service is stateless—all
+    ///     operation state is passed via parameters and returned via results.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="BatchProgressViewModel"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime is used because each batch operation needs its own
+    ///     progress tracking state. Each dialog instance is independent.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="BatchCompletionViewModel"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime is used because each completion dialog needs its own
+    ///     result state. Multiple completion dialogs may exist for different operations.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ISimplificationPipeline"/> (v0.7.4b) — Per-paragraph simplification</description></item>
+    ///   <item><description><see cref="IReadabilityTargetService"/> (v0.7.4a) — Target resolution</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.IReadabilityService"/> (v0.3.3c) — Metrics calculation</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> — Document operations</description></item>
+    ///   <item><description><see cref="MediatR.IMediator"/> — Event publishing</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> — License validation</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.4d as part of the Batch Simplification feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddReadabilityTargetService();        // v0.7.4a
+    ///     services.AddSimplifierAgentPipeline();         // v0.7.4b
+    ///     services.AddSimplifierPreviewUI();             // v0.7.4c
+    ///     services.AddBatchSimplificationService();      // v0.7.4d
+    /// }
+    ///
+    /// // Using the batch service
+    /// var batchService = serviceProvider.GetRequiredService&lt;IBatchSimplificationService&gt;();
+    /// var progress = new Progress&lt;BatchSimplificationProgress&gt;(p =&gt;
+    ///     Console.WriteLine($"Processing paragraph {p.CurrentParagraph}/{p.TotalParagraphs}"));
+    ///
+    /// var result = await batchService.SimplifyDocumentAsync(
+    ///     documentPath,
+    ///     target,
+    ///     options: null,
+    ///     progress,
+    ///     cancellationToken);
+    /// </code>
+    /// </example>
+    /// <seealso cref="IBatchSimplificationService"/>
+    /// <seealso cref="BatchSimplificationService"/>
+    /// <seealso cref="BatchProgressViewModel"/>
+    /// <seealso cref="BatchCompletionViewModel"/>
+    public static IServiceCollection AddBatchSimplificationService(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register BatchSimplificationService as Singleton.
+        // Singleton lifetime is appropriate because:
+        // 1. The service is stateless—all operation state is passed via parameters
+        // 2. Injected services (ISimplificationPipeline, etc.) are singletons or thread-safe
+        // 3. No per-operation state is maintained between invocations
+        services.AddSingleton<IBatchSimplificationService, BatchSimplificationService>();
+
+        // LOGIC: Register BatchProgressViewModel as Transient.
+        // Transient lifetime is appropriate because:
+        // 1. Each batch operation needs isolated progress tracking state
+        // 2. The ViewModel holds CancellationTokenSource for the specific operation
+        // 3. Multiple batch operations should not share state
+        services.AddTransient<BatchProgressViewModel>();
+
+        // LOGIC: Register BatchCompletionViewModel as Transient.
+        // Transient lifetime is appropriate because:
+        // 1. Each completion dialog displays results for a specific operation
+        // 2. Multiple completion dialogs may be shown for different documents
+        // 3. The ViewModel holds BatchSimplificationResult for the specific operation
+        services.AddTransient<BatchCompletionViewModel>();
 
         return services;
     }

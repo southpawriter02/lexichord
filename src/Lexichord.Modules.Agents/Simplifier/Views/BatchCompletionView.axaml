@@ -1,0 +1,310 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Simplifier"
+             mc:Ignorable="d"
+             d:DesignWidth="500" d:DesignHeight="450"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Views.BatchCompletionView"
+             x:DataType="vm:BatchCompletionViewModel">
+
+    <!--
+    ===============================================================================
+    BATCH COMPLETION VIEW - v0.7.4d
+    Completion summary dialog for batch simplification operations showing
+    before/after metrics, processing statistics, and next steps.
+
+    Per LCS-SBD-v0.7.4d:
+    - Success/cancelled/failed status with appropriate styling
+    - Before/after readability metrics comparison
+    - Paragraph counts (simplified, skipped, total)
+    - Grade level improvement summary
+    - Processing time and token usage
+    - Undo hint for reverting changes
+    - View details button for paragraph-level results
+    ===============================================================================
+    -->
+
+    <UserControl.Styles>
+        <!-- Section header style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- Metric label style -->
+        <Style Selector="TextBlock.metric-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <!-- Metric value style -->
+        <Style Selector="TextBlock.metric-value">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- Primary button style -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Padding" Value="24,10" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Secondary button style -->
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Improvement badge style -->
+        <Style Selector="Border.improvement-badge">
+            <Setter Property="Background" Value="#2022C55E" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12,4" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            Padding="24">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+
+            <!-- Row 0: Status Icon and Title -->
+            <StackPanel Grid.Row="0" Spacing="12" Margin="0,0,0,24" HorizontalAlignment="Center">
+                <!-- Success icon -->
+                <Border IsVisible="{Binding IsSuccess}"
+                        Background="#2022C55E"
+                        CornerRadius="24"
+                        Width="48" Height="48"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="&#x2713;"
+                               FontSize="24"
+                               Foreground="#22C55E"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <!-- Cancelled icon -->
+                <Border IsVisible="{Binding WasCancelled}"
+                        Background="#20EAB308"
+                        CornerRadius="24"
+                        Width="48" Height="48"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="&#x2715;"
+                               FontSize="24"
+                               Foreground="#EAB308"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <!-- Failed icon (neither success nor cancelled) -->
+                <Border Background="#20EF4444"
+                        CornerRadius="24"
+                        Width="48" Height="48"
+                        HorizontalAlignment="Center">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="!IsSuccess" />
+                            <Binding Path="!WasCancelled" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <TextBlock Text="!"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#EF4444"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <TextBlock Text="{Binding Title}"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding CompletionMessage}"
+                           FontSize="13"
+                           Opacity="0.7"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center" />
+            </StackPanel>
+
+            <!-- Row 1: Grade Level Improvement (success only) -->
+            <Border Grid.Row="1"
+                    Classes="improvement-badge"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,24"
+                    IsVisible="{Binding IsSuccess}">
+                <TextBlock Text="{Binding GradeLevelImprovementText}"
+                           FontSize="14"
+                           FontWeight="Medium"
+                           Foreground="#22C55E" />
+            </Border>
+
+            <!-- Row 2: Readability Metrics Comparison -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="8"
+                    Padding="16"
+                    Margin="0,0,0,16"
+                    IsVisible="{Binding IsSuccess}">
+                <Grid ColumnDefinitions="*,Auto,*">
+                    <!-- Original metrics -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="8">
+                        <TextBlock Text="ORIGINAL"
+                                   Classes="section-header"
+                                   HorizontalAlignment="Center" />
+                        <StackPanel Spacing="4">
+                            <TextBlock HorizontalAlignment="Center">
+                                <Run Text="Grade " Classes="metric-label" />
+                                <Run Text="{Binding OriginalGradeLevelText}" Classes="metric-value" />
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center">
+                                <Run Text="Fog " Classes="metric-label" />
+                                <Run Text="{Binding OriginalFogIndexText}" FontWeight="Medium" />
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Arrow -->
+                    <TextBlock Grid.Column="1"
+                               Text="&#x2192;"
+                               FontSize="24"
+                               VerticalAlignment="Center"
+                               Margin="24,0"
+                               Opacity="0.4" />
+
+                    <!-- Simplified metrics -->
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="8">
+                        <TextBlock Text="SIMPLIFIED"
+                                   Classes="section-header"
+                                   HorizontalAlignment="Center" />
+                        <StackPanel Spacing="4">
+                            <TextBlock HorizontalAlignment="Center">
+                                <Run Text="Grade " Classes="metric-label" />
+                                <Run Text="{Binding SimplifiedGradeLevelText}"
+                                     Classes="metric-value"
+                                     Foreground="{DynamicResource SuccessBrush}" />
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center">
+                                <Run Text="Fog " Classes="metric-label" />
+                                <Run Text="{Binding SimplifiedFogIndexText}"
+                                     FontWeight="Medium"
+                                     Foreground="{DynamicResource SuccessBrush}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Row 3: Paragraph Statistics -->
+            <Border Grid.Row="3"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="8"
+                    Padding="16"
+                    Margin="0,0,0,16">
+                <Grid ColumnDefinitions="*,*,*">
+                    <!-- Simplified -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding SimplifiedParagraphs}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource SuccessBrush}" />
+                        <TextBlock Text="Simplified"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Skipped -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding SkippedParagraphs}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.7" />
+                        <TextBlock Text="Skipped"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Total -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding TotalParagraphs}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Total"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Row 4: Processing Statistics -->
+            <Border Grid.Row="4"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="8"
+                    Padding="16"
+                    Margin="0,0,0,16">
+                <Grid ColumnDefinitions="*,*">
+                    <!-- Processing time -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding ProcessingTimeText}"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Processing Time"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Token usage -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                        <TextBlock Text="{Binding TokensAndCostText}"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Tokens Used"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Row 5: Undo Hint (spacer + hint) -->
+            <StackPanel Grid.Row="5" VerticalAlignment="Bottom" Margin="0,0,0,16">
+                <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                        CornerRadius="4"
+                        Padding="12,8"
+                        IsVisible="{Binding IsSuccess}">
+                    <TextBlock Text="{Binding UndoHint}"
+                               FontSize="11"
+                               Opacity="0.6"
+                               HorizontalAlignment="Center" />
+                </Border>
+            </StackPanel>
+
+            <!-- Row 6: Action Buttons -->
+            <Grid Grid.Row="6" ColumnDefinitions="*,Auto,Auto">
+                <!-- View Details button -->
+                <Button Grid.Column="1"
+                        Content="View Details"
+                        Command="{Binding ViewDetailsCommand}"
+                        Classes="secondary"
+                        Margin="0,0,8,0"
+                        IsVisible="{Binding HasDetailedResults}" />
+
+                <!-- Close/Done button -->
+                <Button Grid.Column="2"
+                        Content="Done"
+                        Command="{Binding CloseCommand}"
+                        Classes="primary" />
+            </Grid>
+
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,264 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lexichord.Modules.Agents.Simplifier"
+             mc:Ignorable="d"
+             d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="Lexichord.Modules.Agents.Simplifier.Views.BatchProgressView"
+             x:DataType="vm:BatchProgressViewModel">
+
+    <!--
+    ===============================================================================
+    BATCH PROGRESS VIEW - v0.7.4d
+    Progress dialog for batch simplification operations showing real-time updates,
+    time estimation, and cancellation support.
+
+    Per LCS-SBD-v0.7.4d:
+    - Progress bar with percentage and paragraph counts
+    - Estimated time remaining display
+    - Current paragraph preview
+    - Token usage tracking
+    - Recent activity log
+    - Cancel button with confirmation
+    ===============================================================================
+    -->
+
+    <UserControl.Styles>
+        <!-- Section header style -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- Metric label style -->
+        <Style Selector="TextBlock.metric-label">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <!-- Metric value style -->
+        <Style Selector="TextBlock.metric-value">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+
+        <!-- Activity item style -->
+        <Style Selector="Border.activity-item">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="0,2" />
+        </Style>
+
+        <!-- Cancel button style -->
+        <Style Selector="Button.cancel">
+            <Setter Property="Background" Value="#EF4444" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Padding" Value="24,8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <!-- Secondary button style -->
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="24,8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            Padding="24">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- Row 0: Header -->
+            <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+                <TextBlock Text="{Binding Title}"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           FontSize="13"
+                           Opacity="0.7" />
+            </StackPanel>
+
+            <!-- Row 1: Progress Section -->
+            <StackPanel Grid.Row="1" Spacing="16" Margin="0,0,0,24">
+
+                <!-- Progress bar with percentage -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <ProgressBar Value="{Binding ProgressPercentage}"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Height="8"
+                                 CornerRadius="4" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ProgressPercentage, StringFormat='{}{0:F0}%'}"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Margin="12,0,0,0"
+                               VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Paragraph counts -->
+                <Grid ColumnDefinitions="*,*,*">
+                    <!-- Processed -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Processed"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding ProcessedParagraphs}" Classes="metric-value" />
+                            <TextBlock Text=" / " Classes="metric-value" Opacity="0.5" />
+                            <TextBlock Text="{Binding TotalParagraphs}" Classes="metric-value" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Simplified -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Simplified"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding SimplifiedParagraphs}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource SuccessBrush}" />
+                    </StackPanel>
+
+                    <!-- Skipped -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Skipped"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding SkippedParagraphs}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.7" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Time and tokens -->
+                <Grid ColumnDefinitions="*,*">
+                    <!-- Time remaining -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Time Remaining"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding EstimatedTimeRemainingText}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Tokens used -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Tokens Used"
+                                   Classes="metric-label"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding TokensUsed, StringFormat='{}{0:N0}'}"
+                                   Classes="metric-value"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Current paragraph preview -->
+                <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                        CornerRadius="4"
+                        Padding="12"
+                        IsVisible="{Binding CurrentParagraphPreview, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Currently Processing"
+                                   Classes="section-header" />
+                        <TextBlock Text="{Binding CurrentParagraphPreview}"
+                                   FontSize="12"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxLines="2"
+                                   Opacity="0.8" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
+            <!-- Row 2: Recent Activity -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource SurfaceElevatedBrush}"
+                    CornerRadius="4"
+                    Padding="12"
+                    Margin="0,0,0,24">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Text="Recent Activity"
+                               Classes="section-header"
+                               Grid.Row="0" />
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding RecentActivity}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:ActivityItem">
+                                    <Border Classes="activity-item">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <!-- Icon based on type -->
+                                            <TextBlock Grid.Column="0"
+                                                       FontSize="12"
+                                                       Margin="0,0,8,0"
+                                                       VerticalAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0}">
+                                                        <Binding Path="IsSkipped" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <!-- Message -->
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding Message}"
+                                                       FontSize="11"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center" />
+                                            <!-- Timestamp -->
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}'}"
+                                                       FontSize="10"
+                                                       Opacity="0.5"
+                                                       VerticalAlignment="Center"
+                                                       Margin="8,0,0,0" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- Row 3: Action Buttons -->
+            <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto">
+
+                <!-- Elapsed time -->
+                <TextBlock VerticalAlignment="Center"
+                           FontSize="11"
+                           Opacity="0.6">
+                    <Run Text="Elapsed: " />
+                    <Run Text="{Binding ElapsedTimeText}" />
+                </TextBlock>
+
+                <!-- Run in background button (future) -->
+                <Button Grid.Column="1"
+                        Content="Run in Background"
+                        Classes="secondary"
+                        IsVisible="False"
+                        Margin="0,0,8,0" />
+
+                <!-- Cancel button -->
+                <Button Grid.Column="2"
+                        Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Classes="cancel"
+                        IsEnabled="{Binding IsRunning}" />
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</UserControl>
