@@ -116,7 +116,7 @@ public static class AgentCapabilitiesExtensions
         if (capabilities.HasCapability(AgentCapabilities.Chat))
             names.Add("Chat");
         if (capabilities.HasCapability(AgentCapabilities.DocumentContext))
-            names.Add("Document");
+            names.Add("Document Context");
         if (capabilities.HasCapability(AgentCapabilities.RAGContext))
             names.Add("RAG");
         if (capabilities.HasCapability(AgentCapabilities.StyleEnforcement))

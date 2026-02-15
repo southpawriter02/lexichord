@@ -382,13 +382,12 @@ internal sealed class AesFileBackend : ISecretStorageBackend, IDisposable
         try
         {
             // LOGIC: Derive key using PBKDF2-SHA256
-            using var kdf = new Rfc2898DeriveBytes(
+            return Rfc2898DeriveBytes.Pbkdf2(
                 password,
                 salt,
                 Pbkdf2Iterations,
-                HashAlgorithmName.SHA256);
-
-            return kdf.GetBytes(KeySizeBytes);
+                HashAlgorithmName.SHA256,
+                KeySizeBytes);
         }
         finally
         {

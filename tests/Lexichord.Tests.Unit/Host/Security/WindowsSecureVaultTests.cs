@@ -311,7 +311,7 @@ public class WindowsSecureVaultTests : IDisposable
         await _vault.StoreSecretAsync("storage:s3:key", "value3");
 
         // Act
-        var keys = await _vault.ListSecretsAsync().ToListAsync();
+        var keys = await AsyncEnumerable.ToListAsync(_vault.ListSecretsAsync());
 
         // Assert
         keys.Should().HaveCount(3);
@@ -331,7 +331,7 @@ public class WindowsSecureVaultTests : IDisposable
         await _vault.StoreSecretAsync("storage:s3:key", "value3");
 
         // Act
-        var llmKeys = await _vault.ListSecretsAsync("llm:").ToListAsync();
+        var llmKeys = await AsyncEnumerable.ToListAsync(_vault.ListSecretsAsync("llm:"));
 
         // Assert
         llmKeys.Should().HaveCount(2);
@@ -346,7 +346,7 @@ public class WindowsSecureVaultTests : IDisposable
         SkipIfNotWindows();
 
         // Act
-        var keys = await _vault.ListSecretsAsync().ToListAsync();
+        var keys = await AsyncEnumerable.ToListAsync(_vault.ListSecretsAsync());
 
         // Assert
         keys.Should().BeEmpty();

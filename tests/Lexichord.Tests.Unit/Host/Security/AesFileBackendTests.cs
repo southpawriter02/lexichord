@@ -318,7 +318,7 @@ public class AesFileBackendTests : IDisposable
         await _backend.StoreAsync("storage:s3:key", "value3", default);
 
         // Act
-        var keys = await _backend.ListAsync(null, default).ToListAsync();
+        var keys = await AsyncEnumerable.ToListAsync(_backend.ListAsync(null, default));
 
         // Assert
         keys.Should().HaveCount(3);
@@ -338,7 +338,7 @@ public class AesFileBackendTests : IDisposable
         await _backend.StoreAsync("storage:s3:key", "value3", default);
 
         // Act
-        var llmKeys = await _backend.ListAsync("llm:", default).ToListAsync();
+        var llmKeys = await AsyncEnumerable.ToListAsync(_backend.ListAsync("llm:", default));
 
         // Assert
         llmKeys.Should().HaveCount(2);
@@ -353,7 +353,7 @@ public class AesFileBackendTests : IDisposable
         SkipIfNotUnix();
 
         // Act
-        var keys = await _backend.ListAsync(null, default).ToListAsync();
+        var keys = await AsyncEnumerable.ToListAsync(_backend.ListAsync(null, default));
 
         // Assert
         keys.Should().BeEmpty();

@@ -100,9 +100,8 @@ public sealed class LintingStressTests : IDisposable
         var viewportEnd = viewportStart + 10000; // 10KB viewport
 
         // Act
-        var firstResult = await _chunkedScanner
-            .ScanChunkedAsync(document, rules, viewportStart, viewportEnd)
-            .FirstAsync();
+        var firstResult = await AsyncEnumerable.FirstAsync(_chunkedScanner
+            .ScanChunkedAsync(document, rules, viewportStart, viewportEnd));
 
         // Assert
         Assert.True(firstResult.IsViewportChunk, "First result should be viewport chunk");
@@ -129,8 +128,8 @@ public sealed class LintingStressTests : IDisposable
             // LOGIC: Simulate debounced lint trigger
             if (i % 10 == 0)
             {
-                await foreach (var _ in _chunkedScanner.ScanChunkedAsync(
-                    document, rules, 0, 1000).Take(1))
+                await foreach (var _ in AsyncEnumerable.Take(_chunkedScanner.ScanChunkedAsync(
+                    document, rules, 0, 1000), 1))
                 {
                     // Process first chunk only
                 }
