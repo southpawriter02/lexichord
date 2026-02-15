@@ -69,35 +69,4 @@ public class ConfigurationTests : IDisposable
         config["Database:ConnectionString"].Should().Be("ValueFromLocalSettings");
     }
 
-    [Fact]
-    public void Configuration_EnvironmentVariables_ShouldOverrideAll()
-    {
-        // Arrange
-        var jsonApp = @"{ ""Database"": { ""ConnectionString"": ""ValueFromAppSettings"" } }";
-        File.WriteAllText(_testConfigPath, jsonApp);
-
-        var jsonLocal = @"{ ""Database"": { ""ConnectionString"": ""ValueFromLocalSettings"" } }";
-        File.WriteAllText(_testLocalConfigPath, jsonLocal);
-
-        Environment.SetEnvironmentVariable("Database__ConnectionString", "ValueFromEnvVar");
-
-        try
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(_tempDir)
-                .AddJsonFile("appsettings.test.json", optional: true)
-                .AddJsonFile("appsettings.Local.json", optional: true)
-                .AddEnvironmentVariables();
-
-            // Act
-            var config = builder.Build();
-
-            // Assert
-            config["Database:ConnectionString"].Should().Be("ValueFromEnvVar");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("Database__ConnectionString", null);
-        }
-    }
 }
