@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lexichord.Modules.Agents.ViewModels"
              xmlns:views="using:Lexichord.Modules.Agents.Views"
+             xmlns:converters="using:Lexichord.Modules.Agents.Converters"
              mc:Ignorable="d"
              d:DesignWidth="400" d:DesignHeight="400"
              x:Class="Lexichord.Modules.Agents.Views.AgentSelectorView"
@@ -26,6 +27,10 @@
     - Persona switching submenu appears when agent has multiple personas.
     ═══════════════════════════════════════════════════════════════════════════
     -->
+
+    <UserControl.Resources>
+        <converters:LucideIconConverter x:Key="LucideIconConverter"/>
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <!-- Trigger Button Container -->
@@ -136,8 +141,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto,Auto">
                 <!-- Agent Icon -->
                 <Border Grid.Column="0" Classes="agent-icon" Margin="0,0,12,0">
-                    <!-- TODO: Add LucideIconConverter and bind to SelectedAgent.Icon -->
-                    <PathIcon Data="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                    <PathIcon Data="{Binding SelectedAgent.Icon, Converter={StaticResource LucideIconConverter}}"
                               Foreground="{DynamicResource AccentPrimaryBrush}"/>
                 </Border>
 

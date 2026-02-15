@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lexichord.Modules.Agents.ViewModels"
+             xmlns:converters="using:Lexichord.Modules.Agents.Converters"
              mc:Ignorable="d"
              d:DesignWidth="320" d:DesignHeight="80"
              x:Class="Lexichord.Modules.Agents.Views.AgentCardView"
@@ -23,6 +24,10 @@
     - If agent has multiple personas, shows persona submenu.
     ═══════════════════════════════════════════════════════════════════════════
     -->
+
+    <UserControl.Resources>
+        <converters:LucideIconConverter x:Key="LucideIconConverter"/>
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <!-- Agent Card Container (uses CardStyles.axaml AgentCard theme) -->
@@ -115,8 +120,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
                 <!-- Agent Icon -->
                 <Border Grid.Column="0" Classes="agent-icon-small" Margin="0,0,12,0">
-                    <!-- TODO: Add LucideIconConverter and bind to Icon -->
-                    <PathIcon Data="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                    <PathIcon Data="{Binding Icon, Converter={StaticResource LucideIconConverter}}"
                               Foreground="{DynamicResource AccentPrimaryBrush}"/>
                 </Border>
 
