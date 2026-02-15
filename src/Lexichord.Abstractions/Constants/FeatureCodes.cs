@@ -322,4 +322,21 @@ public static class FeatureCodes
     public const string RAGContext = "Feature.RAGContext";
 
     #endregion
+
+    #region Editor Agent Features (v0.7.3)
+
+    /// <summary>
+    /// The Editor Agent feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Editor Agent features including AI-powered rewriting
+    /// via the context menu (Rewrite Formally, Simplify, Expand, Custom Rewrite).
+    /// When this feature is not enabled, rewrite menu items show a lock icon and
+    /// clicking them triggers an upgrade prompt instead of executing the rewrite.
+    /// Introduced in v0.7.3a.
+    /// </remarks>
+    public const string EditorAgent = "Feature.EditorAgent";
+
+    #endregion
 }

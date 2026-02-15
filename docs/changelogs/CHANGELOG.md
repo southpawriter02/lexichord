@@ -6,6 +6,27 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.7.3] - 2026-02 (In Progress)
+
+### The Editor Agent (AI-Powered Text Rewriting)
+
+This release introduces the Editor Agent system, enabling writers to select text and apply AI-powered rewriting transformations directly from the editor context menu.
+
+#### What's New
+
+- **EditorViewModel Integration (v0.7.3a)** — Context menu integration for AI rewrite commands in `Lexichord.Modules.Agents.Editor`. Added `RewriteIntent` enum (Formal, Simplified, Expanded, Custom) and `RewriteCommandOption` record for command metadata with kebab-case validation. Added `IEditorAgentContextMenuProvider` interface with `GetRewriteMenuItems()`, `CanRewrite`, `HasSelection`, `IsLicensed`, `CanRewriteChanged`, and `ExecuteRewriteAsync()`. Added `EditorAgentContextMenuProvider` implementation subscribing to `IEditorService.SelectionChanged` and `ILicenseContext.LicenseChanged` events, with MediatR event publishing for decoupled command handling. Added 3 MediatR events: `RewriteRequestedEvent` (carries intent, selected text, span, document path, custom instruction), `ShowUpgradeModalEvent` (triggers license upgrade modal), `ShowCustomRewriteDialogEvent` (opens custom instruction dialog). Added `RewriteCommandViewModel` with `RewriteFormallyCommand`, `SimplifyCommand`, `ExpandCommand`, `CustomRewriteCommand` async RelayCommands, `IsExecuting`/`Progress`/`ProgressMessage` state, and `CanRewriteChanged` event handling. Added `RewriteKeyboardShortcuts` implementing `IKeyBindingConfiguration` with Ctrl+Shift+R/S/E/C bindings conditioned on EditorHasSelection. Added `AddEditorAgentContextMenu()` DI extension registering provider as singleton, ViewModel as transient, shortcuts as singleton. Added `FeatureCodes.EditorAgent` constant for license gating. Updated `AgentsModule` to v0.7.3 with `services.AddEditorAgentContextMenu()` call and initialization verification. Design decision: uses MediatR events to decouple v0.7.3a from v0.7.3b (IRewriteCommandHandler doesn't exist yet), avoiding circular dependencies. No new NuGet packages. Includes 34 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.3a.md)
+
+#### Sub-Part Changelogs
+
+| Version                             | Title                       | Status      |
+| ----------------------------------- | --------------------------- | ----------- |
+| [v0.7.3a](v0.7.x/LCS-CL-v0.7.3a.md) | EditorViewModel Integration | ✅ Complete |
+| v0.7.3b                             | Command Handler             | ⏳ Pending  |
+| v0.7.3c                             | Streaming Rewrite UI        | ⏳ Pending  |
+| v0.7.3d                             | History & Undo              | ⏳ Pending  |
+
+---
+
 ## [v0.7.1] - 2026-02 (In Progress)
 
 ### The Agent Registry (Persona Management)

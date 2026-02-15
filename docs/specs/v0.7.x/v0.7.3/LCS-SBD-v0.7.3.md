@@ -1761,8 +1761,8 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~EditorAgent"
 
 | #  | Deliverable                                                    | Status |
 | :- | :------------------------------------------------------------- | :----- |
-| 1  | `EditorAgentContextMenuProvider.cs`                            | [ ]    |
-| 2  | `RewriteCommandViewModel.cs`                                   | [ ]    |
+| 1  | `EditorAgentContextMenuProvider.cs`                            | [x]    |
+| 2  | `RewriteCommandViewModel.cs`                                   | [x]    |
 | 3  | `EditorAgent.cs` implementing `IEditorAgent`                   | [ ]    |
 | 4  | `RewriteRequest.cs` / `RewriteResult.cs` records               | [ ]    |
 | 5  | `RewriteCommandHandler.cs`                                     | [ ]    |
@@ -1773,12 +1773,12 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~EditorAgent"
 | 10 | `TerminologyContextStrategy.cs`                                | [ ]    |
 | 11 | `RewriteUndoableOperation.cs`                                  | [ ]    |
 | 12 | `RewriteApplicator.cs`                                         | [ ]    |
-| 13 | Unit tests for context menu (v0.7.3a)                          | [ ]    |
+| 13 | Unit tests for context menu (v0.7.3a)                          | [x]    |
 | 14 | Unit tests for command pipeline (v0.7.3b)                      | [ ]    |
 | 15 | Unit tests for context strategies (v0.7.3c)                    | [ ]    |
 | 16 | Unit tests for undo/redo (v0.7.3d)                             | [ ]    |
 | 17 | Integration tests for full workflow                            | [ ]    |
-| 18 | DI registration in `AgentsModule.cs`                           | [ ]    |
+| 18 | DI registration in `AgentsModule.cs`                           | [x]    |
 
 ---
 

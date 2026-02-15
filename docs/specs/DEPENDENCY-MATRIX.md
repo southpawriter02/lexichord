@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.2h added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.3a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1656,6 +1656,57 @@
 - v0.7.2d (FragmentViewModel, StrategyToggleItem, ContextPreviewViewModel) — Preview panel ViewModels
 - v0.7.2e (KnowledgeContextStrategy, KnowledgeContextConfig) — Knowledge strategy implementation
 
+### 1.45 v0.7.3a EditorViewModel Integration
+
+**New Enums (v0.7.3a):**
+
+| Enum            | Defined In | Module       | Purpose                                    |
+| :-------------- | :--------- | :----------- | :----------------------------------------- |
+| `RewriteIntent` | v0.7.3a    | Abstractions | Formal/Simplified/Expanded/Custom intents  |
+
+**New Records (v0.7.3a):**
+
+| Record                 | Defined In | Module         | Purpose                                       |
+| :--------------------- | :--------- | :------------- | :-------------------------------------------- |
+| `RewriteCommandOption` | v0.7.3a    | Abstractions   | Rewrite command metadata (id, name, icon, etc.) |
+
+**New Interfaces (v0.7.3a):**
+
+| Interface                        | Defined In | Module         | Purpose                                           |
+| :------------------------------- | :--------- | :------------- | :------------------------------------------------ |
+| `IEditorAgentContextMenuProvider`| v0.7.3a    | Modules.Agents | Context menu provider for rewrite commands        |
+
+**New Classes (v0.7.3a):**
+
+| Class                                 | Defined In | Module         | Purpose                                           |
+| :------------------------------------ | :--------- | :------------- | :------------------------------------------------ |
+| `EditorAgentContextMenuProvider`      | v0.7.3a    | Modules.Agents | Provider implementation with MediatR events      |
+| `RewriteCommandViewModel`             | v0.7.3a    | Modules.Agents | ViewModel with async rewrite commands             |
+| `RewriteKeyboardShortcuts`            | v0.7.3a    | Modules.Agents | IKeyBindingConfiguration for Ctrl+Shift+R/S/E/C  |
+| `EditorAgentServiceCollectionExtensions` | v0.7.3a | Modules.Agents | AddEditorAgentContextMenu() DI registration      |
+
+**New Events (v0.7.3a):**
+
+| Event                        | Defined In | Module         | Purpose                                           |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------ |
+| `RewriteRequestedEvent`      | v0.7.3a    | Modules.Agents | Carries intent, text, span for rewrite handler    |
+| `ShowUpgradeModalEvent`      | v0.7.3a    | Modules.Agents | Triggers license upgrade modal                    |
+| `ShowCustomRewriteDialogEvent`| v0.7.3a   | Modules.Agents | Opens custom rewrite instruction dialog           |
+
+**New Constants (v0.7.3a):**
+
+| Constant                         | Defined In | Module       | Purpose                                     |
+| :------------------------------- | :--------- | :----------- | :------------------------------------------ |
+| `FeatureCodes.EditorAgent`       | v0.7.3a    | Abstractions | License gating for Editor Agent features    |
+
+**Dependencies (v0.7.3a):**
+- v0.6.7a (IEditorService, SelectionChangedEventArgs, ContextMenuItem) — Selection state and context menu
+- v0.6.7b (TextSpan) — Selection span record
+- v0.0.4c (ILicenseContext, LicenseTier, LicenseChangedEventArgs) — License checking
+- v0.0.7a (IMediator, INotification) — Event publishing
+- v0.6.7a (IKeyBindingConfiguration, IKeyBindingService) — Keyboard shortcuts
+- CommunityToolkit.Mvvm (ObservableObject, RelayCommand) — MVVM patterns
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1707,6 +1758,9 @@
 | `QuickActionExecutedEvent`     | v0.6.7d    | Quick action executed (telemetry) |
 | `ContextAssembledEvent`        | v0.7.2c    | Context assembly completed        |
 | `StrategyToggleEvent`          | v0.7.2c    | Context strategy toggled          |
+| `RewriteRequestedEvent`        | v0.7.3a    | Rewrite command requested         |
+| `ShowUpgradeModalEvent`        | v0.7.3a    | License upgrade modal triggered   |
+| `ShowCustomRewriteDialogEvent` | v0.7.3a    | Custom rewrite dialog requested   |
 
 ---
 

@@ -83,9 +83,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 6, 8),
+        Version: new Version(0, 7, 3),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, and performance optimization");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, and editor agent context menu");
 
     /// <inheritdoc />
     /// <remarks>
@@ -254,6 +254,14 @@ public class AgentsModule : IModule
         //   v0.7.2c — Context Orchestrator (parallel execution, dedup, budget)
         //   v0.7.2d — Context Preview Panel (bridge, ViewModels)
         services.AddContextStrategies();
+
+        // ── v0.7.3: Editor Agent ────────────────────────────────────────────
+        // LOGIC: Register the Editor Agent context menu services:
+        //   v0.7.3a — Context menu provider, ViewModel, keyboard shortcuts
+        //   - IEditorAgentContextMenuProvider: Singleton for selection state tracking
+        //   - RewriteCommandViewModel: Transient for per-view command state
+        //   - RewriteKeyboardShortcuts: Singleton IKeyBindingConfiguration
+        services.AddEditorAgentContextMenu();
     }
 
     /// <inheritdoc />
@@ -382,6 +390,20 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Cached context assembler is not registered. Context caching will not be available.");
+        }
+
+        // LOGIC: Verify Editor Agent context menu provider is available (v0.7.3a).
+        var editorAgentProvider = provider.GetService<Editor.IEditorAgentContextMenuProvider>();
+        if (editorAgentProvider is not null)
+        {
+            var menuItems = editorAgentProvider.GetRewriteMenuItems();
+            logger.LogDebug(
+                "Editor Agent context menu provider available with {MenuItemCount} rewrite options",
+                menuItems.Count);
+        }
+        else
+        {
+            logger.LogWarning("Editor Agent context menu provider is not registered. AI rewrite features will not be available.");
         }
     }
 }
