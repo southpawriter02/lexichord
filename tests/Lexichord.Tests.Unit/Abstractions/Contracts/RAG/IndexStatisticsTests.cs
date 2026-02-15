@@ -4,6 +4,7 @@
 // Description: Unit tests for IndexStatistics record.
 // =============================================================================
 
+using System.Collections.Generic;
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts.RAG;
 using Xunit;
@@ -70,15 +71,17 @@ public class IndexStatisticsTests
     }
 
     [Fact]
-    public void PendingCount_ShouldReturnZero_WhenStatusCountsIsNull()
+    public void PendingCount_ShouldReturnZero_WhenStatusCountsIsExplicitlyNull()
     {
         // Arrange
+        // We use null! to bypass nullable reference type warning for robustness testing
         var stats = new IndexStatistics
         {
             StatusCounts = null!
         };
 
         // Act
+        // This should not throw due to defensive null check in PendingCount property
         var pendingCount = stats.PendingCount;
 
         // Assert
