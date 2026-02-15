@@ -78,10 +78,18 @@ public sealed class LucideIconConverter : IValueConverter
     private static bool TryGetIconResource(string key, out object? resource)
     {
         resource = null;
-        if (Application.Current == null) return false;
+        try
+        {
+            if (Application.Current == null) return false;
 
-        // Try application resources first
-        return Application.Current.TryGetResource(key, null, out resource);
+            // Try application resources first
+            return Application.Current.TryGetResource(key, null, out resource);
+        }
+        catch (Exception)
+        {
+            // In unit tests or design time, Application.Current might be invalid or throw
+            return false;
+        }
     }
 
     private static object? GetDefaultIcon()

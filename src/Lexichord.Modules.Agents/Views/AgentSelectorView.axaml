@@ -30,6 +30,7 @@
 
     <UserControl.Resources>
         <converters:LucideIconConverter x:Key="LucideIconConverter"/>
+        <converters:FavoriteIconConverter x:Key="FavoriteIconConverter"/>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -165,17 +166,9 @@
                         CommandParameter="{Binding SelectedAgent}"
                         IsVisible="{Binding SelectedAgent, Converter={x:Static ObjectConverters.IsNotNull}}"
                         ToolTip.Tip="Toggle favorite">
-                    <Panel>
-                        <!-- TODO: Add FavoriteIconConverter -->
-                        <PathIcon Width="16" Height="16"
-                                  Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                                  Foreground="{DynamicResource AccentPrimaryBrush}"
-                                  IsVisible="{Binding SelectedAgent.IsFavorite}"/>
-                        <PathIcon Width="16" Height="16"
-                                  Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z M12 5.5l-1.55 3.14-3.46.5 2.5 2.44-.59 3.45L12 13.39l3.09 1.63-.59-3.45 2.5-2.44-3.46-.5L12 5.5z"
-                                  Foreground="{DynamicResource ForegroundMutedBrush}"
-                                  IsVisible="{Binding !SelectedAgent.IsFavorite}"/>
-                    </Panel>
+                    <PathIcon Width="16" Height="16"
+                              Data="{Binding SelectedAgent.IsFavorite, Converter={StaticResource FavoriteIconConverter}}"
+                              Foreground="{DynamicResource AccentPrimaryBrush}"/>
                 </Button>
 
                 <!-- Chevron Icon -->
@@ -188,7 +181,7 @@
 
         <!-- Dropdown Popup -->
         <Popup IsOpen="{Binding IsDropdownOpen, Mode=TwoWay}"
-               PlacementMode="Bottom"
+               Placement="Bottom"
                PlacementTarget="{Binding $parent[Border]}"
                IsLightDismissEnabled="True">
             <Border Classes="agent-dropdown">
