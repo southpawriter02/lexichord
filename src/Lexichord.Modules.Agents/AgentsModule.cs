@@ -297,6 +297,14 @@ public class AgentsModule : IModule
         //   - Target resolution from Voice Profile, presets, or explicit parameters
         //   - Target validation against source text readability metrics
         services.AddReadabilityTargetService();
+
+        // LOGIC: Register the Simplifier Agent pipeline services:
+        //   v0.7.4b — Simplification Pipeline
+        //   - ISimplificationResponseParser → SimplificationResponseParser: Singleton for response parsing
+        //   - ISimplificationPipeline → SimplifierAgent: Singleton for stateless simplification
+        //   - IAgent (forwarded): Enables agent discovery via IAgentRegistry
+        //   - Prompt template: specialist-simplifier.yaml with structured output format
+        services.AddSimplifierAgentPipeline();
     }
 
     /// <inheritdoc />
@@ -509,6 +517,31 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Readability Target Service is not registered. Simplifier Agent features will not be available.");
+        }
+
+        // LOGIC: Verify Simplifier Agent pipeline is available (v0.7.4b).
+        var simplifierPipeline = provider.GetService<ISimplificationPipeline>();
+        if (simplifierPipeline is not null)
+        {
+            // LOGIC: Verify the agent is also registered as IAgent for discovery
+            var simplifierAsAgent = simplifierPipeline as IAgent;
+            if (simplifierAsAgent is not null)
+            {
+                logger.LogDebug(
+                    "Simplifier Agent pipeline available: AgentId={AgentId}, Capabilities={Capabilities}",
+                    simplifierAsAgent.AgentId,
+                    simplifierAsAgent.Capabilities);
+            }
+            else
+            {
+                logger.LogDebug(
+                    "Simplifier Agent pipeline available: {PipelineType}",
+                    simplifierPipeline.GetType().Name);
+            }
+        }
+        else
+        {
+            logger.LogWarning("Simplifier Agent pipeline is not registered. Text simplification features will not be available.");
         }
     }
 }
