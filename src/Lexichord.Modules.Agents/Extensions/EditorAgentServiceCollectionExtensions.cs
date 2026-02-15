@@ -25,9 +25,10 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddEditorAgentContextMenu"/> (v0.7.3a) — Context menu, ViewModel, keyboard shortcuts</description></item>
 ///   <item><description><see cref="AddEditorAgentPipeline"/> (v0.7.3b) — Agent, command handler, event handler</description></item>
 ///   <item><description><see cref="AddEditorAgentContextStrategies"/> (v0.7.3c) — Context-aware rewriting strategies</description></item>
+///   <item><description><see cref="AddEditorAgentUndoIntegration"/> (v0.7.3d) — Rewrite applicator with undo/redo support</description></item>
 /// </list>
 /// <para>
-/// <b>Introduced in:</b> v0.7.3a. Extended in v0.7.3b, v0.7.3c.
+/// <b>Introduced in:</b> v0.7.3a. Extended in v0.7.3b, v0.7.3c, v0.7.3d.
 /// </para>
 /// </remarks>
 /// <seealso cref="IEditorAgentContextMenuProvider"/>
@@ -263,6 +264,74 @@ public static class EditorAgentServiceCollectionExtensions
         // LOGIC: Register EditorTerminologyContextStrategy as Transient.
         // Same rationale as above.
         services.AddTransient<EditorTerminologyContextStrategy>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Editor Agent undo/redo integration services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="IRewriteApplicator"/> → <see cref="RewriteApplicator"/> (Scoped)
+    ///     <para>
+    ///     Scoped lifetime ensures per-operation isolation of preview state
+    ///     (<see cref="RewriteApplicator.IsPreviewActive"/>) and the preview timeout
+    ///     timer. Each DI scope gets its own applicator instance.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Nullable Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="Lexichord.Abstractions.Contracts.Undo.IUndoRedoService"/> is NOT registered here.
+    ///     <see cref="RewriteApplicator"/> accepts it as nullable (<c>IUndoRedoService?</c>).
+    ///     When null, rewrites are still applied via the editor's built-in undo groups,
+    ///     but labeled operation tracking in the undo history is unavailable.
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Impact on v0.7.3b:</b>
+    /// With this registration, <see cref="RewriteCommandHandler"/> will receive a non-null
+    /// <see cref="IRewriteApplicator"/> and will delegate document application to it.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.3d as part of Undo/Redo Integration.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddEditorAgentContextMenu();         // v0.7.3a
+    ///     services.AddEditorAgentPipeline();             // v0.7.3b
+    ///     services.AddEditorAgentContextStrategies();    // v0.7.3c
+    ///     services.AddEditorAgentUndoIntegration();      // v0.7.3d
+    /// }
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddEditorAgentUndoIntegration(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register RewriteApplicator as Scoped implementing IRewriteApplicator.
+        // Scoped lifetime ensures per-operation isolation of preview state and the
+        // preview timeout timer. Each DI scope gets its own applicator instance.
+        //
+        // RewriteApplicator accepts IUndoRedoService? (nullable) — when no concrete
+        // IUndoRedoService is registered, the DI container resolves it as null.
+        // The applicator still functions using the editor's built-in undo groups.
+        services.AddScoped<IRewriteApplicator, RewriteApplicator>();
 
         return services;
     }

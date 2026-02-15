@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-14 (v0.7.3c added)                                             |
+| **Last Updated** | 2026-02-14 (v0.7.3d added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1788,6 +1788,52 @@
 - v0.6.1b (ITokenCounter) — Token counting via ContextStrategyBase
 - v0.0.4c (RequiresLicenseAttribute, LicenseTier) — License gating
 
+### 1.48 v0.7.3d Undo/Redo Integration
+
+**New Interfaces (v0.7.3d — Abstractions):**
+
+| Interface             | Version    | Module         | Description                                        |
+| :-------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IUndoableOperation`  | v0.7.3d    | Abstractions   | Undoable operation with Execute/Undo/Redo           |
+| `IUndoRedoService`    | v0.7.3d    | Abstractions   | Undo/redo stack management with Push/Clear/events   |
+
+**New Classes (v0.7.3d — Abstractions):**
+
+| Class                       | Version    | Module         | Description                                        |
+| :-------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `UndoRedoChangedEventArgs`  | v0.7.3d    | Abstractions   | EventArgs with CanUndo, CanRedo, LastOperationName  |
+
+**New Classes (v0.7.3d — Modules.Agents):**
+
+| Class                          | Version    | Module         | Description                                        |
+| :----------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `RewriteUndoableOperation`     | v0.7.3d    | Modules.Agents | IUndoableOperation for AI rewrites                 |
+| `RewriteApplicator`            | v0.7.3d    | Modules.Agents | IRewriteApplicator with preview/undo support       |
+
+**New Events (v0.7.3d):**
+
+| Event                          | Version    | Module         | Description                                        |
+| :----------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `RewriteAppliedEvent`          | v0.7.3d    | Modules.Agents | Rewrite applied to document with undo entry        |
+| `RewriteUndoneEvent`           | v0.7.3d    | Modules.Agents | Rewrite reverted via undo                          |
+| `RewriteRedoneEvent`           | v0.7.3d    | Modules.Agents | Rewrite re-applied via redo                        |
+| `RewritePreviewStartedEvent`   | v0.7.3d    | Modules.Agents | Preview text applied (not committed)               |
+| `RewritePreviewCommittedEvent` | v0.7.3d    | Modules.Agents | Preview finalized to undo stack                    |
+| `RewritePreviewCancelledEvent` | v0.7.3d    | Modules.Agents | Preview cancelled, original restored               |
+
+**Modified Interfaces (v0.7.3d):**
+
+| Interface             | Change                              | Description                                        |
+| :-------------------- | :---------------------------------- | :------------------------------------------------- |
+| `IRewriteApplicator`  | Added `bool IsPreviewActive { get; }` | Preview state query property                      |
+
+**Dependencies (v0.7.3d):**
+- v0.7.3b (IRewriteApplicator, RewriteResult, RewriteIntent) — Forward-declared interface, rewrite data contracts
+- v0.7.3a (RewriteIntent) — Intent enum for display name
+- v0.1.3a (IEditorService, TextSpan) — Sync text manipulation and span tracking
+- v0.0.7a (IMediator) — Event publishing
+- v0.7.3d (IUndoableOperation, IUndoRedoService) — New undo abstractions (nullable in applicator)
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -1844,6 +1890,12 @@
 | `ShowCustomRewriteDialogEvent` | v0.7.3a    | Custom rewrite dialog requested   |
 | `RewriteStartedEvent`         | v0.7.3b    | Rewrite pipeline started          |
 | `RewriteCompletedEvent`       | v0.7.3b    | Rewrite pipeline completed        |
+| `RewriteAppliedEvent`          | v0.7.3d    | Rewrite applied with undo entry   |
+| `RewriteUndoneEvent`           | v0.7.3d    | Rewrite reverted via undo         |
+| `RewriteRedoneEvent`           | v0.7.3d    | Rewrite re-applied via redo       |
+| `RewritePreviewStartedEvent`   | v0.7.3d    | Preview text applied              |
+| `RewritePreviewCommittedEvent` | v0.7.3d    | Preview finalized to undo stack   |
+| `RewritePreviewCancelledEvent` | v0.7.3d    | Preview cancelled                 |
 
 ---
 

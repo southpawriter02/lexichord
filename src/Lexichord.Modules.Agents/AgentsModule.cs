@@ -86,7 +86,7 @@ public class AgentsModule : IModule
         Name: "Agents",
         Version: new Version(0, 7, 3),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, and editor agent context menu");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, and undo/redo integration");
 
     /// <inheritdoc />
     /// <remarks>
@@ -278,6 +278,14 @@ public class AgentsModule : IModule
         //   - EditorTerminologyContextStrategy: Transient, scans terminology matches
         //   Both are registered in ContextStrategyFactory as WriterPro-tier strategies.
         services.AddEditorAgentContextStrategies();
+
+        // LOGIC: Register the Editor Agent undo/redo integration services:
+        //   v0.7.3d — Undo/Redo Integration
+        //   - IRewriteApplicator → RewriteApplicator: Scoped for per-operation preview state
+        //   - IUndoRedoService is NOT registered (nullable in RewriteApplicator)
+        //   NOTE: This enables RewriteCommandHandler to delegate document application
+        //   to the applicator (was previously skipped when applicator was null).
+        services.AddEditorAgentUndoIntegration();
     }
 
     /// <inheritdoc />
@@ -454,6 +462,23 @@ public class AgentsModule : IModule
                 logger.LogWarning(
                     "Editor Agent context strategies partially available: surrounding-text={HasSurrounding}, terminology={HasTerminology}",
                     hasSurrounding, hasTerminology);
+            }
+        }
+
+        // LOGIC: Verify Editor Agent undo/redo integration is available (v0.7.3d).
+        // IRewriteApplicator is scoped, so we create a scope to verify registration.
+        using (var scope = provider.CreateScope())
+        {
+            var applicator = scope.ServiceProvider.GetService<Editor.IRewriteApplicator>();
+            if (applicator is not null)
+            {
+                logger.LogDebug(
+                    "Editor Agent rewrite applicator available: {ApplicatorType}",
+                    applicator.GetType().Name);
+            }
+            else
+            {
+                logger.LogWarning("Editor Agent rewrite applicator is not registered. Rewrite undo/redo integration will not be available.");
             }
         }
     }

@@ -12,7 +12,7 @@
 | **License Tier** | `Writer Pro` | Requires Writer Pro |
 | **Feature Gate Key** | `FeatureFlags.Agents.Editor` | License gate |
 | **Author** | Lead Architect | |
-| **Status** | `Draft` | |
+| **Status** | `Complete` | |
 | **Last Updated** | `2026-01-27` | |
 | **Parent Document** | [LCS-DES-073-INDEX](./LCS-DES-073-INDEX.md) | |
 | **Scope Breakdown** | [LCS-SBD-073 Section 3.4](./LCS-SBD-073.md#34-v073d-undoredo-integration) | |
@@ -1101,18 +1101,18 @@ public class RewriteApplicatorTests
 
 | # | Deliverable | Status |
 | :--- | :--- | :--- |
-| 1 | `RewriteUndoableOperation.cs` | [ ] |
-| 2 | `IRewriteApplicator.cs` interface | [ ] |
-| 3 | `RewriteApplicator.cs` implementation | [ ] |
-| 4 | `RewriteAppliedEvent.cs` | [ ] |
-| 5 | `RewriteUndoneEvent.cs` | [ ] |
-| 6 | `RewriteRedoneEvent.cs` | [ ] |
-| 7 | `RewritePreviewStartedEvent.cs` | [ ] |
-| 8 | `RewritePreviewCommittedEvent.cs` | [ ] |
-| 9 | `RewritePreviewCancelledEvent.cs` | [ ] |
-| 10 | Unit tests for RewriteUndoableOperation | [ ] |
-| 11 | Unit tests for RewriteApplicator | [ ] |
-| 12 | DI registration | [ ] |
+| 1 | `RewriteUndoableOperation.cs` | [x] |
+| 2 | `IRewriteApplicator.cs` interface (updated with `IsPreviewActive`) | [x] |
+| 3 | `RewriteApplicator.cs` implementation | [x] |
+| 4 | `RewriteAppliedEvent.cs` | [x] |
+| 5 | `RewriteUndoneEvent.cs` | [x] |
+| 6 | `RewriteRedoneEvent.cs` | [x] |
+| 7 | `RewritePreviewStartedEvent.cs` | [x] |
+| 8 | `RewritePreviewCommittedEvent.cs` | [x] |
+| 9 | `RewritePreviewCancelledEvent.cs` | [x] |
+| 10 | Unit tests for RewriteUndoableOperation (18 tests) | [x] |
+| 11 | Unit tests for RewriteApplicator (31 tests) | [x] |
+| 12 | DI registration (`AddEditorAgentUndoIntegration()`) | [x] |
 
 ---
 
@@ -1150,3 +1150,4 @@ dotnet test --filter "FullyQualifiedName~RewriteApplicatorTests"
 | Version | Date | Author | Changes |
 | :--- | :--- | :--- | :--- |
 | 1.0 | 2026-01-27 | Lead Architect | Initial draft |
+| 1.1 | 2026-02-14 | Claude Opus 4.6 | Implementation complete — all deliverables checked |

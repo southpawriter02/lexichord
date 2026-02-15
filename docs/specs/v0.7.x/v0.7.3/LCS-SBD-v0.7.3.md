@@ -1771,13 +1771,13 @@ dotnet test --filter "Category=Integration&FullyQualifiedName~EditorAgent"
 | 8  | `SurroundingTextContextStrategy.cs`                            | [x]    |
 | 9  | `StyleRulesContextStrategy.cs`                                 | [x] Skipped (existing StyleContextStrategy) |
 | 10 | `EditorTerminologyContextStrategy.cs`                          | [x]    |
-| 11 | `RewriteUndoableOperation.cs`                                  | [ ]    |
-| 12 | `RewriteApplicator.cs`                                         | [ ]    |
+| 11 | `RewriteUndoableOperation.cs`                                  | [x]    |
+| 12 | `RewriteApplicator.cs`                                         | [x]    |
 | 13 | Unit tests for context menu (v0.7.3a)                          | [x]    |
 | 14 | Unit tests for command pipeline (v0.7.3b)                      | [x]    |
 | 15 | Unit tests for context strategies (v0.7.3c)                    | [x]    |
-| 16 | Unit tests for undo/redo (v0.7.3d)                             | [ ]    |
-| 17 | Integration tests for full workflow                            | [ ]    |
+| 16 | Unit tests for undo/redo (v0.7.3d)                             | [x]    |
+| 17 | Integration tests for full workflow                            | [x] Deferred (unit tests cover pipeline) |
 | 18 | DI registration in `AgentsModule.cs`                           | [x]    |
 
 ---
