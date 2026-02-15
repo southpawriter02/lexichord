@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-15 (v0.7.4c added)                                             |
+| **Last Updated** | 2026-02-15 (v0.7.5a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1933,6 +1933,56 @@
 - v0.1.3a (IEditorService) — Document operations, undo groups
 - v0.0.4c (ILicenseContext, LicenseTier) — License gating
 - DiffPlex 1.7.2 — Text diff visualization
+
+### 1.51 v0.7.5a Style Deviation Scanner
+
+**New Interfaces (v0.7.5a — Abstractions):**
+
+| Interface                  | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IStyleDeviationScanner`   | v0.7.5a    | Abstractions   | Document/range scanning for style deviations       |
+
+**New Records (v0.7.5a — Abstractions):**
+
+| Record                     | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `StyleDeviation`           | v0.7.5a    | Abstractions   | Enriched violation with context and rule details   |
+| `DeviationScanResult`      | v0.7.5a    | Abstractions   | Scan result with grouping helpers and cache info   |
+
+**New Enums (v0.7.5a — Abstractions):**
+
+| Enum                       | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `DeviationPriority`        | v0.7.5a    | Abstractions   | Low/Normal/High/Critical priority mapping          |
+
+**New Classes (v0.7.5a — Abstractions):**
+
+| Class                           | Defined In | Module         | Purpose                                           |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------ |
+| `DeviationsDetectedEventArgs`   | v0.7.5a    | Abstractions   | Event args for deviation detection                |
+
+**New Classes (v0.7.5a — Modules.Agents):**
+
+| Class                      | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `StyleDeviationScanner`    | v0.7.5a    | Modules.Agents | IStyleDeviationScanner with caching and events    |
+| `ScannerOptions`           | v0.7.5a    | Modules.Agents | Context window, cache TTL, filtering options      |
+
+**DI Registrations (v0.7.5a):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `IStyleDeviationScanner`   | Singleton  | TuningServiceCollectionExtensions           |
+
+**Dependencies (v0.7.5a):**
+- v0.2.3a (ILintingOrchestrator) — Violation detection
+- v0.2.3b (LintingCompletedEvent) — Real-time updates
+- v0.2.1d (StyleSheetReloadedEvent) — Rules change notification
+- v0.2.1b (StyleViolation) — Violation data
+- v0.2.1a (StyleRule) — Rule details
+- v0.1.3a (IEditorService) — Document content access
+- v0.0.4c (ILicenseContext) — License validation
+- Microsoft.Extensions.Caching.Memory — Result caching
 
 ## 2. MediatR Events Registry
 

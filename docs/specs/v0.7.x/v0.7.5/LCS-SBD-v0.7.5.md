@@ -1900,9 +1900,9 @@ dotnet test --filter "Version~v0.7.5" --logger "trx;LogFileName=v075-results.trx
 
 | #  | Deliverable                                                    | Status |
 | :- | :------------------------------------------------------------- | :----- |
-| 1  | `IStyleDeviationScanner` interface                             | [ ]    |
-| 2  | `StyleDeviationScanner` implementation                         | [ ]    |
-| 3  | `StyleDeviation` and `DeviationScanResult` records             | [ ]    |
+| 1  | `IStyleDeviationScanner` interface                             | [x]    |
+| 2  | `StyleDeviationScanner` implementation                         | [x]    |
+| 3  | `StyleDeviation` and `DeviationScanResult` records             | [x]    |
 | 4  | `IFixSuggestionGenerator` interface                            | [ ]    |
 | 5  | `FixSuggestionGenerator` implementation                        | [ ]    |
 | 6  | `FixSuggestion` and related records                            | [ ]    |

@@ -9,6 +9,7 @@ using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Agents.Simplifier;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Agents;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Chat.Abstractions;
@@ -85,9 +86,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 7, 4),
+        Version: new Version(0, 7, 5),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, undo/redo integration, and readability target service");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, undo/redo integration, readability target service, and style deviation scanning");
 
     /// <inheritdoc />
     /// <remarks>
@@ -319,6 +320,16 @@ public class AgentsModule : IModule
         //   - BatchProgressViewModel: Transient for per-operation progress tracking
         //   - BatchCompletionViewModel: Transient for per-operation completion summary
         services.AddBatchSimplificationService();
+
+        // ── v0.7.5: Tuning Agent ─────────────────────────────────────────────
+        // LOGIC: Register the Style Deviation Scanner services:
+        //   v0.7.5a — Style Deviation Scanner
+        //   - IStyleDeviationScanner → StyleDeviationScanner: Singleton
+        //     Bridges linting infrastructure with AI fix generation
+        //   - Subscribes to LintingCompletedEvent and StyleSheetReloadedEvent
+        //   - Result caching via IMemoryCache with content hash validation
+        //   - Real-time deviation detection via MediatR event handlers
+        services.AddStyleDeviationScanner();
     }
 
     /// <inheritdoc />
@@ -556,6 +567,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Simplifier Agent pipeline is not registered. Text simplification features will not be available.");
+        }
+
+        // LOGIC: Verify Style Deviation Scanner is available (v0.7.5a).
+        var styleDeviationScanner = provider.GetService<IStyleDeviationScanner>();
+        if (styleDeviationScanner is not null)
+        {
+            logger.LogDebug(
+                "Style Deviation Scanner available: {ScannerType}",
+                styleDeviationScanner.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Style Deviation Scanner is not registered. Tuning Agent features will not be available.");
         }
     }
 }

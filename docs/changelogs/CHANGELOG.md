@@ -6,7 +6,25 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
-## [v0.7.4] - 2026-02 (In Progress)
+## [v0.7.5] - 2026-02 (In Progress)
+
+### The Tuning Agent (Proactive Style Harmony)
+
+This release introduces the Tuning Agent system, enabling proactive style scanning that bridges the linting infrastructure with AI-powered fix generation.
+
+#### What's New
+
+- **Style Deviation Scanner (v0.7.5a)** — Foundation for AI-powered style fix generation in `Lexichord.Abstractions.Contracts.Agents` and `Lexichord.Modules.Agents.Tuning`. Added `IStyleDeviationScanner` interface with methods for document scanning (`ScanDocumentAsync()`), range scanning (`ScanRangeAsync()`), cache management (`GetCachedResultAsync()`, `InvalidateCache()`, `InvalidateAllCaches()`), and real-time event notification via `DeviationsDetected` event. Added `StyleDeviation` record with `DeviationId` (Guid), `Violation` (StyleViolation from v0.2.1b), `Location` (TextSpan), `OriginalText`, `SurroundingContext` (for AI context window), `ViolatedRule` (nullable StyleRule), `IsAutoFixable` (bool), `Priority` (DeviationPriority); computed properties `Category`, `RuleId`, `Message`, `LinterSuggestedFix`. Added `DeviationScanResult` record with `DocumentPath`, `Deviations`, `ScannedAt`, `ScanDuration`, `IsCached`, `ContentHash`, `RulesVersion`; computed properties `TotalCount`, `AutoFixableCount`, `ManualOnlyCount`; grouping helpers `ByCategory`, `ByPriority`, `ByPosition`; factory methods `Empty()`, `LicenseRequired()`. Added `DeviationPriority` enum mapping lint severity to priority (Low=Hint, Normal=Information, High=Warning, Critical=Error). Added `DeviationsDetectedEventArgs` class with `DocumentPath`, `NewDeviations`, `TotalDeviationCount`, `IsIncremental`; computed properties `NewDeviationCount`, `HasNewDeviations`. Added `ScannerOptions` configuration class with `ContextWindowSize=500`, `CacheTtlMinutes=5`, `MaxDeviationsPerScan=100`, `IncludeManualOnly=true`, `MinimumSeverity=Hint`, `EnableRealTimeUpdates=true`, `ExcludedCategories=[]`. Added `StyleDeviationScanner` implementation as Singleton with `ILintingOrchestrator`, `IEditorService`, `IMemoryCache`, `ILicenseContext`, `IOptions<ScannerOptions>`, `ILogger` dependencies; implements `INotificationHandler<LintingCompletedEvent>` and `INotificationHandler<StyleSheetReloadedEvent>` for real-time updates and cache invalidation; content-hash-based cache key generation; auto-fixability determination based on rule properties (IsAiFixable, RuleType, Category, Complexity); semaphore-based thread safety; context extraction with sentence boundary adjustment. Added `AddStyleDeviationScanner()` DI extension in `TuningServiceCollectionExtensions`. Updated `AgentsModule` to v0.7.5 with registration and init verification. License gating: requires WriterPro tier, returns `LicenseRequired()` empty result for lower tiers. No new NuGet packages. Includes 33 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.5a.md)
+
+#### Sub-Part Changelogs
+
+| Version                               | Title                        | Status      |
+| ------------------------------------- | ---------------------------- | ----------- |
+| [v0.7.5a](v0.7.x/LCS-CL-v0.7.5a.md) | Style Deviation Scanner      | ✅ Complete |
+
+---
+
+## [v0.7.4] - 2026-02 (Complete)
 
 ### The Simplifier Agent (Readability-Targeted Simplification)
 
