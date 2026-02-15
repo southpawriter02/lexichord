@@ -377,7 +377,7 @@ public class CommandPaletteViewModelTests
         viewModel.SelectedItem = fileResult;
 
         _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
-            .ReturnsAsync((IManuscriptViewModel?)null!);
+            .ReturnsAsync(new Mock<IManuscriptViewModel>().Object);
 
         await viewModel.ExecuteSelectedAsync();
 
@@ -393,7 +393,7 @@ public class CommandPaletteViewModelTests
         viewModel.SelectedItem = fileResult;
 
         _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
-            .ReturnsAsync((IManuscriptViewModel?)null!);
+            .ReturnsAsync(new Mock<IManuscriptViewModel>().Object);
 
         await viewModel.ExecuteSelectedAsync();
 
