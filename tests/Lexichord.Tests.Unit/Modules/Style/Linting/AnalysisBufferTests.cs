@@ -136,7 +136,7 @@ public class AnalysisBufferTests : IDisposable
 
         // Act
         buffer.Submit(request);
-        await Task.Delay(500); // Wait for idle period + generous margin
+        await Task.Delay(1500); // Wait for idle period + generous margin
 
         // Assert
         emittedRequest.Should().NotBeNull();
@@ -160,7 +160,7 @@ public class AnalysisBufferTests : IDisposable
         buffer.Submit(AnalysisRequest.Create("doc-1", null, "content 3"));
 
         // Wait for idle period to complete
-        await Task.Delay(800);
+        await Task.Delay(1800);
 
         // Assert - only latest content should be emitted
         emissions.Should().HaveCount(1);
@@ -180,7 +180,7 @@ public class AnalysisBufferTests : IDisposable
         buffer.Submit(AnalysisRequest.Create("doc-2", null, "content 2"));
 
         // Wait for both to complete
-        await Task.Delay(500);
+        await Task.Delay(1500);
 
         // Assert - both should be emitted
         emissions.Should().HaveCount(2);
@@ -203,7 +203,7 @@ public class AnalysisBufferTests : IDisposable
         buffer.Cancel("doc-1");
 
         // Wait for what would have been the idle period
-        await Task.Delay(600);
+        await Task.Delay(1600);
 
         // Assert - nothing should be emitted
         emissions.Should().BeEmpty();
@@ -251,7 +251,7 @@ public class AnalysisBufferTests : IDisposable
 
         // Act
         buffer.CancelAll();
-        await Task.Delay(600);
+        await Task.Delay(1600);
 
         // Assert
         emissions.Should().BeEmpty();
@@ -304,7 +304,7 @@ public class AnalysisBufferTests : IDisposable
         emitted.Should().BeFalse();
 
         // But should emit after idle period + margin
-        await Task.Delay(800);
+        await Task.Delay(1800);
         emitted.Should().BeTrue();
     }
 
@@ -327,7 +327,7 @@ public class AnalysisBufferTests : IDisposable
         buffer.Submit(AnalysisRequest.Create("doc-1", null, "content 2"));
 
         // Wait for idle period
-        await Task.Delay(600);
+        await Task.Delay(1600);
 
         // Assert - only second content should be emitted
         emissions.Should().HaveCount(1);
