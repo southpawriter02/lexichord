@@ -20,6 +20,7 @@ public class CommandPaletteViewModelTests
     private readonly Mock<IMediator> _mediatorMock = new();
     private readonly Mock<IEditorService> _editorServiceMock = new();
     private readonly Mock<ILogger<CommandPaletteViewModel>> _loggerMock = new();
+    private readonly Mock<IManuscriptViewModel> _manuscriptMock = new();
 
     private CommandPaletteViewModel CreateViewModel(List<CommandDefinition>? commands = null)
     {
@@ -377,7 +378,7 @@ public class CommandPaletteViewModelTests
         viewModel.SelectedItem = fileResult;
 
         _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
-            .ReturnsAsync(new Mock<IManuscriptViewModel>().Object);
+            .ReturnsAsync(_manuscriptMock.Object);
 
         await viewModel.ExecuteSelectedAsync();
 
@@ -393,7 +394,7 @@ public class CommandPaletteViewModelTests
         viewModel.SelectedItem = fileResult;
 
         _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
-            .ReturnsAsync(new Mock<IManuscriptViewModel>().Object);
+            .ReturnsAsync(_manuscriptMock.Object);
 
         await viewModel.ExecuteSelectedAsync();
 
