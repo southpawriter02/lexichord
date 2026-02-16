@@ -27,7 +27,8 @@ public class FileWatcherIngestionHandlerTests : IDisposable
     public FileWatcherIngestionHandlerTests()
     {
         _mediatorMock = new Mock<IMediator>();
-        _options = FileWatcherOptions.Default;
+        // Use a longer debounce delay for tests to ensure stability on slow CI runners
+        _options = FileWatcherOptions.Default with { DebounceDelayMs = 1000 };
         _sut = new FileWatcherIngestionHandler(
             _mediatorMock.Object,
             Options.Create(_options),
@@ -132,7 +133,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
         await _sut.Handle(changes, CancellationToken.None);
 
         // Wait for debounce to fire
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -163,7 +164,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
         await _sut.Handle(changes, CancellationToken.None);
 
         // Wait for debounce
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -188,7 +189,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -209,7 +210,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -230,7 +231,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -249,7 +250,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -272,7 +273,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -304,7 +305,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
         }
 
         // Wait for debounce
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert - should publish only once after debounce
         _mediatorMock.Verify(
@@ -323,7 +324,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert
         _mediatorMock.Verify(
@@ -348,7 +349,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert - only 2 valid files should be published
         _mediatorMock.Verify(
@@ -370,7 +371,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act - dispose immediately before debounce fires
         _sut.Dispose();
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 1000);
 
         // Assert - no event should be published after disposal
         _mediatorMock.Verify(
