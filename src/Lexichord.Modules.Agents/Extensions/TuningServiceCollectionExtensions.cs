@@ -6,8 +6,11 @@
 // -----------------------------------------------------------------------
 
 using Lexichord.Abstractions.Contracts.Agents;
+using Lexichord.Abstractions.Contracts.Agents.Events;
 using Lexichord.Modules.Agents.Tuning;
 using Lexichord.Modules.Agents.Tuning.Configuration;
+using Lexichord.Modules.Agents.Tuning.Storage;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lexichord.Modules.Agents.Extensions;
@@ -24,6 +27,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddStyleDeviationScanner"/> (v0.7.5a) — Style deviation scanning with caching and real-time updates</description></item>
 ///   <item><description><see cref="AddFixSuggestionGenerator"/> (v0.7.5b) — AI-powered fix suggestions for style deviations</description></item>
 ///   <item><description><see cref="AddTuningReviewUI"/> (v0.7.5c) — Accept/Reject UI ViewModels for suggestion review</description></item>
+///   <item><description><see cref="AddLearningLoop"/> (v0.7.5d) — Learning Loop feedback persistence and pattern analysis</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
@@ -34,6 +38,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <para>
 /// <b>Updated in:</b> v0.7.5c with Accept/Reject review UI.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5d with Learning Loop feedback system.
+/// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
@@ -42,6 +49,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <seealso cref="FixSuggestionGenerator"/>
 /// <seealso cref="TuningPanelViewModel"/>
 /// <seealso cref="SuggestionCardViewModel"/>
+/// <seealso cref="ILearningLoopService"/>
+/// <seealso cref="LearningLoopService"/>
+/// <seealso cref="LearningStorageOptions"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -325,6 +335,141 @@ public static class TuningServiceCollectionExtensions
         // 2. Multiple panels should have isolated suggestion collections
         // 3. Matches the SimplificationPreviewViewModel registration pattern
         services.AddTransient<TuningPanelViewModel>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Learning Loop services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <param name="configure">Optional configuration action for storage options.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="LearningStorageOptions"/> (via <c>IOptions&lt;LearningStorageOptions&gt;</c>)
+    ///     <para>
+    ///     Configures database path, retention days, pattern cache limits, and
+    ///     minimum pattern frequency.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IFeedbackStore"/> → <see cref="SqliteFeedbackStore"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the SQLite connection pool is shared
+    ///     across the application. Thread-safe via per-method connection pooling.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="PatternAnalyzer"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the analyzer is stateless.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="ILearningLoopService"/> → <see cref="LearningLoopService"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime ensures consistent state and a single database connection pool.
+    ///     Also registered as MediatR notification handlers for <see cref="SuggestionAcceptedEvent"/>
+    ///     and <see cref="SuggestionRejectedEvent"/> via factory forwarding.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>MediatR Handler Forwarding:</b> The <see cref="LearningLoopService"/> singleton
+    /// is forwarded as both <c>INotificationHandler&lt;SuggestionAcceptedEvent&gt;</c> and
+    /// <c>INotificationHandler&lt;SuggestionRejectedEvent&gt;</c> to ensure the same instance
+    /// handles events as serves the public API.
+    /// </para>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ISettingsService"/> (v0.1.6a) — Privacy settings persistence</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — License tier validation</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>License Requirement:</b> Requires Teams tier or higher.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5d as part of the Learning Loop feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule with default options
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    ///     services.AddTuningReviewUI();
+    ///     services.AddLearningLoop();
+    /// }
+    ///
+    /// // Registration with custom options
+    /// services.AddLearningLoop(options =>
+    /// {
+    ///     options.DatabasePath = "/custom/path/learning.db";
+    ///     options.RetentionDays = 180;
+    /// });
+    ///
+    /// // Resolve and use via DI
+    /// var learningLoop = serviceProvider.GetRequiredService&lt;ILearningLoopService&gt;();
+    /// var context = await learningLoop.GetLearningContextAsync("TERM-001");
+    /// </code>
+    /// </example>
+    /// <seealso cref="ILearningLoopService"/>
+    /// <seealso cref="LearningLoopService"/>
+    /// <seealso cref="LearningStorageOptions"/>
+    /// <seealso cref="SqliteFeedbackStore"/>
+    /// <seealso cref="PatternAnalyzer"/>
+    public static IServiceCollection AddLearningLoop(
+        this IServiceCollection services,
+        Action<LearningStorageOptions>? configure = null)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Configure LearningStorageOptions via IOptions pattern.
+        if (configure is not null)
+        {
+            services.Configure(configure);
+        }
+        else
+        {
+            // LOGIC: Ensure options are registered even without custom configuration.
+            services.Configure<LearningStorageOptions>(_ => { });
+        }
+
+        // LOGIC: Register SqliteFeedbackStore as Singleton implementing IFeedbackStore.
+        // Singleton lifetime is appropriate because:
+        // 1. Connection pooling is managed at the connection string level
+        // 2. Thread-safe via per-method connection creation from the pool
+        // 3. Schema initialization is called once during module InitializeAsync
+        services.AddSingleton<IFeedbackStore, SqliteFeedbackStore>();
+
+        // LOGIC: Register PatternAnalyzer as Singleton.
+        // The analyzer is stateless — all state is passed as method parameters.
+        services.AddSingleton<PatternAnalyzer>();
+
+        // LOGIC: Register LearningLoopService as Singleton implementing ILearningLoopService.
+        // Singleton ensures the same instance handles both public API calls and MediatR events.
+        services.AddSingleton<LearningLoopService>();
+        services.AddSingleton<ILearningLoopService>(sp =>
+            sp.GetRequiredService<LearningLoopService>());
+
+        // LOGIC: Forward MediatR handler registrations to the same singleton instance.
+        // This is critical — without forwarding, MediatR would create separate instances
+        // for each handler registration, breaking the singleton pattern.
+        services.AddSingleton<INotificationHandler<SuggestionAcceptedEvent>>(sp =>
+            sp.GetRequiredService<LearningLoopService>());
+        services.AddSingleton<INotificationHandler<SuggestionRejectedEvent>>(sp =>
+            sp.GetRequiredService<LearningLoopService>());
 
         return services;
     }

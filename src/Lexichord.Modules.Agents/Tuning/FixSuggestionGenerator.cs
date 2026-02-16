@@ -43,6 +43,7 @@ namespace Lexichord.Modules.Agents.Tuning;
 /// </para>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5b as part of the Automatic Fix Suggestions feature.
+/// <b>Updated in:</b> v0.7.5d — added <c>ILearningLoopService</c> for learning-enhanced prompt context.
 /// </para>
 /// </remarks>
 public sealed class FixSuggestionGenerator : IFixSuggestionGenerator
@@ -72,6 +73,7 @@ public sealed class FixSuggestionGenerator : IFixSuggestionGenerator
     private readonly IPromptTemplateRepository _templateRepository;
     private readonly DiffGenerator _diffGenerator;
     private readonly FixValidator _validator;
+    private readonly ILearningLoopService? _learningLoop;
     private readonly ILicenseContext _licenseContext;
     private readonly ILogger<FixSuggestionGenerator> _logger;
 
@@ -87,15 +89,17 @@ public sealed class FixSuggestionGenerator : IFixSuggestionGenerator
     /// <param name="templateRepository">The template repository for prompt templates.</param>
     /// <param name="diffGenerator">The diff generator for creating text diffs.</param>
     /// <param name="validator">The fix validator for validating suggestions.</param>
+    /// <param name="learningLoop">The learning loop service for feedback-enhanced prompts (nullable — added in v0.7.5d).</param>
     /// <param name="licenseContext">The license context for tier validation.</param>
     /// <param name="logger">The logger instance.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any dependency is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when any required (non-nullable) dependency is null.</exception>
     public FixSuggestionGenerator(
         IChatCompletionService chatService,
         IPromptRenderer promptRenderer,
         IPromptTemplateRepository templateRepository,
         DiffGenerator diffGenerator,
         FixValidator validator,
+        ILearningLoopService? learningLoop,
         ILicenseContext licenseContext,
         ILogger<FixSuggestionGenerator> logger)
     {
@@ -104,10 +108,13 @@ public sealed class FixSuggestionGenerator : IFixSuggestionGenerator
         _templateRepository = templateRepository ?? throw new ArgumentNullException(nameof(templateRepository));
         _diffGenerator = diffGenerator ?? throw new ArgumentNullException(nameof(diffGenerator));
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+        _learningLoop = learningLoop;
         _licenseContext = licenseContext ?? throw new ArgumentNullException(nameof(licenseContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        _logger.LogDebug("FixSuggestionGenerator initialized");
+        _logger.LogDebug(
+            "FixSuggestionGenerator initialized (LearningLoop: {Available})",
+            learningLoop is not null ? "available" : "not available");
     }
 
     #endregion
@@ -442,12 +449,24 @@ public sealed class FixSuggestionGenerator : IFixSuggestionGenerator
     #region Private Methods
 
     /// <summary>
-    /// Builds the prompt context dictionary from deviation and options.
+    /// Builds the prompt context dictionary from deviation, options, and optional learning context.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> Constructs the template variable dictionary that the prompt renderer uses
+    /// to fill in the fix generation template. When a <see cref="ILearningLoopService"/> is
+    /// available, also fetches the <see cref="LearningContext"/> for the deviation's rule and
+    /// injects the <see cref="LearningContext.PromptEnhancement"/> into the context dictionary.
+    /// </para>
+    /// <para>
+    /// <b>Updated in:</b> v0.7.5d — changed from <c>static</c> to instance method and added
+    /// learning loop integration for feedback-enhanced prompts.
+    /// </para>
+    /// </remarks>
     /// <param name="deviation">The style deviation.</param>
     /// <param name="options">The generation options.</param>
     /// <returns>A dictionary of prompt context variables.</returns>
-    private static Dictionary<string, object> BuildPromptContext(
+    private Dictionary<string, object> BuildPromptContext(
         StyleDeviation deviation,
         FixGenerationOptions options)
     {
@@ -478,6 +497,49 @@ public sealed class FixSuggestionGenerator : IFixSuggestionGenerator
         if (options.Tone != TonePreference.Neutral)
         {
             context["tone"] = options.Tone.ToString().ToLowerInvariant();
+        }
+
+        // LOGIC: v0.7.5d — Inject learning context from feedback history.
+        // When the learning loop service is available, fetch the learning context for
+        // this rule and add the prompt enhancement to the template context. This allows
+        // the LLM to incorporate user preference patterns from past accept/reject decisions.
+        // Wrapped in try/catch for resilience — learning loop failures should never
+        // prevent fix generation.
+        if (_learningLoop is not null)
+        {
+            try
+            {
+                // LOGIC: Use synchronous blocking here because BuildPromptContext is called
+                // within an already-async pipeline. The learning context is cached and fast.
+                var learningContext = _learningLoop
+                    .GetLearningContextAsync(deviation.RuleId, CancellationToken.None)
+                    .GetAwaiter()
+                    .GetResult();
+
+                if (!string.IsNullOrEmpty(learningContext.PromptEnhancement))
+                {
+                    context["learning_enhancement"] = learningContext.PromptEnhancement;
+                    _logger.LogDebug(
+                        "Added learning enhancement for rule {RuleId} ({AcceptedPatterns} accepted, {RejectedPatterns} rejected patterns)",
+                        deviation.RuleId,
+                        learningContext.AcceptedPatterns.Count,
+                        learningContext.RejectedPatterns.Count);
+                }
+                else
+                {
+                    _logger.LogTrace(
+                        "No learning enhancement available for rule {RuleId} (insufficient feedback data)",
+                        deviation.RuleId);
+                }
+            }
+            catch (Exception ex)
+            {
+                // LOGIC: Learning loop failures are non-fatal — log and continue without enhancement
+                _logger.LogWarning(
+                    ex,
+                    "Failed to retrieve learning context for rule {RuleId}; proceeding without learning enhancement",
+                    deviation.RuleId);
+            }
         }
 
         return context;

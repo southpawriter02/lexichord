@@ -99,6 +99,7 @@ public class FixSuggestionGeneratorTests
             _mockTemplateRepository.Object,
             diffGenerator,
             validator,
+            null,
             _mockLicenseContext.Object,
             _generatorLogger);
     }
@@ -231,6 +232,7 @@ public class FixSuggestionGeneratorTests
             _mockTemplateRepository.Object,
             diffGenerator,
             validator,
+            null,
             _mockLicenseContext.Object,
             _generatorLogger);
 
@@ -253,6 +255,7 @@ public class FixSuggestionGeneratorTests
             _mockTemplateRepository.Object,
             diffGenerator,
             validator,
+            null,
             _mockLicenseContext.Object,
             _generatorLogger);
 
@@ -275,6 +278,7 @@ public class FixSuggestionGeneratorTests
             null!,
             diffGenerator,
             validator,
+            null,
             _mockLicenseContext.Object,
             _generatorLogger);
 
@@ -296,6 +300,7 @@ public class FixSuggestionGeneratorTests
             _mockTemplateRepository.Object,
             null!,
             validator,
+            null,
             _mockLicenseContext.Object,
             _generatorLogger);
 
@@ -317,6 +322,7 @@ public class FixSuggestionGeneratorTests
             _mockTemplateRepository.Object,
             diffGenerator,
             null!,
+            null,
             _mockLicenseContext.Object,
             _generatorLogger);
 

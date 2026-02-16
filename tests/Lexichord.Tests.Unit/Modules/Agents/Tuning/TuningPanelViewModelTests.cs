@@ -103,6 +103,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockGenerator.Object,
             _mockEditorService.Object,
             withUndoService ? _mockUndoService.Object : null,
+            null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
             _logger);
@@ -295,6 +296,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockGenerator.Object,
             _mockEditorService.Object,
             null,
+            null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
             _logger);
@@ -312,6 +314,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockScanner.Object,
             null!,
             _mockEditorService.Object,
+            null,
             null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
@@ -331,6 +334,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockGenerator.Object,
             null!,
             null,
+            null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
             _logger);
@@ -348,6 +352,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockScanner.Object,
             _mockGenerator.Object,
             _mockEditorService.Object,
+            null,
             null,
             null!,
             _mockMediator.Object,
@@ -367,6 +372,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockGenerator.Object,
             _mockEditorService.Object,
             null,
+            null,
             _mockLicenseContext.Object,
             null!,
             _logger);
@@ -384,6 +390,7 @@ public class TuningPanelViewModelTests : IDisposable
             _mockScanner.Object,
             _mockGenerator.Object,
             _mockEditorService.Object,
+            null,
             null,
             _mockLicenseContext.Object,
             _mockMediator.Object,

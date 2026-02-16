@@ -348,6 +348,17 @@ public class AgentsModule : IModule
         //   - SuggestionCardViewModel: Not DI-registered (created by TuningPanelViewModel)
         //   - TuningUndoableOperation: Not DI-registered (created per-accept)
         services.AddTuningReviewUI();
+
+        // LOGIC: Register the Learning Loop services:
+        //   v0.7.5d — Learning Loop
+        //   - IFeedbackStore → SqliteFeedbackStore: Singleton for SQLite persistence
+        //   - PatternAnalyzer: Singleton for pattern extraction and prompt enhancement
+        //   - ILearningLoopService → LearningLoopService: Singleton
+        //     Also registered as INotificationHandler<SuggestionAcceptedEvent> and
+        //     INotificationHandler<SuggestionRejectedEvent> via factory forwarding
+        //   - Captures user accept/reject/modify decisions for continuous improvement
+        //   - Generates learning context to enhance fix generation prompts
+        services.AddLearningLoop();
     }
 
     /// <inheritdoc />
@@ -627,6 +638,28 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Tuning Panel ViewModel is not registered. Accept/Reject UI will not be available.");
+        }
+
+        // LOGIC: Verify Learning Loop is available and initialize storage (v0.7.5d).
+        var learningLoopService = provider.GetService<ILearningLoopService>();
+        if (learningLoopService is not null)
+        {
+            logger.LogDebug(
+                "Learning Loop Service available: {ServiceType}",
+                learningLoopService.GetType().Name);
+
+            // LOGIC: Initialize the feedback store's database schema.
+            // This creates tables if they don't exist.
+            var feedbackStore = provider.GetService<Tuning.Storage.IFeedbackStore>();
+            if (feedbackStore is not null)
+            {
+                await feedbackStore.InitializeAsync();
+                logger.LogDebug("Learning Loop feedback store initialized");
+            }
+        }
+        else
+        {
+            logger.LogWarning("Learning Loop Service is not registered. Feedback-driven improvement will not be available.");
         }
     }
 }

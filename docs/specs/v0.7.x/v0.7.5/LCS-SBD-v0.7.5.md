@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-075                              |
 | **Version**      | v0.7.5                                   |
 | **Codename**     | The Tuning Agent (Proactive Style Harmony) |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
+| **Status**       | Complete                                 |
+| **Last Updated** | 2026-02-15                               |
 | **Owner**        | Lead Architect                           |
 | **Depends On**   | v0.7.1 (Agent Registry), v0.7.2 (Context Assembler), v0.7.3 (Editor Agent), v0.2.x (Linting), v0.6.x (LLM Gateway) |
 
@@ -1195,7 +1195,7 @@ public record LearningPrivacyOptions
 | Package          | Version | Purpose                    | New/Existing |
 | :--------------- | :------ | :------------------------- | :----------- |
 | `DiffPlex`       | 1.7.x   | Text diff generation       | **New**      |
-| `SQLite-net`     | 1.8.x   | Learning data storage      | Existing     |
+| `Microsoft.Data.Sqlite` | 9.0.0 | Learning data storage (adapted from spec's SQLite-net) | **New** |
 | `MediatR`        | 12.x    | Event publishing           | Existing     |
 | `CommunityToolkit.Mvvm` | 8.x | ViewModel generation  | Existing     |
 

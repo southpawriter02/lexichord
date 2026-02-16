@@ -57,7 +57,8 @@ namespace Lexichord.Modules.Agents.Tuning;
 ///     <c>BeginUndoGroup</c>/<c>DeleteText</c>/<c>InsertText</c>/<c>EndUndoGroup</c> (sync methods).
 ///     The spec's async variants do not exist.</description></item>
 ///   <item><description><c>IUndoRedoService</c> is nullable — may not be registered yet.</description></item>
-///   <item><description><c>ILearningLoopService</c> does not exist (v0.7.5d) — omitted entirely.</description></item>
+///   <item><description><c>ILearningLoopService</c> is nullable — added in v0.7.5d. Events are handled
+///     via MediatR, not direct ViewModel calls.</description></item>
 /// </list>
 /// </para>
 /// <para>
@@ -66,6 +67,7 @@ namespace Lexichord.Modules.Agents.Tuning;
 /// </para>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5c as part of the Accept/Reject UI feature.
+/// <b>Updated in:</b> v0.7.5d — added <c>ILearningLoopService</c> dependency for learning loop integration.
 /// </para>
 /// </remarks>
 /// <seealso cref="SuggestionCardViewModel"/>
@@ -79,6 +81,7 @@ public sealed partial class TuningPanelViewModel : DisposableViewModel
     private readonly IFixSuggestionGenerator _suggestionGenerator;
     private readonly IEditorService _editorService;
     private readonly IUndoRedoService? _undoService;
+    private readonly ILearningLoopService? _learningLoop;
     private readonly ILicenseContext _licenseContext;
     private readonly IMediator _mediator;
     private readonly ILogger<TuningPanelViewModel> _logger;
@@ -93,6 +96,7 @@ public sealed partial class TuningPanelViewModel : DisposableViewModel
     /// <param name="suggestionGenerator">The fix suggestion generator service.</param>
     /// <param name="editorService">The editor service for document access and text manipulation.</param>
     /// <param name="undoService">The undo/redo service for labeled undo history (nullable — may not be registered).</param>
+    /// <param name="learningLoop">The learning loop service for feedback persistence and pattern learning (nullable — added in v0.7.5d).</param>
     /// <param name="licenseContext">The license context for feature gating.</param>
     /// <param name="mediator">The MediatR mediator for event publishing.</param>
     /// <param name="logger">The logger for diagnostic output.</param>
@@ -104,6 +108,7 @@ public sealed partial class TuningPanelViewModel : DisposableViewModel
         IFixSuggestionGenerator suggestionGenerator,
         IEditorService editorService,
         IUndoRedoService? undoService,
+        ILearningLoopService? learningLoop,
         ILicenseContext licenseContext,
         IMediator mediator,
         ILogger<TuningPanelViewModel> logger)
@@ -119,6 +124,7 @@ public sealed partial class TuningPanelViewModel : DisposableViewModel
         _suggestionGenerator = suggestionGenerator;
         _editorService = editorService;
         _undoService = undoService;
+        _learningLoop = learningLoop;
         _licenseContext = licenseContext;
         _mediator = mediator;
         _logger = logger;

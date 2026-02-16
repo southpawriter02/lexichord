@@ -387,4 +387,21 @@ public static class FeatureCodes
     public const string TuningAgent = "Feature.TuningAgent";
 
     #endregion
+
+    #region Learning Loop Features (v0.7.5d)
+
+    /// <summary>
+    /// The Learning Loop feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: Teams
+    /// Controls access to the Learning Loop feedback system that captures user
+    /// accept/reject/modify decisions and uses them to improve future fix suggestions.
+    /// When this feature is not enabled, the Tuning Agent still works but without
+    /// personalized learning from past decisions.
+    /// Introduced in v0.7.5d.
+    /// </remarks>
+    public const string LearningLoop = "Feature.LearningLoop";
+
+    #endregion
 }
