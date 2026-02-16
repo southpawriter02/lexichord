@@ -66,6 +66,7 @@ public class QueryHistoryService : IQueryHistoryService
     private readonly IDbConnection _connection;
     private readonly IMediator _mediator;
     private readonly ILicenseContext _licenseContext;
+    private readonly ISettingsService _settingsService;
     private readonly ILogger<QueryHistoryService> _logger;
 
     private const int MaxHistoryEntries = 1000;
@@ -77,16 +78,19 @@ public class QueryHistoryService : IQueryHistoryService
     /// <param name="connection">Database connection (Npgsql).</param>
     /// <param name="mediator">MediatR for publishing analytics events.</param>
     /// <param name="licenseContext">License validation.</param>
+    /// <param name="settingsService">Settings access.</param>
     /// <param name="logger">Logger instance.</param>
     public QueryHistoryService(
         IDbConnection connection,
         IMediator mediator,
         ILicenseContext licenseContext,
+        ISettingsService settingsService,
         ILogger<QueryHistoryService> logger)
     {
         _connection = connection;
         _mediator = mediator;
         _licenseContext = licenseContext;
+        _settingsService = settingsService;
         _logger = logger;
     }
 
@@ -277,8 +281,11 @@ public class QueryHistoryService : IQueryHistoryService
         CancellationToken cancellationToken)
     {
         // LOGIC: Check if telemetry is enabled in settings
-        // TODO: Add settings key check when telemetry settings are implemented
-        // For now, always publish (handlers will check opt-in)
+        if (!_settingsService.Get(TelemetrySettingsKeys.UsageAnalyticsEnabled, false))
+        {
+            return;
+        }
+
         var analyticsEvent = new QueryAnalyticsEvent(
             QueryHash: queryHash,
             Intent: entry.Intent,
