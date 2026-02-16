@@ -394,23 +394,64 @@ internal sealed class GraphRepository : IGraphRepository
             "Searching entities with query: {Query}, MaxResults={MaxResults}",
             query.Query, query.MaxResults);
 
-        // LOGIC: For v0.6.6e, use in-memory filtering over all entities.
-        // A future optimization will use Cypher full-text indexing for
-        // better performance on large graphs.
-        var allEntities = await GetAllEntitiesAsync(ct);
-
         var terms = query.Query.ToLowerInvariant()
             .Split([' ', ',', '.', '/', '-', '_'], StringSplitOptions.RemoveEmptyEntries)
             .Where(t => t.Length > 2)
             .ToHashSet();
 
-        var results = allEntities
+        if (terms.Count == 0)
+        {
+            return Array.Empty<KnowledgeEntity>();
+        }
+
+        await using var session = await _connectionFactory.CreateSessionAsync(GraphAccessMode.Read, ct);
+
+        // LOGIC: Optimized query using Cypher WHERE clauses.
+        // We fetch potentially matching candidates from the database to avoid
+        // loading the entire graph. In-memory filtering is applied afterwards
+        // to handle edge cases (e.g. JSON property keys matching search terms)
+        // and ensure exact behavior.
+        var cypherBuilder = new System.Text.StringBuilder();
+        cypherBuilder.AppendLine("MATCH (n:Entity)");
+        cypherBuilder.AppendLine("WHERE n.id IS NOT NULL");
+
+        var parameters = new Dictionary<string, object?>();
+
+        // Type filter
+        if (query.EntityTypes != null && query.EntityTypes.Count > 0)
+        {
+            cypherBuilder.AppendLine("AND n.type IN $types");
+            parameters["types"] = query.EntityTypes.ToList();
+        }
+
+        // Term matching (OR logic between terms)
+        cypherBuilder.AppendLine("AND (");
+
+        var termConditions = new List<string>();
+        int i = 0;
+        foreach (var term in terms)
+        {
+            string pName = $"t{i}";
+            parameters[pName] = term;
+            // Note: toLower(n.properties) checks the JSON string.
+            // This may match property keys, which is a false positive.
+            // We filter these out in the memory pass below.
+            termConditions.Add($"(toLower(n.name) CONTAINS ${pName} OR toLower(n.type) CONTAINS ${pName} OR toLower(n.properties) CONTAINS ${pName})");
+            i++;
+        }
+
+        cypherBuilder.AppendLine(string.Join(" OR ", termConditions));
+        cypherBuilder.AppendLine(")");
+
+        cypherBuilder.AppendLine("RETURN n");
+        // Over-fetch to allow for post-filtering of false positives
+        cypherBuilder.AppendLine($"LIMIT {query.MaxResults * 5}");
+
+        var candidates = await session.QueryAsync<KnowledgeEntity>(cypherBuilder.ToString(), parameters, ct);
+
+        var results = candidates
             .Where(e =>
             {
-                // Apply type filter if specified
-                if (query.EntityTypes != null && !query.EntityTypes.Contains(e.Type))
-                    return false;
-
                 // Match against name, type, or property values
                 var nameLower = e.Name.ToLowerInvariant();
                 var typeLower = e.Type.ToLowerInvariant();

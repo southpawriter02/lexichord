@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
@@ -69,6 +68,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Lexichord.Tests.Unit" />
     <InternalsVisibleTo Include="Lexichord.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
 </Project>
