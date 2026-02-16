@@ -29,6 +29,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddTuningReviewUI"/> (v0.7.5c) — Accept/Reject UI ViewModels for suggestion review</description></item>
 ///   <item><description><see cref="AddLearningLoop"/> (v0.7.5d) — Learning Loop feedback persistence and pattern analysis</description></item>
 ///   <item><description><see cref="AddUnifiedValidationService"/> (v0.7.5f) — Unified validation aggregation from multiple sources</description></item>
+///   <item><description><see cref="AddUnifiedIssuesPanel"/> (v0.7.5g) — Unified Issues Panel UI for displaying all validation issues</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
@@ -45,6 +46,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <para>
 /// <b>Updated in:</b> v0.7.5f with Unified Validation Service.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5g with Unified Issues Panel.
+/// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
@@ -58,6 +62,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <seealso cref="LearningStorageOptions"/>
 /// <seealso cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/>
 /// <seealso cref="UnifiedValidationService"/>
+/// <seealso cref="UnifiedIssuesPanelViewModel"/>
+/// <seealso cref="IssuePresentationGroup"/>
+/// <seealso cref="IssuePresentation"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -564,6 +571,89 @@ public static class TuningServiceCollectionExtensions
         // 2. Thread-safe via SemaphoreSlim for concurrent validations
         // 3. Injected services are singletons or thread-safe
         services.AddSingleton<Abstractions.Contracts.Validation.IUnifiedValidationService, UnifiedValidationService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Unified Issues Panel ViewModel to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="UnifiedIssuesPanelViewModel"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime is appropriate because each panel instance manages its own
+    ///     issue state, filter settings, and UI state. Multiple panels should not
+    ///     share state.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Note:</b> <see cref="IssuePresentationGroup"/> and <see cref="IssuePresentation"/>
+    /// are NOT DI-registered. Instances are created manually by <see cref="UnifiedIssuesPanelViewModel"/>
+    /// when refreshing with validation results.
+    /// </para>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/> (v0.7.5f) — Validation results</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> (v0.6.7c) — Navigation and fix application</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Undo.IUndoRedoService"/> (v0.7.3d) — Undo support (nullable)</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — License validation</description></item>
+    ///   <item><description><see cref="MediatR.IMediator"/> (v0.0.7a) — Event publishing</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>License Requirement:</b> Available at Core tier. Issue availability is
+    /// controlled by <see cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/>.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5g as part of the Unified Issues Panel feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    ///     services.AddTuningReviewUI();
+    ///     services.AddLearningLoop();
+    ///     services.AddUnifiedValidationService();
+    ///     services.AddUnifiedIssuesPanel();
+    /// }
+    ///
+    /// // Resolve and use via DI
+    /// var viewModel = serviceProvider.GetRequiredService&lt;UnifiedIssuesPanelViewModel&gt;();
+    /// viewModel.InitializeAsync();
+    ///
+    /// // Refresh with validation results
+    /// await viewModel.RefreshCommand.ExecuteAsync(null);
+    /// </code>
+    /// </example>
+    /// <seealso cref="UnifiedIssuesPanelViewModel"/>
+    /// <seealso cref="IssuePresentationGroup"/>
+    /// <seealso cref="IssuePresentation"/>
+    public static IServiceCollection AddUnifiedIssuesPanel(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register UnifiedIssuesPanelViewModel as Transient.
+        // Transient lifetime is appropriate because:
+        // 1. Each panel instance manages its own validation result and filter state
+        // 2. Multiple panels should have isolated issue collections
+        // 3. Matches the TuningPanelViewModel registration pattern from v0.7.5c
+        services.AddTransient<UnifiedIssuesPanelViewModel>();
 
         return services;
     }

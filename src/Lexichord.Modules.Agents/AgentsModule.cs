@@ -371,6 +371,16 @@ public class AgentsModule : IModule
         //   - License-gated validator availability
         //   - ValidationCompleted event for UI notification
         services.AddUnifiedValidationService();
+
+        // LOGIC: Register the Unified Issues Panel services:
+        //   v0.7.5g — Unified Issues Panel
+        //   - UnifiedIssuesPanelViewModel: Transient for per-instance isolation
+        //     Displays all validation issues from IUnifiedValidationService in a
+        //     single panel with severity grouping, filtering, and bulk fix operations
+        //   - IssuePresentationGroup: Not DI-registered (created by ViewModel)
+        //   - IssuePresentation: Not DI-registered (created by ViewModel)
+        //   - Subscribes to ValidationCompleted event for real-time updates
+        services.AddUnifiedIssuesPanel();
     }
 
     /// <inheritdoc />
@@ -685,6 +695,22 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Unified Validation Service is not registered. Issue aggregation features will not be available.");
+        }
+
+        // LOGIC: Verify Unified Issues Panel is available (v0.7.5g).
+        // UnifiedIssuesPanelViewModel is transient, so we resolve it to verify registration
+        // and immediately dispose it.
+        var unifiedIssuesPanelViewModel = provider.GetService<Tuning.UnifiedIssuesPanelViewModel>();
+        if (unifiedIssuesPanelViewModel is not null)
+        {
+            logger.LogDebug(
+                "Unified Issues Panel ViewModel available: {ViewModelType}",
+                unifiedIssuesPanelViewModel.GetType().Name);
+            unifiedIssuesPanelViewModel.Dispose();
+        }
+        else
+        {
+            logger.LogWarning("Unified Issues Panel ViewModel is not registered. Issues Panel UI will not be available.");
         }
     }
 }

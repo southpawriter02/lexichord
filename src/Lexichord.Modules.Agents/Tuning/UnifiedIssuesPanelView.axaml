@@ -1,0 +1,673 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tuning="clr-namespace:Lexichord.Modules.Agents.Tuning"
+             mc:Ignorable="d"
+             d:DesignWidth="380"
+             d:DesignHeight="600"
+             x:Class="Lexichord.Modules.Agents.Tuning.UnifiedIssuesPanelView"
+             x:DataType="tuning:UnifiedIssuesPanelViewModel">
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         UNIFIED ISSUES PANEL
+
+         Displays validation issues from all sources (Style Linter, Grammar Linter,
+         CKVS Validation Engine) in a single panel, grouped by severity.
+
+         LAYOUT:
+         - Header: Title, counts, and toolbar (Refresh, Fix All, Clear)
+         - Filters: Category and severity dropdowns
+         - Content: TreeView with severity groups containing issue items
+         - Footer: Status message and progress indicator
+
+         LOGIC: Binds to UnifiedIssuesPanelViewModel for all data and commands.
+         Groups are rendered as Expanders with nested issue items.
+
+         v0.7.5g: Unified Issues Panel
+         ═══════════════════════════════════════════════════════════════════════════ -->
+
+    <UserControl.Styles>
+        <!-- ── Severity Colors ─────────────────────────────────────────────── -->
+        <Style Selector="TextBlock.severity-error">
+            <Setter Property="Foreground" Value="#E51400"/>
+        </Style>
+
+        <Style Selector="TextBlock.severity-warning">
+            <Setter Property="Foreground" Value="#FA6800"/>
+        </Style>
+
+        <Style Selector="TextBlock.severity-info">
+            <Setter Property="Foreground" Value="#0078D7"/>
+        </Style>
+
+        <Style Selector="TextBlock.severity-hint">
+            <Setter Property="Foreground" Value="#107C10"/>
+        </Style>
+
+        <!-- ── Count Badge Styles ──────────────────────────────────────────── -->
+        <Style Selector="Border.count-badge">
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Margin" Value="4,0,0,0"/>
+            <Setter Property="MinWidth" Value="24"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.count-badge.error">
+            <Setter Property="Background" Value="#E51400"/>
+        </Style>
+
+        <Style Selector="Border.count-badge.warning">
+            <Setter Property="Background" Value="#FA6800"/>
+        </Style>
+
+        <Style Selector="Border.count-badge.info">
+            <Setter Property="Background" Value="#0078D7"/>
+        </Style>
+
+        <Style Selector="Border.count-badge.hint">
+            <Setter Property="Background" Value="#107C10"/>
+        </Style>
+
+        <!-- ── Severity Bar Style (visual indicator) ──────────────────────── -->
+        <Style Selector="Border.severity-bar">
+            <Setter Property="Width" Value="4"/>
+            <Setter Property="CornerRadius" Value="2"/>
+        </Style>
+
+        <Style Selector="Border.severity-bar.error">
+            <Setter Property="Background" Value="#E51400"/>
+        </Style>
+
+        <Style Selector="Border.severity-bar.warning">
+            <Setter Property="Background" Value="#FA6800"/>
+        </Style>
+
+        <Style Selector="Border.severity-bar.info">
+            <Setter Property="Background" Value="#0078D7"/>
+        </Style>
+
+        <Style Selector="Border.severity-bar.hint">
+            <Setter Property="Background" Value="#107C10"/>
+        </Style>
+
+        <!-- ── Issue Item Styles ───────────────────────────────────────────── -->
+        <Style Selector="Border.issue-item">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="0,1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Border.issue-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+        </Style>
+
+        <Style Selector="Border.issue-item.selected">
+            <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}"/>
+        </Style>
+
+        <Style Selector="Border.issue-item.suppressed">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+
+        <Style Selector="Border.issue-item.fixed">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+
+        <!-- ── Group Expander Styles ───────────────────────────────────────── -->
+        <Style Selector="Expander.severity-group">
+            <Setter Property="Margin" Value="0,4"/>
+        </Style>
+
+        <Style Selector="Expander.severity-group > Border">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+
+        <!-- ── Detail Panel Style ──────────────────────────────────────────── -->
+        <Style Selector="Border.detail-panel">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="8,4,8,8"/>
+        </Style>
+
+        <!-- ── Fix Button Style ────────────────────────────────────────────── -->
+        <Style Selector="Button.fix-button">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- ── Dismiss Button Style ────────────────────────────────────────── -->
+        <Style Selector="Button.dismiss-button">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <UserControl.DataTemplates>
+        <!-- ── Issue Item Template ─────────────────────────────────────────── -->
+        <DataTemplate DataType="tuning:IssuePresentation">
+            <StackPanel>
+                <!-- Issue Summary Row -->
+                <Border Classes="issue-item"
+                        Classes.selected="{Binding IsSelected}"
+                        Classes.suppressed="{Binding IsSuppressed}"
+                        Classes.fixed="{Binding IsFixed}"
+                        DoubleTapped="OnIssueItemDoubleTapped">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+
+                        <!-- Severity bar indicator -->
+                        <Border Grid.Column="0"
+                                Classes="severity-bar"
+                                Classes.error="{Binding Issue.Severity, Converter={x:Static tuning:SeverityConverters.IsError}}"
+                                Classes.warning="{Binding Issue.Severity, Converter={x:Static tuning:SeverityConverters.IsWarning}}"
+                                Classes.info="{Binding Issue.Severity, Converter={x:Static tuning:SeverityConverters.IsInfo}}"
+                                Classes.hint="{Binding Issue.Severity, Converter={x:Static tuning:SeverityConverters.IsHint}}"
+                                Margin="0,0,8,0"/>
+
+                        <!-- Message and location -->
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Message}"
+                                       FontSize="12"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextWrapping="NoWrap"/>
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="0,2,0,0">
+                                <TextBlock Text="{Binding LocationDisplay}"
+                                           FontSize="10"
+                                           FontFamily="Consolas, Menlo, monospace"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+                                <TextBlock Text=" • "
+                                           FontSize="10"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+                                <TextBlock Text="{Binding SourceId}"
+                                           FontSize="10"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Expand/collapse indicator -->
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding IsExpanded, Converter={x:Static tuning:ExpanderConverters.ToChevron}}"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Margin="8,0"/>
+
+                        <!-- Quick fix button (visible if has auto-fix) -->
+                        <Button Grid.Column="3"
+                                Content="Fix"
+                                Classes="fix-button"
+                                IsVisible="{Binding CanAutoApply}"
+                                Command="{Binding $parent[UserControl].((tuning:UnifiedIssuesPanelViewModel)DataContext).FixIssueCommand}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Apply the suggested fix"/>
+                    </Grid>
+                </Border>
+
+                <!-- Expanded Detail Panel -->
+                <Border Classes="detail-panel"
+                        IsVisible="{Binding IsExpanded}">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <!-- Category and source -->
+                        <StackPanel Grid.Row="0"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,4">
+                            <TextBlock Text="Category:"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Width="80"/>
+                            <TextBlock Text="{Binding CategoryLabel}"
+                                       FontSize="11"/>
+                            <TextBlock Text=" via "
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                       Margin="8,0,0,0"/>
+                            <TextBlock Text="{Binding SourceDisplay}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                        </StackPanel>
+
+                        <!-- Original text (if available) -->
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,4"
+                                    IsVisible="{Binding OriginalText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <TextBlock Text="Original:"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Width="80"/>
+                            <TextBlock Text="{Binding OriginalText}"
+                                       FontSize="11"
+                                       FontStyle="Italic"
+                                       Foreground="#E51400"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="250"/>
+                        </StackPanel>
+
+                        <!-- Suggested fix text (if available) -->
+                        <StackPanel Grid.Row="2"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,4"
+                                    IsVisible="{Binding HasFix}">
+                            <TextBlock Text="Suggested:"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Width="80"/>
+                            <TextBlock Text="{Binding SuggestedText}"
+                                       FontSize="11"
+                                       FontStyle="Italic"
+                                       Foreground="#107C10"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="250"/>
+                        </StackPanel>
+
+                        <!-- Fix description -->
+                        <StackPanel Grid.Row="3"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,4"
+                                    IsVisible="{Binding FixDescription, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <TextBlock Text="Fix:"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Width="80"/>
+                            <TextBlock Text="{Binding FixDescription}"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="250"/>
+                        </StackPanel>
+
+                        <!-- Confidence -->
+                        <StackPanel Grid.Row="4"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,8"
+                                    IsVisible="{Binding HasFix}">
+                            <TextBlock Text="Confidence:"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Width="80"/>
+                            <TextBlock Text="{Binding ConfidenceDisplay}"
+                                       FontSize="11"/>
+                            <TextBlock Text=" ("
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                       Margin="4,0,0,0"/>
+                            <TextBlock Text="{Binding FixTypeLabel}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+                            <TextBlock Text=")"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+                        </StackPanel>
+
+                        <!-- Action buttons -->
+                        <StackPanel Grid.Row="5"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Spacing="8">
+                            <Button Content="Dismiss"
+                                    Classes="dismiss-button"
+                                    Command="{Binding $parent[UserControl].((tuning:UnifiedIssuesPanelViewModel)DataContext).DismissIssueCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="Dismiss this issue"/>
+                            <Button Content="Navigate"
+                                    Command="{Binding $parent[UserControl].((tuning:UnifiedIssuesPanelViewModel)DataContext).NavigateToIssueCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="Go to issue location"/>
+                            <Button Content="Apply Fix"
+                                    Classes="fix-button"
+                                    IsVisible="{Binding CanAutoApply}"
+                                    Command="{Binding $parent[UserControl].((tuning:UnifiedIssuesPanelViewModel)DataContext).FixIssueCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="Apply the suggested fix"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- ── Severity Group Template ─────────────────────────────────────── -->
+        <DataTemplate DataType="tuning:IssuePresentationGroup">
+            <Expander Classes="severity-group"
+                      IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+
+                <!-- Group Header -->
+                <Expander.Header>
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                        <!-- Severity icon (emoji for simplicity) -->
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding Severity, Converter={x:Static tuning:SeverityConverters.ToIcon}}"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+
+                        <!-- Group label -->
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Label}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+
+                        <!-- Spacer -->
+                        <TextBlock Grid.Column="2"/>
+
+                        <!-- Count badge -->
+                        <Border Grid.Column="3"
+                                Classes="count-badge"
+                                Classes.error="{Binding Severity, Converter={x:Static tuning:SeverityConverters.IsError}}"
+                                Classes.warning="{Binding Severity, Converter={x:Static tuning:SeverityConverters.IsWarning}}"
+                                Classes.info="{Binding Severity, Converter={x:Static tuning:SeverityConverters.IsInfo}}"
+                                Classes.hint="{Binding Severity, Converter={x:Static tuning:SeverityConverters.IsHint}}">
+                            <TextBlock Text="{Binding Count}"
+                                       FontSize="11"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </Expander.Header>
+
+                <!-- Group Items -->
+                <ItemsControl ItemsSource="{Binding Items}"
+                              Margin="16,4,0,0"/>
+            </Expander>
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             HEADER SECTION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="8">
+            <Grid RowDefinitions="Auto,Auto,Auto">
+
+                <!-- Title and toolbar -->
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8">
+                        <TextBlock Text="Unified Issues"
+                                   FontWeight="SemiBold"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"/>
+
+                        <!-- Loading indicator -->
+                        <ProgressBar IsIndeterminate="True"
+                                     IsVisible="{Binding IsLoading}"
+                                     Width="50"
+                                     Height="3"
+                                     VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Toolbar buttons -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                        <Button Content="↻"
+                                ToolTip.Tip="Refresh validation"
+                                Command="{Binding RefreshCommand}"
+                                Padding="6,2"/>
+                        <Button Content="Clear"
+                                ToolTip.Tip="Clear all issues"
+                                Command="{Binding ClearCommand}"
+                                Padding="6,2"/>
+                        <Button Content="×"
+                                ToolTip.Tip="Close panel"
+                                Command="{Binding CloseCommand}"
+                                Padding="6,2"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Count summary row -->
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            Margin="0,6,0,0">
+
+                    <!-- Error count -->
+                    <Border Classes="count-badge error"
+                            IsVisible="{Binding ErrorCount}">
+                        <TextBlock FontSize="11" Foreground="White">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} error{1}">
+                                    <Binding Path="ErrorCount"/>
+                                    <Binding Path="ErrorCount" Converter="{x:Static tuning:PluralConverter.Instance}"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Border>
+
+                    <!-- Warning count -->
+                    <Border Classes="count-badge warning"
+                            IsVisible="{Binding WarningCount}">
+                        <TextBlock FontSize="11" Foreground="White">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} warning{1}">
+                                    <Binding Path="WarningCount"/>
+                                    <Binding Path="WarningCount" Converter="{x:Static tuning:PluralConverter.Instance}"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Border>
+
+                    <!-- Info count -->
+                    <Border Classes="count-badge info"
+                            IsVisible="{Binding InfoCount}">
+                        <TextBlock FontSize="11" Foreground="White">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} info">
+                                    <Binding Path="InfoCount"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Border>
+
+                    <!-- Hint count -->
+                    <Border Classes="count-badge hint"
+                            IsVisible="{Binding HintCount}">
+                        <TextBlock FontSize="11" Foreground="White">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} hint{1}">
+                                    <Binding Path="HintCount"/>
+                                    <Binding Path="HintCount" Converter="{x:Static tuning:PluralConverter.Instance}"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Border>
+
+                    <!-- No issues message -->
+                    <TextBlock Text="No issues found"
+                               FontSize="11"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               IsVisible="{Binding !HasIssues}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Bulk action buttons -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            Margin="0,8,0,0"
+                            IsVisible="{Binding HasIssues}">
+                    <Button Content="Fix All"
+                            Classes="fix-button"
+                            Command="{Binding FixAllCommand}"
+                            IsEnabled="{Binding AutoFixableCount}"
+                            ToolTip.Tip="Fix all auto-fixable issues"/>
+                    <Button Content="Fix Errors"
+                            Command="{Binding FixErrorsOnlyCommand}"
+                            IsEnabled="{Binding ErrorCount}"
+                            ToolTip.Tip="Fix error-level issues only"/>
+                    <TextBlock Text="{Binding AutoFixableCount, StringFormat='{}{0} auto-fixable'}"
+                               FontSize="11"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             FILTER SECTION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="1"
+                Padding="8"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8">
+
+                <!-- Category filter -->
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <TextBlock Text="Category:"
+                               FontSize="11"
+                               VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding AvailableCategories}"
+                              SelectedItem="{Binding SelectedCategoryFilter}"
+                              Width="100"
+                              FontSize="11"
+                              PlaceholderText="All"/>
+                </StackPanel>
+
+                <!-- Severity filter -->
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <TextBlock Text="Severity:"
+                               FontSize="11"
+                               VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding AvailableSeverities}"
+                              SelectedItem="{Binding SelectedSeverityFilter}"
+                              Width="90"
+                              FontSize="11"
+                              PlaceholderText="All"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             CONTENT SECTION (Issue Groups)
+             ═══════════════════════════════════════════════════════════════════ -->
+        <ScrollViewer Grid.Row="2"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Issue groups list -->
+                <ItemsControl ItemsSource="{Binding IssueGroups}"
+                              Margin="8"/>
+
+                <!-- Empty state (when filters result in no issues) -->
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8"
+                            Margin="0,32"
+                            IsVisible="{Binding !HasIssues}">
+                    <TextBlock Text="✓"
+                               FontSize="48"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="All clear!"
+                               FontSize="14"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="No validation issues found in this document."
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="250"
+                               TextAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Bulk processing progress -->
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8"
+                            Margin="0,32"
+                            IsVisible="{Binding IsBulkProcessing}">
+                    <ProgressBar Value="{Binding ProgressPercent}"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Width="200"
+                                 Height="8"/>
+                    <TextBlock Text="{Binding ProgressPercent, StringFormat='Processing... {0}%'}"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             FOOTER SECTION (Status)
+             ═══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="3"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="8,4">
+            <Grid ColumnDefinitions="*,Auto">
+                <!-- Status message -->
+                <TextBlock Text="{Binding StatusMessage}"
+                           FontSize="11"
+                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"/>
+
+                <!-- Duration and cached indicator -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                    <TextBlock Text="{Binding DurationDisplay}"
+                               FontSize="10"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                               IsVisible="{Binding DurationDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               VerticalAlignment="Center"/>
+                    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                            CornerRadius="4"
+                            Padding="4,2"
+                            IsVisible="{Binding IsCached}">
+                        <TextBlock Text="cached"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             ERROR MESSAGE OVERLAY
+             ═══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2"
+                Background="#33E51400"
+                CornerRadius="4"
+                Padding="12"
+                Margin="8"
+                VerticalAlignment="Top"
+                IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <StackPanel>
+                <TextBlock Text="⚠ Error"
+                           FontWeight="SemiBold"
+                           Foreground="#E51400"
+                           Margin="0,0,0,4"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
