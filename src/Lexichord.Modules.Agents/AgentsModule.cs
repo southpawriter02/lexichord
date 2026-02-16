@@ -359,6 +359,18 @@ public class AgentsModule : IModule
         //   - Captures user accept/reject/modify decisions for continuous improvement
         //   - Generates learning context to enhance fix generation prompts
         services.AddLearningLoop();
+
+        // LOGIC: Register the Unified Validation Service:
+        //   v0.7.5f — Issue Aggregator
+        //   - IUnifiedValidationService → UnifiedValidationService: Singleton
+        //     Aggregates validation results from multiple validators:
+        //       • Style Linter (IStyleDeviationScanner) — Core tier
+        //       • Grammar Linter (IGrammarLinter, nullable) — WriterPro tier (future)
+        //       • CKVS Validation Engine (IValidationEngine) — Teams tier
+        //   - Parallel/sequential execution, result caching, deduplication
+        //   - License-gated validator availability
+        //   - ValidationCompleted event for UI notification
+        services.AddUnifiedValidationService();
     }
 
     /// <inheritdoc />
@@ -660,6 +672,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Learning Loop Service is not registered. Feedback-driven improvement will not be available.");
+        }
+
+        // LOGIC: Verify Unified Validation Service is available (v0.7.5f).
+        var unifiedValidationService = provider.GetService<Abstractions.Contracts.Validation.IUnifiedValidationService>();
+        if (unifiedValidationService is not null)
+        {
+            logger.LogDebug(
+                "Unified Validation Service available: {ServiceType}",
+                unifiedValidationService.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Unified Validation Service is not registered. Issue aggregation features will not be available.");
         }
     }
 }

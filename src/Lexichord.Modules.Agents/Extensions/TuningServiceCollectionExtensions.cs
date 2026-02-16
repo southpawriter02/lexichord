@@ -28,6 +28,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddFixSuggestionGenerator"/> (v0.7.5b) — AI-powered fix suggestions for style deviations</description></item>
 ///   <item><description><see cref="AddTuningReviewUI"/> (v0.7.5c) — Accept/Reject UI ViewModels for suggestion review</description></item>
 ///   <item><description><see cref="AddLearningLoop"/> (v0.7.5d) — Learning Loop feedback persistence and pattern analysis</description></item>
+///   <item><description><see cref="AddUnifiedValidationService"/> (v0.7.5f) — Unified validation aggregation from multiple sources</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
@@ -41,6 +42,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <para>
 /// <b>Updated in:</b> v0.7.5d with Learning Loop feedback system.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5f with Unified Validation Service.
+/// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
@@ -52,6 +56,8 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <seealso cref="ILearningLoopService"/>
 /// <seealso cref="LearningLoopService"/>
 /// <seealso cref="LearningStorageOptions"/>
+/// <seealso cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/>
+/// <seealso cref="UnifiedValidationService"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -470,6 +476,94 @@ public static class TuningServiceCollectionExtensions
             sp.GetRequiredService<LearningLoopService>());
         services.AddSingleton<INotificationHandler<SuggestionRejectedEvent>>(sp =>
             sp.GetRequiredService<LearningLoopService>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Unified Validation Service to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/>
+    ///     → <see cref="UnifiedValidationService"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the service uses shared caching
+    ///     via <see cref="Microsoft.Extensions.Caching.Memory.IMemoryCache"/> and
+    ///     is thread-safe via internal synchronization.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="IStyleDeviationScanner"/> (v0.7.5a) — Style deviation detection</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Knowledge.Validation.IValidationEngine"/> (v0.6.5e) — CKVS validation</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — License tier validation</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Caching.Memory.IMemoryCache"/> — Result caching</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>License Gating:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>Core: Style Linter only</description></item>
+    ///   <item><description>WriterPro: Style + Grammar Linter (when available)</description></item>
+    ///   <item><description>Teams/Enterprise: All validators including CKVS</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5f as part of the Unified Validation feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    ///     services.AddTuningReviewUI();
+    ///     services.AddLearningLoop();
+    ///     services.AddUnifiedValidationService();
+    /// }
+    ///
+    /// // Resolve and use via DI
+    /// var validator = serviceProvider.GetRequiredService&lt;IUnifiedValidationService&gt;();
+    /// var result = await validator.ValidateAsync(
+    ///     documentPath,
+    ///     content,
+    ///     UnifiedValidationOptions.Default,
+    ///     cancellationToken);
+    ///
+    /// if (!result.CanPublish)
+    /// {
+    ///     Console.WriteLine($"Document has {result.ErrorCount} errors");
+    /// }
+    /// </code>
+    /// </example>
+    /// <seealso cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/>
+    /// <seealso cref="UnifiedValidationService"/>
+    /// <seealso cref="Lexichord.Abstractions.Contracts.Validation.UnifiedValidationOptions"/>
+    /// <seealso cref="Lexichord.Abstractions.Contracts.Validation.UnifiedValidationResult"/>
+    public static IServiceCollection AddUnifiedValidationService(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register UnifiedValidationService as Singleton.
+        // Singleton lifetime is appropriate because:
+        // 1. The service uses shared caching via IMemoryCache
+        // 2. Thread-safe via SemaphoreSlim for concurrent validations
+        // 3. Injected services are singletons or thread-safe
+        services.AddSingleton<Abstractions.Contracts.Validation.IUnifiedValidationService, UnifiedValidationService>();
 
         return services;
     }
