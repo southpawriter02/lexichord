@@ -340,6 +340,14 @@ public class AgentsModule : IModule
         //   - Uses tuning-agent-fix.yaml prompt template
         //   - Batch processing with SemaphoreSlim parallelism control
         services.AddFixSuggestionGenerator();
+
+        // LOGIC: Register the Tuning Review UI services:
+        //   v0.7.5c — Accept/Reject UI
+        //   - TuningPanelViewModel: Transient for per-instance isolation
+        //     Orchestrates suggestion review with accept/reject/modify/skip actions
+        //   - SuggestionCardViewModel: Not DI-registered (created by TuningPanelViewModel)
+        //   - TuningUndoableOperation: Not DI-registered (created per-accept)
+        services.AddTuningReviewUI();
     }
 
     /// <inheritdoc />
@@ -603,6 +611,22 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Fix Suggestion Generator is not registered. AI fix suggestion features will not be available.");
+        }
+
+        // LOGIC: Verify Tuning Review UI is available (v0.7.5c).
+        // TuningPanelViewModel is transient, so we resolve it to verify registration
+        // and immediately dispose it.
+        var tuningPanelViewModel = provider.GetService<Tuning.TuningPanelViewModel>();
+        if (tuningPanelViewModel is not null)
+        {
+            logger.LogDebug(
+                "Tuning Panel ViewModel available: {ViewModelType}",
+                tuningPanelViewModel.GetType().Name);
+            tuningPanelViewModel.Dispose();
+        }
+        else
+        {
+            logger.LogWarning("Tuning Panel ViewModel is not registered. Accept/Reject UI will not be available.");
         }
     }
 }

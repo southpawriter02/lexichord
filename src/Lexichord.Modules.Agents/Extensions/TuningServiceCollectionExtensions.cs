@@ -23,6 +23,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <list type="bullet">
 ///   <item><description><see cref="AddStyleDeviationScanner"/> (v0.7.5a) — Style deviation scanning with caching and real-time updates</description></item>
 ///   <item><description><see cref="AddFixSuggestionGenerator"/> (v0.7.5b) — AI-powered fix suggestions for style deviations</description></item>
+///   <item><description><see cref="AddTuningReviewUI"/> (v0.7.5c) — Accept/Reject UI ViewModels for suggestion review</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
@@ -30,12 +31,17 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <para>
 /// <b>Updated in:</b> v0.7.5b with fix suggestion generation support.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5c with Accept/Reject review UI.
+/// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
 /// <seealso cref="ScannerOptions"/>
 /// <seealso cref="IFixSuggestionGenerator"/>
 /// <seealso cref="FixSuggestionGenerator"/>
+/// <seealso cref="TuningPanelViewModel"/>
+/// <seealso cref="SuggestionCardViewModel"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -242,6 +248,83 @@ public static class TuningServiceCollectionExtensions
         // 2. Thread-safe via SemaphoreSlim for batch operations
         // 3. Injected services are singletons or thread-safe
         services.AddSingleton<IFixSuggestionGenerator, FixSuggestionGenerator>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Tuning Review UI ViewModels to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="TuningPanelViewModel"/> (Transient)
+    ///     <para>
+    ///     Transient lifetime is appropriate because each panel instance manages its own
+    ///     scan state, suggestion collection, and UI state. Multiple panels should not
+    ///     share state.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Note:</b> <see cref="SuggestionCardViewModel"/> is NOT DI-registered.
+    /// Instances are created manually by <see cref="TuningPanelViewModel"/> during
+    /// the scan/generation flow.
+    /// </para>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="IStyleDeviationScanner"/> (v0.7.5a) — Deviation detection</description></item>
+    ///   <item><description><see cref="IFixSuggestionGenerator"/> (v0.7.5b) — Fix generation</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> (v0.6.7b) — Document editing</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Undo.IUndoRedoService"/> (v0.7.3d) — Undo support (nullable)</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — License validation</description></item>
+    ///   <item><description><see cref="MediatR.IMediator"/> (v0.0.7a) — Event publishing</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>License Requirement:</b> Requires WriterPro tier or higher.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5c as part of the Accept/Reject UI feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    ///     services.AddTuningReviewUI();
+    /// }
+    ///
+    /// // Resolve and use via DI
+    /// var viewModel = serviceProvider.GetRequiredService&lt;TuningPanelViewModel&gt;();
+    /// viewModel.InitializeAsync();
+    /// await viewModel.ScanDocumentCommand.ExecuteAsync(null);
+    /// </code>
+    /// </example>
+    /// <seealso cref="TuningPanelViewModel"/>
+    /// <seealso cref="SuggestionCardViewModel"/>
+    public static IServiceCollection AddTuningReviewUI(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register TuningPanelViewModel as Transient.
+        // Transient lifetime is appropriate because:
+        // 1. Each panel instance manages its own scan/review state
+        // 2. Multiple panels should have isolated suggestion collections
+        // 3. Matches the SimplificationPreviewViewModel registration pattern
+        services.AddTransient<TuningPanelViewModel>();
 
         return services;
     }

@@ -370,4 +370,21 @@ public static class FeatureCodes
     public const string CustomAudiencePresets = "Feature.CustomAudiencePresets";
 
     #endregion
+
+    #region Tuning Agent Features (v0.7.5)
+
+    /// <summary>
+    /// The Tuning Agent feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Tuning Agent features including proactive style deviation
+    /// scanning, AI-powered fix suggestions, and the Accept/Reject review UI.
+    /// When this feature is not enabled, the Tuning Panel shows an upgrade prompt
+    /// instead of scanning for deviations.
+    /// Introduced in v0.7.5c.
+    /// </remarks>
+    public const string TuningAgent = "Feature.TuningAgent";
+
+    #endregion
 }

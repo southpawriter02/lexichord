@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-15 (v0.7.5b added)                                             |
+| **Last Updated** | 2026-02-15 (v0.7.5c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2041,6 +2041,51 @@
 - v0.2.1a (IStyleEngine) — Re-linting validation
 - v0.0.4c (ILicenseContext) — License validation
 - DiffPlex 1.7.2 — Diff generation
+
+### 1.53 v0.7.5c Accept/Reject UI
+
+**New Enums (v0.7.5c — Abstractions):**
+
+| Enum                       | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SuggestionStatus`         | v0.7.5c    | Abstractions   | Pending/Accepted/Rejected/Modified/Skipped         |
+| `SuggestionFilter`         | v0.7.5c    | Abstractions   | All/Pending/HighConfidence/HighPriority             |
+
+**New MediatR Events (v0.7.5c — Abstractions):**
+
+| Event                      | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SuggestionAcceptedEvent`  | v0.7.5c    | Abstractions   | Analytics for accepted suggestions                 |
+| `SuggestionRejectedEvent`  | v0.7.5c    | Abstractions   | Analytics for rejected suggestions                 |
+
+**New Constants (v0.7.5c — Abstractions):**
+
+| Constant                   | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `FeatureCodes.TuningAgent` | v0.7.5c    | Abstractions   | License feature code for Tuning Agent              |
+
+**New Classes (v0.7.5c — Modules.Agents):**
+
+| Class                        | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `TuningPanelViewModel`       | v0.7.5c    | Modules.Agents | Panel orchestrator with scan/review commands       |
+| `SuggestionCardViewModel`    | v0.7.5c    | Modules.Agents | Per-suggestion UI state with computed properties   |
+| `TuningUndoableOperation`    | v0.7.5c    | Modules.Agents | Atomic undo/redo for applied fix suggestions       |
+
+**DI Registrations (v0.7.5c):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `TuningPanelViewModel`     | Transient  | TuningServiceCollectionExtensions           |
+
+**Dependencies (v0.7.5c):**
+- v0.7.5a (IStyleDeviationScanner) — Deviation detection
+- v0.7.5b (IFixSuggestionGenerator) — Fix generation
+- v0.6.7b (IEditorService) — Document editing (sync APIs)
+- v0.7.3d (IUndoRedoService) — Labeled undo history (nullable)
+- v0.0.4c (ILicenseContext) — License validation
+- v0.0.7a (IMediator) — Event publishing
+- v0.7.3d (DisposableViewModel) — Base class with dispose tracking
 
 ## 2. MediatR Events Registry
 

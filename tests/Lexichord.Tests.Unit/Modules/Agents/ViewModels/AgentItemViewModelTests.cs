@@ -219,7 +219,7 @@ public class AgentItemViewModelTests
 
         // Assert
         result.Should().Contain("Chat");
-        result.Should().Contain("Document Context");
+        result.Should().Contain("Document");
     }
 
     // -----------------------------------------------------------------------

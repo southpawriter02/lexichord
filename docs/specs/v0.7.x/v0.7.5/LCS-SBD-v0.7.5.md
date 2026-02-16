@@ -1910,11 +1910,11 @@ dotnet test --filter "Version~v0.7.5" --logger "trx;LogFileName=v075-results.trx
 | 8  | `TextDiff` and diff generation                                 | [x]    |
 | 9  | Fix validation against linter                                  | [x]    |
 | 10 | `TuningPanelView.axaml`                                        | [ ]    |
-| 11 | `TuningPanelViewModel`                                         | [ ]    |
+| 11 | `TuningPanelViewModel`                                         | [x]    |
 | 12 | `SuggestionCardView.axaml`                                     | [ ]    |
-| 13 | `SuggestionCardViewModel`                                      | [ ]    |
-| 14 | Keyboard navigation support                                    | [ ]    |
-| 15 | Undo integration                                               | [ ]    |
+| 13 | `SuggestionCardViewModel`                                      | [x]    |
+| 14 | Keyboard navigation support                                    | [x]    |
+| 15 | Undo integration                                               | [x]    |
 | 16 | `ILearningLoopService` interface                               | [ ]    |
 | 17 | `LearningLoopService` implementation                           | [ ]    |
 | 18 | `FixFeedback` and `LearningContext` records                    | [ ]    |
