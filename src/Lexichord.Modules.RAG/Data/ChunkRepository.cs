@@ -325,6 +325,27 @@ public sealed class ChunkRepository : IChunkRepository
         var rowList = rows.ToList();
 
         // LOGIC: v0.5.9f - Convert rows to DeduplicatedSearchResult, optionally loading provenance.
+        IDictionary<Guid, IReadOnlyList<ChunkProvenance>>? provenanceMap = null;
+        if (options.IncludeProvenance)
+        {
+            // LOGIC: Batch load provenance to solve N+1 issue.
+            var canonicalIds = rowList
+                .Select(r => r.CanonicalRecordId)
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .Distinct();
+
+            try
+            {
+                provenanceMap = await _canonicalManager.GetProvenanceBatchAsync(canonicalIds, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to load provenance batch");
+                provenanceMap = new Dictionary<Guid, IReadOnlyList<ChunkProvenance>>();
+            }
+        }
+
         var results = new List<DeduplicatedSearchResult>(rowList.Count);
         foreach (var row in rowList)
         {
@@ -333,16 +354,14 @@ public sealed class ChunkRepository : IChunkRepository
                 row.ChunkIndex, row.StartOffset, row.EndOffset, row.Heading, row.HeadingLevel);
 
             IReadOnlyList<ChunkProvenance>? provenance = null;
-            if (options.IncludeProvenance && row.CanonicalRecordId.HasValue)
+            if (options.IncludeProvenance && row.CanonicalRecordId.HasValue && provenanceMap != null)
             {
-                // LOGIC: Load provenance from ICanonicalManager.
-                try
+                if (provenanceMap.TryGetValue(row.CanonicalRecordId.Value, out var p))
                 {
-                    provenance = await _canonicalManager.GetProvenanceAsync(row.CanonicalRecordId.Value, cancellationToken);
+                    provenance = p;
                 }
-                catch (Exception ex)
+                else
                 {
-                    _logger.LogWarning(ex, "Failed to load provenance for canonical {CanonicalId}", row.CanonicalRecordId);
                     provenance = Array.Empty<ChunkProvenance>();
                 }
             }

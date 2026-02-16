@@ -33,7 +33,7 @@ public class VaultStatusServiceTests
 
         // Default: vault is accessible (ListSecretsAsync returns empty)
         _secureVault.ListSecretsAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-            .Returns(AsyncEnumerable.Empty<string>());
+            .Returns(System.Linq.AsyncEnumerable.Empty<string>());
 
         _sut = new VaultStatusService(_secureVault, _logger);
     }

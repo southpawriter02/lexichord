@@ -170,7 +170,7 @@ public class AgentCapabilitiesTests
         // Assert
         names.Should().HaveCount(11); // Updated from 5
         names.Should().Contain("Chat");
-        names.Should().Contain("Document");
+        names.Should().Contain("Document Context");
         names.Should().Contain("RAG");
         names.Should().Contain("Style");
         names.Should().Contain("Streaming");
@@ -213,7 +213,7 @@ public class AgentCapabilitiesTests
         names.Should().HaveCount(2);
         names.Should().Contain("Chat");
         names.Should().Contain("RAG");
-        names.Should().NotContain("Document");
+        names.Should().NotContain("Document Context");
         names.Should().NotContain("Style");
         names.Should().NotContain("Streaming");
     }
