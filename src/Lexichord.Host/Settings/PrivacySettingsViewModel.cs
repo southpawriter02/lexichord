@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lexichord.Abstractions.Constants;
 using Lexichord.Abstractions.Contracts;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -79,12 +80,9 @@ public partial class PrivacySettingsViewModel : ObservableObject
     {
         try
         {
-            // TODO: Update with actual privacy policy URL
-            const string privacyPolicyUrl = "https://lexichord.app/privacy";
-
             Process.Start(new ProcessStartInfo
             {
-                FileName = privacyPolicyUrl,
+                FileName = ApplicationUrls.PrivacyPolicy,
                 UseShellExecute = true
             });
 

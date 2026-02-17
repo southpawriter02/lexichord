@@ -232,15 +232,15 @@ public class DebounceControllerTests : IDisposable
     public async Task ConfigurableDelay_Respected()
     {
         // Arrange - use generous debounce to avoid flakiness under parallel test load
-        var controller = CreateController(debounceMs: 300);
+        var controller = CreateController(debounceMs: 500);
         controller.RequestScan("test content");
 
         // Act - check well before debounce (generous margin for CI load)
         await Task.Delay(50);
         var stateBeforeDebounce = controller.CurrentState;
 
-        // Wait for debounce to complete (300ms debounce + margin)
-        await Task.Delay(400);
+        // Wait for debounce to complete (500ms debounce + margin)
+        await Task.Delay(600);
         var stateAfterDebounce = controller.CurrentState;
 
         // Assert
