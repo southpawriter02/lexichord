@@ -7,8 +7,8 @@
 | **Document ID**  | LCS-SBD-075                              |
 | **Version**      | v0.7.5                                   |
 | **Codename**     | The Tuning Agent (Proactive Style Harmony) |
-| **Status**       | Draft                                    |
-| **Last Updated** | 2026-01-27                               |
+| **Status**       | Complete                                 |
+| **Last Updated** | 2026-02-16                               |
 | **Owner**        | Lead Architect                           |
 | **Depends On**   | v0.7.1 (Agent Registry), v0.7.2 (Context Assembler), v0.7.3 (Editor Agent), v0.2.x (Linting), v0.6.x (LLM Gateway) |
 
@@ -1195,7 +1195,7 @@ public record LearningPrivacyOptions
 | Package          | Version | Purpose                    | New/Existing |
 | :--------------- | :------ | :------------------------- | :----------- |
 | `DiffPlex`       | 1.7.x   | Text diff generation       | **New**      |
-| `SQLite-net`     | 1.8.x   | Learning data storage      | Existing     |
+| `Microsoft.Data.Sqlite` | 9.0.0 | Learning data storage (adapted from spec's SQLite-net) | **New** |
 | `MediatR`        | 12.x    | Event publishing           | Existing     |
 | `CommunityToolkit.Mvvm` | 8.x | ViewModel generation  | Existing     |
 
@@ -1900,21 +1900,21 @@ dotnet test --filter "Version~v0.7.5" --logger "trx;LogFileName=v075-results.trx
 
 | #  | Deliverable                                                    | Status |
 | :- | :------------------------------------------------------------- | :----- |
-| 1  | `IStyleDeviationScanner` interface                             | [ ]    |
-| 2  | `StyleDeviationScanner` implementation                         | [ ]    |
-| 3  | `StyleDeviation` and `DeviationScanResult` records             | [ ]    |
-| 4  | `IFixSuggestionGenerator` interface                            | [ ]    |
-| 5  | `FixSuggestionGenerator` implementation                        | [ ]    |
-| 6  | `FixSuggestion` and related records                            | [ ]    |
-| 7  | Tuning prompt templates (YAML)                                 | [ ]    |
-| 8  | `TextDiff` and diff generation                                 | [ ]    |
-| 9  | Fix validation against linter                                  | [ ]    |
+| 1  | `IStyleDeviationScanner` interface                             | [x]    |
+| 2  | `StyleDeviationScanner` implementation                         | [x]    |
+| 3  | `StyleDeviation` and `DeviationScanResult` records             | [x]    |
+| 4  | `IFixSuggestionGenerator` interface                            | [x]    |
+| 5  | `FixSuggestionGenerator` implementation                        | [x]    |
+| 6  | `FixSuggestion` and related records                            | [x]    |
+| 7  | Tuning prompt templates (YAML)                                 | [x]    |
+| 8  | `TextDiff` and diff generation                                 | [x]    |
+| 9  | Fix validation against linter                                  | [x]    |
 | 10 | `TuningPanelView.axaml`                                        | [ ]    |
-| 11 | `TuningPanelViewModel`                                         | [ ]    |
+| 11 | `TuningPanelViewModel`                                         | [x]    |
 | 12 | `SuggestionCardView.axaml`                                     | [ ]    |
-| 13 | `SuggestionCardViewModel`                                      | [ ]    |
-| 14 | Keyboard navigation support                                    | [ ]    |
-| 15 | Undo integration                                               | [ ]    |
+| 13 | `SuggestionCardViewModel`                                      | [x]    |
+| 14 | Keyboard navigation support                                    | [x]    |
+| 15 | Undo integration                                               | [x]    |
 | 16 | `ILearningLoopService` interface                               | [ ]    |
 | 17 | `LearningLoopService` implementation                           | [ ]    |
 | 18 | `FixFeedback` and `LearningContext` records                    | [ ]    |
@@ -1924,6 +1924,14 @@ dotnet test --filter "Version~v0.7.5" --logger "trx;LogFileName=v075-results.trx
 | 22 | Integration tests for full workflow                            | [ ]    |
 | 23 | DI registration complete                                       | [ ]    |
 | 24 | License gating implemented                                     | [ ]    |
+| 25 | `IUnifiedFixWorkflow` interface (v0.7.5h)                      | [x]    |
+| 26 | `UnifiedFixOrchestrator` implementation (v0.7.5h)              | [x]    |
+| 27 | `FixConflictDetector` conflict detection (v0.7.5h)             | [x]    |
+| 28 | `FixPositionSorter` bottom-to-top sorting (v0.7.5h)           | [x]    |
+| 29 | `FixGrouper` category-ordered grouping (v0.7.5h)              | [x]    |
+| 30 | Fix workflow contract types (v0.7.5h)                          | [x]    |
+| 31 | `UnifiedIssuesPanelViewModel` orchestrator integration (v0.7.5h) | [x]  |
+| 32 | Combined Fix Workflow unit tests — 135 tests (v0.7.5h)        | [x]    |
 
 ---
 

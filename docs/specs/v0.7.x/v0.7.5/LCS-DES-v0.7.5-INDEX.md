@@ -12,8 +12,8 @@
 | **Swimlane** | Ensemble (Agents) |
 | **License Tier** | Writer Pro (Core), Teams (Learning Loop) |
 | **Feature Gate Key** | `FeatureFlags.Agents.TuningAgent` |
-| **Status** | Draft |
-| **Last Updated** | 2026-01-27 |
+| **Status** | Complete |
+| **Last Updated** | 2026-02-15 |
 
 ---
 
@@ -220,7 +220,7 @@ sequenceDiagram
 | Package | Version | Purpose |
 | :--- | :--- | :--- |
 | `DiffPlex` | 1.7.x | Text diff generation (NEW) |
-| `SQLite-net` | 1.8.x | Learning data storage |
+| `Microsoft.Data.Sqlite` | 9.0.0 | Learning data storage (adapted from spec's SQLite-net) |
 | `MediatR` | 12.x | Event publishing |
 | `CommunityToolkit.Mvvm` | 8.x | ViewModel generation |
 | `Microsoft.Extensions.Caching.Memory` | 8.x | Deviation caching |
@@ -450,3 +450,4 @@ See [LCS-SBD-075](./LCS-SBD-075.md) Section 8 for detailed risk analysis.
 | Version | Date | Author | Changes |
 | :--- | :--- | :--- | :--- |
 | 1.0 | 2026-01-27 | Lead Architect | Initial draft |
+| 1.1 | 2026-02-15 | Implementation | All four sub-parts (v0.7.5a-d) complete |

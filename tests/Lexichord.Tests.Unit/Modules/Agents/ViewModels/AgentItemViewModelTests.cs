@@ -219,7 +219,8 @@ public class AgentItemViewModelTests
 
         // Assert
         result.Should().Contain("Chat");
-        result.Should().Contain("Document Context");
+        // LOGIC: DocumentContext capability maps to "Document" display string
+        result.Should().Contain("Document");
     }
 
     // -----------------------------------------------------------------------

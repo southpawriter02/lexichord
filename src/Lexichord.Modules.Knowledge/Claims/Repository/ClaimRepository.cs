@@ -372,27 +372,39 @@ public sealed class ClaimRepository : IClaimRepository
 
         try
         {
+            // Optimization: Fetch all existing claims in one query to avoid N+1 SELECTs
+            var ids = claimList.Select(c => c.Id).ToArray();
+            var existingRows = await connection.QueryAsync<ClaimRow>(
+                new DapperCommandDefinition("SELECT * FROM claims WHERE id = ANY(@Ids)", new { Ids = ids }, transaction, cancellationToken: ct));
+
+            var existingDict = existingRows.ToDictionary(r => r.Id);
+            var insertSql = GetInsertSql();
+            var updateSql = GetUpdateSql();
+
             foreach (var claim in claimList)
             {
                 try
                 {
-                    var existing = await connection.QueryFirstOrDefaultAsync<ClaimRow>(
-                        new DapperCommandDefinition("SELECT * FROM claims WHERE id = @Id", new { claim.Id }, transaction, cancellationToken: ct));
-
-                    if (existing == null)
+                    var claimRow = MapToRow(claim);
+                    if (existingDict.TryGetValue(claim.Id, out var existing))
                     {
-                        await connection.ExecuteAsync(new DapperCommandDefinition(GetInsertSql(), MapToRow(claim), transaction, cancellationToken: ct));
-                        created++;
-                    }
-                    else if (HasChanged(existing, claim))
-                    {
-                        await connection.ExecuteAsync(new DapperCommandDefinition(GetUpdateSql(), MapToRow(claim), transaction, cancellationToken: ct));
-                        updated++;
-                        InvalidateCache(claim.Id);
+                        if (HasChanged(existing, claim))
+                        {
+                            await connection.ExecuteAsync(new DapperCommandDefinition(updateSql, claimRow, transaction, cancellationToken: ct));
+                            updated++;
+                            InvalidateCache(claim.Id);
+                            existingDict[claim.Id] = claimRow; // Update local state for subsequent duplicates
+                        }
+                        else
+                        {
+                            unchanged++;
+                        }
                     }
                     else
                     {
-                        unchanged++;
+                        await connection.ExecuteAsync(new DapperCommandDefinition(insertSql, claimRow, transaction, cancellationToken: ct));
+                        created++;
+                        existingDict[claim.Id] = claimRow; // Add to local state for subsequent duplicates
                     }
                 }
                 catch (Exception ex)

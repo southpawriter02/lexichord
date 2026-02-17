@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-15 (v0.7.4c added)                                             |
+| **Last Updated** | 2026-02-15 (v0.7.5c added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -1933,6 +1933,159 @@
 - v0.1.3a (IEditorService) — Document operations, undo groups
 - v0.0.4c (ILicenseContext, LicenseTier) — License gating
 - DiffPlex 1.7.2 — Text diff visualization
+
+### 1.51 v0.7.5a Style Deviation Scanner
+
+**New Interfaces (v0.7.5a — Abstractions):**
+
+| Interface                  | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IStyleDeviationScanner`   | v0.7.5a    | Abstractions   | Document/range scanning for style deviations       |
+
+**New Records (v0.7.5a — Abstractions):**
+
+| Record                     | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `StyleDeviation`           | v0.7.5a    | Abstractions   | Enriched violation with context and rule details   |
+| `DeviationScanResult`      | v0.7.5a    | Abstractions   | Scan result with grouping helpers and cache info   |
+
+**New Enums (v0.7.5a — Abstractions):**
+
+| Enum                       | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `DeviationPriority`        | v0.7.5a    | Abstractions   | Low/Normal/High/Critical priority mapping          |
+
+**New Classes (v0.7.5a — Abstractions):**
+
+| Class                           | Defined In | Module         | Purpose                                           |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------ |
+| `DeviationsDetectedEventArgs`   | v0.7.5a    | Abstractions   | Event args for deviation detection                |
+
+**New Classes (v0.7.5a — Modules.Agents):**
+
+| Class                      | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `StyleDeviationScanner`    | v0.7.5a    | Modules.Agents | IStyleDeviationScanner with caching and events    |
+| `ScannerOptions`           | v0.7.5a    | Modules.Agents | Context window, cache TTL, filtering options      |
+
+**DI Registrations (v0.7.5a):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `IStyleDeviationScanner`   | Singleton  | TuningServiceCollectionExtensions           |
+
+**Dependencies (v0.7.5a):**
+- v0.2.3a (ILintingOrchestrator) — Violation detection
+- v0.2.3b (LintingCompletedEvent) — Real-time updates
+- v0.2.1d (StyleSheetReloadedEvent) — Rules change notification
+- v0.2.1b (StyleViolation) — Violation data
+- v0.2.1a (StyleRule) — Rule details
+- v0.1.3a (IEditorService) — Document content access
+- v0.0.4c (ILicenseContext) — License validation
+- Microsoft.Extensions.Caching.Memory — Result caching
+
+### 1.52 v0.7.5b Automatic Fix Suggestions
+
+**New Interfaces (v0.7.5b — Abstractions):**
+
+| Interface                  | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IFixSuggestionGenerator`  | v0.7.5b    | Abstractions   | AI-powered fix suggestion generation               |
+
+**New Records (v0.7.5b — Abstractions):**
+
+| Record                     | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `FixSuggestion`            | v0.7.5b    | Abstractions   | Core suggestion with confidence, diff, alternatives|
+| `AlternativeSuggestion`    | v0.7.5b    | Abstractions   | Alternative fix option                             |
+| `FixValidationResult`      | v0.7.5b    | Abstractions   | Validation status with semantic similarity         |
+| `FixGenerationOptions`     | v0.7.5b    | Abstractions   | Generation configuration options                   |
+| `TextDiff`                 | v0.7.5b    | Abstractions   | Structured diff with operations and formats        |
+| `DiffOperation`            | v0.7.5b    | Abstractions   | Single diff operation (add/delete/unchanged)       |
+
+**New Enums (v0.7.5b — Abstractions):**
+
+| Enum                       | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `TonePreference`           | v0.7.5b    | Abstractions   | Neutral/Formal/Casual/Technical/Simplified         |
+| `ValidationStatus`         | v0.7.5b    | Abstractions   | Valid/ValidWithWarnings/Invalid/ValidationFailed   |
+| `DiffType`                 | v0.7.5b    | Abstractions   | Unchanged/Addition/Deletion                        |
+
+**New Classes (v0.7.5b — Modules.Agents):**
+
+| Class                      | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `FixSuggestionGenerator`   | v0.7.5b    | Modules.Agents | IFixSuggestionGenerator with LLM integration       |
+| `DiffGenerator`            | v0.7.5b    | Modules.Agents | DiffPlex wrapper for diff generation               |
+| `FixValidator`             | v0.7.5b    | Modules.Agents | Re-linting and semantic similarity validation      |
+
+**New Prompt Template (v0.7.5b — Modules.Agents):**
+
+| Template                   | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `tuning-agent-fix.yaml`    | v0.7.5b    | Modules.Agents | Mustache template for fix generation prompts       |
+
+**DI Registrations (v0.7.5b):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `IFixSuggestionGenerator`  | Singleton  | TuningServiceCollectionExtensions           |
+| `DiffGenerator`            | Singleton  | TuningServiceCollectionExtensions           |
+| `FixValidator`             | Singleton  | TuningServiceCollectionExtensions           |
+
+**Dependencies (v0.7.5b):**
+- v0.7.5a (StyleDeviation) — Input deviation data
+- v0.5.1a (IChatCompletionService) — LLM calls
+- v0.5.2a (IPromptRenderer) — Template rendering
+- v0.5.2b (IPromptTemplateRepository) — Template retrieval
+- v0.2.1a (IStyleEngine) — Re-linting validation
+- v0.0.4c (ILicenseContext) — License validation
+- DiffPlex 1.7.2 — Diff generation
+
+### 1.53 v0.7.5c Accept/Reject UI
+
+**New Enums (v0.7.5c — Abstractions):**
+
+| Enum                       | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SuggestionStatus`         | v0.7.5c    | Abstractions   | Pending/Accepted/Rejected/Modified/Skipped         |
+| `SuggestionFilter`         | v0.7.5c    | Abstractions   | All/Pending/HighConfidence/HighPriority             |
+
+**New MediatR Events (v0.7.5c — Abstractions):**
+
+| Event                      | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SuggestionAcceptedEvent`  | v0.7.5c    | Abstractions   | Analytics for accepted suggestions                 |
+| `SuggestionRejectedEvent`  | v0.7.5c    | Abstractions   | Analytics for rejected suggestions                 |
+
+**New Constants (v0.7.5c — Abstractions):**
+
+| Constant                   | Defined In | Module         | Purpose                                            |
+| :------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `FeatureCodes.TuningAgent` | v0.7.5c    | Abstractions   | License feature code for Tuning Agent              |
+
+**New Classes (v0.7.5c — Modules.Agents):**
+
+| Class                        | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `TuningPanelViewModel`       | v0.7.5c    | Modules.Agents | Panel orchestrator with scan/review commands       |
+| `SuggestionCardViewModel`    | v0.7.5c    | Modules.Agents | Per-suggestion UI state with computed properties   |
+| `TuningUndoableOperation`    | v0.7.5c    | Modules.Agents | Atomic undo/redo for applied fix suggestions       |
+
+**DI Registrations (v0.7.5c):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `TuningPanelViewModel`     | Transient  | TuningServiceCollectionExtensions           |
+
+**Dependencies (v0.7.5c):**
+- v0.7.5a (IStyleDeviationScanner) — Deviation detection
+- v0.7.5b (IFixSuggestionGenerator) — Fix generation
+- v0.6.7b (IEditorService) — Document editing (sync APIs)
+- v0.7.3d (IUndoRedoService) — Labeled undo history (nullable)
+- v0.0.4c (ILicenseContext) — License validation
+- v0.0.7a (IMediator) — Event publishing
+- v0.7.3d (DisposableViewModel) — Base class with dispose tracking
 
 ## 2. MediatR Events Registry
 
