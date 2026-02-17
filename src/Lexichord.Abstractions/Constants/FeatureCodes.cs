@@ -404,4 +404,22 @@ public static class FeatureCodes
     public const string LearningLoop = "Feature.LearningLoop";
 
     #endregion
+
+    #region Summarizer Agent Features (v0.7.6)
+
+    /// <summary>
+    /// The Summarizer Agent feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Summarizer Agent features including multi-mode document
+    /// summarization (Abstract, TLDR, BulletPoints, KeyTakeaways, Executive, Custom),
+    /// natural language command parsing, and intelligent document chunking for long texts.
+    /// When this feature is not enabled, summarizer menu items show a lock icon and
+    /// clicking them triggers an upgrade prompt instead of executing the summarization.
+    /// Introduced in v0.7.6a.
+    /// </remarks>
+    public const string SummarizerAgent = "Feature.SummarizerAgent";
+
+    #endregion
 }

@@ -1,0 +1,158 @@
+# -----------------------------------------------------------------------
+# Lexichord Prompt Template: Specialist Summarizer Agent
+# Version: v0.7.6a
+# Category: summarization
+# -----------------------------------------------------------------------
+
+template_id: "specialist-summarizer"
+name: "Summarizer Specialist"
+description: "Multi-mode document summarization with configurable output formats"
+category: "summarization"
+tags:
+  - summarization
+  - analysis
+  - condensing
+  - summarizer-agent
+
+system_prompt: |
+  You are a professional content summarizer focused on distilling documents into clear, actionable summaries.
+  Your role is to extract the essential information while preserving accuracy and the author's intent.
+
+  ## Core Guidelines
+
+  1. **Accuracy First**: Never invent or assume information not present in the source document.
+  2. **Preserve Key Terms**: Retain proper nouns, technical terms, and domain-specific vocabulary exactly as written.
+  3. **Capture Essence**: Identify the main thesis, supporting arguments, and conclusions.
+  4. **Maintain Objectivity**: Summarize what the author says, not your interpretation.
+
+  {{#target_audience}}
+  ## Target Audience
+  Adapt your summary for: {{target_audience}}
+  - Use vocabulary appropriate for this audience
+  - Emphasize aspects most relevant to their needs
+  - Adjust technical depth accordingly
+  {{/target_audience}}
+
+  {{#preserve_technical_terms}}
+  ## Technical Terms
+  Preserve all technical terms and domain-specific vocabulary exactly as they appear in the source.
+  Do not simplify or explain technical terms unless explicitly asked.
+  {{/preserve_technical_terms}}
+  {{^preserve_technical_terms}}
+  ## Technical Terms
+  You may explain or simplify technical terms for broader accessibility.
+  Consider adding brief parenthetical definitions for specialized vocabulary.
+  {{/preserve_technical_terms}}
+
+  ## Mode-Specific Instructions
+  {{mode_instructions}}
+
+user_prompt: |
+  {{#mode_is_abstract}}
+  Generate an academic-style abstract for the following document.
+  Target length: approximately {{target_word_count}} words.
+  {{/mode_is_abstract}}
+
+  {{#mode_is_tldr}}
+  Generate a TL;DR summary for the following document.
+  Keep it concise: approximately {{target_word_count}} words in a single paragraph.
+  {{/mode_is_tldr}}
+
+  {{#mode_is_bullets}}
+  Summarize the following document in exactly {{max_items}} bullet points.
+  Start each bullet with an action verb or key concept.
+  {{/mode_is_bullets}}
+
+  {{#mode_is_takeaways}}
+  Extract exactly {{max_items}} key takeaways from the following document.
+  Format each as "**Takeaway N:** [insight]" followed by a brief explanation.
+  {{/mode_is_takeaways}}
+
+  {{#mode_is_executive}}
+  Generate an executive summary of the following document for stakeholders.
+  Target length: approximately {{target_word_count}} words.
+  Focus on strategic implications and recommended actions.
+  {{/mode_is_executive}}
+
+  {{#mode_is_custom}}
+  {{custom_prompt}}
+  {{/mode_is_custom}}
+
+  ---
+
+  **Document Content:**
+
+  {{#document_title}}
+  # {{document_title}}
+
+  {{/document_title}}
+  {{document_content}}
+
+  ---
+
+  {{#is_chunked}}
+  Note: This is part {{chunk_number}} of {{total_chunks}} chunks from a longer document.
+  {{#chunk_context}}
+  Current section: {{chunk_context}}
+  {{/chunk_context}}
+  {{/is_chunked}}
+
+required_variables:
+  - document_content
+  - mode_instructions
+
+optional_variables:
+  - target_audience
+  - preserve_technical_terms
+  - mode_is_abstract
+  - mode_is_tldr
+  - mode_is_bullets
+  - mode_is_takeaways
+  - mode_is_executive
+  - mode_is_custom
+  - target_word_count
+  - max_items
+  - custom_prompt
+  - document_title
+  - is_chunked
+  - chunk_number
+  - total_chunks
+  - chunk_context
+
+variable_metadata:
+  document_content:
+    description: "The document text content to summarize"
+  mode_instructions:
+    description: "Mode-specific instructions injected into the system prompt"
+  target_audience:
+    description: "Target audience for tone and complexity adjustment"
+  preserve_technical_terms:
+    description: "Boolean: true to preserve technical terms, false to simplify them"
+  mode_is_abstract:
+    description: "Boolean: true if mode is Abstract"
+  mode_is_tldr:
+    description: "Boolean: true if mode is TLDR"
+  mode_is_bullets:
+    description: "Boolean: true if mode is BulletPoints"
+  mode_is_takeaways:
+    description: "Boolean: true if mode is KeyTakeaways"
+  mode_is_executive:
+    description: "Boolean: true if mode is Executive"
+  mode_is_custom:
+    description: "Boolean: true if mode is Custom"
+  target_word_count:
+    description: "Target word count for prose modes (e.g., 200 for Abstract)"
+  max_items:
+    description: "Number of items for list modes (e.g., 5 for BulletPoints)"
+  custom_prompt:
+    description: "User's custom summarization instructions for Custom mode"
+  document_title:
+    description: "Title of the document being summarized, if available"
+  is_chunked:
+    description: "Boolean: true if the document was chunked for processing"
+  chunk_number:
+    description: "Current chunk number (1-based) when processing chunked documents"
+  total_chunks:
+    description: "Total number of chunks when processing chunked documents"
+  chunk_context:
+    description: "Section heading or context for the current chunk"

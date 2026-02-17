@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-15 (v0.7.5c added)                                             |
+| **Last Updated** | 2026-02-17 (v0.7.6a added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2087,6 +2087,57 @@
 - v0.0.7a (IMediator) — Event publishing
 - v0.7.3d (DisposableViewModel) — Base class with dispose tracking
 
+### 1.54 v0.7.6a Summarization Modes
+
+**New Interfaces (v0.7.6a — Abstractions):**
+
+| Interface                    | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `ISummarizerAgent`           | v0.7.6a    | Abstractions   | Summarization contract extending IAgent            |
+
+**New Records (v0.7.6a — Abstractions):**
+
+| Record                       | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SummarizationOptions`       | v0.7.6a    | Abstractions   | Configuration with mode, items, audience, etc.     |
+| `SummarizationResult`        | v0.7.6a    | Abstractions   | Result with summary, metrics, and Failed factory   |
+
+**New Enums (v0.7.6a — Abstractions):**
+
+| Enum                         | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SummarizationMode`          | v0.7.6a    | Abstractions   | Six output formats (Abstract, TLDR, etc.)          |
+
+**New Classes (v0.7.6a — Modules.Agents):**
+
+| Class                        | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `SummarizerAgent`            | v0.7.6a    | Modules.Agents | Core summarizer implementation                     |
+
+**New Events (v0.7.6a — Modules.Agents):**
+
+| Event                              | Defined In | Module         | Purpose                                      |
+| :--------------------------------- | :--------- | :------------- | :------------------------------------------- |
+| `SummarizationStartedEvent`        | v0.7.6a    | Modules.Agents | Published when summarization begins          |
+| `SummarizationCompletedEvent`      | v0.7.6a    | Modules.Agents | Published on successful summarization        |
+| `SummarizationFailedEvent`         | v0.7.6a    | Modules.Agents | Published on summarization failure           |
+
+**DI Registrations (v0.7.6a):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `ISummarizerAgent`         | Singleton  | SummarizerServiceCollectionExtensions       |
+| `IAgent` (forwarding)      | Singleton  | SummarizerServiceCollectionExtensions       |
+
+**Dependencies (v0.7.6a):**
+- v0.7.2c (IContextOrchestrator) — Context assembly
+- v0.6.1a (IChatCompletionService) — LLM invocation
+- v0.6.3b (IPromptRenderer) — Template rendering
+- v0.6.3c (IPromptTemplateRepository) — Template lookup
+- v0.1.4b (IFileService) — Document loading
+- v0.0.4c (ILicenseContext) — License validation
+- v0.0.7a (IMediator) — Event publishing
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -2152,6 +2203,9 @@
 | `SimplificationAcceptedEvent`  | v0.7.4c    | Simplification changes accepted   |
 | `SimplificationRejectedEvent`  | v0.7.4c    | Simplification changes rejected   |
 | `ResimplificationRequestedEvent` | v0.7.4c  | Re-simplification with new preset |
+| `SummarizationStartedEvent`      | v0.7.6a  | Summarization operation started   |
+| `SummarizationCompletedEvent`    | v0.7.6a  | Summarization completed           |
+| `SummarizationFailedEvent`       | v0.7.6a  | Summarization operation failed    |
 
 ---
 

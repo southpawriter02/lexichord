@@ -8,6 +8,7 @@
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Agents.Simplifier;
+using Lexichord.Abstractions.Agents.Summarizer;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Agents;
 using Lexichord.Abstractions.Contracts.Editor;
@@ -410,6 +411,17 @@ public class AgentsModule : IModule
         //   - Dependencies: ILogger only
         //   - Available at all license tiers
         services.AddIssueFilterService();
+
+        // ── v0.7.6: Summarizer Agent ────────────────────────────────────────
+        // LOGIC: Register the Summarizer Agent pipeline services:
+        //   v0.7.6a — Summarization Modes
+        //   - ISummarizerAgent → SummarizerAgent: Singleton for stateless summarization
+        //   - IAgent (forwarded): Enables agent discovery via IAgentRegistry
+        //   - Supports 6 modes: Abstract, TLDR, BulletPoints, KeyTakeaways, Executive, Custom
+        //   - Natural language command parsing for mode inference
+        //   - Intelligent document chunking for long documents (4000 tokens/chunk)
+        //   - Prompt template: specialist-summarizer.yaml with mode-specific instructions
+        services.AddSummarizerAgentPipeline();
     }
 
     /// <inheritdoc />
@@ -767,6 +779,20 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Issue Filter Service is not registered. Issue filtering features will not be available.");
+        }
+
+        // LOGIC: Verify Summarizer Agent is available (v0.7.6a).
+        var summarizerAgent = provider.GetService<ISummarizerAgent>();
+        if (summarizerAgent is not null)
+        {
+            logger.LogDebug(
+                "Summarizer Agent available: {AgentType}, AgentId={AgentId}",
+                summarizerAgent.GetType().Name,
+                summarizerAgent.AgentId);
+        }
+        else
+        {
+            logger.LogWarning("Summarizer Agent is not registered. Document summarization features will not be available.");
         }
     }
 }

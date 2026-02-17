@@ -6,6 +6,24 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.7.6] - 2026-02 (In Progress)
+
+### The Summarizer Agent (Multi-Mode Document Summarization)
+
+This release introduces the Summarizer Agent system, enabling multi-mode document summarization with six output formats, natural language command parsing, intelligent document chunking, and mode-specific prompt templates.
+
+#### What's New
+
+- **Summarization Modes (v0.7.6a)** — Multi-mode summarization engine in `Lexichord.Abstractions.Agents.Summarizer` and `Lexichord.Modules.Agents.Summarizer`. Added `ISummarizerAgent` interface extending `IAgent` with methods for file-based summarization (`SummarizeAsync()`), content-based summarization (`SummarizeContentAsync()`), natural language command parsing (`ParseCommand()`), and mode-specific defaults (`GetDefaultOptions()`). Added `SummarizationMode` enum with six output formats: `Abstract` (formal academic prose, 150-300 words), `TLDR` (single paragraph, 50-100 words), `BulletPoints` (configurable "•" list, default 5 items), `KeyTakeaways` (numbered "**Takeaway N:**" items with explanations), `Executive` (business prose, 100-200 words), `Custom` (user-defined prompt). Added `SummarizationOptions` record with `Mode`, `MaxItems` (1-10, default 5), `TargetWordCount` (10-1000, nullable), `CustomPrompt` (required for Custom mode), `IncludeSectionSummaries`, `TargetAudience`, `PreserveTechnicalTerms` (default true), `MaxResponseTokens` (default 2048); `Validate()` method enforcing range constraints and Custom mode requirements. Added `SummarizationResult` record with `Summary` (required), `Mode`, `Items` (for list modes), `OriginalReadingMinutes` (200 wpm), `OriginalWordCount`, `SummaryWordCount`, `CompressionRatio`, `Usage` (required UsageMetrics), `GeneratedAt`, `Model`, `WasChunked`, `ChunkCount`, `Success`, `ErrorMessage`; static `Failed()` factory for error results. Added `SummarizerAgent` sealed class implementing `IAgent` and `ISummarizerAgent` with `[RequiresLicense(LicenseTier.WriterPro, FeatureCode = FeatureCodes.SummarizerAgent)]` and `[AgentDefinition("summarizer", Priority = 102)]` attributes; constructor dependencies: `IChatCompletionService`, `IPromptRenderer`, `IPromptTemplateRepository`, `IContextOrchestrator`, `IFileService`, `ILicenseContext`, `IMediator`, `ILogger<SummarizerAgent>`; agent properties AgentId="summarizer", Name="The Summarizer", Description="Summarizes documents in multiple formats: abstract, TLDR, bullet points, key takeaways, and executive summary.", Capabilities=Chat|DocumentContext|Summarization; invocation flow: validate options → publish SummarizationStartedEvent → estimate tokens (content.Length / 4) → chunk if needed (4000 tokens/chunk, 100-token overlap, split on headings → paragraphs → sentences) → assemble context via IContextOrchestrator → render mode-specific prompt → invoke LLM via IChatCompletionService → parse response and extract items → calculate metrics (word counts, compression ratio, reading time) → publish SummarizationCompletedEvent → return SummarizationResult; 3-catch error handling (user cancellation → timeout → generic) with SummarizationFailedEvent publishing; regex-based ParseCommand with keyword detection for mode, numeric extraction for MaxItems, audience phrase extraction for TargetAudience, false positive filtering for common pronouns. Added MediatR events: `SummarizationStartedEvent` (Mode, CharacterCount, DocumentPath, Timestamp), `SummarizationCompletedEvent` (Mode, OriginalWordCount, SummaryWordCount, CompressionRatio, WasChunked, Duration, Timestamp), `SummarizationFailedEvent` (Mode, ErrorMessage, DocumentPath, Timestamp); all with static `Create()` factory methods. Added `specialist-summarizer.yaml` Mustache prompt template with mode-specific instructions, audience adaptation, technical term handling, and chunking context. Added `FeatureCodes.SummarizerAgent = "Feature.SummarizerAgent"` constant. Added `AddSummarizerAgentPipeline()` DI extension registering `ISummarizerAgent → SummarizerAgent` as Singleton with `IAgent` forwarding. Updated `AgentsModule` with registration and init verification. License gating: requires WriterPro tier. No new NuGet packages. Includes 44 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.6a.md)
+
+#### Sub-Part Changelogs
+
+| Version                               | Title                        | Status      |
+| ------------------------------------- | ---------------------------- | ----------- |
+| [v0.7.6a](v0.7.x/LCS-CL-v0.7.6a.md) | Summarization Modes          | ✅ Complete |
+
+---
+
 ## [v0.7.5] - 2026-02 (In Progress)
 
 ### The Tuning Agent (Proactive Style Harmony)
