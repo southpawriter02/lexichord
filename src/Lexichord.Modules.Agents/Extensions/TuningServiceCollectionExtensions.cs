@@ -33,6 +33,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddUnifiedValidationService"/> (v0.7.5f) — Unified validation aggregation from multiple sources</description></item>
 ///   <item><description><see cref="AddUnifiedIssuesPanel"/> (v0.7.5g) — Unified Issues Panel UI for displaying all validation issues</description></item>
 ///   <item><description><see cref="AddUnifiedFixWorkflow"/> (v0.7.5h) — Combined Fix Workflow for orchestrating fix application across validators</description></item>
+///   <item><description><see cref="AddIssueFilterService"/> (v0.7.5i) — Issue filtering, sorting, searching, and preset management</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
@@ -55,6 +56,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <para>
 /// <b>Updated in:</b> v0.7.5h with Combined Fix Workflow.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5i with Issue Filters.
+/// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
@@ -74,6 +78,10 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <seealso cref="IUnifiedFixWorkflow"/>
 /// <seealso cref="UnifiedFixOrchestrator"/>
 /// <seealso cref="FixConflictDetector"/>
+/// <seealso cref="IIssueFilterService"/>
+/// <seealso cref="IssueFilterService"/>
+/// <seealso cref="IssueFilterOptions"/>
+/// <seealso cref="SortCriteria"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -796,6 +804,93 @@ public static class TuningServiceCollectionExtensions
         // 3. Injected services (IEditorService, IUnifiedValidationService, etc.) are singletons
         // 4. Implements IDisposable for SemaphoreSlim cleanup
         services.AddSingleton<IUnifiedFixWorkflow, UnifiedFixOrchestrator>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Issue Filter Service to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="IIssueFilterService"/> → <see cref="IssueFilterService"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the service is stateless aside from
+    ///     the in-memory preset dictionary. All filtering operations are performed on
+    ///     immutable input lists with no shared mutable state.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Default Presets:</b> Six built-in filter presets are initialized at construction:
+    /// "Errors Only", "Warnings and Errors", "Auto-Fixable Only", "Style Issues",
+    /// "Grammar Issues", "Knowledge Issues".
+    /// </para>
+    /// <para>
+    /// <b>License Requirement:</b> Available at all license tiers. Issue availability
+    /// is controlled by <see cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/>.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5i as part of the Issue Filters feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    ///     services.AddTuningReviewUI();
+    ///     services.AddLearningLoop();
+    ///     services.AddUnifiedValidationService();
+    ///     services.AddUnifiedIssuesPanel();
+    ///     services.AddUnifiedFixWorkflow();
+    ///     services.AddIssueFilterService();
+    /// }
+    ///
+    /// // Resolve and use via DI
+    /// var filterService = serviceProvider.GetRequiredService&lt;IIssueFilterService&gt;();
+    /// var filtered = await filterService.FilterAsync(
+    ///     validationResult.Issues,
+    ///     new IssueFilterOptions
+    ///     {
+    ///         MinimumSeverity = UnifiedSeverity.Warning,
+    ///         SortBy = [SortCriteria.Severity, SortCriteria.Location]
+    ///     });
+    /// </code>
+    /// </example>
+    /// <seealso cref="IIssueFilterService"/>
+    /// <seealso cref="IssueFilterService"/>
+    /// <seealso cref="IssueFilterOptions"/>
+    /// <seealso cref="SortCriteria"/>
+    /// <seealso cref="FilterCriteria"/>
+    /// <seealso cref="SortOptions"/>
+    public static IServiceCollection AddIssueFilterService(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register IssueFilterService as Singleton implementing IIssueFilterService.
+        // Singleton lifetime is appropriate because:
+        // 1. The service is effectively stateless — only holds an in-memory preset dictionary
+        // 2. All filtering operations are performed on immutable input lists
+        // 3. Thread-safe for concurrent filtering calls
+        // 4. Preset mutations (save/delete) are not expected to be concurrent
+        services.AddSingleton<IIssueFilterService, IssueFilterService>();
 
         return services;
     }

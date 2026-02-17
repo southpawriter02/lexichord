@@ -399,6 +399,17 @@ public class AgentsModule : IModule
         //     FixPositionSorter: Static, sorts fixes by position descending
         //     FixGrouper: Static, groups fixes by IssueCategory
         services.AddUnifiedFixWorkflow();
+
+        // LOGIC: Register the Issue Filter Service:
+        //   v0.7.5i — Issue Filters
+        //   - IIssueFilterService → IssueFilterService: Singleton
+        //     Provides in-memory filtering, sorting, searching, and preset management
+        //     for UnifiedIssue collections with AND-composed criteria matching,
+        //     multi-criteria OrderBy/ThenBy sorting, wildcard pattern matching,
+        //     and 6 built-in filter presets
+        //   - Dependencies: ILogger only
+        //   - Available at all license tiers
+        services.AddIssueFilterService();
     }
 
     /// <inheritdoc />
@@ -742,6 +753,20 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Unified Fix Workflow is not registered. Combined fix application will not be available.");
+        }
+
+        // LOGIC: Verify Issue Filter Service is available (v0.7.5i).
+        var issueFilterService = provider.GetService<Abstractions.Contracts.Validation.IIssueFilterService>();
+        if (issueFilterService is not null)
+        {
+            var presetCount = issueFilterService.ListPresets().Count;
+            logger.LogDebug(
+                "Issue Filter Service available: {ServiceType} with {PresetCount} presets",
+                issueFilterService.GetType().Name, presetCount);
+        }
+        else
+        {
+            logger.LogWarning("Issue Filter Service is not registered. Issue filtering features will not be available.");
         }
     }
 }
