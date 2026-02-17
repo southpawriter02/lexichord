@@ -9,6 +9,7 @@ using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Agents.Simplifier;
 using Lexichord.Abstractions.Contracts;
+using Lexichord.Abstractions.Contracts.Agents;
 using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Contracts.LLM;
 using Lexichord.Modules.Agents.Chat.Abstractions;
@@ -85,9 +86,9 @@ public class AgentsModule : IModule
     public ModuleInfo Info => new(
         Id: "agents",
         Name: "Agents",
-        Version: new Version(0, 7, 4),
+        Version: new Version(0, 7, 5),
         Author: "Lexichord Team",
-        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, undo/redo integration, and readability target service");
+        Description: "AI agent orchestration with streaming, prompt templating, conversation management, agent registry, selection context, performance optimization, editor agent context menu, undo/redo integration, readability target service, and style deviation scanning");
 
     /// <inheritdoc />
     /// <remarks>
@@ -319,6 +320,96 @@ public class AgentsModule : IModule
         //   - BatchProgressViewModel: Transient for per-operation progress tracking
         //   - BatchCompletionViewModel: Transient for per-operation completion summary
         services.AddBatchSimplificationService();
+
+        // ── v0.7.5: Tuning Agent ─────────────────────────────────────────────
+        // LOGIC: Register the Style Deviation Scanner services:
+        //   v0.7.5a — Style Deviation Scanner
+        //   - IStyleDeviationScanner → StyleDeviationScanner: Singleton
+        //     Bridges linting infrastructure with AI fix generation
+        //   - Subscribes to LintingCompletedEvent and StyleSheetReloadedEvent
+        //   - Result caching via IMemoryCache with content hash validation
+        //   - Real-time deviation detection via MediatR event handlers
+        services.AddStyleDeviationScanner();
+
+        // LOGIC: Register the Fix Suggestion Generator services:
+        //   v0.7.5b — Automatic Fix Suggestions
+        //   - IFixSuggestionGenerator → FixSuggestionGenerator: Singleton
+        //     Generates AI-powered fix suggestions for style deviations
+        //   - DiffGenerator: Internal helper for text diff generation
+        //   - FixValidator: Internal helper for fix validation via re-linting
+        //   - Uses tuning-agent-fix.yaml prompt template
+        //   - Batch processing with SemaphoreSlim parallelism control
+        services.AddFixSuggestionGenerator();
+
+        // LOGIC: Register the Tuning Review UI services:
+        //   v0.7.5c — Accept/Reject UI
+        //   - TuningPanelViewModel: Transient for per-instance isolation
+        //     Orchestrates suggestion review with accept/reject/modify/skip actions
+        //   - SuggestionCardViewModel: Not DI-registered (created by TuningPanelViewModel)
+        //   - TuningUndoableOperation: Not DI-registered (created per-accept)
+        services.AddTuningReviewUI();
+
+        // LOGIC: Register the Learning Loop services:
+        //   v0.7.5d — Learning Loop
+        //   - IFeedbackStore → SqliteFeedbackStore: Singleton for SQLite persistence
+        //   - PatternAnalyzer: Singleton for pattern extraction and prompt enhancement
+        //   - ILearningLoopService → LearningLoopService: Singleton
+        //     Also registered as INotificationHandler<SuggestionAcceptedEvent> and
+        //     INotificationHandler<SuggestionRejectedEvent> via factory forwarding
+        //   - Captures user accept/reject/modify decisions for continuous improvement
+        //   - Generates learning context to enhance fix generation prompts
+        services.AddLearningLoop();
+
+        // LOGIC: Register the Unified Validation Service:
+        //   v0.7.5f — Issue Aggregator
+        //   - IUnifiedValidationService → UnifiedValidationService: Singleton
+        //     Aggregates validation results from multiple validators:
+        //       • Style Linter (IStyleDeviationScanner) — Core tier
+        //       • Grammar Linter (IGrammarLinter, nullable) — WriterPro tier (future)
+        //       • CKVS Validation Engine (IValidationEngine) — Teams tier
+        //   - Parallel/sequential execution, result caching, deduplication
+        //   - License-gated validator availability
+        //   - ValidationCompleted event for UI notification
+        services.AddUnifiedValidationService();
+
+        // LOGIC: Register the Unified Issues Panel services:
+        //   v0.7.5g — Unified Issues Panel
+        //   - UnifiedIssuesPanelViewModel: Transient for per-instance isolation
+        //     Displays all validation issues from IUnifiedValidationService in a
+        //     single panel with severity grouping, filtering, and bulk fix operations
+        //   - IssuePresentationGroup: Not DI-registered (created by ViewModel)
+        //   - IssuePresentation: Not DI-registered (created by ViewModel)
+        //   - Subscribes to ValidationCompleted event for real-time updates
+        services.AddUnifiedIssuesPanel();
+
+        // LOGIC: Register the Combined Fix Workflow services:
+        //   v0.7.5h — Combined Fix Workflow
+        //   - FixConflictDetector: Singleton for stateless conflict detection
+        //     Detects overlapping positions, contradictory suggestions, dependent
+        //     fixes (Style+Grammar proximity), and invalid fix locations
+        //   - IUnifiedFixWorkflow → UnifiedFixOrchestrator: Singleton
+        //     Orchestrates fix application across multiple validator types with:
+        //       • Position-based sorting (bottom-to-top) to prevent offset drift
+        //       • Category ordering (Knowledge → Structure → Grammar → Style → Custom)
+        //       • Conflict detection and configurable handling strategies
+        //       • Atomic application within editor undo groups
+        //       • Re-validation after fixes to catch cascading issues
+        //       • Transaction recording for undo support (max 50)
+        //   - Internal helpers (not DI-registered):
+        //     FixPositionSorter: Static, sorts fixes by position descending
+        //     FixGrouper: Static, groups fixes by IssueCategory
+        services.AddUnifiedFixWorkflow();
+
+        // LOGIC: Register the Issue Filter Service:
+        //   v0.7.5i — Issue Filters
+        //   - IIssueFilterService → IssueFilterService: Singleton
+        //     Provides in-memory filtering, sorting, searching, and preset management
+        //     for UnifiedIssue collections with AND-composed criteria matching,
+        //     multi-criteria OrderBy/ThenBy sorting, wildcard pattern matching,
+        //     and 6 built-in filter presets
+        //   - Dependencies: ILogger only
+        //   - Available at all license tiers
+        services.AddIssueFilterService();
     }
 
     /// <inheritdoc />
@@ -556,6 +647,126 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Simplifier Agent pipeline is not registered. Text simplification features will not be available.");
+        }
+
+        // LOGIC: Verify Style Deviation Scanner is available (v0.7.5a).
+        var styleDeviationScanner = provider.GetService<IStyleDeviationScanner>();
+        if (styleDeviationScanner is not null)
+        {
+            logger.LogDebug(
+                "Style Deviation Scanner available: {ScannerType}",
+                styleDeviationScanner.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Style Deviation Scanner is not registered. Tuning Agent features will not be available.");
+        }
+
+        // LOGIC: Verify Fix Suggestion Generator is available (v0.7.5b).
+        var fixSuggestionGenerator = provider.GetService<IFixSuggestionGenerator>();
+        if (fixSuggestionGenerator is not null)
+        {
+            logger.LogDebug(
+                "Fix Suggestion Generator available: {GeneratorType}",
+                fixSuggestionGenerator.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Fix Suggestion Generator is not registered. AI fix suggestion features will not be available.");
+        }
+
+        // LOGIC: Verify Tuning Review UI is available (v0.7.5c).
+        // TuningPanelViewModel is transient, so we resolve it to verify registration
+        // and immediately dispose it.
+        var tuningPanelViewModel = provider.GetService<Tuning.TuningPanelViewModel>();
+        if (tuningPanelViewModel is not null)
+        {
+            logger.LogDebug(
+                "Tuning Panel ViewModel available: {ViewModelType}",
+                tuningPanelViewModel.GetType().Name);
+            tuningPanelViewModel.Dispose();
+        }
+        else
+        {
+            logger.LogWarning("Tuning Panel ViewModel is not registered. Accept/Reject UI will not be available.");
+        }
+
+        // LOGIC: Verify Learning Loop is available and initialize storage (v0.7.5d).
+        var learningLoopService = provider.GetService<ILearningLoopService>();
+        if (learningLoopService is not null)
+        {
+            logger.LogDebug(
+                "Learning Loop Service available: {ServiceType}",
+                learningLoopService.GetType().Name);
+
+            // LOGIC: Initialize the feedback store's database schema.
+            // This creates tables if they don't exist.
+            var feedbackStore = provider.GetService<Tuning.Storage.IFeedbackStore>();
+            if (feedbackStore is not null)
+            {
+                await feedbackStore.InitializeAsync();
+                logger.LogDebug("Learning Loop feedback store initialized");
+            }
+        }
+        else
+        {
+            logger.LogWarning("Learning Loop Service is not registered. Feedback-driven improvement will not be available.");
+        }
+
+        // LOGIC: Verify Unified Validation Service is available (v0.7.5f).
+        var unifiedValidationService = provider.GetService<Abstractions.Contracts.Validation.IUnifiedValidationService>();
+        if (unifiedValidationService is not null)
+        {
+            logger.LogDebug(
+                "Unified Validation Service available: {ServiceType}",
+                unifiedValidationService.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Unified Validation Service is not registered. Issue aggregation features will not be available.");
+        }
+
+        // LOGIC: Verify Unified Issues Panel is available (v0.7.5g).
+        // UnifiedIssuesPanelViewModel is transient, so we resolve it to verify registration
+        // and immediately dispose it.
+        var unifiedIssuesPanelViewModel = provider.GetService<Tuning.UnifiedIssuesPanelViewModel>();
+        if (unifiedIssuesPanelViewModel is not null)
+        {
+            logger.LogDebug(
+                "Unified Issues Panel ViewModel available: {ViewModelType}",
+                unifiedIssuesPanelViewModel.GetType().Name);
+            unifiedIssuesPanelViewModel.Dispose();
+        }
+        else
+        {
+            logger.LogWarning("Unified Issues Panel ViewModel is not registered. Issues Panel UI will not be available.");
+        }
+
+        // LOGIC: Verify Combined Fix Workflow is available (v0.7.5h).
+        var unifiedFixWorkflow = provider.GetService<Abstractions.Contracts.Validation.IUnifiedFixWorkflow>();
+        if (unifiedFixWorkflow is not null)
+        {
+            logger.LogDebug(
+                "Unified Fix Workflow available: {WorkflowType}",
+                unifiedFixWorkflow.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Unified Fix Workflow is not registered. Combined fix application will not be available.");
+        }
+
+        // LOGIC: Verify Issue Filter Service is available (v0.7.5i).
+        var issueFilterService = provider.GetService<Abstractions.Contracts.Validation.IIssueFilterService>();
+        if (issueFilterService is not null)
+        {
+            var presetCount = issueFilterService.ListPresets().Count;
+            logger.LogDebug(
+                "Issue Filter Service available: {ServiceType} with {PresetCount} presets",
+                issueFilterService.GetType().Name, presetCount);
+        }
+        else
+        {
+            logger.LogWarning("Issue Filter Service is not registered. Issue filtering features will not be available.");
         }
     }
 }
