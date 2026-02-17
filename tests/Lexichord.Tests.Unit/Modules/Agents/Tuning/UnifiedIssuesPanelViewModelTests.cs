@@ -86,6 +86,7 @@ public class UnifiedIssuesPanelViewModelTests : IDisposable
             _mockValidationService.Object,
             _mockEditorService.Object,
             withUndoService ? _mockUndoService.Object : null,
+            null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
             _logger);
@@ -166,6 +167,7 @@ public class UnifiedIssuesPanelViewModelTests : IDisposable
             null!,
             _mockEditorService.Object,
             null,
+            null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
             _logger);
@@ -182,6 +184,7 @@ public class UnifiedIssuesPanelViewModelTests : IDisposable
         var act = () => new UnifiedIssuesPanelViewModel(
             _mockValidationService.Object,
             null!,
+            null,
             null,
             _mockLicenseContext.Object,
             _mockMediator.Object,
@@ -200,6 +203,7 @@ public class UnifiedIssuesPanelViewModelTests : IDisposable
             _mockValidationService.Object,
             _mockEditorService.Object,
             null,
+            null,
             null!,
             _mockMediator.Object,
             _logger);
@@ -217,6 +221,7 @@ public class UnifiedIssuesPanelViewModelTests : IDisposable
             _mockValidationService.Object,
             _mockEditorService.Object,
             null,
+            null,
             _mockLicenseContext.Object,
             null!,
             _logger);
@@ -233,6 +238,7 @@ public class UnifiedIssuesPanelViewModelTests : IDisposable
         var act = () => new UnifiedIssuesPanelViewModel(
             _mockValidationService.Object,
             _mockEditorService.Object,
+            null,
             null,
             _mockLicenseContext.Object,
             _mockMediator.Object,

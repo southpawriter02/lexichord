@@ -381,6 +381,24 @@ public class AgentsModule : IModule
         //   - IssuePresentation: Not DI-registered (created by ViewModel)
         //   - Subscribes to ValidationCompleted event for real-time updates
         services.AddUnifiedIssuesPanel();
+
+        // LOGIC: Register the Combined Fix Workflow services:
+        //   v0.7.5h — Combined Fix Workflow
+        //   - FixConflictDetector: Singleton for stateless conflict detection
+        //     Detects overlapping positions, contradictory suggestions, dependent
+        //     fixes (Style+Grammar proximity), and invalid fix locations
+        //   - IUnifiedFixWorkflow → UnifiedFixOrchestrator: Singleton
+        //     Orchestrates fix application across multiple validator types with:
+        //       • Position-based sorting (bottom-to-top) to prevent offset drift
+        //       • Category ordering (Knowledge → Structure → Grammar → Style → Custom)
+        //       • Conflict detection and configurable handling strategies
+        //       • Atomic application within editor undo groups
+        //       • Re-validation after fixes to catch cascading issues
+        //       • Transaction recording for undo support (max 50)
+        //   - Internal helpers (not DI-registered):
+        //     FixPositionSorter: Static, sorts fixes by position descending
+        //     FixGrouper: Static, groups fixes by IssueCategory
+        services.AddUnifiedFixWorkflow();
     }
 
     /// <inheritdoc />
@@ -711,6 +729,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Unified Issues Panel ViewModel is not registered. Issues Panel UI will not be available.");
+        }
+
+        // LOGIC: Verify Combined Fix Workflow is available (v0.7.5h).
+        var unifiedFixWorkflow = provider.GetService<Abstractions.Contracts.Validation.IUnifiedFixWorkflow>();
+        if (unifiedFixWorkflow is not null)
+        {
+            logger.LogDebug(
+                "Unified Fix Workflow available: {WorkflowType}",
+                unifiedFixWorkflow.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Unified Fix Workflow is not registered. Combined fix application will not be available.");
         }
     }
 }

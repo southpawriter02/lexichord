@@ -8,7 +8,7 @@
 | **Version**      | v0.7.5                                   |
 | **Codename**     | The Tuning Agent (Proactive Style Harmony) |
 | **Status**       | Complete                                 |
-| **Last Updated** | 2026-02-15                               |
+| **Last Updated** | 2026-02-16                               |
 | **Owner**        | Lead Architect                           |
 | **Depends On**   | v0.7.1 (Agent Registry), v0.7.2 (Context Assembler), v0.7.3 (Editor Agent), v0.2.x (Linting), v0.6.x (LLM Gateway) |
 
@@ -1924,6 +1924,14 @@ dotnet test --filter "Version~v0.7.5" --logger "trx;LogFileName=v075-results.trx
 | 22 | Integration tests for full workflow                            | [ ]    |
 | 23 | DI registration complete                                       | [ ]    |
 | 24 | License gating implemented                                     | [ ]    |
+| 25 | `IUnifiedFixWorkflow` interface (v0.7.5h)                      | [x]    |
+| 26 | `UnifiedFixOrchestrator` implementation (v0.7.5h)              | [x]    |
+| 27 | `FixConflictDetector` conflict detection (v0.7.5h)             | [x]    |
+| 28 | `FixPositionSorter` bottom-to-top sorting (v0.7.5h)           | [x]    |
+| 29 | `FixGrouper` category-ordered grouping (v0.7.5h)              | [x]    |
+| 30 | Fix workflow contract types (v0.7.5h)                          | [x]    |
+| 31 | `UnifiedIssuesPanelViewModel` orchestrator integration (v0.7.5h) | [x]  |
+| 32 | Combined Fix Workflow unit tests — 135 tests (v0.7.5h)        | [x]    |
 
 ---
 

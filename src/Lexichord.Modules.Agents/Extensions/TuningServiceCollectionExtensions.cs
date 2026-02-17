@@ -7,8 +7,10 @@
 
 using Lexichord.Abstractions.Contracts.Agents;
 using Lexichord.Abstractions.Contracts.Agents.Events;
+using Lexichord.Abstractions.Contracts.Validation;
 using Lexichord.Modules.Agents.Tuning;
 using Lexichord.Modules.Agents.Tuning.Configuration;
+using Lexichord.Modules.Agents.Tuning.FixOrchestration;
 using Lexichord.Modules.Agents.Tuning.Storage;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,7 @@ namespace Lexichord.Modules.Agents.Extensions;
 ///   <item><description><see cref="AddLearningLoop"/> (v0.7.5d) — Learning Loop feedback persistence and pattern analysis</description></item>
 ///   <item><description><see cref="AddUnifiedValidationService"/> (v0.7.5f) — Unified validation aggregation from multiple sources</description></item>
 ///   <item><description><see cref="AddUnifiedIssuesPanel"/> (v0.7.5g) — Unified Issues Panel UI for displaying all validation issues</description></item>
+///   <item><description><see cref="AddUnifiedFixWorkflow"/> (v0.7.5h) — Combined Fix Workflow for orchestrating fix application across validators</description></item>
 /// </list>
 /// <para>
 /// <b>Introduced in:</b> v0.7.5a as part of the Tuning Agent feature.
@@ -49,6 +52,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <para>
 /// <b>Updated in:</b> v0.7.5g with Unified Issues Panel.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5h with Combined Fix Workflow.
+/// </para>
 /// </remarks>
 /// <seealso cref="IStyleDeviationScanner"/>
 /// <seealso cref="StyleDeviationScanner"/>
@@ -65,6 +71,9 @@ namespace Lexichord.Modules.Agents.Extensions;
 /// <seealso cref="UnifiedIssuesPanelViewModel"/>
 /// <seealso cref="IssuePresentationGroup"/>
 /// <seealso cref="IssuePresentation"/>
+/// <seealso cref="IUnifiedFixWorkflow"/>
+/// <seealso cref="UnifiedFixOrchestrator"/>
+/// <seealso cref="FixConflictDetector"/>
 public static class TuningServiceCollectionExtensions
 {
     /// <summary>
@@ -654,6 +663,139 @@ public static class TuningServiceCollectionExtensions
         // 2. Multiple panels should have isolated issue collections
         // 3. Matches the TuningPanelViewModel registration pattern from v0.7.5c
         services.AddTransient<UnifiedIssuesPanelViewModel>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the Unified Fix Workflow services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for method chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// <b>LOGIC:</b> This method registers the following services:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>
+    ///     <see cref="FixConflictDetector"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the detector is stateless — all
+    ///     state is passed as method parameters. It only holds a logger dependency.
+    ///     Performs conflict detection heuristics: overlapping positions, contradictory
+    ///     suggestions, dependent fixes (Style+Grammar proximity), and invalid locations.
+    ///     </para>
+    ///   </description></item>
+    ///   <item><description>
+    ///     <see cref="IUnifiedFixWorkflow"/> → <see cref="UnifiedFixOrchestrator"/> (Singleton)
+    ///     <para>
+    ///     Singleton lifetime is appropriate because the orchestrator uses internal
+    ///     synchronization (<see cref="System.Threading.SemaphoreSlim"/>) for thread safety
+    ///     and maintains a bounded undo stack (max 50 transactions) that should be shared
+    ///     across all consumers. Implements <see cref="System.IDisposable"/> for semaphore cleanup.
+    ///     </para>
+    ///   </description></item>
+    /// </list>
+    /// <para>
+    /// <b>Fix Application Pipeline:</b>
+    /// </para>
+    /// <list type="number">
+    ///   <item><description>Extract auto-fixable issues (<see cref="UnifiedIssue.CanAutoFix"/>)</description></item>
+    ///   <item><description>Validate fix locations against document bounds</description></item>
+    ///   <item><description>Detect conflicts via <see cref="FixConflictDetector"/></description></item>
+    ///   <item><description>Handle conflicts per <see cref="FixWorkflowOptions.ConflictStrategy"/></description></item>
+    ///   <item><description>Sort bottom-to-top via <see cref="FixPositionSorter"/> (prevents offset drift)</description></item>
+    ///   <item><description>Group by category via <see cref="FixGrouper"/> (Knowledge → Structure → Grammar → Style → Custom)</description></item>
+    ///   <item><description>Apply atomically within <see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> undo group</description></item>
+    ///   <item><description>Record <see cref="FixTransaction"/> for undo support</description></item>
+    ///   <item><description>Re-validate via <see cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/> (if enabled)</description></item>
+    /// </list>
+    /// <para>
+    /// <b>Internal Helpers (not DI-registered):</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="FixPositionSorter"/> — Static helper, sorts fixes by position descending</description></item>
+    ///   <item><description><see cref="FixGrouper"/> — Static helper, groups fixes by <see cref="IssueCategory"/></description></item>
+    /// </list>
+    /// <para>
+    /// <b>Dependencies:</b>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Editor.IEditorService"/> (v0.6.7c) — Document content access and text mutation</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Validation.IUnifiedValidationService"/> (v0.7.5f) — Post-fix re-validation</description></item>
+    ///   <item><description><see cref="FixConflictDetector"/> (v0.7.5h) — Conflict detection heuristics</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.Undo.IUndoRedoService"/> (v0.7.3d) — Undo support (nullable)</description></item>
+    ///   <item><description><see cref="Lexichord.Abstractions.Contracts.ILicenseContext"/> (v0.0.4c) — License tier validation</description></item>
+    ///   <item><description><see cref="Microsoft.Extensions.Logging.ILogger{T}"/> — Diagnostic logging</description></item>
+    /// </list>
+    /// <para>
+    /// <b>License Requirement:</b> Requires WriterPro tier or higher for fix coordination.
+    /// Individual fix application in <see cref="UnifiedIssuesPanelViewModel"/> remains
+    /// available at Core tier.
+    /// </para>
+    /// <para>
+    /// <b>Introduced in:</b> v0.7.5h as part of the Combined Fix Workflow feature.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddStyleDeviationScanner();
+    ///     services.AddFixSuggestionGenerator();
+    ///     services.AddTuningReviewUI();
+    ///     services.AddLearningLoop();
+    ///     services.AddUnifiedValidationService();
+    ///     services.AddUnifiedIssuesPanel();
+    ///     services.AddUnifiedFixWorkflow();
+    /// }
+    ///
+    /// // Resolve and use via DI
+    /// var fixWorkflow = serviceProvider.GetRequiredService&lt;IUnifiedFixWorkflow&gt;();
+    /// var result = await fixWorkflow.FixAllAsync(
+    ///     documentPath,
+    ///     validationResult,
+    ///     FixWorkflowOptions.Default,
+    ///     cancellationToken);
+    ///
+    /// if (result.Success)
+    /// {
+    ///     Console.WriteLine($"Applied {result.AppliedCount} fixes");
+    ///     if (result.HasRemainingIssues)
+    ///         Console.WriteLine($"Re-validation found {result.RemainingIssues.Count} new issues");
+    /// }
+    /// </code>
+    /// </example>
+    /// <seealso cref="IUnifiedFixWorkflow"/>
+    /// <seealso cref="UnifiedFixOrchestrator"/>
+    /// <seealso cref="FixConflictDetector"/>
+    /// <seealso cref="FixPositionSorter"/>
+    /// <seealso cref="FixGrouper"/>
+    /// <seealso cref="FixWorkflowOptions"/>
+    /// <seealso cref="FixApplyResult"/>
+    /// <seealso cref="FixConflictCase"/>
+    /// <seealso cref="FixTransaction"/>
+    public static IServiceCollection AddUnifiedFixWorkflow(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: Register FixConflictDetector as Singleton.
+        // Singleton lifetime is appropriate because:
+        // 1. The detector is stateless — all analysis is performed on method parameters
+        // 2. Only dependency is ILogger, which is thread-safe
+        // 3. Used by UnifiedFixOrchestrator for pre-application conflict detection
+        services.AddSingleton<FixConflictDetector>();
+
+        // LOGIC: Register UnifiedFixOrchestrator as Singleton implementing IUnifiedFixWorkflow.
+        // Singleton lifetime is appropriate because:
+        // 1. Thread-safe via SemaphoreSlim for concurrent fix operations
+        // 2. Maintains shared undo stack (max 50 transactions) across all consumers
+        // 3. Injected services (IEditorService, IUnifiedValidationService, etc.) are singletons
+        // 4. Implements IDisposable for SemaphoreSlim cleanup
+        services.AddSingleton<IUnifiedFixWorkflow, UnifiedFixOrchestrator>();
 
         return services;
     }

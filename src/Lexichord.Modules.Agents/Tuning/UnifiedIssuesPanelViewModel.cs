@@ -63,8 +63,10 @@ namespace Lexichord.Modules.Agents.Tuning;
 /// <para>
 /// <b>Spec Adaptations:</b>
 /// <list type="bullet">
-///   <item><description><c>IFixOrchestrator</c> does not exist yet (v0.7.5h) — using direct
-///     <c>IEditorService</c> calls for fix application.</description></item>
+///   <item><description><c>IUnifiedFixWorkflow</c> (v0.7.5h) is nullable — when available,
+///     bulk fix operations delegate to the orchestrator for conflict detection, category
+///     ordering, and re-validation. When null, falls back to direct <c>IEditorService</c>
+///     calls for fix application.</description></item>
 ///   <item><description><c>IEditorService</c> uses sync APIs: <c>BeginUndoGroup</c>,
 ///     <c>DeleteText</c>, <c>InsertText</c>, <c>EndUndoGroup</c>.</description></item>
 ///   <item><description><c>IUndoRedoService</c> is nullable — may not be registered.</description></item>
@@ -80,17 +82,25 @@ namespace Lexichord.Modules.Agents.Tuning;
 /// <para>
 /// <b>Introduced in:</b> v0.7.5g as part of the Unified Issues Panel feature.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.5h — Integrated <see cref="IUnifiedFixWorkflow"/> for
+/// orchestrated fix application with conflict detection, category ordering, and
+/// re-validation. Falls back to direct <see cref="IEditorService"/> calls when
+/// the workflow is not available.
+/// </para>
 /// </remarks>
 /// <seealso cref="IssuePresentationGroup"/>
 /// <seealso cref="IssuePresentation"/>
 /// <seealso cref="IUnifiedValidationService"/>
 /// <seealso cref="UnifiedValidationResult"/>
+/// <seealso cref="IUnifiedFixWorkflow"/>
 public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
 {
     // ── Dependencies ────────────────────────────────────────────────────
     private readonly IUnifiedValidationService _validationService;
     private readonly IEditorService _editorService;
     private readonly IUndoRedoService? _undoService;
+    private readonly IUnifiedFixWorkflow? _fixWorkflow;
     private readonly ILicenseContext _licenseContext;
     private readonly IMediator _mediator;
     private readonly ILogger<UnifiedIssuesPanelViewModel> _logger;
@@ -106,6 +116,12 @@ public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
     /// <param name="validationService">The unified validation service for getting results.</param>
     /// <param name="editorService">The editor service for document navigation and editing.</param>
     /// <param name="undoService">The undo/redo service for labeled undo history (nullable).</param>
+    /// <param name="fixWorkflow">
+    /// The unified fix workflow for orchestrated fix application (nullable, v0.7.5h).
+    /// When available, bulk fix operations delegate to this service for conflict detection,
+    /// category ordering, and re-validation. When null, falls back to direct
+    /// <see cref="IEditorService"/> calls.
+    /// </param>
     /// <param name="licenseContext">The license context for feature gating.</param>
     /// <param name="mediator">The MediatR mediator for event publishing.</param>
     /// <param name="logger">The logger for diagnostic output.</param>
@@ -116,6 +132,7 @@ public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
         IUnifiedValidationService validationService,
         IEditorService editorService,
         IUndoRedoService? undoService,
+        IUnifiedFixWorkflow? fixWorkflow,
         ILicenseContext licenseContext,
         IMediator mediator,
         ILogger<UnifiedIssuesPanelViewModel> logger)
@@ -129,11 +146,14 @@ public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
         _validationService = validationService;
         _editorService = editorService;
         _undoService = undoService;
+        _fixWorkflow = fixWorkflow;
         _licenseContext = licenseContext;
         _mediator = mediator;
         _logger = logger;
 
-        _logger.LogDebug("UnifiedIssuesPanelViewModel created");
+        _logger.LogDebug(
+            "UnifiedIssuesPanelViewModel created (FixWorkflow={FixWorkflowAvailable})",
+            _fixWorkflow is not null);
     }
 
     // ── Events ──────────────────────────────────────────────────────────
@@ -436,12 +456,36 @@ public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
         }
 
         _logger.LogDebug(
-            "Applying fix for issue {IssueId}, rule {SourceId}",
-            issue.Issue.IssueId, issue.Issue.SourceId);
+            "Applying fix for issue {IssueId}, rule {SourceId} (via {Method})",
+            issue.Issue.IssueId, issue.Issue.SourceId,
+            _fixWorkflow is not null ? "IUnifiedFixWorkflow" : "direct IEditorService");
 
         try
         {
-            ApplyFix(issue.Issue, fix);
+            // LOGIC: Delegate to IUnifiedFixWorkflow when available (v0.7.5h).
+            // This provides conflict detection, undo transaction recording, and
+            // re-validation. Falls back to direct IEditorService calls when not available.
+            if (_fixWorkflow is not null && _currentResult is not null)
+            {
+                var result = await _fixWorkflow.FixByIdAsync(
+                    _currentResult.DocumentPath,
+                    _currentResult,
+                    [issue.Issue.IssueId]);
+
+                if (!result.Success)
+                {
+                    _logger.LogWarning(
+                        "Fix workflow returned failure for issue {IssueId}: {FailedCount} failed",
+                        issue.Issue.IssueId, result.FailedCount);
+                    StatusMessage = $"Fix failed for {issue.Issue.SourceId}";
+                    return;
+                }
+            }
+            else
+            {
+                // LOGIC: Fallback to direct editor calls when orchestrator is not available.
+                ApplyFix(issue.Issue, fix);
+            }
 
             // LOGIC: Mark the issue as fixed in the UI.
             issue.MarkAsFixed();
@@ -480,12 +524,83 @@ public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
     /// Applies fixes for all auto-fixable issues.
     /// </summary>
     /// <remarks>
-    /// <b>LOGIC:</b> Applies fixes in reverse document order to preserve text offsets.
-    /// All fixes are wrapped in a single editor undo group.
+    /// <para>
+    /// <b>LOGIC:</b> When <see cref="IUnifiedFixWorkflow"/> is available (v0.7.5h),
+    /// delegates to <see cref="IUnifiedFixWorkflow.FixAllAsync"/> for orchestrated
+    /// application with conflict detection, category ordering, and re-validation.
+    /// </para>
+    /// <para>
+    /// Falls back to direct editor calls: applies fixes in reverse document order
+    /// to preserve text offsets, all wrapped in a single editor undo group.
+    /// </para>
     /// </remarks>
     [RelayCommand(CanExecute = nameof(CanFixAll))]
     private async Task FixAllAsync()
     {
+        // LOGIC: Delegate to IUnifiedFixWorkflow when available (v0.7.5h).
+        if (_fixWorkflow is not null && _currentResult is not null)
+        {
+            _logger.LogDebug("Delegating Fix All to IUnifiedFixWorkflow");
+            IsBulkProcessing = true;
+            StatusMessage = "Applying all fixes via orchestrator...";
+
+            try
+            {
+                var result = await _fixWorkflow.FixAllAsync(
+                    _currentResult.DocumentPath,
+                    _currentResult,
+                    FixWorkflowOptions.Default);
+
+                if (result.Success)
+                {
+                    StatusMessage = $"Applied {result.AppliedCount} fixes" +
+                        (result.SkippedCount > 0 ? $" ({result.SkippedCount} skipped)" : "") +
+                        ". Press Ctrl+Z to undo.";
+
+                    // LOGIC: Mark all applied issues as fixed in the UI.
+                    foreach (var resolvedIssue in result.ResolvedIssues)
+                    {
+                        var presentation = GetAllActionableIssues()
+                            .FirstOrDefault(i => i.Issue.IssueId == resolvedIssue.IssueId);
+                        presentation?.MarkAsFixed();
+                    }
+
+                    _logger.LogInformation(
+                        "Fix All via orchestrator: {Applied} applied, {Skipped} skipped, {Failed} failed",
+                        result.AppliedCount, result.SkippedCount, result.FailedCount);
+                }
+                else
+                {
+                    StatusMessage = $"Fix All failed: {result.FailedCount} failures";
+                    _logger.LogWarning("Fix All via orchestrator failed: {Result}", result);
+                }
+
+                foreach (var group in IssueGroups)
+                    group.NotifyCountChanged();
+                NotifyComputedProperties();
+            }
+            catch (FixConflictException ex)
+            {
+                _logger.LogWarning(ex, "Fix All aborted due to conflicts: {Count} conflicts", ex.Conflicts.Count);
+                StatusMessage = $"Fix All aborted: {ex.Conflicts.Count} conflicts detected";
+                ErrorMessage = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fix All via orchestrator failed");
+                StatusMessage = $"Fix All failed: {ex.Message}";
+                ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsBulkProcessing = false;
+                ProgressPercent = 100;
+            }
+
+            return;
+        }
+
+        // LOGIC: Fallback to direct editor calls when orchestrator is not available.
         var fixable = GetAllActionableIssues()
             .Where(i => i.CanAutoApply)
             .OrderByDescending(i => i.Issue.Location.Start) // LOGIC: Reverse order!
@@ -507,11 +622,74 @@ public sealed partial class UnifiedIssuesPanelViewModel : DisposableViewModel
     /// Applies fixes for error-level issues only.
     /// </summary>
     /// <remarks>
-    /// <b>LOGIC:</b> Similar to Fix All but filtered to error severity only.
+    /// <para>
+    /// <b>LOGIC:</b> When <see cref="IUnifiedFixWorkflow"/> is available (v0.7.5h),
+    /// delegates to <see cref="IUnifiedFixWorkflow.FixBySeverityAsync"/> filtered to
+    /// <see cref="UnifiedSeverity.Error"/> only.
+    /// </para>
+    /// <para>
+    /// Falls back to direct editor calls filtered to error severity.
+    /// </para>
     /// </remarks>
     [RelayCommand(CanExecute = nameof(CanFixErrorsOnly))]
     private async Task FixErrorsOnlyAsync()
     {
+        // LOGIC: Delegate to IUnifiedFixWorkflow when available (v0.7.5h).
+        if (_fixWorkflow is not null && _currentResult is not null)
+        {
+            _logger.LogDebug("Delegating Fix Errors Only to IUnifiedFixWorkflow");
+            IsBulkProcessing = true;
+            StatusMessage = "Fixing errors via orchestrator...";
+
+            try
+            {
+                var result = await _fixWorkflow.FixBySeverityAsync(
+                    _currentResult.DocumentPath,
+                    _currentResult,
+                    UnifiedSeverity.Error);
+
+                if (result.Success)
+                {
+                    StatusMessage = $"Applied {result.AppliedCount} error fixes" +
+                        (result.SkippedCount > 0 ? $" ({result.SkippedCount} skipped)" : "") +
+                        ". Press Ctrl+Z to undo.";
+
+                    foreach (var resolvedIssue in result.ResolvedIssues)
+                    {
+                        var presentation = GetAllActionableIssues()
+                            .FirstOrDefault(i => i.Issue.IssueId == resolvedIssue.IssueId);
+                        presentation?.MarkAsFixed();
+                    }
+
+                    _logger.LogInformation(
+                        "Fix Errors Only via orchestrator: {Applied} applied, {Skipped} skipped",
+                        result.AppliedCount, result.SkippedCount);
+                }
+                else
+                {
+                    StatusMessage = $"Fix Errors Only failed: {result.FailedCount} failures";
+                }
+
+                foreach (var group in IssueGroups)
+                    group.NotifyCountChanged();
+                NotifyComputedProperties();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fix Errors Only via orchestrator failed");
+                StatusMessage = $"Fix Errors Only failed: {ex.Message}";
+                ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsBulkProcessing = false;
+                ProgressPercent = 100;
+            }
+
+            return;
+        }
+
+        // LOGIC: Fallback to direct editor calls when orchestrator is not available.
         var fixable = GetAllActionableIssues()
             .Where(i => i.CanAutoApply && i.Issue.Severity == UnifiedSeverity.Error)
             .OrderByDescending(i => i.Issue.Location.Start)
