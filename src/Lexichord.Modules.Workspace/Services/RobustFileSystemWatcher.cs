@@ -241,7 +241,7 @@ public sealed class RobustFileSystemWatcher : IFileSystemWatcher
         ProcessChange(FileSystemChangeType.Renamed, e.FullPath, e.OldFullPath);
     }
 
-    private void OnInnerError(object sender, ErrorEventArgs e)
+    private async void OnInnerError(object sender, ErrorEventArgs e)
     {
         var exception = e.GetException();
         _logger.LogError(exception, "File system watcher error occurred");
@@ -255,7 +255,7 @@ public sealed class RobustFileSystemWatcher : IFileSystemWatcher
         }
 
         // LOGIC: Attempt recovery for other errors
-        var recovered = TryRecoverWatcher();
+        var recovered = await TryRecoverWatcherAsync();
         Error?.Invoke(this, new FileSystemWatcherErrorEventArgs
         {
             Exception = exception,
@@ -433,7 +433,7 @@ public sealed class RobustFileSystemWatcher : IFileSystemWatcher
     /// <summary>
     /// Attempts to recover the file system watcher after an error.
     /// </summary>
-    private bool TryRecoverWatcher()
+    private async Task<bool> TryRecoverWatcherAsync()
     {
         if (_recoveryAttempts >= MaxRecoveryAttempts)
         {
@@ -463,7 +463,7 @@ public sealed class RobustFileSystemWatcher : IFileSystemWatcher
             }
 
             // LOGIC: Brief delay before restart
-            Thread.Sleep(RecoveryDelayMs);
+            await Task.Delay(RecoveryDelayMs);
 
             // LOGIC: Restart watching
             StartWatching(currentPath);
