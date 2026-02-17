@@ -421,5 +421,25 @@ public static class FeatureCodes
     /// </remarks>
     public const string SummarizerAgent = "Feature.SummarizerAgent";
 
+    /// <summary>
+    /// The Metadata Extraction feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Metadata Extraction features including:
+    /// - Key term extraction with importance scoring and frequency analysis
+    /// - High-level concept identification for categorization
+    /// - Tag suggestions consistent with existing workspace taxonomy
+    /// - Reading time calculation based on word count and complexity
+    /// - Target audience inference from vocabulary and style
+    /// - Document complexity scoring on a 1-10 scale
+    /// - Document type classification (Tutorial, Reference, Report, etc.)
+    /// - Named entity extraction (people, organizations, products)
+    /// When this feature is not enabled, metadata extraction menu items show a lock icon
+    /// and clicking them triggers an upgrade prompt instead of executing extraction.
+    /// Introduced in v0.7.6b.
+    /// </remarks>
+    public const string MetadataExtraction = "Feature.MetadataExtraction";
+
     #endregion
 }

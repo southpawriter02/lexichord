@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-17 (v0.7.6a added)                                             |
+| **Last Updated** | 2026-02-17 (v0.7.6b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2138,6 +2138,57 @@
 - v0.0.4c (ILicenseContext) — License validation
 - v0.0.7a (IMediator) — Event publishing
 
+### 1.55 v0.7.6b Metadata Extraction
+
+**New Interfaces (v0.7.6b — Abstractions):**
+
+| Interface                    | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IMetadataExtractor`         | v0.7.6b    | Abstractions   | Metadata extraction contract extending IAgent      |
+
+**New Records (v0.7.6b — Abstractions):**
+
+| Record                       | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `MetadataExtractionOptions`  | v0.7.6b    | Abstractions   | Configuration for extraction parameters            |
+| `DocumentMetadata`           | v0.7.6b    | Abstractions   | Result with key terms, concepts, tags, metrics     |
+| `KeyTerm`                    | v0.7.6b    | Abstractions   | Term with importance scoring and technical flags   |
+
+**New Enums (v0.7.6b — Abstractions):**
+
+| Enum                         | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `DocumentType`               | v0.7.6b    | Abstractions   | 15 document classification types                   |
+
+**New Classes (v0.7.6b — Modules.Agents):**
+
+| Class                        | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `MetadataExtractor`          | v0.7.6b    | Modules.Agents | Core metadata extractor implementation             |
+
+**New Events (v0.7.6b — Modules.Agents):**
+
+| Event                              | Defined In | Module         | Purpose                                      |
+| :--------------------------------- | :--------- | :------------- | :------------------------------------------- |
+| `MetadataExtractionStartedEvent`   | v0.7.6b    | Modules.Agents | Published when extraction begins             |
+| `MetadataExtractionCompletedEvent` | v0.7.6b    | Modules.Agents | Published on successful extraction           |
+| `MetadataExtractionFailedEvent`    | v0.7.6b    | Modules.Agents | Published on extraction failure              |
+
+**DI Registrations (v0.7.6b):**
+
+| Service                    | Lifetime   | Registered Via                              |
+| :------------------------- | :--------- | :------------------------------------------ |
+| `IMetadataExtractor`       | Singleton  | MetadataExtractionServiceCollectionExtensions |
+| `IAgent` (forwarding)      | Singleton  | MetadataExtractionServiceCollectionExtensions |
+
+**Dependencies (v0.7.6b):**
+- v0.6.1a (IChatCompletionService) — LLM invocation
+- v0.6.3b (IPromptRenderer) — Template rendering
+- v0.6.3c (IPromptTemplateRepository) — Template lookup
+- v0.1.4b (IFileService) — Document loading
+- v0.0.4c (ILicenseContext) — License validation
+- v0.0.7a (IMediator) — Event publishing
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -2206,6 +2257,9 @@
 | `SummarizationStartedEvent`      | v0.7.6a  | Summarization operation started   |
 | `SummarizationCompletedEvent`    | v0.7.6a  | Summarization completed           |
 | `SummarizationFailedEvent`       | v0.7.6a  | Summarization operation failed    |
+| `MetadataExtractionStartedEvent` | v0.7.6b  | Metadata extraction started       |
+| `MetadataExtractionCompletedEvent` | v0.7.6b | Metadata extraction completed    |
+| `MetadataExtractionFailedEvent`  | v0.7.6b  | Metadata extraction failed        |
 
 ---
 

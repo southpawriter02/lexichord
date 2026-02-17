@@ -1887,13 +1887,13 @@ dotnet run --project src/Lexichord.Host -- --verify-services ISummarizerAgent,IM
 
 | #  | Deliverable                                                    | Status |
 | :- | :------------------------------------------------------------- | :----- |
-| 1  | `SummarizationMode.cs` enum and options records                | [ ]    |
-| 2  | `ISummarizerAgent.cs` interface                                | [ ]    |
-| 3  | `SummarizerAgent.cs` implementation                            | [ ]    |
-| 4  | `specialist-summarizer.yaml` prompt template                   | [ ]    |
-| 5  | `IMetadataExtractor.cs` interface                              | [ ]    |
-| 6  | `MetadataExtractor.cs` implementation                          | [ ]    |
-| 7  | `metadata-extractor.yaml` prompt template                      | [ ]    |
+| 1  | `SummarizationMode.cs` enum and options records                | [✅]   |
+| 2  | `ISummarizerAgent.cs` interface                                | [✅]   |
+| 3  | `SummarizerAgent.cs` implementation                            | [✅]   |
+| 4  | `specialist-summarizer.yaml` prompt template                   | [✅]   |
+| 5  | `IMetadataExtractor.cs` interface                              | [✅]   |
+| 6  | `MetadataExtractor.cs` implementation                          | [✅]   |
+| 7  | `metadata-extractor.yaml` prompt template                      | [✅]   |
 | 8  | `ISummaryExporter.cs` interface                                | [ ]    |
 | 9  | `SummaryExporter.cs` implementation                            | [ ]    |
 | 10 | `SummaryPanelView.axaml` UI component                          | [ ]    |
@@ -1902,13 +1902,13 @@ dotnet run --project src/Lexichord.Host -- --verify-services ISummarizerAgent,IM
 | 13 | `DocumentComparer.cs` implementation                           | [ ]    |
 | 14 | `document-comparer.yaml` prompt template                       | [ ]    |
 | 15 | `ComparisonView.axaml` UI component                            | [ ]    |
-| 16 | Unit tests for summarization modes                             | [ ]    |
-| 17 | Unit tests for metadata extraction                             | [ ]    |
+| 16 | Unit tests for summarization modes                             | [✅]   |
+| 17 | Unit tests for metadata extraction                             | [✅]   |
 | 18 | Unit tests for export operations                               | [ ]    |
 | 19 | Unit tests for document comparison                             | [ ]    |
 | 20 | Integration tests for full workflow                            | [ ]    |
 | 21 | License gating tests                                           | [ ]    |
-| 22 | DI registration in AgentsModule.cs                             | [ ]    |
+| 22 | DI registration in AgentsModule.cs                             | [✅]   |
 
 ---
 

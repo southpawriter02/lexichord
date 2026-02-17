@@ -8,6 +8,7 @@
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Agents.Simplifier;
+using Lexichord.Abstractions.Agents.MetadataExtraction;
 using Lexichord.Abstractions.Agents.Summarizer;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Agents;
@@ -422,6 +423,16 @@ public class AgentsModule : IModule
         //   - Intelligent document chunking for long documents (4000 tokens/chunk)
         //   - Prompt template: specialist-summarizer.yaml with mode-specific instructions
         services.AddSummarizerAgentPipeline();
+
+        // LOGIC: Register the Metadata Extraction pipeline services:
+        //   v0.7.6b — Metadata Extraction
+        //   - IMetadataExtractor → MetadataExtractor: Singleton for stateless extraction
+        //   - IAgent (forwarded): Enables agent discovery via IAgentRegistry
+        //   - Extracts: Key terms, concepts, tags, reading time, complexity score, document type
+        //   - Reading time calculation using complexity heuristics (no LLM)
+        //   - Tag matching with existing workspace tags (Levenshtein similarity)
+        //   - Prompt template: metadata-extractor.yaml with JSON output format
+        services.AddMetadataExtractionPipeline();
     }
 
     /// <inheritdoc />
@@ -793,6 +804,20 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Summarizer Agent is not registered. Document summarization features will not be available.");
+        }
+
+        // LOGIC: Verify Metadata Extractor is available (v0.7.6b).
+        var metadataExtractor = provider.GetService<IMetadataExtractor>();
+        if (metadataExtractor is not null)
+        {
+            logger.LogDebug(
+                "Metadata Extractor available: {AgentType}, AgentId={AgentId}",
+                metadataExtractor.GetType().Name,
+                metadataExtractor.AgentId);
+        }
+        else
+        {
+            logger.LogWarning("Metadata Extractor is not registered. Metadata extraction features will not be available.");
         }
     }
 }
