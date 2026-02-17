@@ -218,7 +218,7 @@ public partial class KnowledgeHubViewModel : ObservableObject, IKnowledgeHubView
                 TotalDocuments: stats.DocumentCount,
                 TotalChunks: stats.ChunkCount,
                 IndexedDocuments: stats.DocumentCount,
-                PendingDocuments: 0,  // TODO: Add PendingCount to IndexStatistics
+                PendingDocuments: stats.PendingCount,
                 LastIndexedAt: stats.LastIndexedAt.HasValue ? stats.LastIndexedAt.Value.DateTime : (DateTime?)null,
                 StorageSizeBytes: stats.StorageSizeBytes);
 
