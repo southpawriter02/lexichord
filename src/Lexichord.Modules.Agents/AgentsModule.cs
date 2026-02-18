@@ -433,6 +433,18 @@ public class AgentsModule : IModule
         //   - Tag matching with existing workspace tags (Levenshtein similarity)
         //   - Prompt template: metadata-extractor.yaml with JSON output format
         services.AddMetadataExtractionPipeline();
+
+        // LOGIC: Register the Summary Export pipeline services:
+        //   v0.7.6c — Export Formats
+        //   - ISummaryExporter → SummaryExporter: Singleton for stateless export
+        //   - IClipboardService → ClipboardService: Singleton for clipboard operations
+        //   - ISummaryCacheService → SummaryCacheService: Singleton for hybrid caching
+        //   - SummaryPanelViewModel: Transient for per-panel isolation
+        //   - Supports 5 destinations: Panel, Frontmatter, File, Clipboard, InlineInsert
+        //   - YAML frontmatter merging with field selection
+        //   - Content hash-based cache invalidation (SHA256)
+        //   - MediatR events: SummaryExportStartedEvent, SummaryExportedEvent, SummaryExportFailedEvent
+        services.AddSummaryExportPipeline();
     }
 
     /// <inheritdoc />
@@ -818,6 +830,32 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Metadata Extractor is not registered. Metadata extraction features will not be available.");
+        }
+
+        // LOGIC: Verify Summary Exporter is available (v0.7.6c).
+        var summaryExporter = provider.GetService<Abstractions.Agents.SummaryExport.ISummaryExporter>();
+        if (summaryExporter is not null)
+        {
+            logger.LogDebug(
+                "Summary Exporter available: {ExporterType}",
+                summaryExporter.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Summary Exporter is not registered. Summary export features will not be available.");
+        }
+
+        // LOGIC: Verify Clipboard Service is available (v0.7.6c).
+        var clipboardService = provider.GetService<IClipboardService>();
+        if (clipboardService is not null)
+        {
+            logger.LogDebug(
+                "Clipboard Service available: {ServiceType}",
+                clipboardService.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Clipboard Service is not registered. Clipboard operations will not be available.");
         }
     }
 }

@@ -1,0 +1,212 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Agents.SummaryExport.ViewModels"
+             xmlns:views="clr-namespace:Lexichord.Modules.Agents.SummaryExport.Views"
+             mc:Ignorable="d"
+             d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="Lexichord.Modules.Agents.SummaryExport.Views.SummaryPanelView"
+             x:DataType="vm:SummaryPanelViewModel">
+
+    <!-- Summary Panel View (v0.7.6c) -->
+    <!-- Displays generated summaries and metadata with export actions -->
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,8,0,4"/>
+        </Style>
+        <Style Selector="TextBlock.stat-label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Opacity" Value="0.7"/>
+        </Style>
+        <Style Selector="TextBlock.stat-value">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Padding="12"
+            CornerRadius="8"
+            Background="{DynamicResource Brush.Surface.Primary}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Summary"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+
+                <!-- Mode Dropdown -->
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding AvailableModes}"
+                          SelectedItem="{Binding SelectedMode}"
+                          Width="120"
+                          Margin="8,0"/>
+
+                <!-- Refresh Button -->
+                <Button Grid.Column="2"
+                        Command="{Binding RefreshCommand}"
+                        ToolTip.Tip="Refresh summary (Ctrl+R)"
+                        Padding="8,4"
+                        Margin="4,0">
+                    <PathIcon Data="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                              Width="16" Height="16"/>
+                </Button>
+
+                <!-- Close Button -->
+                <Button Grid.Column="3"
+                        Command="{Binding CloseCommand}"
+                        ToolTip.Tip="Close panel (Escape)"
+                        Padding="8,4"
+                        Margin="4,0,0,0">
+                    <PathIcon Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                              Width="16" Height="16"/>
+                </Button>
+            </Grid>
+
+            <!-- Document Info -->
+            <StackPanel Grid.Row="1" Margin="0,8,0,0" IsVisible="{Binding HasContent}">
+                <TextBlock Text="{Binding DocumentName}"
+                           FontSize="13"
+                           FontWeight="Medium"
+                           Opacity="0.9"/>
+                <TextBlock Text="{Binding GenerationInfo}"
+                           FontSize="11"
+                           Opacity="0.6"
+                           Margin="0,2,0,0"/>
+                <TextBlock Text="{Binding CompressionDisplay}"
+                           FontSize="11"
+                           Opacity="0.6"/>
+            </StackPanel>
+
+            <!-- Main Content Area -->
+            <ScrollViewer Grid.Row="2" Margin="0,8,0,0">
+                <StackPanel>
+                    <!-- Loading Indicator -->
+                    <StackPanel IsVisible="{Binding IsLoading}"
+                                HorizontalAlignment="Center"
+                                Margin="0,24">
+                        <ProgressBar IsIndeterminate="True" Width="150"/>
+                        <TextBlock Text="Generating summary..."
+                                   HorizontalAlignment="Center"
+                                   Margin="0,8,0,0"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+
+                    <!-- Error Message -->
+                    <Border IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            Background="{DynamicResource Brush.Error.Background}"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8">
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Brush.Error.Foreground}"/>
+                    </Border>
+
+                    <!-- Summary Section -->
+                    <StackPanel IsVisible="{Binding HasContent}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Summary"
+                                       Classes="section-header"/>
+                            <Button Grid.Column="1"
+                                    Command="{Binding CopySummaryCommand}"
+                                    Content="Copy"
+                                    Padding="8,2"
+                                    FontSize="11"/>
+                        </Grid>
+                        <Border Background="{DynamicResource Brush.Surface.Secondary}"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="{Binding Summary.Summary}"
+                                       TextWrapping="Wrap"
+                                       FontSize="13"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Key Terms Section -->
+                    <StackPanel IsVisible="{Binding HasMetadata}" Margin="0,12,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Key Terms"
+                                       Classes="section-header"/>
+                            <Button Grid.Column="1"
+                                    Command="{Binding CopyKeyTermsCommand}"
+                                    Content="Copy"
+                                    Padding="8,2"
+                                    FontSize="11"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding KeyTerms}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:KeyTermViewModel">
+                                    <views:KeyTermChip Margin="0,0,6,6"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Metadata Section -->
+                    <StackPanel IsVisible="{Binding HasMetadata}" Margin="0,12,0,0">
+                        <TextBlock Text="Metadata" Classes="section-header"/>
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                            <!-- Row 1 -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,4">
+                                <TextBlock Text="📖 " FontSize="12"/>
+                                <TextBlock Text="{Binding ReadingTimeDisplay}" Classes="stat-value"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,4">
+                                <TextBlock Text="🎯 " FontSize="12"/>
+                                <TextBlock Text="{Binding AudienceDisplay}" Classes="stat-value"/>
+                            </StackPanel>
+
+                            <!-- Row 2 -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,4">
+                                <TextBlock Text="📊 " FontSize="12"/>
+                                <TextBlock Text="{Binding ComplexityDisplay}" Classes="stat-value"/>
+                                <TextBlock Text=" complexity" Classes="stat-label" Margin="4,0,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,4">
+                                <TextBlock Text="📁 " FontSize="12"/>
+                                <TextBlock Text="{Binding CategoryDisplay}" Classes="stat-value"/>
+                            </StackPanel>
+
+                            <!-- Row 3 -->
+                            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,4">
+                                <TextBlock Text="🏷️ " FontSize="12"/>
+                                <TextBlock Text="{Binding TagsDisplay}" Classes="stat-value" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Action Bar -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,12,0,0"
+                        IsVisible="{Binding HasContent}">
+                <Button Command="{Binding CopySummaryCommand}"
+                        Content="Copy Summary"
+                        Margin="0,0,8,0"/>
+                <Button Command="{Binding AddToFrontmatterCommand}"
+                        Content="Add to Frontmatter"
+                        Margin="0,0,8,0"/>
+                <Button Command="{Binding ExportFileCommand}"
+                        Content="Export File..."
+                        Classes="accent"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

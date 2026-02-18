@@ -441,5 +441,24 @@ public static class FeatureCodes
     /// </remarks>
     public const string MetadataExtraction = "Feature.MetadataExtraction";
 
+    /// <summary>
+    /// The Summary Export feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Summary Export features including:
+    /// - Export to Summary Panel UI
+    /// - Export to YAML frontmatter with intelligent field merging
+    /// - Export to standalone Markdown file
+    /// - Export to system clipboard
+    /// - Export to inline cursor position with callout formatting
+    /// - Summary caching with content hash invalidation
+    /// When this feature is not enabled, export actions return Failed result
+    /// with an upgrade prompt message. Cached summaries are viewable but
+    /// not exportable or regeneratable.
+    /// Introduced in v0.7.6c.
+    /// </remarks>
+    public const string SummaryExport = "Feature.SummaryExport";
+
     #endregion
 }
