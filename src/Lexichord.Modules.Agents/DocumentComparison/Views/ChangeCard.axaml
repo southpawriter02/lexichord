@@ -1,0 +1,202 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Agents.DocumentComparison.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="400" d:DesignHeight="120"
+             x:Class="Lexichord.Modules.Agents.DocumentComparison.Views.ChangeCard"
+             x:DataType="vm:ChangeCardViewModel">
+
+    <!-- ChangeCard View (v0.7.6d) -->
+    <!-- Displays an individual document change with category, description, and expandable diff -->
+
+    <UserControl.Styles>
+        <!-- Category badge styling -->
+        <Style Selector="Border.category-badge">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+
+        <!-- Significance indicator dot -->
+        <Style Selector="Ellipse.significance-dot">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Description text -->
+        <Style Selector="TextBlock.change-description">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+
+        <!-- Section label -->
+        <Style Selector="TextBlock.section-label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Opacity" Value="0.7"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+
+        <!-- Diff text styling -->
+        <Style Selector="TextBlock.diff-text">
+            <Setter Property="FontFamily" Value="Cascadia Code, Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style Selector="TextBlock.diff-removed">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Error.Foreground}"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Error.Background}"/>
+        </Style>
+
+        <Style Selector="TextBlock.diff-added">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Success.Foreground}"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Success.Background}"/>
+        </Style>
+
+        <!-- Expander toggle button -->
+        <Style Selector="Button.expand-toggle">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource Brush.Surface.Secondary}"
+            CornerRadius="6"
+            Padding="12"
+            Margin="0,4">
+        <Grid RowDefinitions="Auto,Auto,Auto">
+
+            <!-- Row 0: Header with category, significance, section -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto">
+
+                <!-- Category Badge -->
+                <Border Grid.Column="0"
+                        Classes="category-badge"
+                        Background="{DynamicResource Brush.Surface.Tertiary}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding CategorySymbol}"
+                                   FontSize="12"
+                                   Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding Change.Category}"
+                                   FontSize="11"
+                                   FontWeight="Medium"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Significance Indicator -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Classes="significance-dot">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{DynamicResource Color.Significance.Medium}"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock Text="{Binding SignificanceLabel}"
+                               FontSize="10"
+                               FontWeight="SemiBold"
+                               Opacity="0.8"/>
+                </StackPanel>
+
+                <!-- Section Label -->
+                <TextBlock Grid.Column="2"
+                           Text="{Binding Change.Section}"
+                           Classes="section-label"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding Change.Section, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                <!-- Expand/Collapse Toggle -->
+                <Button Grid.Column="3"
+                        Classes="expand-toggle"
+                        Command="{Binding ToggleExpandCommand}"
+                        ToolTip.Tip="Toggle diff view"
+                        IsVisible="{Binding HasDiffContent}">
+                    <TextBlock Text="{Binding ExpandCollapseIcon}"
+                               FontSize="10"/>
+                </Button>
+            </Grid>
+
+            <!-- Row 1: Description and Impact -->
+            <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <TextBlock Text="{Binding Change.Description}"
+                           Classes="change-description"/>
+
+                <!-- Impact Note (if present) -->
+                <Border IsVisible="{Binding Change.HasImpact}"
+                        Background="{DynamicResource Brush.Warning.Background}"
+                        CornerRadius="4"
+                        Padding="8,4"
+                        Margin="0,6,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚠️ " FontSize="12"/>
+                        <TextBlock Text="{Binding Change.Impact}"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Brush.Warning.Foreground}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Row 2: Expandable Diff Content -->
+            <Border Grid.Row="2"
+                    IsVisible="{Binding IsExpanded}"
+                    Background="{DynamicResource Brush.Surface.Primary}"
+                    CornerRadius="4"
+                    Padding="8"
+                    Margin="0,8,0,0">
+                <Grid RowDefinitions="Auto,Auto,Auto">
+
+                    <!-- Original Text (Removed) -->
+                    <StackPanel Grid.Row="0"
+                                IsVisible="{Binding Change.HasOriginalText}"
+                                Margin="0,0,0,8">
+                        <TextBlock Text="{Binding OriginalVersionLabel}"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.6"
+                                   Margin="0,0,0,4"/>
+                        <Border Background="{DynamicResource Brush.Error.Background}"
+                                CornerRadius="2"
+                                Padding="6">
+                            <TextBlock Text="{Binding Change.OriginalText}"
+                                       Classes="diff-text"
+                                       Foreground="{DynamicResource Brush.Error.Foreground}"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Arrow indicator between versions -->
+                    <TextBlock Grid.Row="1"
+                               Text="↓"
+                               HorizontalAlignment="Center"
+                               FontSize="14"
+                               Opacity="0.5"
+                               IsVisible="{Binding ShowDiffArrow}"
+                               Margin="0,0,0,8"/>
+
+                    <!-- New Text (Added) -->
+                    <StackPanel Grid.Row="2"
+                                IsVisible="{Binding Change.HasNewText}">
+                        <TextBlock Text="{Binding NewVersionLabel}"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.6"
+                                   Margin="0,0,0,4"/>
+                        <Border Background="{DynamicResource Brush.Success.Background}"
+                                CornerRadius="2"
+                                Padding="6">
+                            <TextBlock Text="{Binding Change.NewText}"
+                                       Classes="diff-text"
+                                       Foreground="{DynamicResource Brush.Success.Foreground}"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

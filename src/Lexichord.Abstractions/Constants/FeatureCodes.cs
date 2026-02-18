@@ -460,5 +460,25 @@ public static class FeatureCodes
     /// </remarks>
     public const string SummaryExport = "Feature.SummaryExport";
 
+    /// <summary>
+    /// The Document Comparison feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro
+    /// Controls access to the Document Comparison features including:
+    /// - Semantic document version comparison with LLM analysis
+    /// - Change categorization (Added, Removed, Modified, Restructured, etc.)
+    /// - Significance scoring (Critical, High, Medium, Low)
+    /// - Affected section identification
+    /// - Git history version comparison
+    /// - Text diff generation via DiffPlex
+    /// - Natural language change summaries
+    /// When this feature is not enabled, comparison actions return Failed result
+    /// with an upgrade prompt message. Basic text diff via GetTextDiff remains
+    /// available to all tiers.
+    /// Introduced in v0.7.6d.
+    /// </remarks>
+    public const string DocumentComparison = "Feature.DocumentComparison";
+
     #endregion
 }

@@ -7,6 +7,7 @@
 
 using Lexichord.Abstractions.Agents;
 using Lexichord.Abstractions.Agents.Context;
+using Lexichord.Abstractions.Agents.DocumentComparison;
 using Lexichord.Abstractions.Agents.Simplifier;
 using Lexichord.Abstractions.Agents.MetadataExtraction;
 using Lexichord.Abstractions.Agents.Summarizer;
@@ -445,6 +446,18 @@ public class AgentsModule : IModule
         //   - Content hash-based cache invalidation (SHA256)
         //   - MediatR events: SummaryExportStartedEvent, SummaryExportedEvent, SummaryExportFailedEvent
         services.AddSummaryExportPipeline();
+
+        // LOGIC: Register the Document Comparison pipeline services:
+        //   v0.7.6d — Document Comparison
+        //   - IDocumentComparer → DocumentComparer: Singleton for stateless comparison
+        //   - ComparisonViewModel: Transient for per-panel isolation
+        //   - Hybrid DiffPlex + LLM approach for semantic analysis
+        //   - Change categorization: Added, Removed, Modified, Restructured, Clarified, Formatting, Correction, Terminology
+        //   - Significance scoring: Critical (0.8-1.0), High (0.6-0.8), Medium (0.3-0.6), Low (0.0-0.3)
+        //   - Git history comparison via git show
+        //   - Prompt template: document-comparer.yaml with JSON output format
+        //   - MediatR events: DocumentComparisonStartedEvent, DocumentComparisonCompletedEvent, DocumentComparisonFailedEvent
+        services.AddDocumentComparisonPipeline();
     }
 
     /// <inheritdoc />
@@ -856,6 +869,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Clipboard Service is not registered. Clipboard operations will not be available.");
+        }
+
+        // LOGIC: Verify Document Comparer is available (v0.7.6d).
+        var documentComparer = provider.GetService<IDocumentComparer>();
+        if (documentComparer is not null)
+        {
+            logger.LogDebug(
+                "Document Comparer available: {ComparerType}",
+                documentComparer.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Document Comparer is not registered. Document comparison features will not be available.");
         }
     }
 }

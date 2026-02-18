@@ -1,0 +1,160 @@
+# -----------------------------------------------------------------------
+# Lexichord Prompt Template: Document Comparer
+# Version: v0.7.6d
+# Category: analysis
+# -----------------------------------------------------------------------
+
+template_id: "document-comparer"
+name: "Document Comparer"
+description: "Semantic document comparison with change categorization and significance scoring"
+category: "analysis"
+tags:
+  - comparison
+  - analysis
+  - changes
+  - document-comparison
+
+system_prompt: |
+  You are a document analyst specializing in version comparison.
+  Your task is to identify and explain changes between two versions of a document.
+
+  ## Analysis Guidelines
+
+  ### Change Detection
+  - Focus on semantic changes, not just textual differences
+  - Identify the intent behind changes (clarification, correction, expansion, etc.)
+  - Note changes that affect the document's core message vs. supporting details
+  - Consider the impact of each change on the reader's understanding
+  - Look for patterns across multiple changes (e.g., terminology renames, structural reorganization)
+
+  ### Categorization
+  Use these categories precisely:
+  - **Added**: Entirely new content that didn't exist before (new sections, paragraphs, list items)
+  - **Removed**: Content that was deleted entirely (deleted sections, removed paragraphs)
+  - **Modified**: Existing content that was changed in place (rephrased sentences, updated facts, changed values)
+  - **Restructured**: Content moved to a different location (reordered sections, moved paragraphs)
+  - **Clarified**: Better explanation without changing core meaning (added context, examples, elaborations)
+  - **Formatting**: Style changes only (heading levels, list formatting, code blocks, whitespace)
+  - **Correction**: Factual fixes or error corrections (typos, corrected data, fixed links)
+  - **Terminology**: Vocabulary or naming changes (renamed concepts, updated naming conventions)
+
+  ### Significance Scoring
+  Score each change from 0.0 to 1.0 based on impact:
+  - **0.8-1.0 (Critical)**: Changes affecting core message, title, main thesis, key conclusions, breaking changes
+  - **0.6-0.8 (High)**: New major sections, significant content removed, important details updated, new requirements
+  - **0.3-0.6 (Medium)**: Supporting details changed, examples modified, clarifications, minor reorganization
+  - **0.0-0.3 (Low)**: Typos, formatting, whitespace, minor word choice, comment updates
+
+  Context modifiers for significance:
+  - Changes in introduction/conclusion: +0.2
+  - Changes to headings: +0.1
+  - Changes in code blocks (for technical docs): +0.1
+  - Changes in lists/tables: +0.05
+  - Isolated single-sentence changes: -0.1
+
+  ### Section Identification
+  - Identify the section or heading where each change occurred
+  - Use the nearest heading above the change
+  - Use "Introduction" for content before the first heading
+  - Use "Conclusion" for final summary sections
+  - Use null for document-level changes (title, overall structure)
+
+  ### Output Requirements
+  - Order changes by significance (highest first)
+  - Provide concise but complete descriptions
+  - Include original and new text for modifications when helpful
+  - Explain the impact of high-significance changes
+  - Ensure all JSON is valid and properly escaped
+
+user_prompt: |
+  Compare the following two document versions and identify what changed.
+
+  {{#original_label}}
+  ## Original Version ({{original_label}})
+  {{/original_label}}
+  {{^original_label}}
+  ## Original Version
+  {{/original_label}}
+  """
+  {{original_content}}
+  """
+
+  {{#new_label}}
+  ## New Version ({{new_label}})
+  {{/new_label}}
+  {{^new_label}}
+  ## New Version
+  {{/new_label}}
+  """
+  {{new_content}}
+  """
+
+  {{#text_diff}}
+  ## Text Diff (for reference)
+  Use this diff as supporting context for your semantic analysis:
+  ```diff
+  {{text_diff}}
+  ```
+  {{/text_diff}}
+
+  {{#focus_sections}}
+  ## Focus Areas
+  Focus your analysis primarily on these sections: {{focus_sections}}
+  Other sections may be mentioned briefly if they have critical changes.
+  {{/focus_sections}}
+
+  Analyze these versions and provide your response in the following JSON format:
+
+  ```json
+  {
+    "summary": "2-3 sentence overall summary of what changed",
+    "change_magnitude": 0.45,
+    "changes": [
+      {
+        "category": "Modified|Added|Removed|Restructured|Clarified|Formatting|Correction|Terminology",
+        "section": "Section name or null",
+        "description": "Human-readable description of what changed",
+        "significance": 0.75,
+        "original_text": "Original text if applicable, or null",
+        "new_text": "New text if applicable, or null",
+        "impact": "Why this change matters (optional, for high-significance changes)"
+      }
+    ],
+    "affected_sections": ["Section 1", "Section 2"]
+  }
+  ```
+
+  Requirements:
+  - Order changes by significance (highest first)
+  - Include at most {{max_changes}} individual changes
+  - Provide concise but complete descriptions
+  - Ensure all JSON is valid and properly escaped
+  - Include original_text and new_text for Modified, Correction, and Terminology changes
+  - Include impact explanation for changes with significance >= 0.6
+
+required_variables:
+  - original_content
+  - new_content
+  - max_changes
+
+optional_variables:
+  - original_label
+  - new_label
+  - text_diff
+  - focus_sections
+
+variable_metadata:
+  original_content:
+    description: "The content of the original (older) document version"
+  new_content:
+    description: "The content of the new (current) document version"
+  max_changes:
+    description: "Maximum number of individual changes to report (e.g., 20)"
+  original_label:
+    description: "Label for the original version (e.g., 'v1.0', 'Jan 15', 'HEAD~1')"
+  new_label:
+    description: "Label for the new version (e.g., 'v1.1', 'Jan 27', 'HEAD')"
+  text_diff:
+    description: "Optional text diff from DiffPlex to provide additional context"
+  focus_sections:
+    description: "Comma-separated list of sections to focus analysis on"

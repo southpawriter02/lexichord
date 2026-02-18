@@ -1,0 +1,327 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lexichord.Modules.Agents.DocumentComparison.ViewModels"
+             xmlns:views="clr-namespace:Lexichord.Modules.Agents.DocumentComparison.Views"
+             mc:Ignorable="d"
+             d:DesignWidth="450" d:DesignHeight="700"
+             x:Class="Lexichord.Modules.Agents.DocumentComparison.Views.ComparisonView"
+             x:DataType="vm:ComparisonViewModel">
+
+    <!-- ComparisonView (v0.7.6d) -->
+    <!-- Main view for displaying document comparison results -->
+    <!-- Shows summary, magnitude bar, and grouped changes by significance -->
+
+    <UserControl.Styles>
+        <!-- Section headers -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,12,0,6"/>
+        </Style>
+
+        <!-- Stat labels and values -->
+        <Style Selector="TextBlock.stat-label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Opacity" Value="0.7"/>
+        </Style>
+        <Style Selector="TextBlock.stat-value">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+
+        <!-- Group expander styling -->
+        <Style Selector="Expander.change-group">
+            <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <!-- Magnitude bar -->
+        <Style Selector="ProgressBar.magnitude-bar">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+
+        <!-- Empty state text -->
+        <Style Selector="TextBlock.empty-state">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,24"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Padding="12"
+            CornerRadius="8"
+            Background="{DynamicResource Brush.Surface.Primary}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- Row 0: Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Document Comparison"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+
+                <!-- Refresh Button -->
+                <Button Grid.Column="1"
+                        Command="{Binding RefreshCommand}"
+                        ToolTip.Tip="Refresh comparison (Ctrl+R)"
+                        Padding="8,4"
+                        Margin="4,0"
+                        IsEnabled="{Binding CanRefresh}">
+                    <PathIcon Data="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                              Width="16" Height="16"/>
+                </Button>
+
+                <!-- Cancel Button (visible during loading) -->
+                <Button Grid.Column="2"
+                        Command="{Binding CancelCommand}"
+                        Content="Cancel"
+                        Padding="8,4"
+                        Margin="4,0"
+                        IsVisible="{Binding IsLoading}"/>
+
+                <!-- Close Button -->
+                <Button Grid.Column="3"
+                        Command="{Binding CloseCommand}"
+                        ToolTip.Tip="Close panel (Escape)"
+                        Padding="8,4"
+                        Margin="4,0,0,0">
+                    <PathIcon Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                              Width="16" Height="16"/>
+                </Button>
+            </Grid>
+
+            <!-- Row 1: Document Paths -->
+            <StackPanel Grid.Row="1" Margin="0,8,0,0" IsVisible="{Binding HasResult}">
+                <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Grid.Column="0" Text="Original: " Classes="stat-label"/>
+                    <TextBlock Grid.Column="1" Text="{Binding OriginalDocumentName}" Classes="stat-value" TextTrimming="CharacterEllipsis"/>
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*" Margin="0,2,0,0">
+                    <TextBlock Grid.Column="0" Text="New: " Classes="stat-label"/>
+                    <TextBlock Grid.Column="1" Text="{Binding NewDocumentName}" Classes="stat-value" TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- Row 2: Main Content Area -->
+            <ScrollViewer Grid.Row="2" Margin="0,8,0,0">
+                <StackPanel>
+
+                    <!-- Loading Indicator -->
+                    <StackPanel IsVisible="{Binding IsLoading}"
+                                HorizontalAlignment="Center"
+                                Margin="0,24">
+                        <ProgressBar IsIndeterminate="True" Width="150"/>
+                        <TextBlock Text="Analyzing documents..."
+                                   HorizontalAlignment="Center"
+                                   Margin="0,8,0,0"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+
+                    <!-- Error Message -->
+                    <Border IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            Background="{DynamicResource Brush.Error.Background}"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8">
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Brush.Error.Foreground}"/>
+                    </Border>
+
+                    <!-- Identical Documents State -->
+                    <StackPanel IsVisible="{Binding AreDocumentsIdentical}"
+                                HorizontalAlignment="Center"
+                                Margin="0,24">
+                        <TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center" Opacity="0.5"/>
+                        <TextBlock Text="Documents are identical"
+                                   Classes="empty-state"/>
+                        <TextBlock Text="No changes detected between the two versions."
+                                   FontSize="12"
+                                   Opacity="0.5"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Comparison Results -->
+                    <StackPanel IsVisible="{Binding HasChanges}">
+
+                        <!-- Summary Section -->
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Text="Summary" Classes="section-header"/>
+                            <Border Background="{DynamicResource Brush.Surface.Secondary}"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <TextBlock Text="{Binding Result.Summary}"
+                                           TextWrapping="Wrap"
+                                           FontSize="13"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Change Magnitude -->
+                        <StackPanel Margin="0,12,0,0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Change Magnitude" Classes="section-header" Margin="0"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding MagnitudePercentage}"
+                                           Classes="stat-value"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <ProgressBar Classes="magnitude-bar"
+                                         Value="{Binding Result.ChangeMagnitude}"
+                                         Minimum="0"
+                                         Maximum="1"/>
+                            <Grid ColumnDefinitions="*,*,*" Margin="0,8,0,0">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <TextBlock Text="+" Foreground="{DynamicResource Brush.Success.Foreground}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding AdditionCount}" Classes="stat-value" Margin="2,0,0,0"/>
+                                    <TextBlock Text=" added" Classes="stat-label"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="-" Foreground="{DynamicResource Brush.Error.Foreground}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding DeletionCount}" Classes="stat-value" Margin="2,0,0,0"/>
+                                    <TextBlock Text=" removed" Classes="stat-label"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Text="~" Foreground="{DynamicResource Brush.Warning.Foreground}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding ModificationCount}" Classes="stat-value" Margin="2,0,0,0"/>
+                                    <TextBlock Text=" modified" Classes="stat-label"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Word Count Delta -->
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="Word count change: " Classes="stat-label"/>
+                            <TextBlock Text="{Binding WordCountDeltaDisplay}" Classes="stat-value"/>
+                        </StackPanel>
+
+                        <!-- Affected Sections -->
+                        <StackPanel Margin="0,8,0,0" IsVisible="{Binding HasAffectedSections}">
+                            <TextBlock Text="Affected Sections" Classes="section-header"/>
+                            <ItemsControl ItemsSource="{Binding Result.AffectedSections}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource Brush.Surface.Tertiary}"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                Margin="0,0,6,6">
+                                            <TextBlock Text="{Binding}" FontSize="11"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <!-- Changes by Significance Group -->
+                        <TextBlock Text="Changes" Classes="section-header"/>
+
+                        <!-- Critical Changes -->
+                        <Expander Classes="change-group"
+                                  IsVisible="{Binding HasCriticalChanges}"
+                                  IsExpanded="True">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource Brush.Error.Foreground}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Critical" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding CriticalChanges.Count, StringFormat=' ({0})'}" Opacity="0.7"/>
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsControl ItemsSource="{Binding CriticalChanges}" Margin="0,4,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ChangeCardViewModel">
+                                        <views:ChangeCard/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Expander>
+
+                        <!-- High Changes -->
+                        <Expander Classes="change-group"
+                                  IsVisible="{Binding HasHighChanges}"
+                                  IsExpanded="True">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource Brush.Warning.Foreground}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="High" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding HighChanges.Count, StringFormat=' ({0})'}" Opacity="0.7"/>
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsControl ItemsSource="{Binding HighChanges}" Margin="0,4,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ChangeCardViewModel">
+                                        <views:ChangeCard/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Expander>
+
+                        <!-- Medium Changes -->
+                        <Expander Classes="change-group"
+                                  IsVisible="{Binding HasMediumChanges}"
+                                  IsExpanded="False">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource Brush.Info.Foreground}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Medium" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding MediumChanges.Count, StringFormat=' ({0})'}" Opacity="0.7"/>
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsControl ItemsSource="{Binding MediumChanges}" Margin="0,4,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ChangeCardViewModel">
+                                        <views:ChangeCard/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Expander>
+
+                        <!-- Low Changes -->
+                        <Expander Classes="change-group"
+                                  IsVisible="{Binding HasLowChanges}"
+                                  IsExpanded="False">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="10" Height="10" Fill="{DynamicResource Brush.Text.Secondary}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Low" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding LowChanges.Count, StringFormat=' ({0})'}" Opacity="0.7"/>
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsControl ItemsSource="{Binding LowChanges}" Margin="0,4,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ChangeCardViewModel">
+                                        <views:ChangeCard/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Expander>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Row 3: Action Bar -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,12,0,0"
+                        IsVisible="{Binding HasResult}">
+                <Button Command="{Binding CopyDiffCommand}"
+                        Content="Copy Diff"
+                        Margin="0,0,8,0"/>
+                <Button Command="{Binding ExportReportCommand}"
+                        Content="Export Report..."
+                        Classes="accent"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
