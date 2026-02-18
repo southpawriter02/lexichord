@@ -421,6 +421,46 @@ public sealed class KnowledgeModule : IModule
                     Abstractions.Contracts.Knowledge.Copilot.ScoringConfig>>(),
                 sp.GetRequiredService<ILogger<Copilot.Context.Scoring.EntityRelevanceScorer>>(),
                 sp.GetService<IEmbeddingService>()));
+
+        // =====================================================================
+        // v0.7.6e: Sync Service Core (CKVS Phase 4c)
+        // =====================================================================
+
+        // LOGIC: Register SyncStatusTracker as singleton.
+        // Maintains per-document sync state in memory (thread-safe via ConcurrentDictionary).
+        // Singleton ensures consistent state across sync operations.
+        services.AddSingleton<Sync.SyncStatusTracker>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.ISyncStatusTracker>(sp =>
+            sp.GetRequiredService<Sync.SyncStatusTracker>());
+
+        // LOGIC: Register SyncConflictDetector as singleton.
+        // Compares document extractions against graph state to detect conflicts.
+        // Stateless operation using IGraphRepository for queries.
+        services.AddSingleton<Sync.SyncConflictDetector>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.ISyncConflictDetector>(sp =>
+            sp.GetRequiredService<Sync.SyncConflictDetector>());
+
+        // LOGIC: Register ConflictResolver as singleton.
+        // Applies resolution strategies to sync conflicts.
+        // Maintains pending conflicts in memory per document.
+        services.AddSingleton<Sync.ConflictResolver>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.IConflictResolver>(sp =>
+            sp.GetRequiredService<Sync.ConflictResolver>());
+
+        // LOGIC: Register SyncOrchestrator as singleton.
+        // Coordinates the sync pipeline (extraction, conflict detection, graph upsert).
+        // Depends on IEntityExtractionPipeline, IGraphRepository, ISyncConflictDetector.
+        services.AddSingleton<Sync.Core.SyncOrchestrator>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.ISyncOrchestrator>(sp =>
+            sp.GetRequiredService<Sync.Core.SyncOrchestrator>());
+
+        // LOGIC: Register SyncService as singleton.
+        // Main entry point for sync operations with license gating and event publishing.
+        // Depends on ISyncOrchestrator, ISyncStatusTracker, IConflictResolver,
+        // ILicenseContext, IMediator.
+        services.AddSingleton<Sync.Core.SyncService>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.ISyncService>(sp =>
+            sp.GetRequiredService<Sync.Core.SyncService>());
     }
 
     /// <inheritdoc/>

@@ -481,4 +481,25 @@ public static class FeatureCodes
     public const string DocumentComparison = "Feature.DocumentComparison";
 
     #endregion
+
+    #region Sync Service Features (v0.7.6e)
+
+    /// <summary>
+    /// The Sync Service feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro (doc-to-graph only), Teams (full bidirectional)
+    /// Controls access to document-graph synchronization features including:
+    /// - Document-to-graph sync (extract entities/claims, upsert to graph)
+    /// - Graph-to-document propagation (find affected documents when graph changes)
+    /// - Sync status tracking (pending, in-sync, conflict states)
+    /// - Conflict detection and resolution workflows
+    /// - Sync completion events
+    /// When this feature is not enabled (Core tier), sync actions return
+    /// UnauthorizedAccessException and sync UI elements are hidden.
+    /// Introduced in v0.7.6e.
+    /// </remarks>
+    public const string SyncService = "Feature.SyncService";
+
+    #endregion
 }
