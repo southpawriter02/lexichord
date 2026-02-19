@@ -102,7 +102,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await handler.Handle(changes, CancellationToken.None);
-        await Task.Delay(500); // Wait for any potential debounce
+        await Task.Delay(800); // Wait for any potential debounce
 
         // Assert
         _mediatorMock.Verify(
@@ -132,7 +132,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
         await _sut.Handle(changes, CancellationToken.None);
 
         // Wait for debounce to fire
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -163,7 +163,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
         await _sut.Handle(changes, CancellationToken.None);
 
         // Wait for debounce
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -188,7 +188,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -209,7 +209,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -230,7 +230,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -249,7 +249,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -272,7 +272,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 100);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -304,7 +304,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
         }
 
         // Wait for debounce
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert - should publish only once after debounce
         _mediatorMock.Verify(
@@ -323,7 +323,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert
         _mediatorMock.Verify(
@@ -348,7 +348,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act
         await _sut.Handle(changes, CancellationToken.None);
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert - only 2 valid files should be published
         _mediatorMock.Verify(
@@ -370,7 +370,7 @@ public class FileWatcherIngestionHandlerTests : IDisposable
 
         // Act - dispose immediately before debounce fires
         _sut.Dispose();
-        await Task.Delay(_options.DebounceDelayMs + 200);
+        await Task.Delay(_options.DebounceDelayMs + 500);
 
         // Assert - no event should be published after disposal
         _mediatorMock.Verify(

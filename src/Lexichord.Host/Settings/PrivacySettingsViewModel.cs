@@ -79,8 +79,7 @@ public partial class PrivacySettingsViewModel : ObservableObject
     {
         try
         {
-            // TODO: Update with actual privacy policy URL
-            const string privacyPolicyUrl = "https://lexichord.app/privacy";
+            const string privacyPolicyUrl = "https://github.com/lexichord/lexichord/blob/main/PRIVACY.md";
 
             Process.Start(new ProcessStartInfo
             {
