@@ -461,6 +461,38 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Sync.Core.SyncService>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.ISyncService>(sp =>
             sp.GetRequiredService<Sync.Core.SyncService>());
+
+        // =====================================================================
+        // v0.7.6f: Doc-to-Graph Sync (CKVS Phase 4c)
+        // =====================================================================
+
+        // LOGIC: Register ExtractionLineageStore as singleton.
+        // Maintains extraction history per document in memory (thread-safe).
+        // Enables lineage queries and rollback target identification.
+        services.AddSingleton<Sync.DocToGraph.ExtractionLineageStore>();
+
+        // LOGIC: Register ExtractionValidator as singleton.
+        // Validates extracted entities and relationships against graph schema.
+        // Stateless validation using known entity types list.
+        services.AddSingleton<Sync.DocToGraph.ExtractionValidator>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.DocToGraph.IExtractionValidator>(sp =>
+            sp.GetRequiredService<Sync.DocToGraph.ExtractionValidator>());
+
+        // LOGIC: Register ExtractionTransformer as singleton.
+        // Transforms AggregatedEntity to KnowledgeEntity, derives relationships.
+        // Depends on IGraphRepository for entity enrichment.
+        services.AddSingleton<Sync.DocToGraph.ExtractionTransformer>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.DocToGraph.IExtractionTransformer>(sp =>
+            sp.GetRequiredService<Sync.DocToGraph.ExtractionTransformer>());
+
+        // LOGIC: Register DocumentToGraphSyncProvider as singleton.
+        // Main orchestrator for doc-to-graph sync with license gating and event publishing.
+        // Depends on IEntityExtractionPipeline, IExtractionTransformer, IExtractionValidator,
+        // IGraphRepository, IClaimExtractionService, ExtractionLineageStore,
+        // ILicenseContext, IMediator.
+        services.AddSingleton<Sync.DocToGraph.DocumentToGraphSyncProvider>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.DocToGraph.IDocumentToGraphSyncProvider>(sp =>
+            sp.GetRequiredService<Sync.DocToGraph.DocumentToGraphSyncProvider>());
     }
 
     /// <inheritdoc/>

@@ -502,4 +502,26 @@ public static class FeatureCodes
     public const string SyncService = "Feature.SyncService";
 
     #endregion
+
+    #region Doc-to-Graph Sync Features (v0.7.6f)
+
+    /// <summary>
+    /// The Doc-to-Graph Sync feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro (basic), Teams (with enrichment)
+    /// Controls access to document-to-graph synchronization features including:
+    /// - Entity extraction from documents and transformation to graph format
+    /// - Extraction validation against graph schema
+    /// - Entity enrichment with existing graph context (Teams+)
+    /// - Extraction lineage tracking and rollback capability
+    /// - Claim extraction and relationship derivation
+    /// - Sync completion events and progress tracking
+    /// When this feature is not enabled (Core tier), doc-to-graph sync returns
+    /// UnauthorizedAccessException and the sync UI shows an upgrade prompt.
+    /// Introduced in v0.7.6f.
+    /// </remarks>
+    public const string DocToGraphSync = "Feature.DocToGraphSync";
+
+    #endregion
 }

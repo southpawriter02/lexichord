@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-17 (v0.7.6b added)                                             |
+| **Last Updated** | 2026-02-18 (v0.7.6f added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2189,6 +2189,68 @@
 - v0.0.4c (ILicenseContext) — License validation
 - v0.0.7a (IMediator) — Event publishing
 
+### 1.56 v0.7.6f Doc-to-Graph Sync
+
+**New Interfaces (v0.7.6f — Abstractions):**
+
+| Interface                       | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `IDocumentToGraphSyncProvider`  | v0.7.6f    | Abstractions   | Main document-to-graph sync provider               |
+| `IExtractionTransformer`        | v0.7.6f    | Abstractions   | Transforms extraction results to graph format      |
+| `IExtractionValidator`          | v0.7.6f    | Abstractions   | Validates extraction results against schema        |
+
+**New Records (v0.7.6f — Abstractions):**
+
+| Record                          | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `DocToGraphSyncOptions`         | v0.7.6f    | Abstractions   | Sync operation configuration                       |
+| `DocToGraphSyncResult`          | v0.7.6f    | Abstractions   | Sync result with entities and validation errors    |
+| `ExtractionRecord`              | v0.7.6f    | Abstractions   | Lineage record for rollback capability             |
+| `GraphIngestionData`            | v0.7.6f    | Abstractions   | Data structured for graph ingestion                |
+| `ValidationResult`              | v0.7.6f    | Abstractions   | Extraction validation result                       |
+| `ValidationError`               | v0.7.6f    | Abstractions   | Validation error details                           |
+| `ValidationWarning`             | v0.7.6f    | Abstractions   | Validation warning details                         |
+| `EntityValidationResult`        | v0.7.6f    | Abstractions   | Single entity validation result                    |
+| `RelationshipValidationResult`  | v0.7.6f    | Abstractions   | Relationship validation result                     |
+| `DocToGraphValidationContext`   | v0.7.6f    | Abstractions   | Validation context configuration                   |
+
+**New Enums (v0.7.6f — Abstractions):**
+
+| Enum                            | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `ValidationSeverity`            | v0.7.6f    | Abstractions   | Warning, Error, Critical severity levels           |
+
+**New Classes (v0.7.6f — Modules.Knowledge):**
+
+| Class                           | Defined In | Module             | Purpose                                        |
+| :------------------------------ | :--------- | :----------------- | :--------------------------------------------- |
+| `DocumentToGraphSyncProvider`   | v0.7.6f    | Modules.Knowledge  | Main sync orchestrator implementation          |
+| `ExtractionTransformer`         | v0.7.6f    | Modules.Knowledge  | Transforms AggregatedEntity to KnowledgeEntity |
+| `ExtractionValidator`           | v0.7.6f    | Modules.Knowledge  | Schema compliance validation                   |
+| `ExtractionLineageStore`        | v0.7.6f    | Modules.Knowledge  | In-memory lineage storage                      |
+
+**New Events (v0.7.6f — Abstractions):**
+
+| Event                           | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `DocToGraphSyncCompletedEvent`  | v0.7.6f    | Abstractions   | Published when sync completes                      |
+
+**DI Registrations (v0.7.6f):**
+
+| Service                         | Lifetime   | Registered Via              |
+| :------------------------------ | :--------- | :-------------------------- |
+| `ExtractionLineageStore`        | Singleton  | KnowledgeModule             |
+| `IExtractionTransformer`        | Singleton  | KnowledgeModule             |
+| `IExtractionValidator`          | Singleton  | KnowledgeModule             |
+| `IDocumentToGraphSyncProvider`  | Singleton  | KnowledgeModule             |
+
+**Dependencies (v0.7.6f):**
+- v0.4.5g (IEntityExtractionPipeline) — Entity extraction from text
+- v0.4.5e (IGraphRepository) — Graph CRUD operations
+- v0.0.4c (ILicenseContext) — License tier checking
+- v0.0.7a (IMediator) — Event publishing
+- v0.7.6e (SyncOperationStatus) — Sync status enum
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -2260,6 +2322,7 @@
 | `MetadataExtractionStartedEvent` | v0.7.6b  | Metadata extraction started       |
 | `MetadataExtractionCompletedEvent` | v0.7.6b | Metadata extraction completed    |
 | `MetadataExtractionFailedEvent`  | v0.7.6b  | Metadata extraction failed        |
+| `DocToGraphSyncCompletedEvent`   | v0.7.6f  | Doc-to-graph sync completed       |
 
 ---
 
