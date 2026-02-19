@@ -524,6 +524,48 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Sync.GraphToDoc.GraphToDocumentSyncProvider>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.GraphToDoc.IGraphToDocumentSyncProvider>(sp =>
             sp.GetRequiredService<Sync.GraphToDoc.GraphToDocumentSyncProvider>());
+
+        // =====================================================================
+        // v0.7.6h: Conflict Resolver (CKVS Phase 4c)
+        // =====================================================================
+
+        // LOGIC: Register EntityComparer as singleton.
+        // Compares document entities against graph entities property-by-property.
+        // Stateless comparison with confidence scoring — safe to share across threads.
+        services.AddSingleton<Sync.Conflict.EntityComparer>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.Conflict.IEntityComparer>(sp =>
+            sp.GetRequiredService<Sync.Conflict.EntityComparer>());
+
+        // LOGIC: Register ConflictStore as singleton.
+        // Thread-safe in-memory storage for conflict details via ConcurrentDictionary.
+        // Provides document-based conflict grouping and resolution history tracking.
+        services.AddSingleton<Sync.Conflict.ConflictStore>();
+
+        // LOGIC: Register ConflictDetector as singleton.
+        // Enhanced conflict detection with value and structural conflict analysis.
+        // Extends ISyncConflictDetector (v0.7.6e) with detailed ConflictDetail records.
+        // Depends on IEntityComparer, IGraphRepository for entity lookups.
+        services.AddSingleton<Sync.Conflict.ConflictDetector>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.Conflict.IConflictDetector>(sp =>
+            sp.GetRequiredService<Sync.Conflict.ConflictDetector>());
+
+        // LOGIC: Register ConflictMerger as singleton.
+        // Provides intelligent value merging with multiple strategies:
+        // DocumentFirst, GraphFirst, Combine, MostRecent, HighestConfidence, RequiresManualMerge.
+        // Stateless merge logic — safe to share across threads.
+        services.AddSingleton<Sync.Conflict.ConflictMerger>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.Conflict.IConflictMerger>(sp =>
+            sp.GetRequiredService<Sync.Conflict.ConflictMerger>());
+
+        // LOGIC: Register EnhancedConflictResolver as singleton.
+        // Extended conflict resolver with detailed resolution results and merge support.
+        // Depends on IConflictMerger, ConflictStore, ILicenseContext, IMediator.
+        // License tiers:
+        // - Core: No resolution access
+        // - WriterPro: Basic resolution (Low severity auto-resolve, Manual only)
+        // - Teams: Full resolution (Low/Medium auto-resolve, Merge support)
+        // - Enterprise: Advanced resolution (all auto-resolve, advanced merge)
+        services.AddSingleton<Sync.Conflict.EnhancedConflictResolver>();
     }
 
     /// <inheritdoc/>

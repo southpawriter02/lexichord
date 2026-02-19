@@ -545,4 +545,30 @@ public static class FeatureCodes
     public const string GraphToDocSync = "Feature.GraphToDocSync";
 
     #endregion
+
+    #region Conflict Resolver Features (v0.7.6h)
+
+    /// <summary>
+    /// The Conflict Resolver feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro (basic), Teams (full merge), Enterprise (advanced)
+    /// Controls access to enhanced conflict resolution features including:
+    /// - Enhanced conflict detection with value and structural analysis
+    /// - Detailed ConflictDetail records with entity-level tracking
+    /// - Intelligent conflict merging via IConflictMerger
+    /// - Multiple merge strategies (DocumentFirst, GraphFirst, Combine, MostRecent, HighestConfidence)
+    /// - Entity comparison infrastructure via IEntityComparer
+    /// - Conflict resolution history and audit trail
+    /// - MediatR event publishing for resolution completion
+    /// License tiers:
+    /// - Core: No conflict resolution access
+    /// - WriterPro: Basic resolution (Low severity auto-resolve, Manual)
+    /// - Teams: Full resolution (Low/Medium auto-resolve, Merge support)
+    /// - Enterprise: Advanced resolution (all auto-resolve, advanced merge)
+    /// Introduced in v0.7.6h.
+    /// </remarks>
+    public const string ConflictResolver = "Feature.ConflictResolver";
+
+    #endregion
 }
