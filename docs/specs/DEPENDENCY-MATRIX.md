@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-19 (v0.7.6g added)                                             |
+| **Last Updated** | 2026-02-19 (v0.7.6i added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2316,6 +2316,65 @@
 - v0.0.7a (IMediator) — Event publishing
 - v0.7.6e (GraphChange, SyncOperationStatus, ChangeType) — Sync data types
 
+### 1.22 v0.7.6i Sync Status Tracker Interfaces
+
+**New Interfaces (v0.7.6i — Abstractions):**
+
+| Interface                  | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `ISyncStatusRepository`    | v0.7.6i    | Abstractions | Sync status data persistence                       |
+
+**Enhanced Interfaces (v0.7.6i — Abstractions):**
+
+| Interface                  | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `ISyncStatusTracker`       | v0.7.6e→i  | Abstractions | Enhanced with batch, history, metrics, operations  |
+
+**New Enums (v0.7.6i — Abstractions):**
+
+| Enum                       | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `SortOrder`                | v0.7.6i    | Abstractions | Query result ordering options                      |
+
+**New Records (v0.7.6i — Abstractions):**
+
+| Record                     | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `SyncStatusQuery`          | v0.7.6i    | Abstractions | Query criteria for filtering status results        |
+| `SyncStatusHistory`        | v0.7.6i    | Abstractions | Historical record of state changes                 |
+| `SyncOperationRecord`      | v0.7.6i    | Abstractions | Record of sync operation for tracking              |
+| `SyncMetrics`              | v0.7.6i    | Abstractions | Aggregated sync statistics                         |
+
+**New Classes (v0.7.6i — Modules.Knowledge):**
+
+| Class                      | Defined In | Module            | Purpose                                       |
+| :------------------------- | :--------- | :---------------- | :-------------------------------------------- |
+| `SyncStatusRepository`     | v0.7.6i    | Modules.Knowledge | In-memory sync status persistence             |
+
+**Enhanced Classes (v0.7.6i — Modules.Knowledge):**
+
+| Class                      | Defined In | Module            | Purpose                                       |
+| :------------------------- | :--------- | :---------------- | :-------------------------------------------- |
+| `SyncStatusTracker`        | v0.7.6e→i  | Modules.Knowledge | Enhanced with caching, history, metrics       |
+
+**New Events (v0.7.6i — Abstractions):**
+
+| Event                      | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `SyncStatusUpdatedEvent`   | v0.7.6i    | Abstractions | Published on sync status state transitions         |
+
+**DI Registrations (v0.7.6i):**
+
+| Service                    | Lifetime   | Registered Via  |
+| :------------------------- | :--------- | :-------------- |
+| `ISyncStatusRepository`    | Singleton  | KnowledgeModule |
+| `ISyncStatusTracker`       | Singleton  | KnowledgeModule |
+
+**Dependencies (v0.7.6i):**
+- v0.7.6e (SyncStatus, SyncState, SyncDirection, SyncOperationStatus) — Base types
+- v0.0.4c (ILicenseContext) — License tier checking
+- v0.0.7a (IMediator) — Event publishing
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -2390,6 +2449,7 @@
 | `DocToGraphSyncCompletedEvent`   | v0.7.6f  | Doc-to-graph sync completed       |
 | `GraphToDocSyncCompletedEvent`   | v0.7.6g  | Graph-to-doc sync completed       |
 | `DocumentFlaggedEvent`           | v0.7.6g  | Document flagged for review       |
+| `SyncStatusUpdatedEvent`         | v0.7.6i  | Sync status state transition      |
 
 ---
 

@@ -571,4 +571,29 @@ public static class FeatureCodes
     public const string ConflictResolver = "Feature.ConflictResolver";
 
     #endregion
+
+    #region Sync Status Tracker Features (v0.7.6i)
+
+    /// <summary>
+    /// The Sync Status Tracker feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro (basic), Teams (full), Enterprise (advanced)
+    /// Controls access to sync status tracking features including:
+    /// - Sync status querying and updates (get/update status)
+    /// - Batch status updates for multiple documents
+    /// - Status change history with audit trail
+    /// - Sync operation recording and tracking
+    /// - Aggregated sync metrics (success rates, durations, conflict stats)
+    /// - Document filtering by sync state
+    /// License tiers:
+    /// - Core: No status tracking access
+    /// - WriterPro: Basic status (get/update), 30-day history
+    /// - Teams: Full status (batch operations, metrics), 90-day history
+    /// - Enterprise: Advanced status (unlimited history, custom metrics)
+    /// Introduced in v0.7.6i.
+    /// </remarks>
+    public const string SyncStatusTracker = "Feature.SyncStatusTracker";
+
+    #endregion
 }

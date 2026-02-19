@@ -424,10 +424,19 @@ public sealed class KnowledgeModule : IModule
 
         // =====================================================================
         // v0.7.6e: Sync Service Core (CKVS Phase 4c)
+        // v0.7.6i: Enhanced Sync Status Tracker
         // =====================================================================
 
+        // LOGIC: Register SyncStatusRepository as singleton (v0.7.6i).
+        // In-memory storage for sync status, history, and operation records.
+        // Thread-safe via ConcurrentDictionary.
+        services.AddSingleton<Sync.Status.SyncStatusRepository>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.Status.ISyncStatusRepository>(sp =>
+            sp.GetRequiredService<Sync.Status.SyncStatusRepository>());
+
         // LOGIC: Register SyncStatusTracker as singleton.
-        // Maintains per-document sync state in memory (thread-safe via ConcurrentDictionary).
+        // Enhanced in v0.7.6i with caching, history tracking, metrics, and event publishing.
+        // Depends on ISyncStatusRepository (v0.7.6i), ILicenseContext, IMediator.
         // Singleton ensures consistent state across sync operations.
         services.AddSingleton<Sync.SyncStatusTracker>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.ISyncStatusTracker>(sp =>
