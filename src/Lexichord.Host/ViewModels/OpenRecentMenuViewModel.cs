@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Events;
+using Lexichord.Abstractions.Services;
 using Lexichord.Host.ViewModels;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -26,15 +27,18 @@ public partial class OpenRecentMenuViewModel : ObservableObject
 {
     private readonly IRecentFilesService _recentFilesService;
     private readonly IMediator _mediator;
+    private readonly IMessageBoxService _messageBoxService;
     private readonly ILogger<OpenRecentMenuViewModel> _logger;
 
     public OpenRecentMenuViewModel(
         IRecentFilesService recentFilesService,
         IMediator mediator,
+        IMessageBoxService messageBoxService,
         ILogger<OpenRecentMenuViewModel> logger)
     {
         _recentFilesService = recentFilesService ?? throw new ArgumentNullException(nameof(recentFilesService));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _recentFilesService.RecentFilesChanged += OnRecentFilesChanged;
@@ -91,7 +95,10 @@ public partial class OpenRecentMenuViewModel : ObservableObject
             // LOGIC: File doesn't exist - remove from list
             _logger.LogWarning("Recent file not found: {FilePath}", entry.FilePath);
             await _recentFilesService.RemoveRecentFileAsync(entry.FilePath);
-            // TODO: Show dialog "File not found. Removed from list."
+
+            await _messageBoxService.ShowMessageAsync(
+                "File Not Found",
+                $"The file '{entry.FilePath}' no longer exists and has been removed from the recent files list.");
             return;
         }
 
