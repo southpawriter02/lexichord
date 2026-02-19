@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Lexichord.Abstractions.Contracts;
 using Lexichord.Abstractions.Contracts.Commands;
+using Lexichord.Abstractions.Contracts.Editor;
 using Lexichord.Abstractions.Events;
 using Lexichord.Host.ViewModels.CommandPalette;
 using MediatR;
@@ -17,7 +18,9 @@ public class CommandPaletteViewModelTests
 {
     private readonly Mock<ICommandRegistry> _commandRegistryMock = new();
     private readonly Mock<IMediator> _mediatorMock = new();
+    private readonly Mock<IEditorService> _editorServiceMock = new();
     private readonly Mock<ILogger<CommandPaletteViewModel>> _loggerMock = new();
+    private readonly Mock<IManuscriptViewModel> _manuscriptMock = new();
 
     private CommandPaletteViewModel CreateViewModel(List<CommandDefinition>? commands = null)
     {
@@ -27,6 +30,7 @@ public class CommandPaletteViewModelTests
         return new CommandPaletteViewModel(
             _commandRegistryMock.Object,
             _mediatorMock.Object,
+            _editorServiceMock.Object,
             _loggerMock.Object);
     }
 
@@ -364,5 +368,36 @@ public class CommandPaletteViewModelTests
 
         var result = viewModel.FilteredItems.First() as CommandSearchResult;
         result?.ShortcutDisplay.Should().Be("Ctrl+S");
+    }
+
+    [Fact]
+    public async Task ExecuteSelectedAsync_WithFileResult_OpensFile()
+    {
+        var viewModel = CreateViewModel();
+        var fileResult = new FileSearchResult { FullPath = "/test/file.txt", Score = 100 };
+        viewModel.SelectedItem = fileResult;
+
+        _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
+            .ReturnsAsync(_manuscriptMock.Object);
+
+        await viewModel.ExecuteSelectedAsync();
+
+        _editorServiceMock.Verify(x => x.OpenDocumentAsync("/test/file.txt"), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteSelectedAsync_WithFileResult_HidesPalette()
+    {
+        var viewModel = CreateViewModel();
+        await viewModel.ShowAsync(PaletteMode.Files);
+        var fileResult = new FileSearchResult { FullPath = "/test/file.txt", Score = 100 };
+        viewModel.SelectedItem = fileResult;
+
+        _editorServiceMock.Setup(x => x.OpenDocumentAsync(It.IsAny<string>()))
+            .ReturnsAsync(_manuscriptMock.Object);
+
+        await viewModel.ExecuteSelectedAsync();
+
+        viewModel.IsVisible.Should().BeFalse();
     }
 }
