@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-19 (v0.7.6i added)                                             |
+| **Last Updated** | 2026-02-19 (v0.7.6j added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2375,6 +2375,71 @@
 - v0.0.4c (ILicenseContext) — License tier checking
 - v0.0.7a (IMediator) — Event publishing
 
+### 1.59 v0.7.6j Sync Event Publisher
+
+**New Interfaces (v0.7.6j — Abstractions):**
+
+| Interface                  | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `ISyncEvent`               | v0.7.6j    | Abstractions | Base interface for sync events (extends INotification) |
+| `IEventStore`              | v0.7.6j    | Abstractions | Sync event persistence and retrieval               |
+| `ISyncEventPublisher`      | v0.7.6j    | Abstractions | Unified event publishing with history and subscriptions |
+
+**New Enums (v0.7.6j — Abstractions):**
+
+| Enum                       | Defined In | Module       | Purpose                                            |
+| :------------------------- | :--------- | :----------- | :------------------------------------------------- |
+| `EventPriority`            | v0.7.6j    | Abstractions | Low/Normal/High/Critical priority levels           |
+| `EventSortOrder`           | v0.7.6j    | Abstractions | Query result ordering options                      |
+
+**New Records (v0.7.6j — Abstractions):**
+
+| Record                        | Defined In | Module       | Purpose                                         |
+| :---------------------------- | :--------- | :----------- | :---------------------------------------------- |
+| `SyncEventRecord`             | v0.7.6j    | Abstractions | Audit trail record for published events         |
+| `SyncEventOptions`            | v0.7.6j    | Abstractions | Publication options (history, timeout, priority)|
+| `SyncEventSubscriptionOptions`| v0.7.6j    | Abstractions | Subscription configuration with filters         |
+| `SyncEventQuery`              | v0.7.6j    | Abstractions | Query criteria for event history retrieval      |
+
+**New Event Types (v0.7.6j — Abstractions):**
+
+| Event                          | Defined In | Module       | Purpose                                        |
+| :----------------------------- | :--------- | :----------- | :--------------------------------------------- |
+| `SyncConflictDetectedEvent`    | v0.7.6j    | Abstractions | Published when conflicts are detected          |
+| `SyncConflictResolvedEvent`    | v0.7.6j    | Abstractions | Published when a conflict is resolved          |
+| `SyncStatusChangedEvent`       | v0.7.6j    | Abstractions | Published when sync state transitions          |
+| `SyncFailedEvent`              | v0.7.6j    | Abstractions | Published when sync operation fails            |
+| `SyncRetryEvent`               | v0.7.6j    | Abstractions | Published when sync operation is retried       |
+| `GraphToDocumentSyncedEvent`   | v0.7.6j    | Abstractions | Published when graph changes sync to document  |
+
+**Enhanced Events (v0.7.6j — Abstractions):**
+
+| Event                      | Defined In | Module       | Enhancement                                    |
+| :------------------------- | :--------- | :----------- | :--------------------------------------------- |
+| `SyncCompletedEvent`       | v0.7.6e→j  | Abstractions | Added ISyncEvent implementation (EventId, Metadata) |
+| `DocumentFlaggedEvent`     | v0.7.6g→j  | Abstractions | Added ISyncEvent implementation (EventId, PublishedAt, Metadata) |
+
+**New Classes (v0.7.6j — Modules.Knowledge):**
+
+| Class                      | Defined In | Module            | Purpose                                    |
+| :------------------------- | :--------- | :---------------- | :----------------------------------------- |
+| `SyncEventStore`           | v0.7.6j    | Modules.Knowledge | In-memory event store with query support   |
+| `SyncEventPublisher`       | v0.7.6j    | Modules.Knowledge | MediatR-based publisher with license gating|
+
+**DI Registrations (v0.7.6j):**
+
+| Service                    | Lifetime   | Registered Via  |
+| :------------------------- | :--------- | :-------------- |
+| `IEventStore`              | Singleton  | KnowledgeModule |
+| `ISyncEventPublisher`      | Singleton  | KnowledgeModule |
+
+**Dependencies (v0.7.6j):**
+- v0.7.6h (SyncConflict, ConflictResolutionStrategy, ConflictType) — Conflict types
+- v0.7.6g (GraphChange, ChangeType) — Graph change types
+- v0.7.6e (SyncState, SyncDirection, SyncOperationStatus, SyncResult) — Base sync types
+- v0.0.4c (ILicenseContext) — License tier checking
+- v0.0.7a (IMediator, INotification) — Event publishing
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -2450,6 +2515,12 @@
 | `GraphToDocSyncCompletedEvent`   | v0.7.6g  | Graph-to-doc sync completed       |
 | `DocumentFlaggedEvent`           | v0.7.6g  | Document flagged for review       |
 | `SyncStatusUpdatedEvent`         | v0.7.6i  | Sync status state transition      |
+| `SyncConflictDetectedEvent`      | v0.7.6j  | Sync conflicts detected           |
+| `SyncConflictResolvedEvent`      | v0.7.6j  | Sync conflict resolved            |
+| `SyncStatusChangedEvent`         | v0.7.6j  | Sync state changed                |
+| `SyncFailedEvent`                | v0.7.6j  | Sync operation failed             |
+| `SyncRetryEvent`                 | v0.7.6j  | Sync operation retry              |
+| `GraphToDocumentSyncedEvent`     | v0.7.6j  | Graph-to-document sync complete   |
 
 ---
 

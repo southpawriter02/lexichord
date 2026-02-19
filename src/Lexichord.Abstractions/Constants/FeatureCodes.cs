@@ -596,4 +596,28 @@ public static class FeatureCodes
     public const string SyncStatusTracker = "Feature.SyncStatusTracker";
 
     #endregion
+
+    #region Sync Event Publisher Features (v0.7.6j)
+
+    /// <summary>
+    /// The Sync Event Publisher feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: WriterPro (basic), Teams (full), Enterprise (advanced)
+    /// Controls access to sync event publishing features including:
+    /// - Event publishing via MediatR with history storage
+    /// - Batch event publishing with deduplication
+    /// - Dynamic event subscriptions with filtering
+    /// - Event history queries with retention limits
+    /// - Event metadata and context tracking
+    /// License tiers:
+    /// - Core: No event publishing access
+    /// - WriterPro: Publish events, 7-day history
+    /// - Teams: Full access, 30-day history, subscriptions, batching
+    /// - Enterprise: Unlimited history, advanced features
+    /// Introduced in v0.7.6j.
+    /// </remarks>
+    public const string SyncEventPublisher = "Feature.SyncEventPublisher";
+
+    #endregion
 }

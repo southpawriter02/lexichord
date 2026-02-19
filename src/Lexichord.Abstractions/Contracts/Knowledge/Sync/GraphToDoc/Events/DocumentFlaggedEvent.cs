@@ -7,10 +7,11 @@
 //   subscribers to send notifications to document owners.
 //
 // v0.7.6g: Graph-to-Doc Sync (CKVS Phase 4c)
-// Dependencies: DocumentFlag
+// v0.7.6j: Enhanced to implement ISyncEvent for unified event handling.
+// Dependencies: DocumentFlag, ISyncEvent (v0.7.6j)
 // =============================================================================
 
-using MediatR;
+using Lexichord.Abstractions.Contracts.Knowledge.Sync.Events;
 
 namespace Lexichord.Abstractions.Contracts.Knowledge.Sync.GraphToDoc.Events;
 
@@ -36,6 +37,10 @@ namespace Lexichord.Abstractions.Contracts.Knowledge.Sync.GraphToDoc.Events;
 /// <para>
 /// <b>Introduced in:</b> v0.7.6g as part of the Graph-to-Doc Sync module.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.6j to implement <see cref="ISyncEvent"/> for
+/// unified event publishing via <see cref="ISyncEventPublisher"/>.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code>
@@ -59,8 +64,39 @@ namespace Lexichord.Abstractions.Contracts.Knowledge.Sync.GraphToDoc.Events;
 /// }
 /// </code>
 /// </example>
-public record DocumentFlaggedEvent : INotification
+public record DocumentFlaggedEvent : ISyncEvent
 {
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Generated at event creation. Used for event deduplication,
+    /// tracking across handlers, and history queries.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    public Guid EventId { get; init; } = Guid.NewGuid();
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Maps to <see cref="Timestamp"/> for ISyncEvent compliance.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    DateTimeOffset ISyncEvent.PublishedAt => Timestamp;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Returns the flagged document's ID.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    Guid ISyncEvent.DocumentId => Flag.DocumentId;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Extensible metadata for correlation IDs, user context,
+    /// and custom handler-specific data.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    public IReadOnlyDictionary<string, object> Metadata { get; init; } =
+        new Dictionary<string, object>();
+
     /// <summary>
     /// The flag that was created.
     /// </summary>

@@ -575,6 +575,34 @@ public sealed class KnowledgeModule : IModule
         // - Teams: Full resolution (Low/Medium auto-resolve, Merge support)
         // - Enterprise: Advanced resolution (all auto-resolve, advanced merge)
         services.AddSingleton<Sync.Conflict.EnhancedConflictResolver>();
+
+        // =====================================================================
+        // v0.7.6j: Sync Event Publisher (CKVS Phase 4c)
+        // =====================================================================
+
+        // LOGIC: Register SyncEventStore as singleton.
+        // In-memory storage for sync event records via ConcurrentDictionary.
+        // Thread-safe for concurrent event recording.
+        // Supports filtering, sorting, and pagination for history queries.
+        services.AddSingleton<Sync.Events.SyncEventStore>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.Events.IEventStore>(sp =>
+            sp.GetRequiredService<Sync.Events.SyncEventStore>());
+
+        // LOGIC: Register SyncEventPublisher as singleton.
+        // Orchestrates sync event publishing via MediatR with additional features:
+        // - Event history storage via IEventStore
+        // - Batch publishing with deduplication
+        // - Dynamic subscriptions with filtering
+        // - License-gated access by tier
+        // Depends on IMediator, IEventStore, ILicenseContext.
+        // License tiers:
+        // - Core: No event publishing access
+        // - WriterPro: Publish events, 7-day history
+        // - Teams: Full access, 30-day history, subscriptions, batching
+        // - Enterprise: Unlimited history, advanced features
+        services.AddSingleton<Sync.Events.SyncEventPublisher>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.Events.ISyncEventPublisher>(sp =>
+            sp.GetRequiredService<Sync.Events.SyncEventPublisher>());
     }
 
     /// <inheritdoc/>

@@ -8,10 +8,9 @@
 //   downstream operations).
 //
 // v0.7.6e: Sync Service Core (CKVS Phase 4c)
-// Dependencies: SyncResult, SyncDirection (v0.7.6e)
+// v0.7.6j: Enhanced to implement ISyncEvent for unified event handling.
+// Dependencies: SyncResult, SyncDirection (v0.7.6e), ISyncEvent (v0.7.6j)
 // =============================================================================
-
-using MediatR;
 
 namespace Lexichord.Abstractions.Contracts.Knowledge.Sync.Events;
 
@@ -36,6 +35,10 @@ namespace Lexichord.Abstractions.Contracts.Knowledge.Sync.Events;
 /// <para>
 /// <b>Introduced in:</b> v0.7.6e as part of the Sync Service Core.
 /// </para>
+/// <para>
+/// <b>Updated in:</b> v0.7.6j to implement <see cref="ISyncEvent"/> for
+/// unified event publishing via <see cref="ISyncEventPublisher"/>.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code>
@@ -50,8 +53,32 @@ namespace Lexichord.Abstractions.Contracts.Knowledge.Sync.Events;
 /// }
 /// </code>
 /// </example>
-public record SyncCompletedEvent : INotification
+public record SyncCompletedEvent : ISyncEvent
 {
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Generated at event creation. Used for event deduplication,
+    /// tracking across handlers, and history queries.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    public Guid EventId { get; init; } = Guid.NewGuid();
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Maps to <see cref="Timestamp"/> for ISyncEvent compliance.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    DateTimeOffset ISyncEvent.PublishedAt => Timestamp;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// LOGIC: Extensible metadata for correlation IDs, user context,
+    /// and custom handler-specific data.
+    /// v0.7.6j: Added for ISyncEvent compliance.
+    /// </remarks>
+    public IReadOnlyDictionary<string, object> Metadata { get; init; } =
+        new Dictionary<string, object>();
+
     /// <summary>
     /// ID of the document that was synchronized.
     /// </summary>
