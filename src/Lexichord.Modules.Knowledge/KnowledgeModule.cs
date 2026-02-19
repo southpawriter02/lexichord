@@ -493,6 +493,37 @@ public sealed class KnowledgeModule : IModule
         services.AddSingleton<Sync.DocToGraph.DocumentToGraphSyncProvider>();
         services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.DocToGraph.IDocumentToGraphSyncProvider>(sp =>
             sp.GetRequiredService<Sync.DocToGraph.DocumentToGraphSyncProvider>());
+
+        // =====================================================================
+        // v0.7.6g: Graph-to-Doc Sync (CKVS Phase 4c)
+        // =====================================================================
+
+        // LOGIC: Register DocumentFlagStore as singleton.
+        // Maintains document flags in memory (thread-safe via ConcurrentDictionary).
+        // Enables flag storage, retrieval, and resolution tracking.
+        services.AddSingleton<Sync.GraphToDoc.DocumentFlagStore>();
+
+        // LOGIC: Register AffectedDocumentDetector as singleton.
+        // Detects documents referencing changed graph entities.
+        // Depends on IDocumentRepository and IGraphRepository for queries.
+        services.AddSingleton<Sync.GraphToDoc.AffectedDocumentDetector>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.GraphToDoc.IAffectedDocumentDetector>(sp =>
+            sp.GetRequiredService<Sync.GraphToDoc.AffectedDocumentDetector>());
+
+        // LOGIC: Register DocumentFlagger as singleton.
+        // Creates and manages document flags for review workflows.
+        // Depends on DocumentFlagStore and IMediator for event publishing.
+        services.AddSingleton<Sync.GraphToDoc.DocumentFlagger>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.GraphToDoc.IDocumentFlagger>(sp =>
+            sp.GetRequiredService<Sync.GraphToDoc.DocumentFlagger>());
+
+        // LOGIC: Register GraphToDocumentSyncProvider as singleton.
+        // Main orchestrator for graph-to-doc sync with license gating and event publishing.
+        // Depends on IAffectedDocumentDetector, IDocumentFlagger, ILicenseContext, IMediator.
+        // License requirement: Teams+ (Core/WriterPro blocked).
+        services.AddSingleton<Sync.GraphToDoc.GraphToDocumentSyncProvider>();
+        services.AddSingleton<Abstractions.Contracts.Knowledge.Sync.GraphToDoc.IGraphToDocumentSyncProvider>(sp =>
+            sp.GetRequiredService<Sync.GraphToDoc.GraphToDocumentSyncProvider>());
     }
 
     /// <inheritdoc/>

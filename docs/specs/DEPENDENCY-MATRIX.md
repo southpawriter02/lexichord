@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-18 (v0.7.6f added)                                             |
+| **Last Updated** | 2026-02-19 (v0.7.6g added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -2251,6 +2251,71 @@
 - v0.0.7a (IMediator) — Event publishing
 - v0.7.6e (SyncOperationStatus) — Sync status enum
 
+### 1.57 v0.7.6g Graph-to-Doc Sync
+
+**New Interfaces (v0.7.6g — Abstractions):**
+
+| Interface                       | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `IGraphToDocumentSyncProvider`  | v0.7.6g    | Abstractions   | Main graph-to-document sync provider               |
+| `IAffectedDocumentDetector`     | v0.7.6g    | Abstractions   | Detects documents affected by graph changes        |
+| `IDocumentFlagger`              | v0.7.6g    | Abstractions   | Creates and manages document flags                 |
+
+**New Records (v0.7.6g — Abstractions):**
+
+| Record                          | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `GraphToDocSyncResult`          | v0.7.6g    | Abstractions   | Sync result with affected documents and flags      |
+| `GraphToDocSyncOptions`         | v0.7.6g    | Abstractions   | Sync operation configuration                       |
+| `AffectedDocument`              | v0.7.6g    | Abstractions   | Document affected by graph change                  |
+| `DocumentFlag`                  | v0.7.6g    | Abstractions   | Flag for document review                           |
+| `DocumentFlagOptions`           | v0.7.6g    | Abstractions   | Flag creation options                              |
+| `SuggestedAction`               | v0.7.6g    | Abstractions   | Suggested action for document update               |
+| `GraphChangeSubscription`       | v0.7.6g    | Abstractions   | Subscription for graph change notifications        |
+
+**New Enums (v0.7.6g — Abstractions):**
+
+| Enum                            | Defined In | Module         | Purpose                                            |
+| :------------------------------ | :--------- | :------------- | :------------------------------------------------- |
+| `DocumentEntityRelationship`    | v0.7.6g    | Abstractions   | How document relates to entity                     |
+| `FlagReason`                    | v0.7.6g    | Abstractions   | Why document was flagged                           |
+| `FlagPriority`                  | v0.7.6g    | Abstractions   | Flag urgency level                                 |
+| `FlagStatus`                    | v0.7.6g    | Abstractions   | Current flag state                                 |
+| `FlagResolution`                | v0.7.6g    | Abstractions   | How flag was resolved                              |
+| `ActionType`                    | v0.7.6g    | Abstractions   | Type of suggested action                           |
+
+**New Classes (v0.7.6g — Modules.Knowledge):**
+
+| Class                           | Defined In | Module             | Purpose                                        |
+| :------------------------------ | :--------- | :----------------- | :--------------------------------------------- |
+| `GraphToDocumentSyncProvider`   | v0.7.6g    | Modules.Knowledge  | Main sync orchestrator implementation          |
+| `AffectedDocumentDetector`      | v0.7.6g    | Modules.Knowledge  | Detects documents via entity source documents  |
+| `DocumentFlagger`               | v0.7.6g    | Modules.Knowledge  | Flag creation and management                   |
+| `DocumentFlagStore`             | v0.7.6g    | Modules.Knowledge  | In-memory flag storage                         |
+
+**New Events (v0.7.6g — Abstractions):**
+
+| Event                             | Defined In | Module         | Purpose                                          |
+| :-------------------------------- | :--------- | :------------- | :----------------------------------------------- |
+| `GraphToDocSyncCompletedEvent`    | v0.7.6g    | Abstractions   | Published when sync completes                    |
+| `DocumentFlaggedEvent`            | v0.7.6g    | Abstractions   | Published when document is flagged               |
+
+**DI Registrations (v0.7.6g):**
+
+| Service                         | Lifetime   | Registered Via              |
+| :------------------------------ | :--------- | :-------------------------- |
+| `DocumentFlagStore`             | Singleton  | KnowledgeModule             |
+| `IAffectedDocumentDetector`     | Singleton  | KnowledgeModule             |
+| `IDocumentFlagger`              | Singleton  | KnowledgeModule             |
+| `IGraphToDocumentSyncProvider`  | Singleton  | KnowledgeModule             |
+
+**Dependencies (v0.7.6g):**
+- v0.4.5e (IGraphRepository) — Graph CRUD operations
+- v0.4.1c (IDocumentRepository) — Document CRUD operations
+- v0.0.4c (ILicenseContext) — License tier checking
+- v0.0.7a (IMediator) — Event publishing
+- v0.7.6e (GraphChange, SyncOperationStatus, ChangeType) — Sync data types
+
 ## 2. MediatR Events Registry
 
 | Event                           | Defined In | Purpose                           |
@@ -2323,6 +2388,8 @@
 | `MetadataExtractionCompletedEvent` | v0.7.6b | Metadata extraction completed    |
 | `MetadataExtractionFailedEvent`  | v0.7.6b  | Metadata extraction failed        |
 | `DocToGraphSyncCompletedEvent`   | v0.7.6f  | Doc-to-graph sync completed       |
+| `GraphToDocSyncCompletedEvent`   | v0.7.6g  | Graph-to-doc sync completed       |
+| `DocumentFlaggedEvent`           | v0.7.6g  | Document flagged for review       |
 
 ---
 

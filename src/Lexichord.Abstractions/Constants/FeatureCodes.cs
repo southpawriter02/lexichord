@@ -524,4 +524,25 @@ public static class FeatureCodes
     public const string DocToGraphSync = "Feature.DocToGraphSync";
 
     #endregion
+
+    #region Graph-to-Doc Sync Features (v0.7.6g)
+
+    /// <summary>
+    /// The Graph-to-Doc Sync feature code.
+    /// </summary>
+    /// <remarks>
+    /// LOGIC: Required tier: Teams (full functionality)
+    /// Controls access to graph-to-document synchronization features including:
+    /// - Detection of documents affected by graph changes
+    /// - Document flagging for review workflow
+    /// - Flag resolution and tracking
+    /// - Graph change subscriptions
+    /// - Notification management
+    /// When this feature is not enabled (Core/WriterPro tier), graph-to-doc sync returns
+    /// UnauthorizedAccessException and the sync UI shows an upgrade prompt.
+    /// Introduced in v0.7.6g.
+    /// </remarks>
+    public const string GraphToDocSync = "Feature.GraphToDocSync";
+
+    #endregion
 }
