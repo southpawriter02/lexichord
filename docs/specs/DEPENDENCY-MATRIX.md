@@ -5,7 +5,7 @@
 | Field            | Value                                                                  |
 | :--------------- | :--------------------------------------------------------------------- |
 | **Document ID**  | LCS-DEP-MATRIX                                                         |
-| **Last Updated** | 2026-02-19 (v0.7.6j added)                                             |
+| **Last Updated** | 2026-02-19 (v0.7.7b added)                                             |
 | **Purpose**      | Cross-reference of all interfaces, services, and their source versions |
 
 ---
@@ -4124,3 +4124,67 @@ v0.13.5-ORC (Patterns & Templates)
 | `PropertyTypeChecker`       | v0.6.5f    | Modules.Knowledge | IPropertyTypeChecker implementation        |
 | `ConstraintEvaluator`       | v0.6.5f    | Modules.Knowledge | IConstraintEvaluator implementation        |
 | `SchemaValidatorService`    | v0.6.5f    | Modules.Knowledge | ISchemaValidatorService + IValidator impl  |
+
+---
+
+### 1.69 v0.7.7b Workflow Engine
+
+**New Interfaces (v0.7.7b — Modules.Agents):**
+
+| Interface                    | Defined In | Module         | Purpose                                            |
+| :--------------------------- | :--------- | :------------- | :------------------------------------------------- |
+| `IWorkflowEngine`           | v0.7.7b    | Modules.Agents | Workflow execution (ExecuteAsync, streaming, etc.) |
+| `IExpressionEvaluator`      | v0.7.7b    | Modules.Agents | Sandboxed condition expression evaluation          |
+
+**New Records (v0.7.7b — Modules.Agents):**
+
+| Record                         | Defined In | Module         | Purpose                                    |
+| :----------------------------- | :--------- | :------------- | :----------------------------------------- |
+| `WorkflowExecutionContext`     | v0.7.7b    | Modules.Agents | Execution input (doc, selection, vars)     |
+| `WorkflowExecutionOptions`    | v0.7.7b    | Modules.Agents | Behavior options (StopOnFirstFailure, etc.)|
+| `WorkflowExecutionResult`     | v0.7.7b    | Modules.Agents | Complete execution result                  |
+| `WorkflowStepExecutionResult` | v0.7.7b    | Modules.Agents | Single step execution result               |
+| `WorkflowUsageMetrics`        | v0.7.7b    | Modules.Agents | Aggregated token usage                     |
+| `AgentUsageMetrics`           | v0.7.7b    | Modules.Agents | Per-step token usage                       |
+| `WorkflowExecutionValidation` | v0.7.7b    | Modules.Agents | Pre-flight validation result               |
+| `WorkflowTokenEstimate`       | v0.7.7b    | Modules.Agents | Token usage estimation                     |
+| `StepTokenEstimate`           | v0.7.7b    | Modules.Agents | Per-step token estimation                  |
+
+**New Enums (v0.7.7b — Modules.Agents):**
+
+| Enum                       | Defined In | Module         | Purpose                                    |
+| :------------------------- | :--------- | :------------- | :----------------------------------------- |
+| `WorkflowExecutionStatus`  | v0.7.7b    | Modules.Agents | Pending/Running/Completed/Failed/Cancelled |
+| `WorkflowStepStatus`       | v0.7.7b    | Modules.Agents | Pending/Running/Completed/Failed/Skipped   |
+
+**New Classes (v0.7.7b — Modules.Agents):**
+
+| Class                          | Defined In | Module         | Purpose                                    |
+| :----------------------------- | :--------- | :------------- | :----------------------------------------- |
+| `WorkflowEngine`               | v0.7.7b    | Modules.Agents | IWorkflowEngine implementation             |
+| `ExpressionEvaluator`          | v0.7.7b    | Modules.Agents | IExpressionEvaluator implementation        |
+| `ExpressionEvaluationException`| v0.7.7b    | Modules.Agents | Expression evaluation failure exception    |
+
+**New Events (v0.7.7b — Modules.Agents):**
+
+| Event                          | Defined In | Module         | Purpose                                    |
+| :----------------------------- | :--------- | :------------- | :----------------------------------------- |
+| `WorkflowStartedEvent`        | v0.7.7b    | Modules.Agents | Published when execution begins            |
+| `WorkflowStepStartedEvent`    | v0.7.7b    | Modules.Agents | Published before each step                 |
+| `WorkflowStepCompletedEvent`  | v0.7.7b    | Modules.Agents | Published after each step                  |
+| `WorkflowCompletedEvent`      | v0.7.7b    | Modules.Agents | Published on execution completion          |
+| `WorkflowCancelledEvent`      | v0.7.7b    | Modules.Agents | Published on cancellation                  |
+
+**DI Registrations (v0.7.7b):**
+
+| Registration                        | Lifetime  | Module         | Purpose                                    |
+| :---------------------------------- | :-------- | :------------- | :----------------------------------------- |
+| `IExpressionEvaluator → ExpressionEvaluator` | Singleton | Modules.Agents | Sandboxed expression evaluation  |
+| `IWorkflowEngine → WorkflowEngine`           | Singleton | Modules.Agents | Workflow execution engine        |
+
+**Dependencies (v0.7.7b):**
+
+| Package                    | Version | Purpose                                    |
+| :------------------------- | :------ | :----------------------------------------- |
+| `DynamicExpresso.Core`     | 2.16.1  | Sandboxed condition expression evaluation  |
+

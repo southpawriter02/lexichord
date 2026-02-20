@@ -11,6 +11,7 @@
           "Avalonia": "11.3.2",
           "CommunityToolkit.Mvvm": "8.4.0",
           "DiffPlex": "1.7.2",
+          "DynamicExpresso.Core": "2.16.1",
           "Lexichord.Abstractions": "1.0.0",
           "Markdig": "0.37.0",
           "MediatR": "12.4.0",
@@ -143,6 +144,17 @@
           "lib/net8.0/Dock.Model.dll": {
             "assemblyVersion": "11.3.2.0",
             "fileVersion": "11.3.2.0"
+          }
+        }
+      },
+      "DynamicExpresso.Core/2.16.1": {
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/DynamicExpresso.Core.dll": {
+            "assemblyVersion": "2.16.1.0",
+            "fileVersion": "2.16.1.0"
           }
         }
       },
@@ -736,6 +748,13 @@
       "sha512": "sha512-qNwP+HzuUj/zwKUccGsW29LGF/RKac76xXJKwycWZ7wX/Q/AXKAvnB42PROyL7U042RZn0lC14G+3oIntlRR6g==",
       "path": "dock.model/11.3.2",
       "hashPath": "dock.model.11.3.2.nupkg.sha512"
+    },
+    "DynamicExpresso.Core/2.16.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RQxI6Ov/cfOcbTEQ8tLBJH5J7/W2uWvZjDCMTLAUZa91Z39Vj31wapSy6dyuEsw1FCZVqTipqoWw+t5qMi2ljA==",
+      "path": "dynamicexpresso.core/2.16.1",
+      "hashPath": "dynamicexpresso.core.2.16.1.nupkg.sha512"
     },
     "FluentValidation/11.9.2": {
       "type": "package",

@@ -58,6 +58,9 @@
 
     <!-- v0.7.5d: SQLite for Learning Loop feedback persistence -->
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+
+    <!-- v0.7.7b: DynamicExpresso for sandboxed workflow condition expressions -->
+    <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
   </ItemGroup>
 
   <!-- v0.6.3c: Embed built-in prompt templates as resources -->

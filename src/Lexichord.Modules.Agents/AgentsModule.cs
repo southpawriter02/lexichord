@@ -469,6 +469,17 @@ public class AgentsModule : IModule
         //     Bridges service layer with the visual designer UI
         services.AddSingleton<IWorkflowDesignerService, WorkflowDesignerService>();
         services.AddTransient<ViewModels.WorkflowDesignerViewModel>();
+
+        // LOGIC: Register the Workflow Engine services:
+        //   v0.7.7b — Workflow Engine
+        //   - IExpressionEvaluator → ExpressionEvaluator: Singleton
+        //     Sandboxed expression evaluation for workflow step conditions
+        //     Uses DynamicExpresso with built-in functions (count, any, isEmpty, contains)
+        //   - IWorkflowEngine → WorkflowEngine: Singleton
+        //     Sequential agent execution with data passing, conditions, and cancellation
+        //     Depends on: IAgentRegistry, IExpressionEvaluator, IMediator, ILogger
+        services.AddSingleton<IExpressionEvaluator, ExpressionEvaluator>();
+        services.AddSingleton<IWorkflowEngine, WorkflowEngine>();
     }
 
     /// <inheritdoc />
@@ -906,6 +917,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Workflow Designer Service is not registered. Workflow designer features will not be available.");
+        }
+
+        // LOGIC: Verify Workflow Engine is available (v0.7.7b).
+        var workflowEngine = provider.GetService<IWorkflowEngine>();
+        if (workflowEngine is not null)
+        {
+            logger.LogDebug(
+                "Workflow Engine available: {EngineType}",
+                workflowEngine.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Workflow Engine is not registered. Workflow execution features will not be available.");
         }
     }
 }
