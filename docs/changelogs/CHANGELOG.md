@@ -6,6 +6,18 @@ This changelog is written for stakeholders and users, focusing on **what changed
 
 ---
 
+## [v0.7.7] - 2026-02 (In Progress)
+
+### Agent Workflows (Visual Workflow Designer)
+
+This release introduces the Workflow Designer — a visual, drag-and-drop builder for creating multi-step agent pipelines with conditional execution, YAML import/export, and comprehensive validation.
+
+#### What's New
+
+- **Workflow Designer UI (v0.7.7a)** — Core infrastructure for the visual workflow designer in `Lexichord.Modules.Agents.Workflows` and `Lexichord.Modules.Agents.ViewModels`. Added `WorkflowDefinition` record with `WorkflowStepDefinition`, `WorkflowStepCondition`, `ConditionType` enum, `WorkflowMetadata` (8 properties including author, tags, category), and `WorkflowCategory` enum (5 categories). Added `IWorkflowDesignerService` interface with 10 methods for CRUD, validation, YAML export/import, duplication, and listing; `WorkflowDesignerService` implementation using `ConcurrentDictionary` in-memory store with 5 validation error rules (`MISSING_NAME`, `EMPTY_WORKFLOW`, `UNKNOWN_AGENT`, `UNKNOWN_PERSONA`, `DUPLICATE_STEP_ID`) and 3 warning rules (`SINGLE_STEP`, `MISSING_DESCRIPTION`, `ALL_SAME_AGENT`). Added `WorkflowYamlSerializer` with YamlDotNet snake_case DTO mapping and `WorkflowImportException` custom exception. Added `IWorkflowDesignerViewModel` interface with 10 commands (`NewWorkflow`, `Save`, `Load`, `Validate`, `AddStep`, `RemoveStep`, `ReorderStep`, `ExportYaml`, `ImportYaml`, `RunWorkflow`); `WorkflowDesignerViewModel` implementation with agent palette population from `IAgentRegistry`, step management, license gating (`LicenseTier.Teams`+), and `BuildCurrentDefinition` helper. Added `WorkflowStepViewModel` (ObservableObject) with identity, configuration, condition, and UI state properties; `AgentPaletteItemViewModel` and `PersonaOption` records. Added `IConfigurationService` minimal abstraction. DI registration: `IWorkflowDesignerService → WorkflowDesignerService` (Singleton), `WorkflowDesignerViewModel` (Transient). License gating: editing requires Teams+ tier. Includes 19 unit tests with 100% pass rate (0 regressions on 11,047-test suite). [Detailed changelog](v0.7.x/LCS-CL-v0.7.7a.md)
+
+---
+
 ## [v0.7.6] - 2026-02 (Complete)
 
 ### The Summarizer Agent (Multi-Mode Document Summarization)

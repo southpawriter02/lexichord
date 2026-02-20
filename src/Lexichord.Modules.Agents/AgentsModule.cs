@@ -23,6 +23,7 @@ using Lexichord.Modules.Agents.Extensions;
 using Lexichord.Modules.Agents.Performance;
 using Lexichord.Modules.Agents.Services;
 using Lexichord.Modules.Agents.Templates;
+using Lexichord.Modules.Agents.Workflows;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -458,6 +459,16 @@ public class AgentsModule : IModule
         //   - Prompt template: document-comparer.yaml with JSON output format
         //   - MediatR events: DocumentComparisonStartedEvent, DocumentComparisonCompletedEvent, DocumentComparisonFailedEvent
         services.AddDocumentComparisonPipeline();
+
+        // ── v0.7.7: Agent Workflows ─────────────────────────────────────────
+        // LOGIC: Register the Workflow Designer services:
+        //   v0.7.7a — Workflow Designer UI
+        //   - IWorkflowDesignerService → WorkflowDesignerService: Singleton
+        //     Manages workflow CRUD, validation, YAML export/import, and duplication
+        //   - WorkflowDesignerViewModel: Transient for per-instance isolation
+        //     Bridges service layer with the visual designer UI
+        services.AddSingleton<IWorkflowDesignerService, WorkflowDesignerService>();
+        services.AddTransient<ViewModels.WorkflowDesignerViewModel>();
     }
 
     /// <inheritdoc />
@@ -882,6 +893,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Document Comparer is not registered. Document comparison features will not be available.");
+        }
+
+        // LOGIC: Verify Workflow Designer Service is available (v0.7.7a).
+        var workflowDesignerService = provider.GetService<IWorkflowDesignerService>();
+        if (workflowDesignerService is not null)
+        {
+            logger.LogDebug(
+                "Workflow Designer Service available: {ServiceType}",
+                workflowDesignerService.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Workflow Designer Service is not registered. Workflow designer features will not be available.");
         }
     }
 }
