@@ -528,6 +528,18 @@ public class AgentsModule : IModule
         //   - Depends on: ILogger<GatingConditionEvaluator>
         services.AddSingleton<Workflows.Validation.IGatingConditionEvaluator,
             Workflows.Validation.GatingConditionEvaluator>();
+
+        // LOGIC: Register the Sync Workflow Step Factory:
+        //   v0.7.7g — Sync Step Type (CKVS Phase 4d)
+        //   - SyncWorkflowStepFactory: Singleton
+        //     Factory for creating ISyncWorkflowStep instances with injected
+        //     ISyncService and ILoggerFactory dependencies.
+        //     Sync steps enable document-to-graph synchronization within
+        //     validation workflows with configurable direction and conflict
+        //     resolution strategies.
+        //   - License gating: WriterPro (D2G only) / Teams (all directions) / Enterprise (full)
+        //   - Depends on: ISyncService (v0.7.6e), ILoggerFactory
+        services.AddSingleton<Workflows.Validation.SyncWorkflowStepFactory>();
     }
 
     /// <inheritdoc />

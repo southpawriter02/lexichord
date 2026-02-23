@@ -4283,3 +4283,27 @@ v0.13.5-ORC (Patterns & Templates)
 | Registration                                                       | Lifetime  | Module         | Purpose                              |
 | :----------------------------------------------------------------- | :-------- | :------------- | :----------------------------------- |
 | `IGatingConditionEvaluator → GatingConditionEvaluator`              | Singleton | Modules.Agents | Gate condition expression evaluator  |
+
+### v0.7.7g — Sync Step Type (CKVS Phase 4d)
+
+**New Interfaces (v0.7.7g):**
+
+| Interface/Class                          | Version    | Module         | Description                                 |
+| :--------------------------------------- | :--------- | :------------- | :------------------------------------------ |
+| `ISyncWorkflowStep`                      | v0.7.7g    | Modules.Agents | Extended IWorkflowStep for sync steps       |
+| `SyncWorkflowStep`                       | v0.7.7g    | Modules.Agents | ISyncWorkflowStep implementation            |
+| `SyncWorkflowStepFactory`               | v0.7.7g    | Modules.Agents | Factory for ISyncWorkflowStep instances      |
+| `ConflictStrategy`                       | v0.7.7g    | Modules.Agents | Workflow-level conflict strategy (6 values) |
+| `SyncStepResult`                         | v0.7.7g    | Modules.Agents | Sync step result record (12 properties)     |
+| `SyncWorkflowContext`                    | v0.7.7g    | Modules.Agents | Workflow sync context record (8 properties) |
+| `SyncStepConflict`                       | v0.7.7g    | Modules.Agents | Conflict detail record                      |
+| `SyncStepConflictResolution`             | v0.7.7g    | Modules.Agents | Conflict resolution record                  |
+| `SyncChange`                             | v0.7.7g    | Modules.Agents | Individual change record                    |
+| `SyncChangeType`                         | v0.7.7g    | Modules.Agents | Change type enum (5 values)                 |
+| `SyncWorkflowStepOptions`               | v0.7.7g    | Modules.Agents | Factory configuration record                |
+
+**DI Registrations (v0.7.7g):**
+
+| Registration                                                       | Lifetime  | Module         | Purpose                              |
+| :----------------------------------------------------------------- | :-------- | :------------- | :----------------------------------- |
+| `SyncWorkflowStepFactory`                                          | Singleton | Modules.Agents | Sync step factory with ISyncService  |
