@@ -4263,3 +4263,23 @@ v0.13.5-ORC (Patterns & Templates)
 | Registration                                                       | Lifetime  | Module         | Purpose                              |
 | :----------------------------------------------------------------- | :-------- | :------------- | :----------------------------------- |
 | `ValidationWorkflowStepFactory`                                     | Singleton | Modules.Agents | Validation step creation factory     |
+
+### v0.7.7f — Gating Step Type (CKVS Phase 4d)
+
+**New Interfaces (v0.7.7f):**
+
+| Interface/Type                           | Source     | Module         | Description                                 |
+| :--------------------------------------- | :--------- | :------------- | :------------------------------------------ |
+| `IGatingWorkflowStep`                    | v0.7.7f    | Modules.Agents | Extended IWorkflowStep for gating steps     |
+| `IGatingConditionEvaluator`              | v0.7.7f    | Modules.Agents | Condition expression evaluator contract     |
+| `GatingWorkflowStep`                     | v0.7.7f    | Modules.Agents | IGatingWorkflowStep implementation          |
+| `GatingConditionEvaluator`               | v0.7.7f    | Modules.Agents | Regex-based expression evaluator            |
+| `GatingResult`                           | v0.7.7f    | Modules.Agents | Gate evaluation result (8 properties)       |
+| `GatingCondition`                        | v0.7.7f    | Modules.Agents | Parsed condition record (5 properties)      |
+| `GatingEvaluationContext`                | v0.7.7f    | Modules.Agents | Evaluation context record (5 properties)    |
+
+**DI Registrations (v0.7.7f):**
+
+| Registration                                                       | Lifetime  | Module         | Purpose                              |
+| :----------------------------------------------------------------- | :-------- | :------------- | :----------------------------------- |
+| `IGatingConditionEvaluator → GatingConditionEvaluator`              | Singleton | Modules.Agents | Gate condition expression evaluator  |

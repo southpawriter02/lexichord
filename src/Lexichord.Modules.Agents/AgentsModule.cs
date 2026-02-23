@@ -518,6 +518,16 @@ public class AgentsModule : IModule
         //   - License gating: WriterPro (Schema, Grammar) / Teams (all types) / Enterprise (unlimited)
         //   - Depends on: IUnifiedValidationService (v0.7.5f), ILoggerFactory
         services.AddSingleton<Workflows.Validation.ValidationWorkflowStepFactory>();
+
+        // LOGIC: Register the Gating Condition Evaluator:
+        //   v0.7.7f — Gating Step Type (CKVS Phase 4d)
+        //   - IGatingConditionEvaluator → GatingConditionEvaluator: Singleton
+        //     Regex-based expression evaluator supporting validation_count,
+        //     metadata, content_length, and has_property expressions.
+        //   - License gating: WriterPro (validation count only) / Teams (all + branching) / Enterprise (full)
+        //   - Depends on: ILogger<GatingConditionEvaluator>
+        services.AddSingleton<Workflows.Validation.IGatingConditionEvaluator,
+            Workflows.Validation.GatingConditionEvaluator>();
     }
 
     /// <inheritdoc />
