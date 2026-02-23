@@ -480,6 +480,19 @@ public class AgentsModule : IModule
         //     Depends on: IAgentRegistry, IExpressionEvaluator, IMediator, ILogger
         services.AddSingleton<IExpressionEvaluator, ExpressionEvaluator>();
         services.AddSingleton<IWorkflowEngine, WorkflowEngine>();
+
+        // LOGIC: Register the Preset Workflow Repository:
+        //   v0.7.7c — Preset Workflows
+        //   - IPresetWorkflowRepository → PresetWorkflowRepository: Singleton
+        //     Loads 5 built-in workflow YAML resources at construction:
+        //       • preset-technical-review (4 steps: editor→simplifier→tuning→summarizer)
+        //       • preset-marketing-polish (4 steps: simplifier→editor→tuning→summarizer)
+        //       • preset-quick-edit (1 step: editor)
+        //       • preset-academic-review (3 steps: editor→tuning→summarizer)
+        //       • preset-executive-summary (3 steps: simplifier→editor→summarizer)
+        //   - License gating: WriterPro (execute) / Teams (duplicate)
+        //   - Depends on: ILogger only
+        services.AddSingleton<IPresetWorkflowRepository, PresetWorkflowRepository>();
     }
 
     /// <inheritdoc />
@@ -930,6 +943,20 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Workflow Engine is not registered. Workflow execution features will not be available.");
+        }
+
+        // LOGIC: Verify Preset Workflow Repository is available (v0.7.7c).
+        var presetWorkflowRepository = provider.GetService<IPresetWorkflowRepository>();
+        if (presetWorkflowRepository is not null)
+        {
+            var presetCount = presetWorkflowRepository.GetAll().Count;
+            logger.LogDebug(
+                "Preset Workflow Repository available: {RepositoryType} with {PresetCount} presets",
+                presetWorkflowRepository.GetType().Name, presetCount);
+        }
+        else
+        {
+            logger.LogWarning("Preset Workflow Repository is not registered. Built-in workflow presets will not be available.");
         }
     }
 }

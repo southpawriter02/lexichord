@@ -1,0 +1,85 @@
+workflow_id: "preset-executive-summary"
+name: "Executive Summary"
+description: "Transform detailed content into executive-ready briefings"
+icon: "briefcase"
+category: General
+
+steps:
+  - step_id: "simplify"
+    agent_id: "simplifier"
+    order: 1
+    prompt_override: |
+      Condense this content for executive consumption.
+
+      Apply these executive communication principles:
+      1. Bottom Line Up Front (BLUF)
+         - Lead with the key takeaway/recommendation
+      2. Eliminate Technical Jargon
+         - Replace with business impact language
+      3. Focus on Business Outcomes
+         - "What does this mean for the organization?"
+      4. Highlight Decision Points
+         - What actions are needed?
+      5. Quantify Where Possible
+         - Numbers, percentages, timelines
+
+      Target reading level: 12th grade (educated but not specialist)
+      Target length: Reduce to 20-30% of original length
+
+  - step_id: "edit"
+    agent_id: "editor"
+    persona_id: "strict"
+    order: 2
+    prompt_override: |
+      Refine this executive briefing for C-suite consumption.
+
+      Ensure:
+      1. Clear, direct statements (no hedging or qualifications)
+      2. Action-oriented language ("Implement X" not "X could be implemented")
+      3. Logical flow from situation to recommendation
+      4. Professional, confident tone
+      5. No redundancy or filler
+
+      Structure check:
+      - Does it answer "So what?" immediately?
+      - Are recommendations specific and actionable?
+      - Is the ask clear?
+
+  - step_id: "summarize"
+    agent_id: "summarizer"
+    order: 3
+    prompt_override: |
+      Format this as a one-page executive summary.
+
+      Structure:
+      1. Situation (2-3 sentences)
+         - Context the executive needs
+
+      2. Key Findings (3-5 bullet points)
+         - Most important insights
+         - Each bullet self-contained
+
+      3. Implications (2-3 sentences)
+         - What this means for the business
+
+      4. Recommended Actions (numbered list)
+         - Specific, actionable steps
+         - Include owners/timelines if available
+
+      5. Next Steps / Timeline
+         - Immediate actions required
+         - Key milestones
+
+      Total length: Must fit on one page (approximately 400-500 words)
+
+metadata:
+  author: "Lexichord"
+  version: "1.0.0"
+  created_at: "2026-01-01T00:00:00Z"
+  tags:
+    - executive
+    - summary
+    - business
+    - briefing
+  is_built_in: true
+  required_tier: Teams

@@ -4188,3 +4188,26 @@ v0.13.5-ORC (Patterns & Templates)
 | :------------------------- | :------ | :----------------------------------------- |
 | `DynamicExpresso.Core`     | 2.16.1  | Sandboxed condition expression evaluation  |
 
+---
+
+### v0.7.7c — Preset Workflows
+
+**New Interfaces (v0.7.7c):**
+
+| Interface/Type                  | Version    | Module         | Purpose                                    |
+| :------------------------------ | :--------- | :------------- | :----------------------------------------- |
+| `IPresetWorkflowRepository`     | v0.7.7c    | Modules.Agents | Preset workflow access (GetAll, GetById, etc.) |
+| `PresetWorkflowSummary`         | v0.7.7c    | Modules.Agents | Lightweight display record for gallery UI  |
+| `PresetWorkflowRepository`      | v0.7.7c    | Modules.Agents | IPresetWorkflowRepository implementation   |
+
+**DI Registrations (v0.7.7c):**
+
+| Registration                                               | Lifetime  | Module         | Purpose                         |
+| :--------------------------------------------------------- | :-------- | :------------- | :------------------------------ |
+| `IPresetWorkflowRepository → PresetWorkflowRepository`     | Singleton | Modules.Agents | Preset workflow gallery access  |
+
+**Dependencies (v0.7.7c):**
+
+| Dependency                 | Version | Purpose                                    |
+| :------------------------- | :------ | :----------------------------------------- |
+| `YamlDotNet`               | 15.x    | YAML deserialization of preset workflows   |

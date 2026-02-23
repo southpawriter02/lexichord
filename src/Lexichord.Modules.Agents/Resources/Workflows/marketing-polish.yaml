@@ -1,0 +1,99 @@
+workflow_id: "preset-marketing-polish"
+name: "Marketing Polish"
+description: "Transform content into compelling marketing copy with brand voice alignment"
+icon: "megaphone"
+category: Marketing
+
+steps:
+  - step_id: "simplify"
+    agent_id: "simplifier"
+    order: 1
+    prompt_override: |
+      Transform this content for maximum marketing impact.
+
+      Apply these principles:
+      1. Use active voice throughout
+      2. Lead with benefits, not features
+      3. Replace passive constructions with dynamic verbs
+      4. Shorten sentences for punch (aim for 15-20 words max)
+      5. Eliminate filler words and redundancies
+
+      Target audience: General consumers
+      Target reading level: 8th grade (accessible to all)
+
+      Make every word earn its place. If it doesn't add value, cut it.
+
+  - step_id: "edit"
+    agent_id: "editor"
+    persona_id: "friendly"
+    order: 2
+    prompt_override: |
+      Polish this marketing content for maximum engagement.
+
+      Enhance:
+      1. Opening hooks - make them irresistible
+      2. Calls-to-action - clear, urgent, benefit-driven
+      3. Emotional resonance - connect with reader needs
+      4. Power words - energize bland phrases
+      5. Rhythm and flow - create momentum
+
+      Avoid:
+      - Marketing cliches ("best-in-class", "cutting-edge", "synergy")
+      - Hyperbole without substance
+      - Passive or weak constructions
+      - Jargon that alienates
+
+      The tone should be confident, conversational, and compelling.
+
+  - step_id: "tune"
+    agent_id: "tuning"
+    order: 3
+    prompt_override: |
+      Ensure brand voice consistency throughout this marketing content.
+
+      Verify:
+      1. Tone matches brand personality (confident, approachable, expert)
+      2. Terminology is consistent with brand lexicon
+      3. Formatting follows marketing style guide
+      4. No conflicting messages or mixed metaphors
+      5. Legal/compliance language preserved where required
+
+      Make subtle adjustments to strengthen brand alignment.
+    condition:
+      type: PreviousSuccess
+
+  - step_id: "summarize"
+    agent_id: "summarizer"
+    order: 4
+    prompt_override: |
+      Generate marketing metadata for this content.
+
+      Produce:
+      1. Tagline (10 words max)
+         - Catchy, memorable, benefit-focused
+
+      2. Social Media Snippets
+         - Twitter/X (280 chars)
+         - LinkedIn (150 words)
+         - Instagram caption (2200 chars with emojis)
+
+      3. Key Selling Points (3 bullet points)
+         - Each should stand alone
+
+      4. Target Audience Definition
+         - Demographics and psychographics
+
+      5. Suggested A/B Test Variations (2 alternatives)
+         - For the main headline
+
+metadata:
+  author: "Lexichord"
+  version: "1.0.0"
+  created_at: "2026-01-01T00:00:00Z"
+  tags:
+    - marketing
+    - copywriting
+    - brand
+    - conversion
+  is_built_in: true
+  required_tier: WriterPro

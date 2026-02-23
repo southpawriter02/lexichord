@@ -73,6 +73,11 @@
     <EmbeddedResource Include="Resources\BuiltIn\*.yaml" />
   </ItemGroup>
 
+  <!-- v0.7.7c: Embed preset workflow definitions as resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Workflows\*.yaml" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- The ONLY project reference allowed for modules -->
     <ProjectReference Include="..\Lexichord.Abstractions\Lexichord.Abstractions.csproj" />

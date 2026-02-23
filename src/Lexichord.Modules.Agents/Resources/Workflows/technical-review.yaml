@@ -1,0 +1,101 @@
+workflow_id: "preset-technical-review"
+name: "Technical Review"
+description: "Comprehensive technical document review: grammar, clarity, and style compliance"
+icon: "file-code"
+category: Technical
+
+steps:
+  - step_id: "edit"
+    agent_id: "editor"
+    persona_id: "strict"
+    order: 1
+    prompt_override: |
+      Review this technical document with meticulous attention to detail.
+
+      Focus on:
+      1. Grammar and punctuation errors
+      2. Technical accuracy and precision
+      3. Unclear or ambiguous statements
+      4. Inconsistent terminology
+      5. Missing or incorrect technical references
+
+      For each issue found, provide:
+      - Location (paragraph/sentence identifier)
+      - The problematic text
+      - Your suggested correction
+      - Severity rating (Critical/Major/Minor)
+
+      Format your response as a structured list of findings.
+
+  - step_id: "simplify"
+    agent_id: "simplifier"
+    order: 2
+    prompt_override: |
+      Analyze this technical document for readability and accessibility.
+
+      Your task:
+      1. Identify overly complex sentences (25+ words)
+      2. Flag jargon that could be simplified for a broader audience
+      3. Suggest paragraph breaks for dense content
+      4. Recommend transition phrases where flow is choppy
+
+      Target audience: Technical professionals who may not be domain experts
+      Target reading level: 10th-12th grade (Flesch-Kincaid)
+
+      Preserve all technical accuracy while improving clarity.
+    condition:
+      type: Expression
+      expression: "settings.simplify_enabled != false"
+
+  - step_id: "tune"
+    agent_id: "tuning"
+    order: 3
+    prompt_override: |
+      Review this document for style guide compliance.
+
+      Check for:
+      1. Consistent use of technical terms
+      2. Proper capitalization of product names
+      3. Correct formatting of code snippets
+      4. Appropriate use of passive vs active voice
+      5. Acronym definitions on first use
+
+      Fix any style violations while preserving the technical content.
+    condition:
+      type: PreviousSuccess
+
+  - step_id: "summarize"
+    agent_id: "summarizer"
+    order: 4
+    prompt_override: |
+      Generate comprehensive metadata for this technical document.
+
+      Produce:
+      1. Technical Abstract (150 words max)
+         - Purpose of the document
+         - Key technical concepts covered
+         - Target audience
+
+      2. Key Points (5-7 bullet points)
+         - Most important technical takeaways
+
+      3. Prerequisites (if applicable)
+         - Required knowledge or setup
+
+      4. Related Topics (3-5 suggestions)
+         - Topics for further reading
+
+      5. Suggested Tags (5-10 keywords)
+         - For searchability and categorization
+
+metadata:
+  author: "Lexichord"
+  version: "1.0.0"
+  created_at: "2026-01-01T00:00:00Z"
+  tags:
+    - technical
+    - documentation
+    - review
+    - comprehensive
+  is_built_in: true
+  required_tier: WriterPro

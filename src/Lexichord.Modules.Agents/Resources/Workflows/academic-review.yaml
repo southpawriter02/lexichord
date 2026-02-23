@@ -1,0 +1,85 @@
+workflow_id: "preset-academic-review"
+name: "Academic Review"
+description: "Scholarly document review with citation and formality checks"
+icon: "graduation-cap"
+category: Academic
+
+steps:
+  - step_id: "edit"
+    agent_id: "editor"
+    persona_id: "strict"
+    order: 1
+    prompt_override: |
+      Review this academic document with scholarly rigor.
+
+      Examine:
+      1. Grammar and syntax (formal academic register)
+      2. Logical argument structure and flow
+      3. Claim-evidence alignment
+      4. Hedging language appropriateness
+      5. Citation placement and formatting
+      6. Transition effectiveness between sections
+
+      Academic standards:
+      - Third person perspective (unless methodology requires first)
+      - Formal vocabulary (no colloquialisms)
+      - Precise, unambiguous statements
+      - Proper qualification of claims
+
+      For each issue, indicate its impact on scholarly credibility.
+
+  - step_id: "tune"
+    agent_id: "tuning"
+    order: 2
+    prompt_override: |
+      Ensure this document meets academic writing standards.
+
+      Verify compliance with:
+      1. Formal academic tone throughout
+      2. Consistent citation style (detect and maintain)
+      3. Appropriate hedging ("suggests" vs "proves")
+      4. Scholarly vocabulary usage
+      5. Objective language (minimize subjective terms)
+      6. Proper use of technical terminology
+
+      Fix violations while preserving the author's argument.
+    condition:
+      type: PreviousSuccess
+
+  - step_id: "summarize"
+    agent_id: "summarizer"
+    order: 3
+    prompt_override: |
+      Generate an academic abstract and metadata.
+
+      Produce:
+      1. Structured Abstract (250 words)
+         - Background/Context (2-3 sentences)
+         - Objective/Research Question
+         - Methods/Approach (if applicable)
+         - Results/Findings
+         - Conclusions/Implications
+
+      2. Keywords (5-7 academic terms)
+         - For database indexing
+
+      3. Discipline Classification
+         - Primary and secondary fields
+
+      4. Contribution Statement
+         - How this advances the field (2-3 sentences)
+
+      5. Suggested Venues
+         - Appropriate journals or conferences (3-5)
+
+metadata:
+  author: "Lexichord"
+  version: "1.0.0"
+  created_at: "2026-01-01T00:00:00Z"
+  tags:
+    - academic
+    - scholarly
+    - research
+    - formal
+  is_built_in: true
+  required_tier: Teams

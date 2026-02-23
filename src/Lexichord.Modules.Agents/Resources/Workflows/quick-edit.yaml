@@ -1,0 +1,40 @@
+workflow_id: "preset-quick-edit"
+name: "Quick Edit"
+description: "Fast grammar and clarity check for any document"
+icon: "zap"
+category: General
+
+steps:
+  - step_id: "edit"
+    agent_id: "editor"
+    persona_id: "friendly"
+    order: 1
+    prompt_override: |
+      Perform a quick, focused review of this text.
+
+      Priority checks (in order):
+      1. Grammar errors (subject-verb agreement, tense consistency)
+      2. Spelling mistakes
+      3. Punctuation problems
+      4. Obviously unclear sentences
+
+      Keep it fast:
+      - Only flag significant issues
+      - Skip minor style preferences
+      - Focus on errors, not improvements
+      - Limit to top 5 most impactful fixes
+
+      Provide your response as a brief, actionable list.
+      Format: "[Issue type] Line/sentence: [Problem] → [Fix]"
+
+metadata:
+  author: "Lexichord"
+  version: "1.0.0"
+  created_at: "2026-01-01T00:00:00Z"
+  tags:
+    - quick
+    - edit
+    - grammar
+    - fast
+  is_built_in: true
+  required_tier: WriterPro
