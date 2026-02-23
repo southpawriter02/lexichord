@@ -4235,3 +4235,31 @@ v0.13.5-ORC (Patterns & Templates)
 | `IWorkflowExecutionHistoryService → WorkflowExecutionHistoryService` | Singleton | Modules.Agents | Execution history tracking           |
 | `WorkflowExecutionViewModel`                                        | Transient | Modules.Agents | Execution panel ViewModel            |
 
+### v0.7.7e — Validation Step Types (CKVS Phase 4d)
+
+**New Interfaces (v0.7.7e):**
+
+| Interface/Type                           | Source     | Module         | Description                                 |
+| :--------------------------------------- | :--------- | :------------- | :------------------------------------------ |
+| `IWorkflowStep`                          | v0.7.7e    | Modules.Agents | Base validation workflow step interface      |
+| `IValidationWorkflowStep`                | v0.7.7e    | Modules.Agents | Extended step with validation capabilities  |
+| `ValidationWorkflowStep`                 | v0.7.7e    | Modules.Agents | IValidationWorkflowStep implementation      |
+| `ValidationWorkflowStepFactory`          | v0.7.7e    | Modules.Agents | Factory for creating validation steps       |
+| `ValidationStepType`                     | v0.7.7e    | Modules.Agents | Enum: 7 validation step types               |
+| `ValidationFailureAction`                | v0.7.7e    | Modules.Agents | Enum: 4 failure handling actions             |
+| `ValidationFailureSeverity`              | v0.7.7e    | Modules.Agents | Enum: 4 failure severity levels              |
+| `ValidationTrigger`                      | v0.7.7e    | Modules.Agents | Enum: 6 validation trigger types             |
+| `ValidationRule`                         | v0.7.7e    | Modules.Agents | Rule definition record (8 properties)        |
+| `ValidationStepResult`                   | v0.7.7e    | Modules.Agents | Step result record (10 properties)           |
+| `ValidationWorkflowStepOptions`          | v0.7.7e    | Modules.Agents | Factory options record (7 properties)        |
+| `ValidationWorkflowContext`              | v0.7.7e    | Modules.Agents | Execution context record (10 properties)     |
+| `WorkflowStepResult`                     | v0.7.7e    | Modules.Agents | Base step result record (4 properties)       |
+| `ValidationConfigurationError`           | v0.7.7e    | Modules.Agents | Configuration error record                   |
+| `ValidationStepError`                    | v0.7.7e    | Modules.Agents | Validation error record                      |
+| `ValidationStepWarning`                  | v0.7.7e    | Modules.Agents | Validation warning record                    |
+
+**DI Registrations (v0.7.7e):**
+
+| Registration                                                       | Lifetime  | Module         | Purpose                              |
+| :----------------------------------------------------------------- | :-------- | :------------- | :----------------------------------- |
+| `ValidationWorkflowStepFactory`                                     | Singleton | Modules.Agents | Validation step creation factory     |

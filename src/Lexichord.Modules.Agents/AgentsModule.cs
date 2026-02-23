@@ -507,6 +507,17 @@ public class AgentsModule : IModule
         //   - License gating: WriterPro (execute) / Teams (history) / Enterprise (statistics)
         services.AddSingleton<IWorkflowExecutionHistoryService, WorkflowExecutionHistoryService>();
         services.AddTransient<WorkflowExecutionViewModel>();
+
+        // LOGIC: Register the Validation Workflow Step Factory:
+        //   v0.7.7e — Validation Step Types (CKVS Phase 4d)
+        //   - ValidationWorkflowStepFactory: Singleton
+        //     Factory for creating IValidationWorkflowStep instances with injected
+        //     IUnifiedValidationService and ILoggerFactory dependencies.
+        //     Supports all 7 step types: Schema, CrossReference, Consistency,
+        //     Custom, Grammar, KnowledgeGraphAlignment, Metadata
+        //   - License gating: WriterPro (Schema, Grammar) / Teams (all types) / Enterprise (unlimited)
+        //   - Depends on: IUnifiedValidationService (v0.7.5f), ILoggerFactory
+        services.AddSingleton<Workflows.Validation.ValidationWorkflowStepFactory>();
     }
 
     /// <inheritdoc />
