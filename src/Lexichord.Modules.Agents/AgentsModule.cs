@@ -24,6 +24,7 @@ using Lexichord.Modules.Agents.Performance;
 using Lexichord.Modules.Agents.Services;
 using Lexichord.Modules.Agents.Templates;
 using Lexichord.Modules.Agents.Workflows;
+using Lexichord.Modules.Agents.ViewModels;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -493,6 +494,19 @@ public class AgentsModule : IModule
         //   - License gating: WriterPro (execute) / Teams (duplicate)
         //   - Depends on: ILogger only
         services.AddSingleton<IPresetWorkflowRepository, PresetWorkflowRepository>();
+
+        // LOGIC: Register the Workflow Execution UI services:
+        //   v0.7.7d — Workflow Execution UI
+        //   - IWorkflowExecutionHistoryService → WorkflowExecutionHistoryService: Singleton
+        //     In-memory ConcurrentDictionary store with 100-entry limit.
+        //     Records execution summaries and computes statistics.
+        //   - WorkflowExecutionViewModel: Transient
+        //     ViewModel for the execution panel — each execution gets a fresh instance.
+        //     Depends on: IWorkflowEngine, IEditorInsertionService, IWorkflowExecutionHistoryService,
+        //                 IClipboardService, ILogger
+        //   - License gating: WriterPro (execute) / Teams (history) / Enterprise (statistics)
+        services.AddSingleton<IWorkflowExecutionHistoryService, WorkflowExecutionHistoryService>();
+        services.AddTransient<WorkflowExecutionViewModel>();
     }
 
     /// <inheritdoc />
@@ -957,6 +971,19 @@ public class AgentsModule : IModule
         else
         {
             logger.LogWarning("Preset Workflow Repository is not registered. Built-in workflow presets will not be available.");
+        }
+
+        // LOGIC: Verify Workflow Execution History Service is available (v0.7.7d).
+        var historyService = provider.GetService<IWorkflowExecutionHistoryService>();
+        if (historyService is not null)
+        {
+            logger.LogDebug(
+                "Workflow Execution History Service available: {ServiceType}",
+                historyService.GetType().Name);
+        }
+        else
+        {
+            logger.LogWarning("Workflow Execution History Service is not registered. Execution history tracking will not be available.");
         }
     }
 }

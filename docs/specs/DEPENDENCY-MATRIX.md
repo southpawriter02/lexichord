@@ -4211,3 +4211,27 @@ v0.13.5-ORC (Patterns & Templates)
 | Dependency                 | Version | Purpose                                    |
 | :------------------------- | :------ | :----------------------------------------- |
 | `YamlDotNet`               | 15.x    | YAML deserialization of preset workflows   |
+
+---
+
+### v0.7.7d — Workflow Execution UI
+
+**New Interfaces (v0.7.7d):**
+
+| Interface/Type                           | Version    | Module         | Purpose                                    |
+| :--------------------------------------- | :--------- | :------------- | :----------------------------------------- |
+| `IWorkflowExecutionViewModel`            | v0.7.7d    | Modules.Agents | Execution panel ViewModel contract         |
+| `WorkflowStepExecutionState`             | v0.7.7d    | Modules.Agents | ObservableObject for step UI state         |
+| `WorkflowExecutionViewModel`             | v0.7.7d    | Modules.Agents | IWorkflowExecutionViewModel implementation |
+| `IWorkflowExecutionHistoryService`       | v0.7.7d    | Modules.Agents | Execution history tracking contract        |
+| `WorkflowExecutionHistoryService`        | v0.7.7d    | Modules.Agents | In-memory history implementation           |
+| `WorkflowExecutionSummary`               | v0.7.7d    | Modules.Agents | History entry record (10 properties)       |
+| `WorkflowExecutionStatistics`            | v0.7.7d    | Modules.Agents | Aggregated stats record (12 properties)    |
+
+**DI Registrations (v0.7.7d):**
+
+| Registration                                                       | Lifetime  | Module         | Purpose                              |
+| :----------------------------------------------------------------- | :-------- | :------------- | :----------------------------------- |
+| `IWorkflowExecutionHistoryService → WorkflowExecutionHistoryService` | Singleton | Modules.Agents | Execution history tracking           |
+| `WorkflowExecutionViewModel`                                        | Transient | Modules.Agents | Execution panel ViewModel            |
+
