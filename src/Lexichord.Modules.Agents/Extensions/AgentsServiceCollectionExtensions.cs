@@ -5,6 +5,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Lexichord.Modules.Agents.Workflows.Validation.CI;
+
 using Lexichord.Abstractions.Agents.Context;
 using Lexichord.Abstractions.Contracts.LLM;
 using MediatR;
@@ -906,6 +908,65 @@ public static class AgentsServiceCollectionExtensions
 
         return services;
     }
-}
 
+    /// <summary>
+    /// Registers the CI/CD Pipeline services for headless workflow execution.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="ICIPipelineService"/> → <see cref="CIPipelineService"/> (Scoped)</description></item>
+    ///   <item><description><see cref="ICIResultFormatter"/> → <see cref="CIResultFormatter"/> (Singleton)</description></item>
+    /// </list>
+    /// <para>
+    /// <b>CIPipelineService</b> is registered as scoped to align with per-request
+    /// lifecycle in API scenarios. Each scope gets its own service instance with
+    /// independent execution tracking.
+    /// </para>
+    /// <para>
+    /// <b>CIResultFormatter</b> is registered as singleton because it is stateless
+    /// and thread-safe — all formatting methods are pure functions.
+    /// </para>
+    /// <para>
+    /// <strong>Dependencies:</strong>
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description><see cref="Templates.IValidationWorkflowRegistry"/> (v0.7.7h) — Workflow resolution</description></item>
+    /// </list>
+    /// <para>
+    /// <strong>Introduced in:</strong> v0.7.7j as part of the CI/CD Integration.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Registration in AgentsModule
+    /// public override void RegisterServices(IServiceCollection services)
+    /// {
+    ///     services.AddCIPipeline();
+    /// }
+    ///
+    /// // Later, resolve via DI
+    /// var pipeline = serviceProvider.GetRequiredService&lt;ICIPipelineService&gt;();
+    /// var result = await pipeline.ExecuteWorkflowAsync(request);
+    /// </code>
+    /// </example>
+    public static IServiceCollection AddCIPipeline(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // LOGIC: v0.7.7j — Register CIPipelineService as scoped for per-request
+        // lifecycle. Each scope gets its own execution tracker state.
+        services.AddScoped<ICIPipelineService, CIPipelineService>();
+
+        // LOGIC: v0.7.7j — Register CIResultFormatter as singleton.
+        // Stateless, thread-safe formatter — all methods are pure functions.
+        services.AddSingleton<ICIResultFormatter, CIResultFormatter>();
+
+        return services;
+    }
+}
 
