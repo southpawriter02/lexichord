@@ -21,6 +21,7 @@ This release introduces the Workflow Designer — a visual, drag-and-drop builde
 - **Validation Step Types (v0.7.7e)** — Unified validation step types for the Validation Workflows system (CKVS Phase 4d). Added `IWorkflowStep` base interface (identity, ordering, timeout, execute, validate); `IValidationWorkflowStep` extended interface (StepType, Options, FailureAction, FailureSeverity, IsAsync, GetValidationRulesAsync, ExecuteValidationAsync); `ValidationWorkflowStep` implementation with `IUnifiedValidationService` delegation, linked `CancellationTokenSource` timeout enforcement, exhaustive logging, and configuration validation. Added `ValidationWorkflowStepFactory` for dependency-injected step creation. Added 4 enums (`ValidationStepType` with 7 types: Schema/CrossReference/Consistency/Custom/Grammar/KnowledgeGraphAlignment/Metadata; `ValidationFailureAction` with 4 actions: Halt/Continue/Branch/Notify; `ValidationFailureSeverity` with 4 levels: Info/Warning/Error/Critical; `ValidationTrigger` with 6 triggers). Added 4 records (`ValidationRule`, `ValidationStepResult` with `ValidationStepError`/`ValidationStepWarning`, `ValidationWorkflowStepOptions`, `ValidationWorkflowContext`). Added `WorkflowStepResult` base result record and `ValidationConfigurationError` record. DI registration: `ValidationWorkflowStepFactory` (Singleton). License gating: WriterPro (Schema, Grammar), Teams (all types), Enterprise (unlimited rules). Includes 10 unit tests with 100% pass rate (0 regressions on 11,108-test suite). [Detailed changelog](v0.7.x/LCS-CL-v0.7.7e.md)
 - **Gating Step Type (v0.7.7f)** — Gating workflow steps that block execution or trigger alternate paths based on condition expressions (CKVS Phase 4d). Added `IGatingWorkflowStep` interface extending `IWorkflowStep` (ConditionExpression, FailureMessage, BranchPath, RequireAll, EvaluateAsync, GetConditionDescription); `GatingWorkflowStep` implementation with expression parsing (AND/OR compound conditions), timeout enforcement, timestamped audit trails, and configuration validation (5 checks). Added `IGatingConditionEvaluator` interface; `GatingConditionEvaluator` implementation with 4 regex-parsed expression types (`validation_count(severity) op value`, `metadata('key') op value`, `content_length op value`, `has_property == true/false`) and 6 comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`). Added 3 records (`GatingResult` with 8 properties, `GatingCondition` with 5 properties, `GatingEvaluationContext` with 5 properties). Branch path stored in `WorkflowStepResult.Data["branchPath"]` for backward compatibility. DI registration: `IGatingConditionEvaluator → GatingConditionEvaluator` (Singleton). License gating: WriterPro (validation count only), Teams (all expressions + branching), Enterprise (full + custom). Includes 16 unit tests with 100% pass rate (0 regressions on 11,123-test suite). [Detailed changelog](v0.7.x/LCS-CL-v0.7.7f.md)
 - **Sync Step Type (v0.7.7g)** — Sync workflow steps for document-to-knowledge-graph synchronization within validation workflows (CKVS Phase 4d). Added `ISyncWorkflowStep` interface extending `IWorkflowStep` (Direction, ConflictStrategy, SkipIfValidationFailed, ExecuteSyncAsync); `SyncWorkflowStep` implementation with `ISyncService` delegation, linked `CancellationTokenSource` timeout enforcement, skip-on-validation-failure logic, and timestamped audit trails. Added `SyncWorkflowStepFactory` for dependency-injected step creation. Added `ConflictStrategy` enum (6 values: PreferDocument, PreferGraph, PreferNewer, Merge, FailOnConflict, Manual) with extension method mapping to existing `ConflictResolutionStrategy`. Added 4 records (`SyncStepResult` with 12 properties, `SyncWorkflowContext` with 8 properties, `SyncStepConflict`/`SyncStepConflictResolution` for conflict tracking, `SyncChange`/`SyncChangeType` for audit). Reuses existing `SyncDirection` from Abstractions (no duplicate). DI registration: `SyncWorkflowStepFactory` (Singleton). License gating: WriterPro (DocumentToGraph only), Teams (all directions + strategies), Enterprise (full + custom sync handlers). Includes 14 unit tests with 100% pass rate (0 regressions on 11,137-test suite). [Detailed changelog](v0.7.x/LCS-CL-v0.7.7g.md)
+- **Pre-built Workflows (v0.7.7h)** — Three production-ready pre-built validation workflow templates for the Validation Workflows system (CKVS Phase 4d). Added `IValidationWorkflowRegistry` interface with `GetWorkflowAsync`, `ListWorkflowsAsync`, `ListPrebuiltAsync`, `RegisterWorkflowAsync`, `UpdateWorkflowAsync`, `DeleteWorkflowAsync` methods; `ValidationWorkflowRegistry` implementation with three-tier lookup (pre-built cache → custom storage → embedded resource loader), pre-built mutation guards, and exhaustive logging. Added `IValidationWorkflowLoader` interface; `EmbeddedResourceValidationWorkflowLoader` implementation loading embedded YAML resources with YamlDotNet/snake_case deserialization and internal DTOs (`ValidationWorkflowYamlDto`, `ValidationWorkflowStepYamlDto`, `ValidationWorkflowLicenseYamlDto`). Added `IValidationWorkflowStorage` interface; `InMemoryValidationWorkflowStorage` stub implementation using `ConcurrentDictionary`. Added `ValidationWorkflowDefinition` record (15 properties), `ValidationWorkflowStepDef` record (7 properties), `ValidationWorkflowTrigger` enum (5 values: Manual, OnSave, PrePublish, ScheduledNightly, Custom), `ValidationWorkflowLicenseRequirement` record (4 tier booleans). Added 3 pre-built validation workflow YAML templates: `on-save-validation` (3 steps: schema→consistency→reference, OnSave trigger, WriterPro+, 2-min target), `pre-publish-gate` (7 steps: schema→grammar→consistency→kg-alignment→reference→gating→sync, PrePublish trigger, Teams+, 8-min target), `nightly-health-check` (5 steps: workspace-scan→batch-schema→batch-consistency→batch-reference→health-report, ScheduledNightly trigger, Teams+, 30-min target). All types in `Lexichord.Modules.Agents.Workflows.Validation.Templates` namespace. Includes 22 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.7h.md)
 
 ---
 
@@ -54,18 +55,18 @@ This release introduces the Summarizer Agent system, enabling multi-mode documen
 
 #### Sub-Part Changelogs
 
-| Version                               | Title                        | Status      |
-| ------------------------------------- | ---------------------------- | ----------- |
-| [v0.7.6a](v0.7.x/LCS-CL-v0.7.6a.md) | Summarization Modes          | ✅ Complete |
-| [v0.7.6b](v0.7.x/LCS-CL-v0.7.6b.md) | Metadata Extraction          | ✅ Complete |
-| [v0.7.6c](v0.7.x/LCS-CL-v0.7.6c.md) | Export Formats               | ✅ Complete |
-| [v0.7.6d](v0.7.x/LCS-CL-v0.7.6d.md) | Document Comparison          | ✅ Complete |
-| [v0.7.6e](v0.7.x/LCS-CL-v0.7.6e.md) | Sync Service Core            | ✅ Complete |
-| [v0.7.6f](v0.7.x/LCS-CL-v0.7.6f.md) | Doc-to-Graph Sync            | ✅ Complete |
-| [v0.7.6g](v0.7.x/LCS-CL-v0.7.6g.md) | Graph-to-Doc Sync            | ✅ Complete |
-| [v0.7.6h](v0.7.x/LCS-CL-v0.7.6h.md) | Conflict Resolver            | ✅ Complete |
-| [v0.7.6i](v0.7.x/LCS-CL-v0.7.6i.md) | Sync Status Tracker          | ✅ Complete |
-| [v0.7.6j](v0.7.x/LCS-CL-v0.7.6j.md) | Sync Event Publisher         | ✅ Complete |
+| Version                             | Title                | Status      |
+| ----------------------------------- | -------------------- | ----------- |
+| [v0.7.6a](v0.7.x/LCS-CL-v0.7.6a.md) | Summarization Modes  | ✅ Complete |
+| [v0.7.6b](v0.7.x/LCS-CL-v0.7.6b.md) | Metadata Extraction  | ✅ Complete |
+| [v0.7.6c](v0.7.x/LCS-CL-v0.7.6c.md) | Export Formats       | ✅ Complete |
+| [v0.7.6d](v0.7.x/LCS-CL-v0.7.6d.md) | Document Comparison  | ✅ Complete |
+| [v0.7.6e](v0.7.x/LCS-CL-v0.7.6e.md) | Sync Service Core    | ✅ Complete |
+| [v0.7.6f](v0.7.x/LCS-CL-v0.7.6f.md) | Doc-to-Graph Sync    | ✅ Complete |
+| [v0.7.6g](v0.7.x/LCS-CL-v0.7.6g.md) | Graph-to-Doc Sync    | ✅ Complete |
+| [v0.7.6h](v0.7.x/LCS-CL-v0.7.6h.md) | Conflict Resolver    | ✅ Complete |
+| [v0.7.6i](v0.7.x/LCS-CL-v0.7.6i.md) | Sync Status Tracker  | ✅ Complete |
+| [v0.7.6j](v0.7.x/LCS-CL-v0.7.6j.md) | Sync Event Publisher | ✅ Complete |
 
 ---
 
@@ -97,17 +98,17 @@ This release introduces the Tuning Agent system, enabling proactive style scanni
 
 #### Sub-Part Changelogs
 
-| Version                               | Title                        | Status      |
-| ------------------------------------- | ---------------------------- | ----------- |
-| [v0.7.5a](v0.7.x/LCS-CL-v0.7.5a.md) | Style Deviation Scanner      | ✅ Complete |
-| [v0.7.5b](v0.7.x/LCS-CL-v0.7.5b.md) | Automatic Fix Suggestions    | ✅ Complete |
-| [v0.7.5c](v0.7.x/LCS-CL-v0.7.5c.md) | Accept/Reject UI             | ✅ Complete |
-| [v0.7.5d](v0.7.x/LCS-CL-v0.7.5d.md) | Learning Loop                | ✅ Complete |
-| [v0.7.5e](v0.7.x/LCS-CL-v0.7.5e.md) | Unified Issue Model          | ✅ Complete |
-| [v0.7.5f](v0.7.x/LCS-CL-v0.7.5f.md) | Issue Aggregator             | ✅ Complete |
-| [v0.7.5g](v0.7.x/LCS-CL-v0.7.5g.md) | Unified Issues Panel         | ✅ Complete |
-| [v0.7.5h](v0.7.x/LCS-CL-v0.7.5h.md) | Combined Fix Workflow        | ✅ Complete |
-| [v0.7.5i](v0.7.x/LCS-CL-v0.7.5i.md) | Issue Filters                | ✅ Complete |
+| Version                             | Title                     | Status      |
+| ----------------------------------- | ------------------------- | ----------- |
+| [v0.7.5a](v0.7.x/LCS-CL-v0.7.5a.md) | Style Deviation Scanner   | ✅ Complete |
+| [v0.7.5b](v0.7.x/LCS-CL-v0.7.5b.md) | Automatic Fix Suggestions | ✅ Complete |
+| [v0.7.5c](v0.7.x/LCS-CL-v0.7.5c.md) | Accept/Reject UI          | ✅ Complete |
+| [v0.7.5d](v0.7.x/LCS-CL-v0.7.5d.md) | Learning Loop             | ✅ Complete |
+| [v0.7.5e](v0.7.x/LCS-CL-v0.7.5e.md) | Unified Issue Model       | ✅ Complete |
+| [v0.7.5f](v0.7.x/LCS-CL-v0.7.5f.md) | Issue Aggregator          | ✅ Complete |
+| [v0.7.5g](v0.7.x/LCS-CL-v0.7.5g.md) | Unified Issues Panel      | ✅ Complete |
+| [v0.7.5h](v0.7.x/LCS-CL-v0.7.5h.md) | Combined Fix Workflow     | ✅ Complete |
+| [v0.7.5i](v0.7.x/LCS-CL-v0.7.5i.md) | Issue Filters             | ✅ Complete |
 
 ---
 
@@ -121,7 +122,7 @@ This release introduces the Simplifier Agent system, enabling writers to simplif
 
 - **Readability Target Service (v0.7.4a)** — Foundation for readability-targeted text simplification in `Lexichord.Abstractions.Agents.Simplifier` and `Lexichord.Modules.Agents.Simplifier`. Added `IReadabilityTargetService` interface with methods for preset management (`GetAllPresetsAsync()`, `GetPresetByIdAsync()`), target resolution (`GetTargetAsync()` with priority: explicit params > preset > Voice Profile > defaults), target validation (`ValidateTarget()` with achievability levels: Achievable, Challenging, Unlikely, AlreadyMet), and custom preset CRUD (`CreateCustomPresetAsync()`, `UpdateCustomPresetAsync()`, `DeleteCustomPresetAsync()` requiring WriterPro/Teams). Added `AudiencePreset` record with `Id`, `Name`, `TargetGradeLevel`, `MaxSentenceLength`, `AvoidJargon`, `Description`, `IsBuiltIn` properties; `IsValid()` quick check; `Validate()` detailed errors; `CloneWithId()` for customization. Added `ReadabilityTarget` record with computed `MinAcceptableGrade`/`MaxAcceptableGrade` (target ± tolerance), `IsGradeLevelAcceptable()` check, `FromPreset()` and `FromExplicit()` factory methods, and `ReadabilityTargetSource` enum (VoiceProfile, Preset, Explicit, Default). Added `TargetValidationResult` record with `Achievability` (via `TargetAchievability` enum), `GradeLevelDelta`, `Warnings` list, `SuggestedPreset`, and `IsAchievable`/`IsAlreadyMet`/`HasWarnings` computed properties with factory methods. Added `BuiltInPresets` static class with 4 presets: General Public (Grade 8, 20 words, avoid jargon), Technical (Grade 12, 25 words, explain jargon), Executive (Grade 10, 18 words, avoid jargon), International/ESL (Grade 6, 15 words, avoid jargon). Added `ReadabilityTargetService` implementation as Singleton with `IVoiceProfileService`, `IReadabilityService`, `ISettingsService`, `ILicenseContext` dependencies; custom preset persistence via `SimplifierAgent:CustomPresets` settings key; thread-safe locking for preset operations. Added `FeatureCodes.SimplifierAgent` and `FeatureCodes.CustomAudiencePresets` constants (both WriterPro tier). Added `AddReadabilityTargetService()` DI extension. Updated `AgentsModule` to v0.7.4 with registration and init verification. Spec adaptations: used `TargetGradeLevel` directly (no `VoiceProfile.TargetAudience`), used `ComplexWordRatio * 100` for percentage (no `ComplexWordPercentage`), omitted passive voice validation (no `PassiveVoicePercentage`). No new NuGet packages. Includes 78 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.4a.md)
 
-- **Simplification Pipeline (v0.7.4b)** — Core Simplifier Agent with LLM-powered text simplification in `Lexichord.Modules.Agents.Simplifier`. Added `ISimplificationPipeline` interface with `SimplifyAsync()` for batch simplification, `SimplifyStreamingAsync()` for real-time streaming, and `ValidateRequest()` for pre-execution validation. Added `SimplificationRequest` record with `OriginalText`, `Target` (ReadabilityTarget), `DocumentPath`, `Strategy` (Conservative/Balanced/Aggressive), `GenerateGlossary`, `PreserveFormatting`, `AdditionalInstructions`, `Timeout` properties; `MaxTextLength` (50,000 chars) and timeout constants; `Validate()` method. Added `SimplificationResult` record with `SimplifiedText`, `OriginalMetrics`, `SimplifiedMetrics`, `Changes`, `Glossary`, `TokenUsage`, `ProcessingTime`, `StrategyUsed`, `TargetUsed`, `Success`, `ErrorMessage` properties; computed `GradeLevelReduction`, `WordCountDifference`, `TargetAchieved`; `Failed()` factory method. Added `SimplificationStrategy` enum (Conservative=0.3 temp, Balanced=0.4 temp, Aggressive=0.5 temp) and `SimplificationChangeType` enum (SentenceSplit, JargonReplacement, PassiveToActive, WordSimplification, ClauseReduction, TransitionAdded, RedundancyRemoved, Combined). Added `SimplificationChange` record with `OriginalText`, `SimplifiedText`, `ChangeType`, `Explanation`, nullable `Location` (TextLocation), `Confidence`. Added `SimplificationChunk` record for streaming with `TextDelta`, `IsComplete`, `CompletedChange`; `Text()` and `Complete()` factories. Added `SimplificationValidation` record with `IsValid`, `Errors`, `Warnings`, `HasWarnings`; factory methods `Valid()`, `ValidWithWarnings()`, `Invalid()`, `InvalidWithWarnings()`. Added `ISimplificationResponseParser` interface with `Parse()` method; `SimplificationParseResult` record with `SimplifiedText`, `Changes`, `Glossary`, `HasChanges`, `HasGlossary`; `Empty()` and `WithTextOnly()` factories. Added `SimplificationResponseParser` implementation using compiled regex patterns for ```simplified, ```changes, ```glossary blocks; supports arrow variations (→, ->, =>); case-insensitive block names; multi-hyphen change types (passive-to-active). Added `SimplifierAgent` class implementing `IAgent` and `ISimplificationPipeline` with `[RequiresLicense(LicenseTier.WriterPro)]`, `[AgentDefinition("simplifier", Priority = 101)]`; AgentId "simplifier", Name "The Simplifier"; Capabilities Chat|DocumentContext|StyleEnforcement|Streaming; 4000-token context budget; strategy-specific temperatures; integrated with `IContextOrchestrator`, `IReadabilityService`, `IChatCompletionService`; user vs timeout cancellation distinction; graceful context failure handling. Added `specialist-simplifier.yaml` prompt template with target readability, current metrics, strategy guidelines, output format specification. Added `AddSimplifierAgentPipeline()` DI extension registering parser and agent as singletons with IAgent forwarding. Updated `AgentsModule` with pipeline registration and init verification. Spec adaptations: implements `IAgent` directly (no BaseAgent), uses nullable `TextLocation` (no TextSpan), omits `PassiveVoicePercentage`. No new NuGet packages. Includes 70 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.4b.md)
+- **Simplification Pipeline (v0.7.4b)** — Core Simplifier Agent with LLM-powered text simplification in `Lexichord.Modules.Agents.Simplifier`. Added `ISimplificationPipeline` interface with `SimplifyAsync()` for batch simplification, `SimplifyStreamingAsync()` for real-time streaming, and `ValidateRequest()` for pre-execution validation. Added `SimplificationRequest` record with `OriginalText`, `Target` (ReadabilityTarget), `DocumentPath`, `Strategy` (Conservative/Balanced/Aggressive), `GenerateGlossary`, `PreserveFormatting`, `AdditionalInstructions`, `Timeout` properties; `MaxTextLength` (50,000 chars) and timeout constants; `Validate()` method. Added `SimplificationResult` record with `SimplifiedText`, `OriginalMetrics`, `SimplifiedMetrics`, `Changes`, `Glossary`, `TokenUsage`, `ProcessingTime`, `StrategyUsed`, `TargetUsed`, `Success`, `ErrorMessage` properties; computed `GradeLevelReduction`, `WordCountDifference`, `TargetAchieved`; `Failed()` factory method. Added `SimplificationStrategy` enum (Conservative=0.3 temp, Balanced=0.4 temp, Aggressive=0.5 temp) and `SimplificationChangeType` enum (SentenceSplit, JargonReplacement, PassiveToActive, WordSimplification, ClauseReduction, TransitionAdded, RedundancyRemoved, Combined). Added `SimplificationChange` record with `OriginalText`, `SimplifiedText`, `ChangeType`, `Explanation`, nullable `Location` (TextLocation), `Confidence`. Added `SimplificationChunk` record for streaming with `TextDelta`, `IsComplete`, `CompletedChange`; `Text()` and `Complete()` factories. Added `SimplificationValidation` record with `IsValid`, `Errors`, `Warnings`, `HasWarnings`; factory methods `Valid()`, `ValidWithWarnings()`, `Invalid()`, `InvalidWithWarnings()`. Added `ISimplificationResponseParser` interface with `Parse()` method; `SimplificationParseResult` record with `SimplifiedText`, `Changes`, `Glossary`, `HasChanges`, `HasGlossary`; `Empty()` and `WithTextOnly()` factories. Added `SimplificationResponseParser` implementation using compiled regex patterns for `simplified, `changes, ```glossary blocks; supports arrow variations (→, ->, =>); case-insensitive block names; multi-hyphen change types (passive-to-active). Added `SimplifierAgent`class implementing`IAgent`and`ISimplificationPipeline`with`[RequiresLicense(LicenseTier.WriterPro)]`, `[AgentDefinition("simplifier", Priority = 101)]`; AgentId "simplifier", Name "The Simplifier"; Capabilities Chat|DocumentContext|StyleEnforcement|Streaming; 4000-token context budget; strategy-specific temperatures; integrated with `IContextOrchestrator`, `IReadabilityService`, `IChatCompletionService`; user vs timeout cancellation distinction; graceful context failure handling. Added `specialist-simplifier.yaml`prompt template with target readability, current metrics, strategy guidelines, output format specification. Added`AddSimplifierAgentPipeline()`DI extension registering parser and agent as singletons with IAgent forwarding. Updated`AgentsModule`with pipeline registration and init verification. Spec adaptations: implements`IAgent`directly (no BaseAgent), uses nullable`TextLocation`(no TextSpan), omits`PassiveVoicePercentage`. No new NuGet packages. Includes 70 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.4b.md)
 
 - **Preview/Diff UI (v0.7.4c)** — Interactive preview interface for simplification changes in `Lexichord.Modules.Agents.Simplifier`. Added `SimplificationPreviewViewModel` orchestrating preview experience with `AcceptAllCommand`, `AcceptSelectedCommand`, `RejectAllCommand`, `ResimplifyCommand`, and view mode switching; undo group integration via `IEditorService`; partial acceptance via `BuildMergedText()` applying selected changes in position order. Added `SimplificationChangeViewModel` wrapping `SimplificationChange` with `IsSelected`, `IsExpanded`, `IsHighlighted` observables and computed display properties (`ChangeTypeDisplay`, `ChangeTypeIcon`, `ChangeTypeBadgeClass` for color-coded badges). Added 3 MediatR events: `SimplificationAcceptedEvent` (with `IsPartialAcceptance`, `AcceptanceRate` computed), `SimplificationRejectedEvent` (with standard reason constants and factory methods), `ResimplificationRequestedEvent` (with `IsPresetChange`, `IsStrategyChange` computed). Added `DiffViewMode` enum (SideBySide, Inline, ChangesOnly) and `CloseRequestedEventArgs` for view close coordination. Added DiffPlex 1.7.2 integration with `DiffTextBox` (side-by-side using `SideBySideDiffBuilder`), `InlineDiffView` (unified using `InlineDiffBuilder`), `ChangesOnlyView` (card-based with checkboxes). Added `ReadabilityComparisonPanel` showing before/after metrics with grade reduction badge. Added `SimplificationPreviewView` main panel with preset selector, view mode tabs, keyboard shortcuts (Ctrl+Enter=Accept All, Escape=Reject), and license warning for non-WriterPro users. Added `AddSimplifierPreviewUI()` DI extension registering `SimplificationPreviewViewModel` as transient. Updated `AgentsModule` with DI call. DiffPlex 1.7.2 is the only new NuGet package. Includes 71 unit tests with 100% pass rate. [Detailed changelog](v0.7.x/LCS-CL-v0.7.4c.md)
 
@@ -129,12 +130,12 @@ This release introduces the Simplifier Agent system, enabling writers to simplif
 
 #### Sub-Part Changelogs
 
-| Version                               | Title                        | Status      |
-| ------------------------------------- | ---------------------------- | ----------- |
-| [v0.7.4a](v0.7.x/LCS-CL-v0.7.4a.md) | Readability Target Service   | ✅ Complete |
-| [v0.7.4b](v0.7.x/LCS-CL-v0.7.4b.md) | Simplification Pipeline      | ✅ Complete |
-| [v0.7.4c](v0.7.x/LCS-CL-v0.7.4c.md) | Preview/Diff UI              | ✅ Complete |
-| [v0.7.4d](v0.7.x/LCS-CL-v0.7.4d.md) | Batch Simplification         | ✅ Complete |
+| Version                             | Title                      | Status      |
+| ----------------------------------- | -------------------------- | ----------- |
+| [v0.7.4a](v0.7.x/LCS-CL-v0.7.4a.md) | Readability Target Service | ✅ Complete |
+| [v0.7.4b](v0.7.x/LCS-CL-v0.7.4b.md) | Simplification Pipeline    | ✅ Complete |
+| [v0.7.4c](v0.7.x/LCS-CL-v0.7.4c.md) | Preview/Diff UI            | ✅ Complete |
+| [v0.7.4d](v0.7.x/LCS-CL-v0.7.4d.md) | Batch Simplification       | ✅ Complete |
 
 ---
 
@@ -156,8 +157,8 @@ This release introduces the Editor Agent system, enabling writers to select text
 
 #### Sub-Part Changelogs
 
-| Version                               | Title                       | Status      |
-| ------------------------------------- | --------------------------- | ----------- |
+| Version                             | Title                       | Status      |
+| ----------------------------------- | --------------------------- | ----------- |
 | [v0.7.3a](v0.7.x/LCS-CL-v0.7.3a.md) | EditorViewModel Integration | ✅ Complete |
 | [v0.7.3b](v0.7.x/LCS-CL-v0.7.3b.md) | Agent Command Pipeline      | ✅ Complete |
 | [v0.7.3c](v0.7.x/LCS-CL-v0.7.3c.md) | Context-Aware Rewriting     | ✅ Complete |
@@ -218,16 +219,16 @@ This release introduces the Context Assembler system, enabling intelligent, prio
 
 #### Sub-Part Changelogs
 
-| Version                             | Title                        | Status      |
-| ----------------------------------- | ---------------------------- | ----------- |
-| [v0.7.2a](v0.7.x/LCS-CL-v0.7.2a.md) | Context Strategy Interface   | ✅ Complete |
-| [v0.7.2b](v0.7.x/LCS-CL-v0.7.2b.md) | Built-in Context Strategies  | ✅ Complete |
+| Version                             | Title                         | Status      |
+| ----------------------------------- | ----------------------------- | ----------- |
+| [v0.7.2a](v0.7.x/LCS-CL-v0.7.2a.md) | Context Strategy Interface    | ✅ Complete |
+| [v0.7.2b](v0.7.x/LCS-CL-v0.7.2b.md) | Built-in Context Strategies   | ✅ Complete |
 | [v0.7.2c](v0.7.x/LCS-CL-v0.7.2c.md) | Context Orchestrator          | ✅ Complete |
 | [v0.7.2d](v0.7.x/LCS-CL-v0.7.2d.md) | Context Preview Panel         | ✅ Complete |
 | [v0.7.2e](v0.7.x/LCS-CL-v0.7.2e.md) | Knowledge Context Strategy    | ✅ Complete |
 | [v0.7.2f](v0.7.x/LCS-CL-v0.7.2f.md) | Entity Relevance Scorer       | ✅ Complete |
 | [v0.7.2g](v0.7.x/LCS-CL-v0.7.2g.md) | Knowledge Context Formatter   | ✅ Complete |
-| [v0.7.2h](v0.7.x/LCS-CL-v0.7.2h.md) | Context Assembler Integration  | ✅ Complete |
+| [v0.7.2h](v0.7.x/LCS-CL-v0.7.2h.md) | Context Assembler Integration | ✅ Complete |
 
 ---
 
@@ -249,11 +250,11 @@ This release focuses on production-readiness with comprehensive testing, error h
 
 #### Sub-Part Changelogs
 
-| Version                        | Title                    | Status      |
-| ------------------------------ | ------------------------ | ----------- |
-| [v0.6.8a](v0.6.x/v0.6.8a.md) | Unit Test Suite          | ✅ Complete |
-| [v0.6.8b](v0.6.x/v0.6.8b.md) | Integration Tests        | ✅ Complete |
-| [v0.6.8c](v0.6.x/v0.6.8c.md) | Performance Optimization | ✅ Complete |
+| Version                      | Title                     | Status      |
+| ---------------------------- | ------------------------- | ----------- |
+| [v0.6.8a](v0.6.x/v0.6.8a.md) | Unit Test Suite           | ✅ Complete |
+| [v0.6.8b](v0.6.x/v0.6.8b.md) | Integration Tests         | ✅ Complete |
+| [v0.6.8c](v0.6.x/v0.6.8c.md) | Performance Optimization  | ✅ Complete |
 | [v0.6.8d](v0.6.x/v0.6.8d.md) | Error Handling & Recovery | ✅ Complete |
 
 ---
@@ -276,9 +277,9 @@ This release enables sending selected editor text to the Co-pilot chat panel, wi
 
 #### Sub-Part Changelogs
 
-| Version                        | Title                    | Status      |
-| ------------------------------ | ------------------------ | ----------- |
-| v0.6.7a                        | Selection Context        | ✅ Complete |
+| Version                      | Title                    | Status      |
+| ---------------------------- | ------------------------ | ----------- |
+| v0.6.7a                      | Selection Context        | ✅ Complete |
 | [v0.6.7b](v0.6.x/v0.6.7b.md) | Inline Suggestions       | ✅ Complete |
 | [v0.6.7c](v0.6.x/v0.6.7c.md) | Document-Aware Prompting | ✅ Complete |
 | [v0.6.7d](v0.6.x/v0.6.7d.md) | Quick Actions Panel      | ✅ Complete |

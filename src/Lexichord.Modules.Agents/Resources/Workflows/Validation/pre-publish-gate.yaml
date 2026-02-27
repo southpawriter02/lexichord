@@ -1,0 +1,111 @@
+# ========================================================================
+# Pre-Publish Gate Workflow
+# Specification: LCS-DES-077-KG-h §2.2
+# Trigger: Before document publication
+# License: Teams+
+# ========================================================================
+
+id: pre-publish-gate
+name: Pre-Publish Gate
+description: >
+    Comprehensive validation pipeline with gating before document publication.
+    Includes schema validation, grammar checking, consistency verification,
+    knowledge graph alignment, reference validation, a publish gate decision,
+    and knowledge graph synchronization. All steps must pass for publication
+    to proceed.
+version: "1.0.0"
+trigger: PrePublish
+enabled_by_default: true
+timeout_minutes: 15
+expected_duration_minutes: 8
+
+steps:
+    - id: schema-validation
+      name: Schema Validation
+      type: Schema
+      order: 1
+      enabled: true
+      timeout_ms: 30000
+      options:
+          validate_frontmatter: true
+          validate_structure: true
+          strict_mode: true
+
+    - id: grammar-check
+      name: Grammar Check
+      type: Grammar
+      order: 2
+      enabled: true
+      timeout_ms: 60000
+      options:
+          check_spelling: true
+          check_grammar: true
+          check_style: true
+          language: en-US
+
+    - id: consistency-check
+      name: Consistency Check
+      type: Consistency
+      order: 3
+      enabled: true
+      timeout_ms: 30000
+      options:
+          check_terminology: true
+          check_formatting: true
+          check_numbering: true
+          cross_document: true
+
+    - id: kg-alignment
+      name: Knowledge Graph Alignment
+      type: KGAlignment
+      order: 4
+      enabled: true
+      timeout_ms: 120000
+      options:
+          check_entity_references: true
+          check_relationship_consistency: true
+          suggest_missing_links: true
+
+    - id: reference-validation
+      name: Reference Validation
+      type: Reference
+      order: 5
+      enabled: true
+      timeout_ms: 60000
+      options:
+          check_internal_links: true
+          check_cross_references: true
+          resolve_external: true
+          verify_citations: true
+
+    - id: publish-gate
+      name: Publish Gate
+      type: Gating
+      order: 6
+      enabled: true
+      timeout_ms: 10000
+      options:
+          severity_threshold: Warning
+          require_all_previous_pass: true
+          allow_override: false
+
+    - id: kg-sync
+      name: Knowledge Graph Sync
+      type: Sync
+      order: 7
+      enabled: true
+      timeout_ms: 120000
+      options:
+          sync_entities: true
+          sync_relationships: true
+          conflict_strategy: PreferSource
+
+license_requirement:
+    core: false
+    writer_pro: false
+    teams: true
+    enterprise: true
+
+performance_targets:
+    max_duration_ms: 480000
+    max_memory_mb: 512

@@ -1,0 +1,62 @@
+# ========================================================================
+# On-Save Validation Workflow
+# Specification: LCS-DES-077-KG-h §2.1
+# Trigger: Automatically when a document is saved
+# License: WriterPro+
+# ========================================================================
+
+id: on-save-validation
+name: On-Save Validation
+description: >
+    Validates document schema, internal consistency, and cross-references
+    automatically when a document is saved. Designed for fast, non-blocking
+    validation with a target completion time of under 2 minutes.
+version: "1.0.0"
+trigger: OnSave
+enabled_by_default: true
+timeout_minutes: 5
+expected_duration_minutes: 2
+
+steps:
+    - id: schema-validation
+      name: Schema Validation
+      type: Schema
+      order: 1
+      enabled: true
+      timeout_ms: 30000
+      options:
+          validate_frontmatter: true
+          validate_structure: true
+          strict_mode: false
+
+    - id: consistency-check
+      name: Consistency Check
+      type: Consistency
+      order: 2
+      enabled: true
+      timeout_ms: 30000
+      options:
+          check_terminology: true
+          check_formatting: true
+          check_numbering: true
+
+    - id: reference-validation
+      name: Reference Validation
+      type: Reference
+      order: 3
+      enabled: true
+      timeout_ms: 60000
+      options:
+          check_internal_links: true
+          check_cross_references: true
+          resolve_external: false
+
+license_requirement:
+    core: false
+    writer_pro: true
+    teams: true
+    enterprise: true
+
+performance_targets:
+    max_duration_ms: 120000
+    max_memory_mb: 256

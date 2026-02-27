@@ -1,0 +1,93 @@
+# ========================================================================
+# Nightly Health Check Workflow
+# Specification: LCS-DES-077-KG-h §2.3
+# Trigger: Scheduled daily at 2 AM UTC
+# License: Teams+
+# ========================================================================
+
+id: nightly-health-check
+name: Nightly Health Check
+description: >
+    Workspace-wide batch validation that runs on a nightly schedule (default
+    2 AM UTC). Scans all documents in the workspace and performs schema,
+    consistency, and reference checks, then generates a consolidated health
+    report. Designed for background execution with a target completion time
+    of under 30 minutes.
+version: "1.0.0"
+trigger: ScheduledNightly
+enabled_by_default: true
+timeout_minutes: 60
+expected_duration_minutes: 30
+
+steps:
+    - id: workspace-scan
+      name: Workspace Scan
+      type: WorkspaceScan
+      order: 1
+      enabled: true
+      timeout_ms: 120000
+      options:
+          scan_all_documents: true
+          include_drafts: false
+          max_documents: 1000
+
+    - id: batch-schema-validation
+      name: Batch Schema Validation
+      type: Schema
+      order: 2
+      enabled: true
+      timeout_ms: 600000
+      options:
+          validate_frontmatter: true
+          validate_structure: true
+          strict_mode: false
+          batch_mode: true
+
+    - id: batch-consistency-check
+      name: Batch Consistency Check
+      type: Consistency
+      order: 3
+      enabled: true
+      timeout_ms: 600000
+      options:
+          check_terminology: true
+          check_formatting: true
+          check_numbering: true
+          cross_document: true
+          batch_mode: true
+
+    - id: batch-reference-check
+      name: Batch Reference Check
+      type: Reference
+      order: 4
+      enabled: true
+      timeout_ms: 600000
+      options:
+          check_internal_links: true
+          check_cross_references: true
+          resolve_external: false
+          detect_orphaned_references: true
+          batch_mode: true
+
+    - id: health-report
+      name: Health Report Generation
+      type: Report
+      order: 5
+      enabled: true
+      timeout_ms: 60000
+      options:
+          format: markdown
+          include_summary: true
+          include_details: true
+          include_trends: true
+          output_path: reports/nightly-health
+
+license_requirement:
+    core: false
+    writer_pro: false
+    teams: true
+    enterprise: true
+
+performance_targets:
+    max_duration_ms: 1800000
+    max_memory_mb: 1024
