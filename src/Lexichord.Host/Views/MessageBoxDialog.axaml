@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Lexichord.Host.ViewModels"
+        x:Class="Lexichord.Host.Views.MessageBoxDialog"
+        x:DataType="vm:MessageBoxViewModel"
+        Title="{Binding Title}"
+        Width="400"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Grid RowDefinitions="*, Auto" Margin="20">
+        <!-- Message -->
+        <TextBlock Grid.Row="0"
+                   Text="{Binding Message}"
+                   TextWrapping="Wrap"
+                   FontSize="14"
+                   VerticalAlignment="Center"
+                   Margin="0,0,0,20" />
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Content="OK"
+                    Command="{Binding OkCommand}"
+                    Width="80"
+                    Classes="accent" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -250,6 +250,7 @@ public static class HostServices
         // LOGIC (v0.1.1d): Register tab infrastructure services
         services.AddSingleton<Lexichord.Abstractions.Layout.ITabService, Layout.TabService>();
         services.AddSingleton<Lexichord.Abstractions.Services.ISaveDialogService, Services.SaveDialogService>();
+        services.AddSingleton<Lexichord.Abstractions.Services.IMessageBoxService, Services.MessageBoxService>();
 
         return services;
     }
